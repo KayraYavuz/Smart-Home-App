@@ -1,0 +1,53 @@
+group 'com.ttlock.ttlock_flutter'
+version '1.0'
+
+buildscript {
+    ext {
+        agp_version = '4.1.2'
+    }
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:$agp_version"
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 31
+    namespace 'com.ttlock.ttlock_flutter'
+    defaultConfig {
+        minSdkVersion 18
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.ttlock:ttlock:3.5.6'
+    implementation 'com.google.code.gson:gson:2.6.2'
+   // implementation(name: 'ttlock-release', ext: 'aar')
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+}
