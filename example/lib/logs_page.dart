@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:ttlock_flutter/ttlock.dart';
 
 class LogsPage extends StatefulWidget {
   // In a real app, you would require lockData to be passed.

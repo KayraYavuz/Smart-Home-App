@@ -1,13 +1,20 @@
 PODS:
   - Flutter (1.0.0)
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - TTLock (3.6.0)
   - ttlock_flutter (0.0.1):
     - Flutter
     - TTLock (= 3.6.0)
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - ttlock_flutter (from `.symlinks/plugins/ttlock_flutter/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -16,13 +23,19 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   ttlock_flutter:
     :path: ".symlinks/plugins/ttlock_flutter/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   TTLock: d998d8cfa3fd07dcf58054bd6f60fb2c7106871a
   ttlock_flutter: c31b70a2ea2c43b6d3d001b92ab8e597e16480c5
+  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
 
 PODFILE CHECKSUM: 53026eaf67b63baa2e316e457f9701dbdf33f41a
 

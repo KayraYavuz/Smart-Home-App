@@ -30,6 +30,10 @@
 	<string>TTLock want to controle smart lock by bluetooth</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>"Akıllı kilitlere bağlanmak için Bluetooth gereklidir."</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Akıllı kilitleri bulmak ve kontrol etmek için konumunuza erişim gereklidir.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Uygulama arka plandayken bile akıllı kilitleri bulmak ve kontrol etmek için konumunuza her zaman erişim gereklidir.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -136,8 +136,6 @@ class _ElectricMeterState extends State<ElectricMeterPage> {
           _showErrorAndDismiss(errorCode, errorMsg);
         });
         break;
-
-      default:
     }
   }
 

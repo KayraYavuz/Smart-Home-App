@@ -70,7 +70,6 @@ class _WaterMeterPageState extends State<WaterMeterPage> {
           _showErrorAndDismiss(errorCode, errorMsg);
         });
         break;
-      default:
     }
   }
 

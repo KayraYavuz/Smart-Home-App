@@ -4,7 +4,21 @@ ttlock-developers-email-list@googlegroups.com
 
 ### ttlock_flutter
 
+Bu Flutter uygulaması TTLock akıllı kilit sistemi ile entegre çalışmaktadır.
 
+#### Özellikler
+- ✅ TTLock hesabı ile giriş
+- ✅ TTLock web sitesi üzerinden kayıt
+- ✅ Akıllı kilit yönetimi
+- ✅ Bluetooth bağlantısı
+- ✅ Ağ geçidi yönetimi
+- ✅ Geçmiş kayıtları görüntüleme
+
+#### TTLock Entegrasyonu
+- **API**: TTLock Cloud API (OAuth2)
+- **SDK**: TTLock Flutter Plugin
+- **Kayıt**: TTLock web sitesi üzerinden
+- **Giriş**: TTLock hesap bilgileri ile
 
 ##### Config
 

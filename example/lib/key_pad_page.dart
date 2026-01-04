@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:ttlock_flutter/ttelectricMeter.dart';
 import 'package:bmprogresshud/progresshud.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'package:ttlock_flutter/ttremoteKeypad.dart';
 
 class KeyPadPage extends StatefulWidget {
-  KeyPadPage(
-      {Key? key,
-      required this.name,
-      required this.mac,
-      required this.lockMac,
-      required this.lockData})
-      : super(key: key);
+  const KeyPadPage({
+    Key? key,
+    required this.name,
+    required this.mac,
+    required this.lockMac,
+    required this.lockData,
+  }) : super(key: key);
+
   final String name;
   final String mac;
   final String lockMac;
   final String lockData;
-  _KeyPadState createState() => _KeyPadState(name, mac, lockMac, lockData);
+
+  @override
+  _KeyPadState createState() => _KeyPadState();
 }
 
 enum Command { getStoredLocks, deleteStoredLock, addFingerprint, addCard }
@@ -32,18 +34,19 @@ class _KeyPadState extends State<KeyPadPage> {
   String note =
       'Note: You need to reset the electric meter before pop current page,otherwise the electric meter will can\'t be initialized again';
 
-  String mac = '';
-  String name = '';
-  String lockMac = '';
-  String lockData = '';
+  late final String mac;
+  late final String name;
+  late final String lockMac;
+  late final String lockData;
   BuildContext? _context;
 
-  _KeyPadState(String name, String mac, String lockMac, String lockData) {
+  @override
+  void initState() {
     super.initState();
-    this.name = name;
-    this.mac = mac;
-    this.lockMac = lockMac;
-    this.lockData = lockData;
+    name = widget.name;
+    mac = widget.mac;
+    lockMac = widget.lockMac;
+    lockData = widget.lockData;
   }
 
   void _showLoading(String text) {
@@ -112,7 +115,6 @@ class _KeyPadState extends State<KeyPadPage> {
                   text: 'errorCode:$errorCode errorMessage:$errorMsg');
             });
         break;
-      default:
     }
   }
 
