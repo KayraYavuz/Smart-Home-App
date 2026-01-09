@@ -6,6 +6,8 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Baulemente</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Baulemente</string>
+	<string>ttlock_flutter_example</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -22,18 +24,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>LSApplicationCategoryType</key>
-	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>TTLock want to controle smart lock by bluetooth</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>"Akıllı kilitlere bağlanmak için Bluetooth gereklidir."</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Akıllı kilitleri bulmak ve kontrol etmek için konumunuza erişim gereklidir.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Uygulama arka plandayken bile akıllı kilitleri bulmak ve kontrol etmek için konumunuza her zaman erişim gereklidir.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -53,7 +45,19 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Yerel ağdaki geliştirici servislerine (VM Service) bağlanmak için gereklidir.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Kilide bağlanmak için Bluetooth gereklidir.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Kilide bağlanmak için Bluetooth gereklidir.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Bluetooth taraması için konum izni gereklidir.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Bluetooth taraması için konum izni gereklidir.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dartobservatory._tcp</string>
+	</array>
 </dict>
 </plist>

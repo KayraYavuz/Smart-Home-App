@@ -13,26 +13,13 @@ class HybridUnlockService {
 
   HybridUnlockService(this._apiService);
 
-  /// Unlock the lock using hybrid approach: Seam API first for Seam devices, then Bluetooth + Gateway
+  /// Unlock the lock using TTLock approach: Bluetooth first, then Gateway API
   /// Returns true if successful, false otherwise
   Future<UnlockResult> unlock({
     required String lockData,
     required String lockMac,
     String? lockId,
-    String? seamDeviceId,
   }) async {
-    // Check if this is a Seam device
-    if (seamDeviceId != null && seamDeviceId.isNotEmpty) {
-      print('Detected Seam device, attempting Seam API unlock: $seamDeviceId');
-      final seamResult = await _trySeamUnlock(seamDeviceId);
-      if (seamResult.success) {
-        print('Seam API unlock successful');
-        return seamResult;
-      }
-      print('Seam API unlock failed: ${seamResult.error}');
-    }
-
-    // For non-Seam devices, use traditional TTLock methods
     // First, try Bluetooth unlock
     print('Attempting Bluetooth unlock for lock: $lockMac');
     final bluetoothResult = await _tryBluetoothUnlock(lockData, lockMac);
@@ -61,25 +48,12 @@ class HybridUnlockService {
     );
   }
 
-  /// Lock the lock using hybrid approach: Seam API first for Seam devices, then Bluetooth + Gateway
+  /// Lock the lock using TTLock approach: Bluetooth first, then Gateway API
   Future<UnlockResult> lock({
     required String lockData,
     required String lockMac,
     String? lockId,
-    String? seamDeviceId,
   }) async {
-    // Check if this is a Seam device
-    if (seamDeviceId != null && seamDeviceId.isNotEmpty) {
-      print('Detected Seam device, attempting Seam API lock: $seamDeviceId');
-      final seamResult = await _trySeamLock(seamDeviceId);
-      if (seamResult.success) {
-        print('Seam API lock successful');
-        return seamResult;
-      }
-      print('Seam API lock failed: ${seamResult.error}');
-    }
-
-    // For non-Seam devices, use traditional TTLock methods
     print('Attempting Bluetooth lock for lock: $lockMac');
     final bluetoothResult = await _tryBluetoothLock(lockData, lockMac);
 
@@ -102,100 +76,28 @@ class HybridUnlockService {
     );
   }
 
-  /// Try to unlock via Seam API
-  Future<UnlockResult> _trySeamUnlock(String seamDeviceId) async {
-    try {
-      final url = Uri.parse('${SeamConfig.baseUrl}/devices/$seamDeviceId/unlock_door');
-
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer ${SeamConfig.seamApiKey}',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        final actionResult = responseData['action_attempt'] ?? {};
-
-        if (actionResult['status'] == 'success' || actionResult['status'] == 'pending') {
-          return UnlockResult(
-            success: true,
-            method: 'seam_api',
-          );
-        } else {
-          return UnlockResult(
-            success: false,
-            error: 'Seam API unlock failed: ${actionResult['error'] ?? 'Unknown error'}',
-            method: 'seam_api',
-          );
-        }
-      } else {
-        return UnlockResult(
-          success: false,
-          error: 'Seam API HTTP error: ${response.statusCode}',
-          method: 'seam_api',
-        );
-      }
-    } catch (e) {
-      return UnlockResult(
-        success: false,
-        error: 'Seam API exception: $e',
-        method: 'seam_api',
-      );
-    }
-  }
-
-  /// Try to lock via Seam API
-  Future<UnlockResult> _trySeamLock(String seamDeviceId) async {
-    try {
-      final url = Uri.parse('${SeamConfig.baseUrl}/devices/$seamDeviceId/lock_door');
-
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer ${SeamConfig.seamApiKey}',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        final actionResult = responseData['action_attempt'] ?? {};
-
-        if (actionResult['status'] == 'success' || actionResult['status'] == 'pending') {
-          return UnlockResult(
-            success: true,
-            method: 'seam_api',
-          );
-        } else {
-          return UnlockResult(
-            success: false,
-            error: 'Seam API lock failed: ${actionResult['error'] ?? 'Unknown error'}',
-            method: 'seam_api',
-          );
-        }
-      } else {
-        return UnlockResult(
-          success: false,
-          error: 'Seam API HTTP error: ${response.statusCode}',
-          method: 'seam_api',
-        );
-      }
-    } catch (e) {
-      return UnlockResult(
-        success: false,
-        error: 'Seam API exception: $e',
-        method: 'seam_api',
-      );
-    }
-  }
 
   /// Try to unlock via Bluetooth
   Future<UnlockResult> _tryBluetoothUnlock(String lockData, String lockMac) async {
+    // 1. Bluetooth durum kontrolü
+    final Completer<bool> btCheckCompleter = Completer();
+    TTLock.getBluetoothState((state) {
+      btCheckCompleter.complete(state == 1 || state == 2); // 1: PowerOn, 2: PoweredOn
+    });
+    
+    final bool isBtEnabled = await btCheckCompleter.future.timeout(const Duration(seconds: 2), onTimeout: () => false);
+    
+    if (!isBtEnabled) {
+      return UnlockResult(
+        success: false,
+        error: 'Bluetooth kapalı. Lütfen Bluetooth\'u açın.',
+        method: 'bluetooth',
+      );
+    }
+
+    print('📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
+
     try {
-      // Use a completer to handle async callback
       final completer = Completer<UnlockResult>();
       
       TTLock.controlLock(
@@ -214,30 +116,32 @@ class HybridUnlockService {
         },
         (errorCode, errorMsg) {
           if (!completer.isCompleted) {
+            print('❌ TTLock BT Hata Kodu: $errorCode - Mesaj: $errorMsg');
             completer.complete(UnlockResult(
               success: false,
-              error: 'Bluetooth error: $errorCode - $errorMsg',
+              error: 'Bluetooth Hatası ($errorCode): $errorMsg',
               method: 'bluetooth',
             ));
           }
         },
       );
 
-      // Wait for result with timeout
       return await completer.future.timeout(
         Duration(seconds: _bluetoothTimeoutSeconds),
         onTimeout: () {
+          print('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(
             success: false,
-            error: 'Bluetooth unlock timeout',
+            error: 'Bluetooth zaman aşımı. Kilidi uyandırıp tekrar deneyin.',
             method: 'bluetooth',
           );
         },
       );
     } catch (e) {
+      print('❌ Bluetooth istisnası: $e');
       return UnlockResult(
         success: false,
-        error: 'Bluetooth exception: $e',
+        error: 'Bluetooth istisnası: $e',
         method: 'bluetooth',
       );
     }
@@ -245,6 +149,24 @@ class HybridUnlockService {
 
   /// Try to lock via Bluetooth
   Future<UnlockResult> _tryBluetoothLock(String lockData, String lockMac) async {
+    // 1. Bluetooth durum kontrolü
+    final Completer<bool> btCheckCompleter = Completer();
+    TTLock.getBluetoothState((state) {
+      btCheckCompleter.complete(state == 1 || state == 2); // 1: PowerOn, 2: PoweredOn
+    });
+    
+    final bool isBtEnabled = await btCheckCompleter.future.timeout(const Duration(seconds: 2), onTimeout: () => false);
+    
+    if (!isBtEnabled) {
+      return UnlockResult(
+        success: false,
+        error: 'Bluetooth kapalı. Lütfen Bluetooth\'u açın.',
+        method: 'bluetooth',
+      );
+    }
+
+    print('📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
+
     try {
       final completer = Completer<UnlockResult>();
       
@@ -264,9 +186,10 @@ class HybridUnlockService {
         },
         (errorCode, errorMsg) {
           if (!completer.isCompleted) {
+            print('❌ TTLock BT Hata Kodu: $errorCode - Mesaj: $errorMsg');
             completer.complete(UnlockResult(
               success: false,
-              error: 'Bluetooth error: $errorCode - $errorMsg',
+              error: 'Bluetooth Hatası ($errorCode): $errorMsg',
               method: 'bluetooth',
             ));
           }
@@ -276,17 +199,19 @@ class HybridUnlockService {
       return await completer.future.timeout(
         Duration(seconds: _bluetoothTimeoutSeconds),
         onTimeout: () {
+          print('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(
             success: false,
-            error: 'Bluetooth lock timeout',
+            error: 'Bluetooth zaman aşımı. Kilidi uyandırıp tekrar deneyin.',
             method: 'bluetooth',
           );
         },
       );
     } catch (e) {
+      print('❌ Bluetooth istisnası: $e');
       return UnlockResult(
         success: false,
-        error: 'Bluetooth exception: $e',
+        error: 'Bluetooth istisnası: $e',
         method: 'bluetooth',
       );
     }

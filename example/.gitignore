@@ -42,3 +42,12 @@ app.*.map.json
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# Firebase ve Gizli Konfigürasyonlar
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+.env
+
+# Yerel ve Geçici Dosyalar (O 1045 dosyanın çoğu burasıdır)
+ios/Pods/
+

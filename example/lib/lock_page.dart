@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'package:bmprogresshud/progresshud.dart';
+import 'package:ttlock_flutter_example/services/ttlock_webhook_service.dart';
+
 
 class LockPage extends StatefulWidget {
   LockPage(
@@ -188,15 +190,18 @@ class _LockPageState extends State<LockPage> {
   }
 
   void _showLoading(String text) {
-    ProgressHud.of(_context!)!.showLoading(text: text);
+    if (!mounted || _context == null) return;
+    ProgressHud.of(_context!)?.showLoading(text: text);
   }
 
   void _showSuccessAndDismiss(String text) {
-    ProgressHud.of(_context!)!.showSuccessAndDismiss(text: text);
+    if (!mounted || _context == null) return;
+    ProgressHud.of(_context!)?.showSuccessAndDismiss(text: text);
   }
 
   void _showErrorAndDismiss(TTLockError errorCode, String errorMsg) {
-    ProgressHud.of(_context!)!.showErrorAndDismiss(
+    if (!mounted || _context == null) return;
+    ProgressHud.of(_context!)?.showErrorAndDismiss(
         text: 'errorCode:$errorCode errorMessage:$errorMsg');
   }
 
@@ -228,6 +233,13 @@ class _LockPageState extends State<LockPage> {
             (lockTime, electricQuantity, uniqueId, lockData) {
           _showSuccessAndDismiss(
               "Unlock Success lockTime:$lockTime electricQuantity:$electricQuantity uniqueId:$uniqueId");
+          TTLockWebhookService().sendEvent(eventType: '3', data: {
+            'lockMac': widget.lockMac,
+            'lockTime': lockTime,
+            'electricQuantity': electricQuantity,
+            'uniqueId': uniqueId,
+            'description': 'Uygulamadan Açıldı'
+          });
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);
         });
@@ -299,6 +311,13 @@ class _LockPageState extends State<LockPage> {
 
           TTLock.createCustomPasscode("6666", startDate, endDate, lockData, () {
             _showSuccessAndDismiss("Success");
+            TTLockWebhookService().sendEvent(eventType: 'passcodeCreated', data: {
+              'lockMac': widget.lockMac,
+              'passcode': '6666',
+              'startDate': startDate,
+              'endDate': endDate,
+              'description': 'Özel Şifre Oluşturuldu'
+            });
           }, (errorCode, errorMsg) {
             _showErrorAndDismiss(errorCode, errorMsg);
           });
@@ -318,6 +337,12 @@ class _LockPageState extends State<LockPage> {
           TTLock.modifyPasscode("6666", "7777", startDate, endDate, lockData,
               () {
             _showSuccessAndDismiss("Success");
+            TTLockWebhookService().sendEvent(eventType: 'passcodeModified', data: {
+              'lockMac': widget.lockMac,
+              'oldPasscode': '6666',
+              'newPasscode': '7777',
+              'description': 'Şifre Değiştirildi'
+            });
           }, (errorCode, errorMsg) {
             _showErrorAndDismiss(errorCode, errorMsg);
           });
@@ -330,6 +355,11 @@ class _LockPageState extends State<LockPage> {
           if (isSupport) {
             TTLock.deletePasscode("7777", lockData, () {
               _showSuccessAndDismiss("Success");
+              TTLockWebhookService().sendEvent(eventType: 'passcodeDeleted', data: {
+                'lockMac': widget.lockMac,
+                'passcode': '7777',
+                'description': 'Şifre Silindi'
+              });
             }, (errorCode, errorMsg) {
               _showErrorAndDismiss(errorCode, errorMsg);
             });
@@ -341,8 +371,18 @@ class _LockPageState extends State<LockPage> {
         break;
 
       case Command.resetPasscode:
-        TTLock.resetPasscode(lockData, (lockData) {
-          _showSuccessAndDismiss("Success");
+        TTLock.resetPasscode(lockData, (newLockData) {
+          // CRITICAL: Update cloud with new lockData after reset
+          // This syncs the new passcode key data with the server
+          // TODO: Replace 'lockId' with actual lock ID from your data model
+          // ApiService().updateLockData(lockId: 'YOUR_LOCK_ID', lockData: newLockData);
+          this.lockData = newLockData; // Update local lockData
+          _showSuccessAndDismiss("Success - LockData güncellendi");
+          TTLockWebhookService().sendEvent(eventType: 'passcodeReset', data: {
+            'lockMac': widget.lockMac,
+            'description': 'Şifreler Sıfırlandı',
+            'newLockData': newLockData.substring(0, 50) + '...' // Log partial for debugging
+          });
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);
         });

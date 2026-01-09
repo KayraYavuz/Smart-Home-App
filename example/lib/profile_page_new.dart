@@ -55,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   // Sol Kısım: Küçük avatar
                   CircleAvatar(
                     radius: 20,
-                    backgroundColor: Colors.blue.withOpacity(0.2),
+                    backgroundColor: Colors.blue.withValues(alpha: 0.2),
                     child: Text(
                       _username.isNotEmpty ? _username[0].toUpperCase() : 'U',
                       style: const TextStyle(
@@ -134,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const CustomerServicePage()),
+                        MaterialPageRoute(builder: (context) => CustomerServicePage()),
                       );
                     },
                   ),
@@ -249,7 +249,7 @@ class _ProfilePageState extends State<ProfilePage> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.2),
+            color: iconColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -290,7 +290,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginPage()),
+      MaterialPageRoute(builder: (_) => LoginPage()),
       (route) => false,
     );
   }
@@ -339,7 +339,7 @@ class _ProfilePageState extends State<ProfilePage> {
       );
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginPage()),
+        MaterialPageRoute(builder: (_) => LoginPage()),
         (route) => false,
       );
     }

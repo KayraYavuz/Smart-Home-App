@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:ttlock_flutter_example/blocs/ttlock_webhook/ttlock_webhook_event.dart';
 
 abstract class TTLockWebhookState extends Equatable {
   const TTLockWebhookState();
@@ -11,7 +12,7 @@ class TTLockWebhookInitial extends TTLockWebhookState {}
 
 class TTLockWebhookConnected extends TTLockWebhookState {
   final String webhookUrl;
-  final dynamic latestEvent;
+  final TTLockWebhookEventData? latestEvent;
 
   const TTLockWebhookConnected(this.webhookUrl, {this.latestEvent});
 
@@ -22,7 +23,7 @@ class TTLockWebhookConnected extends TTLockWebhookState {
 class TTLockWebhookDisconnected extends TTLockWebhookState {}
 
 class TTLockWebhookEventReceivedState extends TTLockWebhookState {
-  final dynamic ttlockEvent;
+  final TTLockWebhookEventData ttlockEvent;
 
   const TTLockWebhookEventReceivedState(this.ttlockEvent);
 

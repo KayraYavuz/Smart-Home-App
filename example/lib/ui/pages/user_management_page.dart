@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ttlock_flutter_example/api_service.dart';
+import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
+import 'package:ttlock_flutter_example/ui/theme.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({Key? key}) : super(key: key);
@@ -11,10 +14,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _users = [];
   bool _isLoading = false;
+  late ApiService _apiService;
 
   @override
   void initState() {
     super.initState();
+    _apiService = ApiService(AuthRepository());
     _loadUsers();
   }
 
@@ -29,35 +34,129 @@ class _UserManagementPageState extends State<UserManagementPage> {
       _isLoading = true;
     });
 
-    // Mock API çağrısı - gerçek uygulamada API'den gelecek
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final response = await _apiService.getUserList(pageNo: 1, pageSize: 100);
+      setState(() {
+        _users = List<Map<String, dynamic>>.from(response['list'] ?? []);
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading users: $e');
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Kullanıcılar yüklenemedi: $e'), backgroundColor: AppColors.error),
+      );
+    }
+  }
 
-    setState(() {
-      _users = []; // Veri yok durumu için boş liste
-      _isLoading = false;
-    });
+  void _showAddUserDialog() {
+    final usernameController = TextEditingController();
+    final passwordController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Yeni Kullanıcı Kaydet'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: usernameController,
+              decoration: const InputDecoration(labelText: 'Kullanıcı Adı (Email/Tel)'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passwordController,
+              decoration: const InputDecoration(labelText: 'Şifre'),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('İptal')),
+          TextButton(
+            onPressed: () async {
+              if (usernameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+                try {
+                  await _apiService.registerUser(
+                    username: usernameController.text,
+                    password: passwordController.text,
+                  );
+                  Navigator.pop(context);
+                  _loadUsers();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Kullanıcı başarıyla kaydedildi'), backgroundColor: AppColors.success),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Kayıt hatası: $e'), backgroundColor: AppColors.error),
+                  );
+                }
+              }
+            },
+            child: const Text('Kaydet'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteUser(Map<String, dynamic> user) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Kullanıcıyı Sil?'),
+        content: Text('${user['username']} kullanıcısını silmek istediğinize emin misiniz?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('İptal')),
+          TextButton(
+            onPressed: () async {
+              try {
+                await _apiService.deleteUser(username: user['username']);
+                Navigator.pop(context);
+                _loadUsers();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Kullanıcı silindi'), backgroundColor: AppColors.success),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Silme hatası: $e'), backgroundColor: AppColors.error),
+                );
+              }
+            },
+            child: const Text('Sil', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Koyu tema
       appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
-          'Kullanıcıları kilitle',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text('Kullanıcı Yönetimi'),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed: _showAddUserDialog,
+            tooltip: 'Yeni Kullanıcı Kaydet',
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadUsers,
+            tooltip: 'Yenile',
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddUserDialog,
+        child: const Icon(Icons.person_add),
       ),
       body: SafeArea(
         child: Column(
@@ -186,7 +285,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           ),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: Colors.blue.withOpacity(0.2),
+              backgroundColor: Colors.blue.withValues(alpha: 0.2),
               child: Text(
                 user['username'][0].toUpperCase(),
                 style: const TextStyle(
@@ -211,13 +310,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
               ),
             ),
             trailing: IconButton(
-              icon: const Icon(Icons.more_vert, color: Colors.grey),
-              onPressed: () {
-                // Kullanıcı menüsü
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${user['username']} için işlemler')),
-                );
-              },
+              icon: const Icon(Icons.delete_outline, color: AppColors.error),
+              onPressed: () => _deleteUser(user),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           ),

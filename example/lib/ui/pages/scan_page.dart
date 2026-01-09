@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ttlock_flutter_example/api_service.dart';
 import 'package:ttlock_flutter_example/blocs/scan/scan_bloc.dart';
 import 'package:ttlock_flutter_example/blocs/scan/scan_event.dart';
 import 'package:ttlock_flutter_example/blocs/scan/scan_state.dart';
@@ -10,7 +11,9 @@ class ScanPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ScanBloc()..add(StartScan()),
+      create: (context) => ScanBloc(
+        apiService: RepositoryProvider.of<ApiService>(context),
+      )..add(StartScan()),
       child: Scaffold(
         backgroundColor: const Color(0xFF121212),
         appBar: AppBar(
@@ -73,6 +76,60 @@ class ScanPage extends StatelessWidget {
             }
           },
           builder: (context, state) {
+            if (state is ScanConnecting) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 1.0, end: 1.5),
+                      duration: const Duration(milliseconds: 1000),
+                      curve: Curves.easeInOut,
+                      builder: (context, value, child) {
+                        return Transform.scale(
+                          scale: value,
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1E90FF).withValues(alpha: 0.2 - (value - 1.0) * 0.2), // Fading ripple
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.lock_open,
+                              color: Color(0xFF1E90FF),
+                              size: 48,
+                            ),
+                          ),
+                        );
+                      },
+                      onEnd: () {}, // Loop handled by parent if stateful, but for stateless we might need a different approach or just simple scale
+                    ),
+                    const SizedBox(height: 32),
+                    const CircularProgressIndicator(
+                      color: Color(0xFF1E90FF),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      state.message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Lütfen kilide yakın durun...',
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
             if (state is ScanLoading) {
               return Center(
                 child: Column(
@@ -190,7 +247,7 @@ class ScanPage extends StatelessWidget {
                               width: 48,
                               height: 48,
                               decoration: BoxDecoration(
-                                color: Colors.blue.withOpacity(0.2),
+                                color: Colors.blue.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(

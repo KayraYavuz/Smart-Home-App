@@ -229,7 +229,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         value: value,
         onChanged: onChanged,
-        activeColor: Colors.blue,
+        activeTrackColor: Colors.blue,
         inactiveTrackColor: Colors.grey[600],
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),

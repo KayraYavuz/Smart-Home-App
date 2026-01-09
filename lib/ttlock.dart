@@ -14,6 +14,7 @@ class TTLock {
       MethodChannel("com.ttlock/command/ttlock");
   static EventChannel _listenChannel = EventChannel("com.ttlock/listen/ttlock");
 
+  static const String COMMAND_SETUP_PUGIN = "setupPlugin";
   static const String CALLBACK_SUCCESS = "callback_success";
   static const String CALLBACK_PROGRESS = "callback_progress";
   static const String CALLBACK_FAIL = "callback_fail";
@@ -155,6 +156,13 @@ class TTLock {
   static Map<String, List<Map>> _commandMap = Map();
 
   static bool printLog = false;
+
+  static void setupApp(String clientId, String clientSecret) {
+    Map map = Map();
+    map["clientId"] = clientId;
+    map["clientSecret"] = clientSecret;
+    invoke(COMMAND_SETUP_PUGIN, map, null);
+  }
 
   // ignore: slash_for_doc_comments
 /**

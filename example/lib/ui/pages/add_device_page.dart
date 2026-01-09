@@ -86,7 +86,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Color(0xFF1E90FF).withOpacity(0.2),
+                  color: Color(0xFF1E90FF).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -148,10 +148,10 @@ class _AddDevicePageState extends State<AddDevicePage> {
           child: Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blueGrey.withOpacity(0.1),
+              color: Colors.blueGrey.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: Colors.blueGrey.withOpacity(0.3),
+                color: Colors.blueGrey.withValues(alpha: 0.3),
               ),
             ),
             child: Row(
@@ -197,7 +197,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.2),
+                  color: Colors.blue.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(

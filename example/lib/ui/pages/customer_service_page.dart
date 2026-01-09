@@ -49,8 +49,8 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF1E90FF).withOpacity(0.8),
-                Color(0xFF4169E1).withOpacity(0.8),
+                Color(0xFF1E90FF).withValues(alpha: 0.8),
+                Color(0xFF4169E1).withValues(alpha: 0.8),
               ],
             ),
           ),
@@ -69,7 +69,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
             end: Alignment.bottomCenter,
             colors: [
               Colors.transparent,
-              Colors.black.withOpacity(0.3),
+              Colors.black.withValues(alpha: 0.3),
             ],
           ),
         ),
@@ -83,12 +83,12 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
                 borderRadius: BorderRadius.circular(20),
                 gradient: LinearGradient(
                   colors: [
-                    Color(0xFF1E90FF).withOpacity(0.1),
-                    Color(0xFF4169E1).withOpacity(0.1),
+                    Color(0xFF1E90FF).withValues(alpha: 0.1),
+                    Color(0xFF4169E1).withValues(alpha: 0.1),
                   ],
                 ),
                 border: Border.all(
-                  color: Color(0xFF1E90FF).withOpacity(0.3),
+                  color: Color(0xFF1E90FF).withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -263,12 +263,12 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
             colors: [
-              Colors.white.withOpacity(0.08),
-              Colors.white.withOpacity(0.04),
+              Colors.white.withValues(alpha: 0.08),
+              Colors.white.withValues(alpha: 0.04),
             ],
           ),
           border: Border.all(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -277,8 +277,8 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(16),
-            splashColor: Color(0xFF1E90FF).withOpacity(0.1),
-            highlightColor: Color(0xFF1E90FF).withOpacity(0.05),
+            splashColor: Color(0xFF1E90FF).withValues(alpha: 0.1),
+            highlightColor: Color(0xFF1E90FF).withValues(alpha: 0.05),
             child: Padding(
               padding: EdgeInsets.all(16),
               child: Row(
@@ -286,7 +286,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Color(0xFF1E90FF).withOpacity(0.1),
+                      color: Color(0xFF1E90FF).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -323,12 +323,12 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
                     Container(
                       padding: EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
                         trailingIcon,
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         size: 18,
                       ),
                     ),

@@ -6,6 +6,7 @@ import 'package:ttlock_flutter_example/ui/pages/customer_service_page.dart';
 import 'package:ttlock_flutter_example/ui/pages/login_page.dart';
 import 'package:ttlock_flutter_example/ui/pages/system_management_page.dart';
 import 'package:ttlock_flutter_example/ui/pages/work_together_page.dart';
+import 'package:ttlock_flutter_example/logs_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -56,7 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   // Sol Kısım: Küçük avatar
                   CircleAvatar(
                     radius: 20,
-                    backgroundColor: Colors.blue.withOpacity(0.2),
+                    backgroundColor: Colors.blue.withValues(alpha: 0.2),
                     child: Text(
                       _username.isNotEmpty ? _username[0].toUpperCase() : 'U',
                       style: const TextStyle(
@@ -143,6 +144,18 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => CustomerServicePage()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  _buildMenuItem(
+                    icon: Icons.history,
+                    iconColor: Colors.blue,
+                    title: 'Tüm Kayıtlar',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LogsPage()),
                       );
                     },
                   ),
@@ -257,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.2),
+            color: iconColor.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(

@@ -1,116 +1,236 @@
 import 'package:flutter/material.dart';
+import 'package:ttlock_flutter_example/api_service.dart';
+import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
+import 'package:ttlock_flutter_example/ui/theme.dart';
 
 class LogsPage extends StatefulWidget {
-  // In a real app, you would require lockData to be passed.
-  // final String lockData;
-  // const LogsPage({Key? key, required this.lockData}) : super(key: key);
+  final String? lockId;
+  final String? lockName;
 
-  const LogsPage({Key? key}) : super(key: key);
+  const LogsPage({Key? key, this.lockId, this.lockName}) : super(key: key);
 
   @override
   _LogsPageState createState() => _LogsPageState();
 }
 
 class _LogsPageState extends State<LogsPage> {
+  late ApiService _apiService;
+  List<Map<String, dynamic>> _records = [];
   bool _isLoading = true;
   String? _error;
-  List<dynamic> _logs = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchLogs();
+    _apiService = ApiService(AuthRepository());
+    _fetchRecords();
   }
 
-  Future<void> _fetchLogs() async {
+  Future<void> _fetchRecords() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
-    // TODO: Replace this simulation with a real SDK call once lockData is available.
-    // To make a real call, uncomment the following lines and pass real lockData.
-    /*
-    TTLock.getLockOperateRecord(
-      TTOperateRecordType.total,
-      widget.lockData,
-      (records) {
-        setState(() {
-          _logs = jsonDecode(records);
-          _isLoading = false;
-        });
-      },
-      (error, errorMessage) {
-        setState(() {
-          _error = 'Failed to load logs: $errorMessage';
-          _isLoading = false;
-        });
-      },
-    );
-    */
+    try {
+      print('🔍 LogsPage: Fetching records for lockId=${widget.lockId}');
+      await _apiService.getAccessToken();
+      final accessToken = _apiService.accessToken;
+      print('🔍 LogsPage: AccessToken is ${accessToken != null ? 'Present' : 'NULL'}');
+      
+      if (accessToken == null) throw Exception('Erişim anahtarı alınamadı');
 
-    // --- Simulation Logic ---
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      // Using the same dummy data for simulation
-      _logs = [
-        {'action': 'Kilidi Açma Başarılı', 'user': 'Ahmet Y.', 'date': '02.01.2026 18:30', 'icon': Icons.lock_open, 'color': Colors.green},
-        {'action': 'Kilitleme Başarılı', 'user': 'Ahmet Y.', 'date': '02.01.2026 16:15', 'icon': Icons.lock, 'color': Colors.red},
-        {'action': 'Kilidi Açma Başarılı', 'user': 'Misafir', 'date': '02.01.2026 14:05', 'icon': Icons.lock_open, 'color': Colors.green},
-        {'action': 'Geçersiz Şifre Girişi', 'user': 'Bilinmiyor', 'date': '02.01.2026 11:20', 'icon': Icons.warning, 'color': Colors.orange},
-        {'action': 'Kilitleme Başarılı', 'user': 'Ayşe K.', 'date': '01.01.2026 22:00', 'icon': Icons.lock, 'color': Colors.red},
-        {'action': 'Kilidi Açma Başarılı', 'user': 'Ayşe K.', 'date': '01.01.2026 09:12', 'icon': Icons.lock_open, 'color': Colors.green},
-      ];
-      _isLoading = false;
-    });
-    // --- End of Simulation Logic ---
+      if (widget.lockId != null) {
+        print('📋 LogsPage: Calling getLockRecords for ${widget.lockId}');
+        final data = await _apiService.getLockRecords(
+          accessToken: accessToken,
+          lockId: widget.lockId!,
+          pageSize: 50,
+        );
+        print('✅ LogsPage: Received ${data.length} records');
+        setState(() {
+          _records = data;
+          _isLoading = false;
+        });
+      } else {
+        print('📋 LogsPage: No lockId, fetching all keys first...');
+        final allKeys = await _apiService.getKeyList();
+        print('🔍 LogsPage: Found ${allKeys.length} locks');
+        List<Map<String, dynamic>> allRecords = [];
+        
+        // Paralel olarak ilk 5 kilidin kayıtlarını çekelim (performans için sınırlı)
+        final limitedKeys = allKeys.take(5).toList();
+        for (var key in limitedKeys) {
+          try {
+            final recs = await _apiService.getLockRecords(
+              accessToken: accessToken,
+              lockId: key['lockId'].toString(),
+              pageSize: 10,
+            );
+            allRecords.addAll(recs);
+          } catch (e) {
+            print('Error fetching records for ${key['lockId']}: $e');
+          }
+        }
+        
+        // Tarihe göre sırala
+        allRecords.sort((a, b) => (b['lockDate'] ?? 0).compareTo(a['lockDate'] ?? 0));
+        
+        setState(() {
+          _records = allRecords;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
-  Widget _buildBody() {
-    if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
+  Map<String, dynamic> _getRecordInfo(Map<String, dynamic> record) {
+    final int typeFromLock = record['recordTypeFromLock'] ?? 0;
+    final int recordType = record['recordType'] ?? 0;
+    
+    switch (typeFromLock) {
+      case 1:
+        return {'label': 'Şifre', 'icon': Icons.keyboard, 'color': AppColors.primary};
+      case 2:
+        return {'label': 'Kart', 'icon': Icons.credit_card, 'color': Colors.green};
+      case 3:
+        return {'label': 'Parmak İzi', 'icon': Icons.fingerprint, 'color': Colors.purple};
+      case 4:
+        return {'label': 'Uygulama (BT)', 'icon': Icons.phone_android, 'color': Colors.orange};
+      case 5:
+        return {'label': 'Uzaktan Açma', 'icon': Icons.wifi, 'color': Colors.teal};
+      case 6:
+        return {'label': 'Kilitlendi', 'icon': Icons.lock, 'color': AppColors.error};
+      case 7:
+        return {'label': 'Mekanik Anahtar', 'icon': Icons.vpn_key, 'color': Colors.grey};
+      case 8:
+        return {'label': 'Bileklik', 'icon': Icons.watch, 'color': Colors.indigo};
+      case 10:
+        return {'label': 'Uzaktan Kumanda', 'icon': Icons.settings_remote, 'color': Colors.blueGrey};
+      case 11:
+      case 28:
+        return {'label': 'Uygulama (Uzaktan)', 'icon': Icons.cloud_done, 'color': Colors.blue};
+      case 12:
+        return {'label': 'Gateway ile açıldı', 'icon': Icons.router, 'color': Colors.cyan};
+      case 17:
+      case 26:
+        return {'label': 'Otomatik Kilitleme', 'icon': Icons.lock_clock, 'color': Colors.redAccent};
+      default:
+        // recordType'a göre fallback
+        if (recordType == 11) return {'label': 'Kilitlendi', 'icon': Icons.lock, 'color': Colors.redAccent};
+        if (recordType == 12) return {'label': 'Açıldı', 'icon': Icons.lock_open, 'color': Colors.greenAccent};
+        return {'label': 'Diğer İşlem ($typeFromLock)', 'icon': Icons.history, 'color': Colors.white54};
     }
-    if (_error != null) {
-      return Center(child: Text(_error!, style: TextStyle(color: Colors.red)));
-    }
-    if (_logs.isEmpty) {
-      return Center(child: Text('Hiç kayıt bulunamadı.', style: TextStyle(color: Colors.white)));
-    }
-
-    return ListView.separated(
-      itemCount: _logs.length,
-      separatorBuilder: (context, index) => Divider(color: Colors.grey[800], height: 1),
-      itemBuilder: (context, index) {
-        final log = _logs[index];
-        return ListTile(
-          leading: Icon(log['icon'], color: log['color'] as Color?, size: 28),
-          title: Text(
-            log['action'],
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text(
-            '${log['user']} - ${log['date']}',
-            style: TextStyle(color: Colors.grey[400]),
-          ),
-          trailing: Icon(Icons.more_vert, color: Colors.grey[600]),
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
-        title: Text('Kayıtlar'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        title: Text(widget.lockName != null ? '${widget.lockName} Kayıtları' : 'Kilit Kayıtları'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _fetchRecords,
+          ),
+        ],
       ),
-      body: _buildBody(),
+      body: RefreshIndicator(
+        onRefresh: _fetchRecords,
+        color: AppColors.primary,
+        child: _buildContent(),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+            const SizedBox(height: 16),
+            Text('Hata: $_error', style: const TextStyle(color: Colors.white70)),
+            TextButton(onPressed: _fetchRecords, child: const Text('Tekrar Dene')),
+          ],
+        ),
+      );
+    }
+
+    if (_records.isEmpty) {
+      return const Center(
+        child: Text('Henüz kayıt bulunamadı', style: TextStyle(color: Colors.grey)),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: _records.length,
+      separatorBuilder: (context, index) => Divider(color: Colors.white.withValues(alpha: 0.1)),
+      itemBuilder: (context, index) {
+        final record = _records[index];
+        final typeInfo = _getRecordInfo(record);
+        
+        final timestamp = record['lockDate'] ?? DateTime.now().millisecondsSinceEpoch;
+        final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+        final formattedDate = '${date.day}.${date.month}.${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+
+        final userName = record['keyName'] ?? record['username'] ?? '';
+
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: (typeInfo['color'] as Color).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(typeInfo['icon'] as IconData, color: typeInfo['color'] as Color, size: 24),
+          ),
+          title: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  typeInfo['label'] as String,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              ),
+              if (userName.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    userName,
+                    style: const TextStyle(color: Colors.white54, fontSize: 11),
+                  ),
+                ),
+            ],
+          ),
+          subtitle: Text(
+            formattedDate,
+            style: const TextStyle(color: Colors.grey, fontSize: 13),
+          ),
+          trailing: record['success'] == 0 
+            ? const Icon(Icons.error, color: AppColors.error, size: 16)
+            : const Icon(Icons.check_circle, color: Colors.green, size: 16),
+        );
+      },
     );
   }
 }

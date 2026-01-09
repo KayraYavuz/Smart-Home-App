@@ -76,10 +76,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF1E90FF).withOpacity(0.8),
-                    Color(0xFF4169E1).withOpacity(0.6),
-                    Color(0xFF000428).withOpacity(0.9),
-                    Color(0xFF004e92).withOpacity(0.8),
+                    Color(0xFF1E90FF).withValues(alpha: 0.8),
+                    Color(0xFF4169E1).withValues(alpha: 0.6),
+                    Color(0xFF000428).withValues(alpha: 0.9),
+                    Color(0xFF004e92).withValues(alpha: 0.8),
                   ],
                   stops: [0.0, 0.3, 0.7, 1.0],
                 ),
@@ -89,7 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
           // Dark overlay for better text readability
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
             ),
           ),
           // Content
@@ -137,7 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Color(0xFF1E90FF).withOpacity(0.3),
+                                  color: Color(0xFF1E90FF).withValues(alpha: 0.3),
                                   blurRadius: 20,
                                   spreadRadius: 5,
                                 ),
@@ -172,10 +172,10 @@ class _RegisterPageState extends State<RegisterPage> {
                           Container(
                             padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Color(0xFF1E90FF).withOpacity(0.1),
+                              color: Color(0xFF1E90FF).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: Color(0xFF1E90FF).withOpacity(0.3),
+                                color: Color(0xFF1E90FF).withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
@@ -195,10 +195,10 @@ class _RegisterPageState extends State<RegisterPage> {
                           Container(
                             padding: EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.05),
+                              color: Colors.white.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.1),
+                                color: Colors.white.withValues(alpha: 0.1),
                               ),
                             ),
                             child: Column(
@@ -230,10 +230,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                 Container(
                                   padding: EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: Color(0xFF1E90FF).withOpacity(0.1),
+                                    color: Color(0xFF1E90FF).withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: Color(0xFF1E90FF).withOpacity(0.3),
+                                      color: Color(0xFF1E90FF).withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Text(
@@ -265,7 +265,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     elevation: 8,
-                                    shadowColor: Color(0xFF1E90FF).withOpacity(0.3),
+                                    shadowColor: Color(0xFF1E90FF).withValues(alpha: 0.3),
                                   ),
                                   icon: Icon(Icons.open_in_browser, color: Colors.white),
                                   label: Text(

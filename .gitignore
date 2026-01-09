@@ -1,7 +1,10 @@
 .idea
-build
-
+build/
 .DS_Store
 .packages
-.dart_tool
-
+.dart_tool/
+node_modules/
+webhook_server.js
+package-lock.json
+package.json
+.env

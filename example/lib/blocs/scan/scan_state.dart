@@ -38,3 +38,12 @@ class AddLockSuccess extends ScanState {
   @override
   List<Object> get props => [addedLock];
 }
+
+class ScanConnecting extends ScanState {
+  final String message;
+  
+  const ScanConnecting(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

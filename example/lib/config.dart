@@ -1,8 +1,10 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiConfig {
   // IMPORTANT: Replace with your own client_id from TTLock developer portal
-  static String clientId = '71d83b61847a4e159001e7d98df71952';
+  static String clientId = dotenv.env['TTLOCK_CLIENT_ID'] ?? '';
   // IMPORTANT: Replace with your own client_secret from TTLock developer portal
-  static String clientSecret = 'e51c0a87a2854053983509b630b21894';
+  static String clientSecret = dotenv.env['TTLOCK_CLIENT_SECRET'] ?? '';
   // IMPORTANT: Replace with your redirect_uri from TTLock developer portal (must match exactly)
   // If you get error 10007, try setting this to empty string: ''
   // Many portals don't require redirect_uri for password grant type
@@ -11,18 +13,23 @@ class ApiConfig {
 
   // IMPORTANT: Replace with your REAL TTLock account credentials
   // Username can be email or phone number (with country code, e.g., +905551234567)
-  static String username = 'ahmetkayrayavuz@gmail.com';
-  // Password will be MD5 hashed automatically
-  static String password = 'Basaksehir180604';
+  static String username = dotenv.env['TTLOCK_USERNAME'] ?? '';
+  // Password will be MD5 hashed automatically - TTLock web sitesindeki gerçek şifrenizi yazın
+  static String password = dotenv.env['TTLOCK_PASSWORD'] ?? ''; // BU ŞİFREYI KONTROL EDİN!
+
+  // DEBUG: Test credentials (TTLock test account)
+  // Uncomment to test with TTLock test account
+  // static String username = 'test@example.com';
+  // static String password = 'testpassword';
 }
 
 class TTLockConfig {
   // TTLock Webhook Callback URL (kendi sunucunuzun URL'i)
   // Bu URL, TTLock'un olay bildirimlerini göndereceği endpoint
-  static const String webhookCallbackUrl = "https://your-server.com/api/ttlock/webhook";
+  static const String webhookCallbackUrl = "https://europe-west3-fenster-berlin-callback.cloudfunctions.net/ttlock-callback";
 
   // TTLock Webhook Secret (callback doğrulaması için)
-  static const String webhookSecret = "your_ttlock_webhook_secret";
+  static const String webhookSecret = "your_webhook_secret"; // TTLock portal'dan alın
 
   // TTLock Event Types
   static const Map<String, String> eventTypes = {
@@ -39,7 +46,7 @@ class TTLockConfig {
 
 class SeamConfig {
   // Seam Sandbox API Anahtarı
-  static const String seamApiKey = "seam_testVYUG_4XPSRdR42pbuCFf33Yhvmx8t";
+  static String seamApiKey = dotenv.env['SEAM_API_KEY'] ?? "";
 
   // Seam API Base URL
   static const String baseUrl = "https://connect.getseam.com";
@@ -52,7 +59,8 @@ class GatewayConfig {
   //test account ttlock uid,  https://api.ttlock.com/v3/user/getUid
   static int uid = 17498;
   //test account ttlock login password
-  static String ttlockLoginPassword = '111111';
+  static String ttlockLoginPassword = dotenv.env['TTLOCK_PASSWORD'] ?? '111111';
+
   // custom gateway name
   static String gatewayName = 'My gateway 1';
 }

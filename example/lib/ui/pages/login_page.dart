@@ -68,10 +68,10 @@ class _LoginPageState extends State<LoginPage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF1E90FF).withOpacity(0.8),
-                    Color(0xFF4169E1).withOpacity(0.6),
-                    Color(0xFF000428).withOpacity(0.9),
-                    Color(0xFF004e92).withOpacity(0.8),
+                    Color(0xFF1E90FF).withValues(alpha: 0.8),
+                    Color(0xFF4169E1).withValues(alpha: 0.6),
+                    Color(0xFF000428).withValues(alpha: 0.9),
+                    Color(0xFF004e92).withValues(alpha: 0.8),
                   ],
                   stops: [0.0, 0.3, 0.7, 1.0],
                 ),
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
           // Dark overlay for better text readability
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
             ),
           ),
           // Content
@@ -176,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     elevation: 8,
-                                    shadowColor: Color(0xFF1E90FF).withOpacity(0.3),
+                                    shadowColor: Color(0xFF1E90FF).withValues(alpha: 0.3),
                                   ),
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
@@ -229,14 +229,14 @@ class _LoginPageState extends State<LoginPage> {
       labelText: label,
       labelStyle: TextStyle(color: Colors.grey[400]),
       filled: true,
-      fillColor: Colors.white.withOpacity(0.1),
+      fillColor: Colors.white.withValues(alpha: 0.1),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -244,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.red.withOpacity(0.5)),
+        borderSide: BorderSide(color: Colors.red.withValues(alpha: 0.5)),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

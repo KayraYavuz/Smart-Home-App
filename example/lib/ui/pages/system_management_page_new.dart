@@ -156,7 +156,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
+            color: Colors.blue.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(
@@ -266,7 +266,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
+            color: Colors.blue.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(

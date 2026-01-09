@@ -104,6 +104,7 @@ class _KeyPadState extends State<KeyPadPage> {
             0,
             0,
             lockData,
+            
                 (){
               print("addCard;;;请刷卡");
             }, (String cardNumber) {

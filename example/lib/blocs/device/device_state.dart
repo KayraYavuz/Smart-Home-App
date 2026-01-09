@@ -14,11 +14,12 @@ class DeviceLoading extends DeviceState {}
 class DeviceSuccess extends DeviceState {
   final String? method;
   final int? battery;
+  final bool? newLockState; // Yeni kilit durumu (true: kilitli, false: açık)
 
-  const DeviceSuccess({this.method, this.battery});
+  const DeviceSuccess({this.method, this.battery, this.newLockState});
 
   @override
-  List<Object> get props => [method ?? '', battery ?? 0];
+  List<Object> get props => [method ?? '', battery ?? 0, newLockState ?? false];
 }
 
 class DeviceFailure extends DeviceState {

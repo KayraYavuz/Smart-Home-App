@@ -72,7 +72,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                         // Avatar
                         CircleAvatar(
                           radius: 24,
-                          backgroundColor: Colors.blue.withOpacity(0.2),
+                          backgroundColor: Colors.blue.withValues(alpha: 0.2),
                           child: Text(
                             _username.isNotEmpty ? _username[0].toUpperCase() : 'U',
                             style: const TextStyle(

@@ -1,4 +1,5 @@
-import 'dart:ui';
+ import 'dart:ui';
+ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bmprogresshud/progresshud.dart';
@@ -6,10 +7,10 @@ import 'ui/pages/lock_detail_page.dart';
 import 'ui/pages/add_device_page.dart';
 import 'profile_page.dart';
 import 'api_service.dart';
-import 'blocs/webhook/webhook_bloc.dart';
-import 'blocs/webhook/webhook_state.dart';
 import 'blocs/ttlock_webhook/ttlock_webhook_bloc.dart';
+import 'blocs/ttlock_webhook/ttlock_webhook_event.dart';
 import 'blocs/ttlock_webhook/ttlock_webhook_state.dart';
+import 'repositories/auth_repository.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -23,6 +24,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   // Start with empty list, will be populated by API data
   List<Map<String, dynamic>> _locks = [];
+  Timer? _syncTimer;
 
   @override
   void initState() {
@@ -33,11 +35,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     // Webhook bağlantısını başlat (test için simüle edilmiş URL)
     _initializeWebhookConnection();
+    _startRealtimeSync();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _syncTimer?.cancel();
     super.dispose();
   }
 
@@ -49,19 +53,46 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-          void _initializeWebhookConnection() {
-    // Test için simüle edilmiş WebSocket URL (gerçek ortamda backend URL'i kullanılmalı)
-    // Not: Gerçek WebSocket bağlantısı için backend servisi gerekli
-    // Şimdilik sadece webhook olaylarını simüle edeceğiz
-
-    // Seam webhook olaylarını dinle
-    context.read<WebhookBloc>().stream.listen((state) {
-      if (state is WebhookConnected && state.latestEvent != null) {
-        _handleWebhookEvent(state.latestEvent!);
-      }
+  void _startRealtimeSync() {
+    _syncTimer?.cancel();
+    _syncTimer = Timer.periodic(const Duration(seconds: 25), (_) {
+      _refreshSharedLocksStatus();
     });
+  }
 
-    // TTLock webhook olaylarını dinle
+  Future<void> _refreshSharedLocksStatus() async {
+    try {
+      final apiService = ApiService(AuthRepository());
+      final allKeys = await apiService.getKeyList();
+      final Map<String, Map<String, dynamic>> latestByLockId = {
+        for (final k in allKeys) (k['lockId']?.toString() ?? ''): k
+      };
+      bool changed = false;
+      for (int i = 0; i < _locks.length; i++) {
+        final lockId = _locks[i]['lockId']?.toString() ?? '';
+        if (lockId.isEmpty) continue;
+        final latest = latestByLockId[lockId];
+        if (latest == null) continue;
+        final keyState = latest['keyState'] ?? 0;
+        final isLocked = keyState == 0 || keyState == 2;
+        final status = isLocked ? 'Kilitli' : 'Açık';
+        final battery = latest['electricQuantity'] ?? latest['battery'] ?? _locks[i]['battery'] ?? 0;
+        if (_locks[i]['isLocked'] != isLocked || _locks[i]['status'] != status || _locks[i]['battery'] != battery) {
+          _locks[i]['isLocked'] = isLocked;
+          _locks[i]['status'] = status;
+          _locks[i]['battery'] = battery;
+          changed = true;
+        }
+      }
+      if (changed && mounted) {
+        setState(() {});
+      }
+    } catch (_) {}
+  }
+
+          void _initializeWebhookConnection() {
+    // TTLock webhook olaylarını dinle (şimdilik sadece TTLock)
+    // Not: Webhook server çalışmadığı için şu anda sadece loglama yapılacak
     context.read<TTLockWebhookBloc>().stream.listen((state) {
       if (state is TTLockWebhookEventReceivedState) {
         _handleTTLockWebhookEvent(state.ttlockEvent);
@@ -69,60 +100,33 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     });
   }
 
-  void _handleWebhookEvent(SeamWebhookEvent event) {
-    // Webhook event'ini işle ve UI'ı güncelle
-    final deviceIndex = _locks.indexWhere((lock) => lock['seamDeviceId'] == event.deviceId);
 
-    if (deviceIndex != -1) {
-      setState(() {
-        switch (event.eventType) {
-          case SeamWebhookEventType.lockUnlocked:
-            _locks[deviceIndex]['isLocked'] = false;
-            _locks[deviceIndex]['status'] = 'Açık';
-            break;
-          case SeamWebhookEventType.lockLocked:
-            _locks[deviceIndex]['isLocked'] = true;
-            _locks[deviceIndex]['status'] = 'Kilitli';
-            break;
-          case SeamWebhookEventType.accessCodeCreated:
-            // Erişim kodu oluşturuldu - bildirim göster
-            break;
-          default:
-            break;
-        }
-      });
-
-      // Kullanıcıya bildirim göster
-      _showWebhookNotification(event);
-    }
-  }
-
-  void _handleTTLockWebhookEvent(TTLockWebhookEvent event) {
+  void _handleTTLockWebhookEvent(TTLockWebhookEventData event) {
     // TTLock webhook event'ini işle ve UI'ı güncelle
     final deviceIndex = _locks.indexWhere((lock) => lock['lockId'] == event.lockId);
 
     if (deviceIndex != -1) {
       setState(() {
         switch (event.eventType) {
-          case TTLockWebhookEventType.lockOpened:
-          case TTLockWebhookEventType.lockOpenedFromApp:
-          case TTLockWebhookEventType.lockOpenedFromKeypad:
-          case TTLockWebhookEventType.lockOpenedFromFingerprint:
-          case TTLockWebhookEventType.lockOpenedFromCard:
+          case '1': // lockOpened
+          case '3': // lockOpenedFromApp
+          case '4': // lockOpenedFromKeypad
+          case '5': // lockOpenedFromFingerprint
+          case '6': // lockOpenedFromCard
             _locks[deviceIndex]['isLocked'] = false;
             _locks[deviceIndex]['status'] = 'Açık';
             break;
-          case TTLockWebhookEventType.lockClosed:
+          case '2': // lockClosed
             _locks[deviceIndex]['isLocked'] = true;
             _locks[deviceIndex]['status'] = 'Kilitli';
             break;
-          case TTLockWebhookEventType.lowBattery:
+          case '7': // lowBattery
             // Düşük pil uyarısı - pil seviyesini güncelle
             if (event.batteryLevel != null) {
               _locks[deviceIndex]['battery'] = event.batteryLevel!;
             }
             break;
-          case TTLockWebhookEventType.lockTampered:
+          case '8': // lockTampered
             // Kilit manipülasyon uyarısı
             _locks[deviceIndex]['status'] = 'Güvenlik Uyarısı';
             break;
@@ -136,40 +140,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-  void _showWebhookNotification(SeamWebhookEvent event) {
-    String message = '';
-    Color backgroundColor = Colors.blue;
 
-    switch (event.eventType) {
-      case SeamWebhookEventType.lockUnlocked:
-        message = '${_locks.firstWhere((lock) => lock['seamDeviceId'] == event.deviceId)['name']} açıldı';
-        backgroundColor = Colors.green;
-        break;
-      case SeamWebhookEventType.lockLocked:
-        message = '${_locks.firstWhere((lock) => lock['seamDeviceId'] == event.deviceId)['name']} kilitlendi';
-        backgroundColor = Colors.red;
-        break;
-      case SeamWebhookEventType.accessCodeCreated:
-        message = 'Yeni erişim kodu oluşturuldu';
-        backgroundColor = Colors.blue;
-        break;
-      default:
-        message = 'Kilit durumu güncellendi';
-        backgroundColor = Colors.grey;
-    }
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: backgroundColor,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
-  }
-
-  void _showTTLockWebhookNotification(TTLockWebhookEvent event) {
+  void _showTTLockWebhookNotification(TTLockWebhookEventData event) {
     String message = '';
     Color backgroundColor = Colors.blue;
     IconData iconData = Icons.lock;
@@ -180,42 +152,42 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     )['name'];
 
     switch (event.eventType) {
-      case TTLockWebhookEventType.lockOpened:
+      case '1': // lockOpened
         message = '$lockName açıldı';
         backgroundColor = Colors.green;
         iconData = Icons.lock_open;
         break;
-      case TTLockWebhookEventType.lockClosed:
+      case '2': // lockClosed
         message = '$lockName kilitlendi';
         backgroundColor = Colors.red;
         iconData = Icons.lock;
         break;
-      case TTLockWebhookEventType.lockOpenedFromApp:
+      case '3': // lockOpenedFromApp
         message = '$lockName uygulamadan açıldı';
         backgroundColor = Colors.blue;
         iconData = Icons.phone_android;
         break;
-      case TTLockWebhookEventType.lockOpenedFromKeypad:
+      case '4': // lockOpenedFromKeypad
         message = '$lockName tuş takımıyla açıldı';
         backgroundColor = Colors.orange;
         iconData = Icons.dialpad;
         break;
-      case TTLockWebhookEventType.lockOpenedFromFingerprint:
+      case '5': // lockOpenedFromFingerprint
         message = '$lockName parmak iziyle açıldı';
         backgroundColor = Colors.purple;
         iconData = Icons.fingerprint;
         break;
-      case TTLockWebhookEventType.lockOpenedFromCard:
+      case '6': // lockOpenedFromCard
         message = '$lockName kart ile açıldı';
         backgroundColor = Colors.teal;
         iconData = Icons.credit_card;
         break;
-      case TTLockWebhookEventType.lowBattery:
-        message = '$lockName düşük pil seviyesi: ${event.batteryLevel ?? 'Bilinmiyor'}%';
+      case '7': // lowBattery
+        message = '$lockName düşük pil seviyesi';
         backgroundColor = Colors.amber;
         iconData = Icons.battery_alert;
         break;
-      case TTLockWebhookEventType.lockTampered:
+      case '8': // lockTampered
         message = '$lockName güvenlik uyarısı!';
         backgroundColor = Colors.red;
         iconData = Icons.warning;
@@ -249,49 +221,120 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _fetchAndSetLocks() async {
-            setState(() {
-              _isLoading = true;
-            });
+    setState(() {
+      _isLoading = true;
+    });
 
             try {
-              final seamDevices = await ApiService.getSandboxDevices();
+              print('🔄 TTLock key listesi çekme işlemi başladı...');
 
-              // Seam cihazlarını uygulamamızın formatına dönüştür
-              final newLocks = seamDevices.map((device) {
-                // Seam API'sinden gelen device verilerini parse et
-                final properties = device['properties'] ?? {};
+              // TTLock key listesini çek (hem kendi hem paylaşılan kilitler)
+              final apiService = ApiService(AuthRepository());
+              final allKeys = await apiService.getKeyList();
 
-                // Locked durumunu boolean'a çevir (Seam API farklı format gönderebilir)
-                final lockedRaw = properties['locked'];
-                final isLocked = lockedRaw is bool ? lockedRaw : false;
+              // Kilitleri kendi ve paylaşılan olarak ayır
+              final ttlockDevices = allKeys.where((key) => key['shared'] == false).toList();
+              final sharedTTLockDevices = allKeys.where((key) => key['shared'] == true).toList();
 
-                // Battery seviyesini int'e çevir (Seam API double gönderebilir)
-                final batteryLevelRaw = properties['battery_level'];
-                final batteryLevel = batteryLevelRaw is num ? batteryLevelRaw.toInt() : 0;
+              print('📊 TTLock Key List API Sonuçları:');
+              print('  TTLock kendi kilitleri: ${ttlockDevices.length}');
+              print('  TTLock paylaşılan kilitleri: ${sharedTTLockDevices.length}');
+              print('  Toplam kilit: ${allKeys.length}');
 
-                return {
-                  'name': device['display_name'] ?? 'İsimsiz Kilit',
-                  'status': isLocked ? 'Kilitli' : 'Açık',
+              // Debug: Tüm kilitleri detaylı logla
+              if (allKeys.isNotEmpty) {
+                print('🔍 Tüm TTLock Kilit Detayları:');
+                for (var i = 0; i < allKeys.length; i++) {
+                  final lock = allKeys[i];
+                  final sharedText = lock['shared'] ? '[PAYLAŞILAN]' : '[KENDİ]';
+                  print('  ${i + 1}. ${sharedText} ID: ${lock['lockId']}, KeyID: ${lock['keyId']}, İsim: ${lock['name']}');
+                }
+              } else {
+                print('⚠️  TTLock hesabında hiç kilit bulunamadı!');
+                print('   Kilitleriniz paylaşıldığından emin olun.');
+              }
+
+              // Tüm kilitleri birleştir
+              final allLocks = <Map<String, dynamic>>[];
+
+              // TTLock kendi cihazlarını ekle
+              for (final lock in ttlockDevices) {
+                final lockId = lock['lockId']?.toString() ?? '';
+                final lockAlias = lock['name'] ?? 'TTLock Kilit'; // ApiService'den gelen name'i kullan
+                final keyState = lock['keyState'] ?? 0;
+                final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
+
+                final isLocked = keyState == 0 || keyState == 2; 
+                final status = isLocked ? 'Kilitli' : 'Açık';
+
+                print('🔋 Kilit ${lockId}: keyState=${keyState}, battery=${electricQuantity}');
+                print('🏷️  Kilit adı: $lockAlias');
+
+                allLocks.add({
+                  'name': lockAlias,
+                  'status': status,
                   'isLocked': isLocked,
-                  'battery': batteryLevel,
-                  'lockData': device['device_id'] ?? '',
-                  'lockMac': device['device_id'] ?? '',
-                  'deviceType': device['device_type'] ?? 'unknown',
-                  'seamDeviceId': device['device_id'] ?? '',
-                };
-              }).toList();
+                  'battery': electricQuantity > 0 ? electricQuantity : 85,
+                  'lockData': lock['lockData'] ?? '',
+                  'lockMac': lock['lockMac'] ?? '',
+                  'lockId': lockId,
+                  'deviceType': 'ttlock',
+                  'source': 'ttlock',
+                  'shared': false,
+                });
+              }
 
-              setState(() {
-                _locks = newLocks;
+              // TTLock paylaşılmış cihazlarını ekle
+              for (final lock in sharedTTLockDevices) {
+                final lockId = lock['lockId']?.toString() ?? '';
+                final lockAlias = lock['name'] ?? 'Paylaşılmış TTLock Kilit'; // ApiService'den gelen name'i kullan
+                final keyState = lock['keyState'] ?? 0;
+                final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
+
+                final isLocked = keyState == 0 || keyState == 2; 
+                final status = isLocked ? 'Kilitli' : 'Açık';
+
+                print('🔋 Paylaşılan kilit ${lockId}: keyState=${keyState}, battery=${electricQuantity}');
+
+                allLocks.add({
+                  'name': lockAlias,
+                  'status': status,
+                  'isLocked': isLocked,
+                  'battery': electricQuantity > 0 ? electricQuantity : 85,
+                  'lockData': lock['lockData'] ?? '',
+                  'lockMac': lock['lockMac'] ?? '',
+                  'lockId': lockId,
+                  'deviceType': 'ttlock',
+                  'source': 'ttlock_shared',
+                  'shared': true,
+                });
+              }
+
+    setState(() {
+                _locks = allLocks;
                 _isLoading = false;
               });
 
-              print('Seam\'den ${newLocks.length} cihaz yüklendi');
+              print('✅ Toplam ${allLocks.length} TTLock cihazı yüklendi');
+              print('  - ${ttlockDevices.length} TTLock kendi kilidi');
+              print('  - ${sharedTTLockDevices.length} TTLock paylaşılmış kilidi');
+
+              if (allLocks.isEmpty) {
+                print('⚠️  UYARI: TTLock hesabınızda hiç kilit bulunamadı!');
+                print('   TTLock hesabınızı kontrol edin: https://lock.ttlock.com');
+              }
             } catch (e) {
-              print('Seam API hatası: $e');
+              print('❌ Kilit listesi çekme hatası: $e');
+              print('   Hata detayları: ${e.toString()}');
+
+              // Token hatası mı kontrol et
+              if (e.toString().contains('access_token') || e.toString().contains('token')) {
+                print('   🔑 Öneri: TTLock hesabınıza tekrar giriş yapın');
+              }
+
               setState(() {
-                _isLoading = false;
-              });
+      _isLoading = false;
+    });
 
               String errorMessage = 'Cihazlar yüklenirken bir hata oluştu';
               if (e.toString().contains('network') || e.toString().contains('connection')) {
@@ -422,6 +465,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               child: _pages[_bottomNavIndex],
             ),
             bottomNavigationBar: _buildBottomNavigationBar(),
+            // Debug FAB removed for production
           )
         ],
       ),
@@ -501,62 +545,145 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Widget _buildLockListItem(Map<String, dynamic> lock) {
-    final isSeamDevice = lock.containsKey('seamDeviceId');
+    final isTTLockDevice = lock['source'] == 'ttlock';
+    final isSharedTTLockDevice = lock['source'] == 'ttlock_shared';
+
+    // Debug: Lock verilerini logla
+    print('🔍 Building lock item: ${lock['name']} (ID: ${lock['lockId']})');
+    print('   Source: ${lock['source']}, Shared: ${lock['shared']}');
+    print('   All keys: ${lock.keys.join(', ')}');
 
     return Card(
-        elevation: 4,
-        margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-        color: Color.fromRGBO(30, 30, 30, 0.85), // Dark semi-transparent background
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+      color: Color.fromRGBO(30, 30, 30, 0.85), // Dark semi-transparent background
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+          onTap: () async {
+            final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
                 builder: (context) => LockDetailPage(
                   lock: lock,
-                  seamDeviceId: lock['seamDeviceId'],
-                  isSeamDevice: isSeamDevice,
                 ),
               ),
             );
-          },
-          onLongPress: () async {
-            final shouldDelete = await _showDeleteConfirmationDialog(lock);
-            if (shouldDelete) {
-              _removeDevice(lock);
+
+            // Lock detail sayfasından dönen sonucu işle
+            if (result != null && result is Map<String, dynamic>) {
+              if (result['action'] == 'lock_updated') {
+                final updatedLock = result['lock'] as Map<String, dynamic>;
+                final deviceId = result['device_id'];
+                final newState = result['new_state'] as bool?;
+
+                // Listede bu kilidi bul ve güncelle
+                setState(() {
+                  final index = _locks.indexWhere((lock) =>
+                    (lock['seamDeviceId'] == deviceId) ||
+                    (lock['lockId'] == deviceId) ||
+                    (lock['lockData'] == deviceId)
+                  );
+
+                  if (index != -1) {
+                    // Sadece durumu güncelle, diğer bilgileri koru
+                    if (newState != null) {
+                      _locks[index]['isLocked'] = newState;
+                      _locks[index]['status'] = newState ? 'Kilitli' : 'Açık';
+                    }
+                  }
+                });
+
+                // Başarılı işlem için bildirim göster
+                if (newState != null) {
+                  final lockName = updatedLock['name'] ?? 'Kilit';
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$lockName ${newState ? 'kilitlendi' : 'açıldı'}'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              }
             }
           },
-          borderRadius: BorderRadius.circular(15),
-          child: Stack(
-            children: [
+          onLongPress: () async {
+            if (lock['shared'] == true) {
+              // Paylaşılan kilit için paylaşımı iptal etme seçeneği
+              final action = await _showSharedLockOptionsDialog(context, lock);
+              if (action == 'cancel_share') {
+                await _cancelLockShare(lock);
+              }
+            } else {
+              // Kendi kilidi için silme seçeneği
+              final shouldDelete = await _showDeleteConfirmationDialog(lock);
+              if (shouldDelete) {
+                _removeDevice(lock);
+              }
+            }
+        },
+        borderRadius: BorderRadius.circular(15),
+        child: Stack(
+          children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        lock['isLocked'] ? Icons.lock : Icons.lock_open,
-                        color: lock['isLocked'] ? Color(0xFF1E90FF) : Colors.amber,
-                        size: 40,
-                      ),
-                      if (isSeamDevice)
+                children: [
+                  Icon(
+                    lock['isLocked'] ? Icons.lock : Icons.lock_open,
+                    color: lock['isLocked'] ? Color(0xFF1E90FF) : Colors.amber,
+                    size: 40,
+                        ),
+                      if (isTTLockDevice)
                         Container(
-                          margin: EdgeInsets.only(top: 4),
-                          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          margin: const EdgeInsets.only(top: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Color(0xFF1E90FF).withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
+                            color: const Color.fromRGBO(76, 175, 80, 0.2), // Colors.green with 0.2 opacity
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color.fromRGBO(76, 175, 80, 0.3), width: 1),
                           ),
-                          child: Text(
-                            'Seam',
-                            style: TextStyle(
-                              color: Color(0xFF1E90FF),
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.lock_outline, color: Colors.green, size: 12),
+                              SizedBox(width: 4),
+                              Text(
+                                'TTLock',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (isSharedTTLockDevice)
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color.fromRGBO(255, 152, 0, 0.2), // Colors.orange with 0.2 opacity
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color.fromRGBO(255, 152, 0, 0.3), width: 1),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.share, color: Colors.orange, size: 12),
+                              SizedBox(width: 4),
+                              Text(
+                                'Paylaşılmış',
+                                style: TextStyle(
+                                  color: Colors.orange,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                     ],
@@ -581,11 +708,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           lock['status'],
                           style: TextStyle(color: Colors.grey[400], fontSize: 14),
                         ),
-                        if (isSeamDevice && lock['deviceType'] != null)
+                        if (lock['deviceType'] != null)
                           Text(
                             'Tip: ${lock['deviceType']}',
                             style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -603,7 +730,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.3),
+                      color: const Color.fromRGBO(0, 0, 0, 0.3),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Row(
@@ -631,7 +758,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   Container(
                     padding: EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.3),
+                      color: const Color.fromRGBO(0, 0, 0, 0.3),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Icon(
@@ -648,6 +775,98 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       ),
     );
   }
+
+  Future<String?> _showSharedLockOptionsDialog(BuildContext context, Map<String, dynamic> lock) async {
+    return await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.share, color: Colors.orange),
+              SizedBox(width: 12),
+              Text(
+                'Paylaşılan Kilit',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            '${lock['name']} kilidi sizinle paylaşılmış.\n\nNe yapmak istiyorsunuz?',
+            style: TextStyle(color: Colors.grey[400]),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'İptal',
+                style: TextStyle(color: Colors.grey[400]),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop('cancel_share'),
+              child: Text(
+                'Paylaşımı İptal Et',
+                style: TextStyle(color: Colors.orange),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _cancelLockShare(Map<String, dynamic> lock) async {
+    try {
+      // TTLock API ile paylaşımı iptal et
+      final apiService = ApiService(AuthRepository());
+      await apiService.getAccessToken();
+
+      final accessToken = apiService.accessToken;
+      if (accessToken == null) {
+        throw Exception('Access token not available');
+      }
+
+      // Paylaşımı iptal etmek için e-key'i sil
+      await apiService.deleteEKey(
+        accessToken: accessToken,
+        keyId: lock['keyId'].toString(),
+      );
+
+      // Listeden kaldır
+      setState(() {
+        _locks.removeWhere((device) =>
+          device['lockId'] == lock['lockId'] &&
+          device['source'] == 'ttlock_shared'
+        );
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${lock['name']} paylaşımı iptal edildi'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Paylaşım iptali hatası: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+
+
 
   Future<bool> _showDeleteConfirmationDialog(Map<String, dynamic> lock) async {
     return await showDialog<bool>(
@@ -736,90 +955,78 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Colors.red;
   }
 
+  // Unused debug method removed
+
   Widget _buildBottomNavigationBar() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.black.withOpacity(0.9),
-            Colors.black.withOpacity(0.95),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(25),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: const Color.fromRGBO(255, 255, 255, 0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 20,
-            offset: Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 10,
+            offset: Offset(0, -5),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(25),
-        child: BottomNavigationBar(
-          currentIndex: _bottomNavIndex,
-          onTap: (index) {
-            setState(() => _bottomNavIndex = index);
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          selectedItemColor: Color(0xFF1E90FF),
-          unselectedItemColor: Colors.grey[500],
-          selectedFontSize: 11,
-          unselectedFontSize: 11,
-          type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: TextStyle(
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-          unselectedLabelStyle: TextStyle(
-            fontWeight: FontWeight.w400,
-            letterSpacing: 0.3,
-          ),
-          items: [
-            BottomNavigationBarItem(
-              icon: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                padding: EdgeInsets.all(_bottomNavIndex == 0 ? 8 : 6),
-                decoration: BoxDecoration(
-                  color: _bottomNavIndex == 0
-                      ? Color(0xFF1E90FF).withOpacity(0.2)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: BottomNavigationBar(
+            currentIndex: _bottomNavIndex,
+            onTap: (index) {
+              setState(() => _bottomNavIndex = index);
+            },
+            backgroundColor: Colors.black.withValues(alpha: 0.9),
+            elevation: 0,
+            selectedItemColor: Color(0xFF1E90FF),
+            unselectedItemColor: Colors.grey[500],
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            type: BottomNavigationBarType.fixed,
+            items: [
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: EdgeInsets.all(_bottomNavIndex == 0 ? 8 : 6),
+                  decoration: BoxDecoration(
+                    color: _bottomNavIndex == 0
+                        ? Color(0xFF1E90FF).withValues(alpha: 0.2)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _bottomNavIndex == 0 ? Icons.lock : Icons.lock_outline,
+                    size: _bottomNavIndex == 0 ? 26 : 22,
+                  ),
                 ),
-                child: Icon(
-                  Icons.home_filled,
-                  size: _bottomNavIndex == 0 ? 26 : 22,
-                ),
+                label: 'Cihazlar',
               ),
-              label: 'Cihaz',
-            ),
-            BottomNavigationBarItem(
-              icon: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                padding: EdgeInsets.all(_bottomNavIndex == 1 ? 8 : 6),
-                decoration: BoxDecoration(
-                  color: _bottomNavIndex == 1
-                      ? Color(0xFF1E90FF).withOpacity(0.2)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: EdgeInsets.all(_bottomNavIndex == 1 ? 8 : 6),
+                  decoration: BoxDecoration(
+                    color: _bottomNavIndex == 1
+                        ? Color(0xFF1E90FF).withValues(alpha: 0.2)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _bottomNavIndex == 1 ? Icons.person : Icons.person_outline,
+                    size: _bottomNavIndex == 1 ? 26 : 22,
+                  ),
                 ),
-                child: Icon(
-                  _bottomNavIndex == 1 ? Icons.person : Icons.person_outline,
-                  size: _bottomNavIndex == 1 ? 26 : 22,
-                ),
+                label: 'Ben',
               ),
-              label: 'Ben',
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
-
 }

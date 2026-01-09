@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter_example/ui/pages/user_management_page.dart';
 import 'package:ttlock_flutter_example/ui/pages/gateway_management_page.dart';
+import 'package:ttlock_flutter_example/ui/theme.dart';
 
 class SystemManagementPage extends StatefulWidget {
   const SystemManagementPage({Key? key}) : super(key: key);
@@ -39,7 +40,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Koyu tema
       appBar: AppBar(
-        backgroundColor: const Color(0xFF121212),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
           'Sistem Yönetimi',
@@ -136,13 +137,14 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.only(top: 16, bottom: 8, left: 4),
       child: Text(
-        title,
+        title.toUpperCase(),
         style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          color: AppColors.primary,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
         ),
       ),
     );
@@ -160,12 +162,12 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(
             Icons.group,
-            color: Colors.blue,
+            color: AppColors.primary,
             size: 24,
           ),
         ),
@@ -233,7 +235,8 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -270,12 +273,12 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
-            color: Colors.blue,
+            color: AppColors.primary,
             size: 24,
           ),
         ),

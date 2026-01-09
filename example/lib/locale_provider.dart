@@ -1,3 +1,5 @@
+// This file defines the LocaleProvider for internationalization.
+
 import 'package:flutter/material.dart';
 
 class LocaleProvider extends ChangeNotifier {
