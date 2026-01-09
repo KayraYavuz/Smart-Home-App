@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:ttlock_flutter/ttlock.dart'; // TTLock SDK import
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:ttlock_flutter_example/blocs/auth/auth_bloc.dart';
@@ -24,60 +24,31 @@ import 'package:ttlock_flutter_example/config.dart' as app_config;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  
+  print('🚀 Uygulama başlatılıyor...');
+  print('📝 .env yüklendi: ${dotenv.env.keys.length} adet anahtar bulundu.');
+  print('⚙️  API Config: ClientId=${app_config.ApiConfig.clientId.isNotEmpty ? "OK" : "BOŞ"}, Username=${app_config.ApiConfig.username.isNotEmpty ? "OK" : "BOŞ"}');
 
-  runApp(AppInitialization());
+  final authRepository = AuthRepository();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => LocaleProvider()),
+        RepositoryProvider.value(value: authRepository),
+        RepositoryProvider(create: (context) => ApiService(authRepository)),
+        BlocProvider(create: (context) => AuthBloc(authRepository, context.read<ApiService>())..add(AppStarted())),
+        BlocProvider(create: (context) => TTLockWebhookBloc(TTLockWebhookService())),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 
-class AppInitialization extends StatelessWidget {
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _initialization,
-      builder: (context, snapshot) {
-        // Hata durumunda
-        if (snapshot.hasError) {
-          return MaterialApp(
-            home: Scaffold(
-              body: Center(
-                child: Text(
-                  'Firebase Başlatma Hatası:\n${snapshot.error}',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ),
-          );
-        }
-
-        // Başarılı olursa ana uygulamayı başlat
-        if (snapshot.connectionState == ConnectionState.done) {
-          final authRepository = AuthRepository();
-          return MultiProvider(
-            providers: [
-              ChangeNotifierProvider(create: (context) => LocaleProvider()),
-              RepositoryProvider.value(value: authRepository),
-              RepositoryProvider(create: (context) => ApiService(authRepository)),
-              BlocProvider(create: (context) => AuthBloc(authRepository)),
-              BlocProvider(create: (context) => TTLockWebhookBloc(TTLockWebhookService())),
-            ],
-            child: MyApp(),
-          );
-        }
-
-        // Yüklenirken Splash ekranını göster
-        return MaterialApp(
-          home: SplashPage(),
-          debugShowCheckedModeBanner: false,
-        );
-      },
-    );
-  }
-}
 
 class MyApp extends StatefulWidget {
+
   @override
   _MyAppState createState() => _MyAppState();
 }

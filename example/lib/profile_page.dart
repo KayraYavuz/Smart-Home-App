@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ttlock_flutter_example/settings_page.dart';
 import 'package:ttlock_flutter_example/ui/pages/account_info_page.dart';
@@ -7,6 +8,8 @@ import 'package:ttlock_flutter_example/ui/pages/login_page.dart';
 import 'package:ttlock_flutter_example/ui/pages/system_management_page.dart';
 import 'package:ttlock_flutter_example/ui/pages/work_together_page.dart';
 import 'package:ttlock_flutter_example/logs_page.dart';
+import 'package:ttlock_flutter_example/blocs/auth/auth_bloc.dart';
+import 'package:ttlock_flutter_example/blocs/auth/auth_event.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -298,9 +301,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _logout(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-
+    // SharedPreferences temizleme ve AuthService token temizleme işlemi
+    // AuthBloc'un LoggedOut eventi içinde yapılıyor (AuthRepository.deleteTokens)
+    // Bu yüzden buradaki manuel temizlemeye gerek yok, veya sadece UI state için kalabilir.
+    
+    // AuthBloc'a çıkış eventi gönder
+    context.read<AuthBloc>().add(LoggedOut());
+    
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -309,11 +316,8 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.green,
       ),
     );
-
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => LoginPage()),
-        (route) => false,
-      );
+    
+    // Manuel navigasyon kaldırıldı. Main.dart içindeki BlocBuilder durumu dinleyip sayfayı değiştirecek.
   }
 
   Future<void> _deleteAccount(BuildContext context) async {
@@ -347,8 +351,9 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     if (confirmed == true) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
+      // AuthBloc'a çıkış eventi gönder (Hesap silme API'si varsa önce o çağrılmalı)
+      // Şimdilik sadece logout gibi davranıyor
+      context.read<AuthBloc>().add(LoggedOut());
 
       if (!mounted) return;
 
@@ -358,11 +363,8 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Colors.red,
         ),
       );
-
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => LoginPage()),
-        (route) => false,
-      );
+      
+      // Manuel navigasyon kaldırıldı. Main.dart içindeki BlocBuilder durumu dinleyip sayfayı değiştirecek.
     }
   }
 }

@@ -21,14 +21,6 @@ enum TTLockWebhookEventType {
   unknown
 }
 
-enum SeamWebhookEventType {
-  lockUnlocked,
-  lockLocked,
-  accessCodeCreated,
-  accessCodeDeleted,
-  unknown
-}
-
 /// TTLock Passcode Types for random passcode generation
 /// These values correspond to the keyboardPwdType parameter in TTLock API
 enum PasscodeType {
@@ -82,81 +74,10 @@ class TTLockWebhookEvent {
   }
 }
 
-class SeamWebhookEvent {
-  final String eventId;
-  final SeamWebhookEventType eventType;
-  final String deviceId;
-  final Map<String, dynamic>? eventData;
-  final DateTime timestamp;
-
-  SeamWebhookEvent({
-    required this.eventId,
-    required this.eventType,
-    required this.deviceId,
-    this.eventData,
-    required this.timestamp,
-  });
-
-  factory SeamWebhookEvent.fromJson(Map<String, dynamic> json) {
-    return SeamWebhookEvent(
-      eventId: json['event_id'] ?? '',
-      eventType: _parseEventType(json['event_type']),
-      deviceId: json['device_id'] ?? '',
-      eventData: json['event_data'],
-      timestamp: DateTime.parse(json['occurred_at'] ?? DateTime.now().toIso8601String()),
-    );
-  }
-
-  static TTLockWebhookEventType parseTTLockEventType(String eventType) {
-    switch (eventType) {
-      case '1':
-      case 'lockOpened':
-        return TTLockWebhookEventType.lockOpened;
-      case '2':
-      case 'lockClosed':
-        return TTLockWebhookEventType.lockClosed;
-      case '3':
-      case 'lockOpenedFromApp':
-        return TTLockWebhookEventType.lockOpenedFromApp;
-      case '4':
-      case 'lockOpenedFromKeypad':
-        return TTLockWebhookEventType.lockOpenedFromKeypad;
-      case '5':
-      case 'lockOpenedFromFingerprint':
-        return TTLockWebhookEventType.lockOpenedFromFingerprint;
-      case '6':
-      case 'lockOpenedFromCard':
-        return TTLockWebhookEventType.lockOpenedFromCard;
-      case '7':
-      case 'lowBattery':
-        return TTLockWebhookEventType.lowBattery;
-      case '8':
-      case 'lockTampered':
-        return TTLockWebhookEventType.lockTampered;
-      default:
-        return TTLockWebhookEventType.unknown;
-    }
-  }
-
-
-  static SeamWebhookEventType _parseEventType(String? eventType) {
-    switch (eventType) {
-      case 'lock.unlocked':
-        return SeamWebhookEventType.lockUnlocked;
-      case 'lock.locked':
-        return SeamWebhookEventType.lockLocked;
-      case 'access_code.created':
-        return SeamWebhookEventType.accessCodeCreated;
-      case 'access_code.deleted':
-        return SeamWebhookEventType.accessCodeDeleted;
-      default:
-        return SeamWebhookEventType.unknown;
-    }
-  }
-}
-
 class ApiService {
-  static const String _baseUrl = 'https://euapi.ttlock.com';
+
+
+  String _baseUrl = 'https://euapi.ttlock.com';
   final AuthRepository _authRepository;
   String? _accessToken;
   String? _refreshToken;
@@ -171,8 +92,9 @@ class ApiService {
   }
 
   String _generateMd5(String input) {
-    // TTLock requires lowercase MD5 hash
-    return md5.convert(utf8.encode(input.trim())).toString().toLowerCase();
+    // TTLock requires lowercase MD5 hash. Note: We don't trim() here because
+    // spaces can be part of a valid password.
+    return md5.convert(utf8.encode(input)).toString().toLowerCase();
   }
 
   /// Initialize tokens from persistent storage
@@ -180,37 +102,59 @@ class ApiService {
     _accessToken = await _authRepository.getAccessToken();
     _refreshToken = await _authRepository.getRefreshToken();
     _tokenExpiry = await _authRepository.getTokenExpiry();
+    final savedBaseUrl = await _authRepository.getBaseUrl();
+    if (savedBaseUrl != null) {
+      _baseUrl = savedBaseUrl;
+      print('🌐 Depolanmış bölge sunucusu yüklendi: $_baseUrl');
+    }
+  }
+
+  /// Clear tokens from memory (used during logout)
+  void clearTokens() {
+    _accessToken = null;
+    _refreshToken = null;
+    _tokenExpiry = null;
+    _baseUrl = 'https://euapi.ttlock.com'; // Reset to default
+    print('🧹 ApiService in-memory tokens cleared.');
   }
 
   /// Get access token, using refresh token if available and needed
   Future<bool> getAccessToken({String? username, String? password}) async {
     print('🔑 Access token alma işlemi başladı...');
 
-    // First, try to load from storage
-    if (_accessToken == null || _tokenExpiry == null) {
-      print('📝 Token bilgilerini yerel depodan yüklüyor...');
-      await initializeTokens();
-    }
+    // If username is provided, we are performing a manual login.
+    // In this case, we MUST ignore the cache/refresh token and request a new one.
+    if (username == null) {
+      // First, try to load from storage if not in memory
+      if (_accessToken == null || _tokenExpiry == null) {
+        print('📝 Token bilgilerini yerel depodan yüklüyor...');
+        await initializeTokens();
+      }
 
-    // If token exists and is valid, no need to fetch a new one
-    if (_accessToken != null &&
-        _tokenExpiry != null &&
-        DateTime.now().isBefore(_tokenExpiry!.subtract(Duration(minutes: 5)))) {
-      print('✅ Mevcut geçerli token kullanılıyor');
-      print('   Token: ${_accessToken!.substring(0, 20)}...');
-      return true;
-    }
-
-    // Try to refresh token if available
-    if (_refreshToken != null && _tokenExpiry != null) {
-      print('🔄 Refresh token ile yeni token alınıyor...');
-      final refreshed = await _refreshAccessToken();
-      if (refreshed) {
-        print('✅ Token başarıyla yenilendi');
+      // If token exists and is valid, no need to fetch a new one
+      if (_accessToken != null &&
+          _tokenExpiry != null &&
+          DateTime.now().isBefore(_tokenExpiry!.subtract(const Duration(minutes: 5)))) {
+        print('✅ Mevcut geçerli token kullanılıyor');
+        print('   Token: ${_accessToken!.substring(0, 10)}...');
         return true;
       }
-      print('❌ Token yenileme başarısız');
+
+      // Try to refresh token if available
+      if (_refreshToken != null && _tokenExpiry != null) {
+        print('🔄 Refresh token ile yeni token alınıyor...');
+        final refreshed = await _refreshAccessToken();
+        if (refreshed) {
+          print('✅ Token başarıyla yenilendi');
+          return true;
+        }
+        print('❌ Token yenileme başarısız');
+      }
+    } else {
+      print('🆕 Manuel giriş algılandı, cache atlanıyor...');
+      clearTokens(); // Log out current state first
     }
+
 
     // Otherwise, get new token with username/password
     print('🆕 Yeni access token isteniyor...');
@@ -1464,190 +1408,159 @@ class ApiService {
     required String username,
     required String password,
   }) async {
-    print('🔐 TTLock OAuth2 token isteği hazırlanıyor...');
-    print('   Base URL: $_baseUrl');
-    print('   Username: $username');
-    print('   Password (uzunluk): ${password.length} karakter');
-    print('   Password (MD5): ${_generateMd5(password)}');
-    print('   Client ID: ${ApiConfig.clientId}');
-    print('   Client Secret: ${ApiConfig.clientSecret.substring(0, 10)}...');
+    final regions = ['https://euapi.ttlock.com', 'https://api.ttlock.com'];
     
-    final url = Uri.parse('$_baseUrl/oauth2/token');
-    
-    // Build form data properly - TTLock uses camelCase
-    // Note: Some TTLock portals don't require redirect_uri for password grant
-    final bodyParams = <String, String>{
-      'clientId': ApiConfig.clientId,
-      'clientSecret': ApiConfig.clientSecret,
-      'username': username.trim(), // Trim whitespace
-      'password': _generateMd5(password),
-      'grant_type': 'password',
-    };
-    
-    // Only add redirect_uri if explicitly configured and not empty
-    // Many TTLock portals don't require redirect_uri for password grant type
-    // If you get error 10007, try removing redirect_uri by setting it to empty string in config.dart
-    if (ApiConfig.redirectUri.isNotEmpty && ApiConfig.redirectUri != '') {
-      bodyParams['redirect_uri'] = ApiConfig.redirectUri;
-      print('Using redirect_uri: ${ApiConfig.redirectUri}');
-    } else {
-      print('Skipping redirect_uri (not required for password grant)');
-    }
+    for (var regionBaseUrl in regions) {
+      print('🔐 TTLock OAuth2 token isteği deneniyor ($regionBaseUrl)...');
+      
+      final url = Uri.parse('$regionBaseUrl/oauth2/token');
+      // Send both snake_case and camelCase for maximum compatibility
+      final bodyParams = <String, String>{
+        'client_id': ApiConfig.clientId, 
+        'clientId': ApiConfig.clientId,
+        'client_secret': ApiConfig.clientSecret, 
+        'clientSecret': ApiConfig.clientSecret,
+        'username': username.trim(),
+        'password': _generateMd5(password),
+        'grant_type': 'password',
+        'date': DateTime.now().millisecondsSinceEpoch.toString(), 
+      };
 
-    print('Request params: ${bodyParams.map((k, v) => MapEntry(k, k == 'password' || k == 'client_secret' ? '***' : v))}');
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: bodyParams,
-      ).timeout(Duration(seconds: 30));
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        print('🔍 TTLock API Full Response: $responseData');
-        
-        // Check for error in response body (some APIs return 200 with error)
-        if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-          final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-          print('❌ API Error: ${responseData['errcode']} - $errorMsg');
-          print('   Error Description: ${responseData['description'] ?? 'No description'}');
-          _accessToken = null;
-          _refreshToken = null;
-          _tokenExpiry = null;
-          throw Exception('API Error ${responseData['errcode']}: $errorMsg');
+      print('📡 OAuth2 isteği gönderiliyor ($regionBaseUrl)...');
+      bodyParams.forEach((key, value) {
+        if (key != 'password' && key != 'client_secret' && key != 'clientSecret') {
+          print('   $key: $value');
         }
-        
-        _accessToken = responseData['access_token'];
-        _refreshToken = responseData['refresh_token'];
-        
-        if (_accessToken == null) {
-          print('❌ ERROR: access_token is null in response');
-          print('Full response: $responseData');
-          throw Exception('No access_token in response: ${response.body}');
-        }
+      });
 
-        print('✅ Token başarıyla alındı: ${_accessToken!.substring(0, 20)}...');
-        
-        final expiresInValue = responseData['expires_in'];
-        int expiresIn;
-        if (expiresInValue is int) {
-          expiresIn = expiresInValue;
-        } else if (expiresInValue is String) {
-          expiresIn = int.tryParse(expiresInValue) ?? 3600;
-        } else {
-          expiresIn = 3600;
-        }
-        _tokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
-
-        // Save tokens to persistent storage
-        if (_accessToken != null && _refreshToken != null && _tokenExpiry != null) {
-          await _authRepository.saveTokens(
-            accessToken: _accessToken!,
-            refreshToken: _refreshToken!,
-            expiry: _tokenExpiry!,
-          );
-        }
-
-        print('Successfully obtained access token');
-        return true;
-      } else {
-        print('Failed to get access token: ${response.statusCode}');
-        print('Response headers: ${response.headers}');
-        print('Response body: ${response.body}');
-        
-        // Try to parse error message
-        String errorMessage = 'HTTP ${response.statusCode}';
-        try {
-          final errorData = json.decode(response.body);
-          if (errorData.containsKey('errmsg')) {
-            errorMessage = errorData['errmsg'];
-          } else if (errorData.containsKey('error_description')) {
-            errorMessage = errorData['error_description'];
-          } else if (errorData.containsKey('error')) {
-            errorMessage = errorData['error'];
-          }
-        } catch (e) {
-          errorMessage = response.body;
-        }
-        
-        _accessToken = null;
-        _refreshToken = null;
-        _tokenExpiry = null;
-        throw Exception('Failed to get access token: $errorMessage');
+      if (ApiConfig.redirectUri.isNotEmpty) {
+        bodyParams['redirect_uri'] = ApiConfig.redirectUri;
       }
-    } on TimeoutException {
-      print('Request timeout');
-      throw Exception('Request timeout - please check your internet connection');
-    } on SocketException catch (e) {
-      print('Network error: $e');
-      throw Exception('Network error: ${e.message}');
-    } catch (e) {
-      print('Exception in _requestNewAccessToken: $e');
-      rethrow;
+
+      try {
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: bodyParams,
+        ).timeout(const Duration(seconds: 15));
+
+        if (response.statusCode == 200) {
+          final responseData = json.decode(response.body);
+          
+          if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+            final rawErrcode = responseData['errcode'];
+            final errcode = (rawErrcode is int) ? rawErrcode : (int.tryParse(rawErrcode.toString()) ?? -1);
+            
+            print('⚠️  API Hata Yanıtı: errcode=$errcode (${responseData['errmsg'] ?? 'Mesaj yok'})');
+            
+            // If it's an error and not the last region, try next region
+            // Region switch is usually for 10003 (Account not found) or 10005 (Password error in some regions)
+            if (regionBaseUrl != regions.last) {
+              print('⚠️  Bölge hatası veya hesap bulunamadı ($errcode), diğer bölge deneniyor...');
+              continue; 
+            }
+            
+            final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+            throw Exception('API Error $errcode: $errorMsg');
+          }
+          
+          _accessToken = responseData['access_token'];
+          _refreshToken = responseData['refresh_token'];
+          
+          final expiresInValue = responseData['expires_in'];
+          int expiresIn = (expiresInValue is int) ? expiresInValue : (int.tryParse(expiresInValue?.toString() ?? '3600') ?? 3600);
+          _tokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
+
+          if (_accessToken != null && _refreshToken != null) {
+            _baseUrl = regionBaseUrl; // Store the working region
+            await _authRepository.saveTokens(
+              accessToken: _accessToken!,
+              refreshToken: _refreshToken!,
+              expiry: _tokenExpiry!,
+              baseUrl: _baseUrl,
+            );
+            print('✅ Token başarıyla alındı ($regionBaseUrl)');
+            return true;
+          }
+        } else {
+          print('❌ HTTP ${response.statusCode} from $regionBaseUrl: ${response.body}');
+          print('   Response Headers: ${response.headers}');
+          if (regionBaseUrl == regions.last) {
+            String errorInfo = 'Bilinmeyen sunucu hatası (HTTP ${response.statusCode})';
+            try {
+              final data = json.decode(response.body);
+              errorInfo = data['errmsg'] ?? data['error_description'] ?? data['error'] ?? response.body;
+            } catch (_) {}
+            throw Exception('Giriş başarısız ($regionBaseUrl): $errorInfo');
+          }
+        }
+      } catch (e) {
+        print('⚠️  $regionBaseUrl denemesinde hata: $e');
+        if (regionBaseUrl == regions.last) rethrow;
+      }
     }
+    return false;
   }
 
   /// Refresh access token using refresh token
   Future<bool> _refreshAccessToken() async {
-    if (_refreshToken == null) {
-      return false;
-    }
+    if (_refreshToken == null) return false;
 
     print('Refreshing access token...');
-    final url = Uri.parse('$_baseUrl/oauth2/token');
+    final regions = [_baseUrl, 'https://euapi.ttlock.com', 'https://api.ttlock.com'];
     
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {
-        'clientId': ApiConfig.clientId,
-        'clientSecret': ApiConfig.clientSecret,
-        'refresh_token': _refreshToken!,
-        'grant_type': 'refresh_token',
-      },
-    );
+    for (var regionBaseUrl in Set.from(regions)) { // Set to avoid duplicate checks
+      final url = Uri.parse('$regionBaseUrl/oauth2/token');
+      try {
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: {
+            'client_id': ApiConfig.clientId,
+            'clientId': ApiConfig.clientId,
+            'client_secret': ApiConfig.clientSecret,
+            'clientSecret': ApiConfig.clientSecret,
+            'refresh_token': _refreshToken!,
+            'grant_type': 'refresh_token',
+            'date': DateTime.now().millisecondsSinceEpoch.toString(),
+          },
+        ).timeout(const Duration(seconds: 15));
 
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      _accessToken = responseData['access_token'];
-      _refreshToken = responseData['refresh_token'] ?? _refreshToken; // Keep old refresh token if not provided
-      
-      final expiresInValue = responseData['expires_in'];
-      int expiresIn;
-      if (expiresInValue is int) {
-        expiresIn = expiresInValue;
-      } else if (expiresInValue is String) {
-        expiresIn = int.tryParse(expiresInValue) ?? 3600;
-      } else {
-        expiresIn = 3600;
+        if (response.statusCode == 200) {
+          final responseData = json.decode(response.body);
+          if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+            continue; // Try next region if current fails
+          }
+          
+          _accessToken = responseData['access_token'];
+          _refreshToken = responseData['refresh_token'] ?? _refreshToken;
+          
+          final expiresInValue = responseData['expires_in'];
+          int expiresIn = (expiresInValue is int) ? expiresInValue : (int.tryParse(expiresInValue?.toString() ?? '3600') ?? 3600);
+          _tokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
+          _baseUrl = regionBaseUrl; // Update working baseUrl
+
+          if (_accessToken != null && _refreshToken != null) {
+            await _authRepository.saveTokens(
+              accessToken: _accessToken!,
+              refreshToken: _refreshToken!,
+              expiry: _tokenExpiry!,
+              baseUrl: _baseUrl,
+            );
+            return true;
+          }
+        }
+      } catch (e) {
+        continue;
       }
-      _tokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
-
-      // Save tokens to persistent storage
-      if (_accessToken != null && _refreshToken != null && _tokenExpiry != null) {
-        await _authRepository.saveTokens(
-          accessToken: _accessToken!,
-          refreshToken: _refreshToken!,
-          expiry: _tokenExpiry!,
-        );
-      }
-
-      print('Successfully refreshed access token');
-      return true;
-    } else {
-      print('Failed to refresh access token: ${response.statusCode}');
-      print('Response: ${response.body}');
-      // Clear invalid tokens
-      _refreshToken = null;
-      _accessToken = null;
-      _tokenExpiry = null;
-      await _authRepository.deleteTokens();
-      return false;
     }
+    
+    // If all regions fail, clear tokens
+    _accessToken = null;
+    _refreshToken = null;
+    _tokenExpiry = null;
+    await _authRepository.deleteTokens();
+    return false;
   }
 
   /// Register a new user in TTLock cloud
@@ -2807,58 +2720,11 @@ class ApiService {
     }
   }
 
-  // Seam Sandbox cihazlarını getiren fonksiyon
-  static Future<List<dynamic>> getSandboxDevices() async {
-    final response = await http.get(
-      Uri.parse('${SeamConfig.baseUrl}/devices/list'),
-      headers: {
-        'Authorization': 'Bearer ${SeamConfig.seamApiKey}',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      return data['devices']; // Cihaz listesini döner
-    } else {
-      print("Seam API Hatası - Kod: ${response.statusCode}");
-      print("Seam API Yanıt: ${response.body}");
-      throw Exception('Seam cihazları listelenemedi. Kod: ${response.statusCode}');
-    }
-  }
-
-  // Seam cihazını kilitleme/kilidi açma fonksiyonu
-  static Future<Map<String, dynamic>> controlSeamLock({
-    required String deviceId,
-    required bool lock,
-  }) async {
-    final endpoint = lock ? 'lock_door' : 'unlock_door';
-    final url = Uri.parse('${SeamConfig.baseUrl}/locks/$endpoint');
-
-    final response = await http.post(
-      url,
-      headers: {
-        'Authorization': 'Bearer ${SeamConfig.seamApiKey}',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'device_id': deviceId,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      print('Seam $endpoint başarılı: $deviceId');
-      return data;
-    } else {
-      print("Seam $endpoint hatası - Kod: ${response.statusCode}");
-      print("Seam $endpoint yanıt: ${response.body}");
-      throw Exception('Seam kilidi ${lock ? 'kilitleme' : 'açma'} başarısız. Kod: ${response.statusCode}');
-    }
-  }
 
   // TTLock kilidi açma/kapama (Gateway API ile - Callback URL gerekli)
-  static Future<Map<String, dynamic>> controlTTLock({
+
+  // TTLock kilidi açma/kapama (Gateway API ile - Callback URL gerekli)
+  Future<Map<String, dynamic>> controlTTLock({
     required String lockId,
     required bool lock, // true: kilitle, false: aç
     required String accessToken,
@@ -2892,7 +2758,7 @@ class ApiService {
   }
 
   // TTLock Webhook callback URL'ini ayarlama
-  static Future<Map<String, dynamic>> setTTLockWebhook({
+  Future<Map<String, dynamic>> setTTLockWebhook({
     required String accessToken,
     required String callbackUrl,
   }) async {
@@ -3005,7 +2871,7 @@ class ApiService {
   }
 
   // TTLock olay geçmişini alma (webhook yerine alternatif)
-  static Future<List<dynamic>> getTTLockRecords({
+  Future<List<dynamic>> getTTLockRecords({
     required String accessToken,
     required String lockId,
     int pageNo = 1,
@@ -3084,128 +2950,7 @@ class ApiService {
     }
   }
 
-  // Seam Webhook signature doğrulama fonksiyonu
-  static bool verifySeamWebhookSignature(String payload, String signature, String secret) {
-    final key = utf8.encode(secret);
-    final bytes = utf8.encode(payload);
-    final hmacSha256 = Hmac(sha256, key);
-    final digest = hmacSha256.convert(bytes);
-    final expectedSignature = 'sha256=${digest.toString()}';
-    return signature == expectedSignature;
-  }
 
-  // Webhook olayını işleme fonksiyonu
-  static Future<SeamWebhookEvent?> processWebhookEvent(
-    Map<String, dynamic> payload,
-    String? signature
-  ) async {
-    try {
-      // Signature doğrulama (üretim ortamında aktif edilmeli)
-      if (signature != null && SeamConfig.webhookSecret.isNotEmpty) {
-        final isValid = verifySeamWebhookSignature(
-          jsonEncode(payload),
-          signature,
-          SeamConfig.webhookSecret
-        );
-        if (!isValid) {
-          print('Webhook signature verification failed');
-          return null;
-        }
-      }
-
-      final event = SeamWebhookEvent.fromJson(payload);
-      print('Webhook event received: ${event.eventType} for device ${event.deviceId}');
-
-      return event;
-    } catch (e) {
-      print('Webhook processing error: $e');
-      return null;
-    }
-  }
 }
 
-// Webhook Service - Gerçek zamanlı olayları yönetir
-class WebhookService {
-  static WebhookService? _instance;
-  WebSocketChannel? _channel;
-  StreamSubscription<dynamic>? _subscription;
-  final StreamController<SeamWebhookEvent> _eventController = StreamController<SeamWebhookEvent>.broadcast();
-
-  // Singleton pattern
-  static WebhookService get instance {
-    _instance ??= WebhookService._();
-    return _instance!;
-  }
-
-  WebhookService._();
-
-  // Gerçek zamanlı olayları dinlemek için stream
-  Stream<SeamWebhookEvent> get eventStream => _eventController.stream;
-
-  // WebSocket bağlantısı başlat
-  void connect(String websocketUrl) {
-    try {
-      _channel = WebSocketChannel.connect(Uri.parse(websocketUrl));
-
-      _subscription = _channel!.stream.listen(
-        (message) {
-          _handleIncomingMessage(message);
-        },
-        onError: (error) {
-          print('WebSocket error: $error');
-          _reconnect(websocketUrl);
-        },
-        onDone: () {
-          print('WebSocket connection closed');
-          _reconnect(websocketUrl);
-        },
-      );
-
-      print('Webhook WebSocket connected to $websocketUrl');
-    } catch (e) {
-      print('Failed to connect WebSocket: $e');
-    }
-  }
-
-  // WebSocket mesajını işle
-  void _handleIncomingMessage(dynamic message) {
-    try {
-      final Map<String, dynamic> payload = jsonDecode(message.toString());
-
-      // Webhook event'ini async olarak işle
-      processWebhookEventAsync(payload, payload['signature']);
-    } catch (e) {
-      print('Error processing WebSocket message: $e');
-    }
-  }
-
-  // Bağlantı koparsa yeniden bağlan
-  void _reconnect(String websocketUrl) {
-    Future.delayed(const Duration(seconds: 5), () {
-      print('Attempting to reconnect WebSocket...');
-      connect(websocketUrl);
-    });
-  }
-
-  // Bağlantıyı kapat
-  void disconnect() {
-    _subscription?.cancel();
-    _channel?.sink.close();
-    _eventController.close();
-    print('Webhook WebSocket disconnected');
-  }
-
-  // Webhook olaylarını test için simüle et
-  void simulateWebhookEvent(SeamWebhookEvent event) {
-    _eventController.add(event);
-  }
-
-  // Webhook event'ini async olarak işle
-  Future<void> processWebhookEventAsync(Map<String, dynamic> payload, String? signature) async {
-    final event = await ApiService.processWebhookEvent(payload, signature);
-    if (event != null) {
-      _eventController.add(event);
-    }
-  }
-}
 

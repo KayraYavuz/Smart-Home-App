@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ttlock_flutter_example/config.dart' as app_config;
 import 'package:ttlock_flutter_example/api_service.dart';
 import 'package:ttlock_flutter_example/blocs/auth/auth_bloc.dart';
 import 'package:ttlock_flutter_example/blocs/login/login_bloc.dart';
@@ -19,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -38,7 +40,17 @@ class _LoginPageState extends State<LoginPage> {
           _passwordController.text = savedPassword;
           _rememberMe = true;
         });
+        return;
       }
+    }
+    
+    // Fallback to .env config if exists and fields are empty
+    if (_usernameController.text.isEmpty && app_config.ApiConfig.username.isNotEmpty) {
+      setState(() {
+        _usernameController.text = app_config.ApiConfig.username;
+        _passwordController.text = app_config.ApiConfig.password;
+        _rememberMe = true;
+      });
     }
   }
 
@@ -86,13 +98,11 @@ class _LoginPageState extends State<LoginPage> {
           ),
           // Content
           BlocProvider(
-            create: (context) {
-              final authRepository = AuthRepository();
-              return LoginBloc(
-                ApiService(authRepository),
+            create: (context) => LoginBloc(
+                context.read<ApiService>(),
                 context.read<AuthBloc>(),
-              );
-            },
+              ),
+
             child: BlocListener<LoginBloc, LoginState>(
               listener: (context, state) {
                 if (state is LoginFailure) {
@@ -139,8 +149,21 @@ class _LoginPageState extends State<LoginPage> {
                               SizedBox(height: 20),
                               TextFormField(
                                 controller: _passwordController,
-                                decoration: _buildInputDecoration('TTLock Şifre'),
-                                obscureText: true,
+                                decoration: _buildInputDecoration(
+                                  'TTLock Şifre',
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                      color: Colors.grey[400],
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                obscureText: _obscurePassword,
                                 style: TextStyle(color: Colors.white),
                                 validator: (value) =>
                                     value!.isEmpty ? 'Lütfen TTLock şifrenizi girin' : null,
@@ -194,6 +217,29 @@ class _LoginPageState extends State<LoginPage> {
                                     style: TextStyle(fontSize: 16, color: Colors.white),
                                   ),
                                 ),
+                              if (state is LoginFailure) ...[
+                                SizedBox(height: 16),
+                                Container(
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.error_outline, color: Colors.red),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          state.error,
+                                          style: TextStyle(color: Colors.red[100], fontSize: 13),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                               SizedBox(height: 20),
                               TextButton(
                                 onPressed: () {
@@ -224,10 +270,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String label) {
+  InputDecoration _buildInputDecoration(String label, {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(color: Colors.grey[400]),
+      suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white.withValues(alpha: 0.1),
       border: OutlineInputBorder(

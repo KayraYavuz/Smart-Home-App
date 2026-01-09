@@ -28,13 +28,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           _authBloc.add(LoggedIn(accessToken));
           emit(LoginSuccess());
         } else {
-          emit(LoginFailure('Failed to get access token'));
+          emit(LoginFailure('Giriş başarılı ancak anahtar alınamadı.'));
         }
       } else {
-        emit(LoginFailure('Invalid credentials'));
+        // success false ise ApiService genellikle hata fırlatmış olmalı,
+        // ama fırlatmadıysa genel bir mesaj gösterelim.
+        emit(LoginFailure('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.'));
       }
     } catch (e) {
-      emit(LoginFailure(e.toString()));
+      // API'den gelen asıl hatayı kullanıcıya göster (Örn: "API Error 10007")
+      print('Login Error: $e');
+      emit(LoginFailure(e.toString().replaceAll('Exception: ', '')));
     }
+
   }
 }

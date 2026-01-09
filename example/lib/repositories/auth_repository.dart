@@ -4,16 +4,26 @@ class AuthRepository {
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
   static const _tokenExpiryKey = 'token_expiry';
+  static const _baseUrlKey = 'base_url';
 
   Future<void> saveTokens({
     required String accessToken,
     required String refreshToken,
     required DateTime expiry,
+    String? baseUrl,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_accessTokenKey, accessToken);
     await prefs.setString(_refreshTokenKey, refreshToken);
     await prefs.setInt(_tokenExpiryKey, expiry.millisecondsSinceEpoch);
+    if (baseUrl != null) {
+      await prefs.setString(_baseUrlKey, baseUrl);
+    }
+  }
+
+  Future<String?> getBaseUrl() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_baseUrlKey);
   }
 
   Future<String?> getAccessToken() async {
@@ -39,7 +49,7 @@ class AuthRepository {
     final expiry = await getTokenExpiry();
     if (expiry == null) return false;
     // Check if token expires in more than 5 minutes (safety buffer)
-    return DateTime.now().isBefore(expiry.subtract(Duration(minutes: 5)));
+    return DateTime.now().isBefore(expiry.subtract(const Duration(minutes: 5)));
   }
 
   Future<void> deleteTokens() async {
@@ -47,5 +57,7 @@ class AuthRepository {
     await prefs.remove(_accessTokenKey);
     await prefs.remove(_refreshTokenKey);
     await prefs.remove(_tokenExpiryKey);
+    await prefs.remove(_baseUrlKey);
   }
+
 }

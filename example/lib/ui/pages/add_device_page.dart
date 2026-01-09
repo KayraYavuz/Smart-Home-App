@@ -7,8 +7,9 @@ class AddDevicePage extends StatefulWidget {
   _AddDevicePageState createState() => _AddDevicePageState();
 }
 
+
 class _AddDevicePageState extends State<AddDevicePage> {
-  bool _isLoadingSeamDevices = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTTLockScanSection(context),
-            _buildSeamSection(context),
+
             _buildSection(
               context,
               'Kilitler',
@@ -61,122 +62,6 @@ class _AddDevicePageState extends State<AddDevicePage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildSeamSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-          child: Row(
-            children: [
-              Icon(Icons.api, color: Color(0xFF1E90FF), size: 24),
-              SizedBox(width: 12),
-              Text(
-                'Seam Sandbox Cihazları',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Spacer(),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Color(0xFF1E90FF).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Test',
-                  style: TextStyle(
-                    color: Color(0xFF1E90FF),
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Seam Connect sandbox ortamındaki test cihazlarını uygulamanıza ekleyin.',
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 14,
-            ),
-          ),
-        ),
-        SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _isLoadingSeamDevices ? null : () => _addSeamDevices(context),
-                  icon: _isLoadingSeamDevices
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : Icon(Icons.add_circle_outline),
-                  label: Text(_isLoadingSeamDevices ? 'Ekleniyor...' : 'Seam Cihazlarını Ekle'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF1E90FF),
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.blueGrey.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Colors.blueGrey.withValues(alpha: 0.3),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  color: Colors.blueAccent,
-                  size: 20,
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Bu buton Seam sandbox\'ındaki 3 test kilidini (Lock 0, 1, 2) uygulamanıza ekler.',
-                    style: TextStyle(
-                      color: Colors.blueAccent,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(height: 20),
-      ],
     );
   }
 
@@ -259,41 +144,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
     );
   }
 
-  Future<void> _addSeamDevices(BuildContext context) async {
-    setState(() {
-      _isLoadingSeamDevices = true;
-    });
 
-    try {
-      final seamDevices = await ApiService.getSandboxDevices();
-
-      // Ana sayfaya Seam cihazlarını eklemek için geri dön
-      Navigator.of(context).pop({
-        'action': 'add_seam_devices',
-        'devices': seamDevices,
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${seamDevices.length} Seam cihazı eklendi'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Seam cihazları eklenirken hata: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingSeamDevices = false;
-        });
-      }
-    }
-  }
 
   Widget _buildSection(BuildContext context, String title, List<Widget> items) {
     return Column(

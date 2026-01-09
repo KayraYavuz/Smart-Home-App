@@ -2,11 +2,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ttlock_flutter_example/blocs/auth/auth_event.dart';
 import 'package:ttlock_flutter_example/blocs/auth/auth_state.dart';
 import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
+import 'package:ttlock_flutter_example/api_service.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
+  final ApiService _apiService;
 
-  AuthBloc(this._authRepository) : super(AuthInitial()) {
+  AuthBloc(this._authRepository, this._apiService) : super(AuthInitial()) {
     on<AppStarted>(_onAppStarted);
     on<LoggedIn>(_onLoggedIn);
     on<LoggedOut>(_onLoggedOut);
@@ -15,6 +17,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
+      // Initialize ApiService tokens and region from storage
+      await _apiService.initializeTokens();
+      
       // Check if we have a valid token in storage
       final isValid = await _authRepository.isTokenValid();
       if (isValid) {
@@ -43,10 +48,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _onLoggedOut(LoggedOut event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
+      // Clear memory tokens in ApiService
+      _apiService.clearTokens();
+      // Delete from permanent storage
       await _authRepository.deleteTokens();
       emit(Unauthenticated());
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
   }
+
 }
