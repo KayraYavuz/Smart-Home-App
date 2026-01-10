@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class GatewayManagementDialog extends StatefulWidget {
   const GatewayManagementDialog({Key? key}) : super(key: key);

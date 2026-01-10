@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:ttlock_flutter/ttlock.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/config.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/config.dart';
 
 /// Service that handles hybrid unlocking: tries Bluetooth first, falls back to Gateway API
 class HybridUnlockService {

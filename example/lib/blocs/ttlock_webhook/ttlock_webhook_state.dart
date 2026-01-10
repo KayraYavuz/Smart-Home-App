@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:ttlock_flutter_example/blocs/ttlock_webhook/ttlock_webhook_event.dart';
+import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_event.dart';
 
 abstract class TTLockWebhookState extends Equatable {
   const TTLockWebhookState();

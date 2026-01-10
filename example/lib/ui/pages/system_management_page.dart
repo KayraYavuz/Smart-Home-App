@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ttlock_flutter_example/ui/pages/user_management_page.dart';
-import 'package:ttlock_flutter_example/ui/pages/gateway_management_page.dart';
-import 'package:ttlock_flutter_example/ui/theme.dart';
+import 'package:yavuz_lock/ui/pages/user_management_page.dart';
+import 'package:yavuz_lock/ui/pages/gateway_management_page.dart';
+import 'package:yavuz_lock/ui/theme.dart';
 
 class SystemManagementPage extends StatefulWidget {
   const SystemManagementPage({Key? key}) : super(key: key);

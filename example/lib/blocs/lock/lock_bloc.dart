@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/blocs/lock/lock_event.dart';
-import 'package:ttlock_flutter_example/blocs/lock/app_lock_state.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/blocs/lock/lock_event.dart';
+import 'package:yavuz_lock/blocs/lock/app_lock_state.dart';
 
 class LockBloc extends Bloc<LockEvent, AppLockState> {
   final ApiService _apiService;

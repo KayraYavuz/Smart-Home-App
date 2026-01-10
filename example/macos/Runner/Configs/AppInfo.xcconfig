@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = ttlock_flutter_example
+PRODUCT_NAME = Yavuz Lock
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.ttlock.ttlockFlutterExample
+PRODUCT_BUNDLE_IDENTIFIER = com.yavuz.yavuzLock
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.ttlock. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.yavuz. All rights reserved.

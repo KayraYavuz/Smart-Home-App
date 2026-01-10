@@ -1,4 +1,4 @@
-package com.ttlock.ttlock_flutter_example;
+package com.yavuz.yavuz_lock;
 
 import com.ttlock.ttlock_flutter.TtlockFlutterPlugin;
 

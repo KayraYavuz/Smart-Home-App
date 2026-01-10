@@ -1,11 +1,11 @@
 {
-    "name": "ttlock_flutter_example",
-    "short_name": "ttlock_flutter_example",
+    "name": "Yavuz Lock",
+    "short_name": "Yavuz Lock",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Yavuz Lock",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

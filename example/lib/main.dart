@@ -6,20 +6,20 @@ import 'package:ttlock_flutter/ttlock.dart'; // TTLock SDK import
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:ttlock_flutter_example/blocs/auth/auth_bloc.dart';
-import 'package:ttlock_flutter_example/blocs/auth/auth_event.dart';
-import 'package:ttlock_flutter_example/blocs/auth/auth_state.dart';
-import 'package:ttlock_flutter_example/blocs/ttlock_webhook/ttlock_webhook_bloc.dart';
-import 'package:ttlock_flutter_example/services/ttlock_webhook_service.dart';
-import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/home_page.dart';
-import 'package:ttlock_flutter_example/ui/pages/login_page.dart';
-import 'package:ttlock_flutter_example/ui/pages/splash_page.dart';
-import 'package:ttlock_flutter_example/ui/theme.dart';
-import 'package:ttlock_flutter_example/l10n/app_localizations.dart';
-import 'package:ttlock_flutter_example/locale_provider.dart';
-import 'package:ttlock_flutter_example/config.dart' as app_config;
+import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
+import 'package:yavuz_lock/blocs/auth/auth_event.dart';
+import 'package:yavuz_lock/blocs/auth/auth_state.dart';
+import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_bloc.dart';
+import 'package:yavuz_lock/services/ttlock_webhook_service.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/home_page.dart';
+import 'package:yavuz_lock/ui/pages/login_page.dart';
+import 'package:yavuz_lock/ui/pages/splash_page.dart';
+import 'package:yavuz_lock/ui/theme.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
+import 'package:yavuz_lock/locale_provider.dart';
+import 'package:yavuz_lock/config.dart' as app_config;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

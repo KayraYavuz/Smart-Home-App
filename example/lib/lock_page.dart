@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'package:bmprogresshud/progresshud.dart';
-import 'package:ttlock_flutter_example/services/ttlock_webhook_service.dart';
+import 'package:yavuz_lock/services/ttlock_webhook_service.dart';
 
 
 class LockPage extends StatefulWidget {

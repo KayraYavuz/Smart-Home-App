@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
-import 'package:ttlock_flutter_example/ui/theme.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:yavuz_lock/ui/theme.dart';
 
 class LogsPage extends StatefulWidget {
   final String? lockId;

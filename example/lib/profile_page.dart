@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ttlock_flutter_example/settings_page.dart';
-import 'package:ttlock_flutter_example/ui/pages/account_info_page.dart';
-import 'package:ttlock_flutter_example/ui/pages/customer_service_page.dart';
-import 'package:ttlock_flutter_example/ui/pages/login_page.dart';
-import 'package:ttlock_flutter_example/ui/pages/system_management_page.dart';
-import 'package:ttlock_flutter_example/ui/pages/work_together_page.dart';
-import 'package:ttlock_flutter_example/logs_page.dart';
-import 'package:ttlock_flutter_example/blocs/auth/auth_bloc.dart';
-import 'package:ttlock_flutter_example/blocs/auth/auth_event.dart';
+import 'package:yavuz_lock/settings_page.dart';
+import 'package:yavuz_lock/ui/pages/account_info_page.dart';
+import 'package:yavuz_lock/ui/pages/customer_service_page.dart';
+import 'package:yavuz_lock/ui/pages/login_page.dart';
+import 'package:yavuz_lock/ui/pages/system_management_page.dart';
+import 'package:yavuz_lock/ui/pages/work_together_page.dart';
+import 'package:yavuz_lock/logs_page.dart';
+import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
+import 'package:yavuz_lock/blocs/auth/auth_event.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);

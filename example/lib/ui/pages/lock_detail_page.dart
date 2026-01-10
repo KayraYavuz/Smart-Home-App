@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ttlock_flutter_example/blocs/device/device_bloc.dart';
-import 'package:ttlock_flutter_example/blocs/device/device_event.dart';
-import 'package:ttlock_flutter_example/blocs/device/device_state.dart';
-import 'package:ttlock_flutter_example/logs_page.dart';
-import 'package:ttlock_flutter_example/ui/pages/lock_settings_page.dart';
-import 'package:ttlock_flutter_example/ui/theme.dart';
-import 'package:ttlock_flutter_example/ui/pages/share_lock_dialog.dart';
-import 'package:ttlock_flutter_example/ui/pages/gateway_management_dialog.dart';
-import 'package:ttlock_flutter_example/ui/pages/ekey_detail_page.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
+import 'package:yavuz_lock/blocs/device/device_bloc.dart';
+import 'package:yavuz_lock/blocs/device/device_event.dart';
+import 'package:yavuz_lock/blocs/device/device_state.dart';
+import 'package:yavuz_lock/logs_page.dart';
+import 'package:yavuz_lock/ui/pages/lock_settings_page.dart';
+import 'package:yavuz_lock/ui/theme.dart';
+import 'package:yavuz_lock/ui/pages/share_lock_dialog.dart';
+import 'package:yavuz_lock/ui/pages/gateway_management_dialog.dart';
+import 'package:yavuz_lock/ui/pages/ekey_detail_page.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class LockDetailPage extends StatefulWidget {
   final Map<String, dynamic> lock;

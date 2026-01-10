@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ttlock_flutter_example/config.dart' as app_config;
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/blocs/auth/auth_bloc.dart';
-import 'package:ttlock_flutter_example/blocs/login/login_bloc.dart';
-import 'package:ttlock_flutter_example/blocs/login/login_event.dart';
-import 'package:ttlock_flutter_example/blocs/login/login_state.dart';
-import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
-import 'package:ttlock_flutter_example/register_page.dart';
+import 'package:yavuz_lock/config.dart' as app_config;
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
+import 'package:yavuz_lock/blocs/login/login_bloc.dart';
+import 'package:yavuz_lock/blocs/login/login_event.dart';
+import 'package:yavuz_lock/blocs/login/login_state.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:yavuz_lock/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override

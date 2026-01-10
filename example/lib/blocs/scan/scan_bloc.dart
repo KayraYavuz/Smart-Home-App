@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ttlock_flutter/ttlock.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/blocs/scan/scan_event.dart';
-import 'package:ttlock_flutter_example/blocs/scan/scan_state.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/blocs/scan/scan_event.dart';
+import 'package:yavuz_lock/blocs/scan/scan_state.dart';
 
 class ScanBloc extends Bloc<ScanEvent, ScanState> {
   final ApiService apiService;

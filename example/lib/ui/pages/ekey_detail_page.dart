@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class EKeyDetailPage extends StatefulWidget {
   final Map<String, dynamic> eKey;

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ttlock_flutter_example/blocs/ttlock_webhook/ttlock_webhook_event.dart';
-import 'package:ttlock_flutter_example/blocs/ttlock_webhook/ttlock_webhook_state.dart';
-import 'package:ttlock_flutter_example/services/ttlock_webhook_service.dart';
+import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_event.dart';
+import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_state.dart';
+import 'package:yavuz_lock/services/ttlock_webhook_service.dart';
 
 class TTLockWebhookBloc extends Bloc<TTLockWebhookBlocEvent, TTLockWebhookState> {
   final TTLockWebhookService _webhookService;

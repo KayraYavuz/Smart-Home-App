@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/blocs/auth/auth_bloc.dart';
-import 'package:ttlock_flutter_example/blocs/auth/auth_event.dart';
-import 'package:ttlock_flutter_example/blocs/login/login_event.dart';
-import 'package:ttlock_flutter_example/blocs/login/login_state.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
+import 'package:yavuz_lock/blocs/auth/auth_event.dart';
+import 'package:yavuz_lock/blocs/login/login_event.dart';
+import 'package:yavuz_lock/blocs/login/login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final ApiService _apiService;

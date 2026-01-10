@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:ttlock_flutter_example/config.dart';
-import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
+import 'package:yavuz_lock/config.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 
 // Webhook olayları için model sınıfları

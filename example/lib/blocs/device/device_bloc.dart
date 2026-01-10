@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ttlock_flutter_example/blocs/device/device_event.dart';
-import 'package:ttlock_flutter_example/blocs/device/device_state.dart';
-import 'package:ttlock_flutter_example/services/hybrid_unlock_service.dart';
-import 'package:ttlock_flutter_example/api_service.dart';
-import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
+import 'package:yavuz_lock/blocs/device/device_event.dart';
+import 'package:yavuz_lock/blocs/device/device_state.dart';
+import 'package:yavuz_lock/services/hybrid_unlock_service.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
   final HybridUnlockService _unlockService;
