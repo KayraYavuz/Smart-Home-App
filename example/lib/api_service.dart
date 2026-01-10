@@ -173,7 +173,12 @@ class ApiService {
   }
 
   /// Get user's key list (both owned and shared locks)
-  Future<List<Map<String, dynamic>>> getKeyList() async {
+  Future<List<Map<String, dynamic>>> getKeyList({
+    int pageNo = 1,
+    int pageSize = 100,
+    String? lockAlias,
+    int? groupId,
+  }) async {
     print('🔑 TTLock key listesi çekme işlemi başladı...');
 
     // Ensure we have a valid token
@@ -183,35 +188,40 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/key/list').replace(queryParameters: {
+    // TTLock API endpoint: /v3/key/list
+    final url = Uri.parse('$_baseUrl/v3/key/list');
+
+    // Make parameters part of the body for POST request
+    final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
-      'accessToken': _accessToken,
-      'pageNo': '1',
-      'pageSize': '100',
+      'accessToken': _accessToken!,
+      'pageNo': pageNo.toString(),
+      'pageSize': pageSize.toString(),
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
-    });
+    };
 
-    print('📡 Key list API çağrısı: ${url.toString()}');
+    if (lockAlias != null) {
+      body['lockAlias'] = lockAlias;
+    }
+    
+    if (groupId != null) {
+      body['groupId'] = groupId.toString();
+    }
 
-    final response = await http.get(url);
+    print('📡 Key list API çağrısı: $url');
+    print('📝 Body parametreleri: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
 
     print('📨 Key list API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       print('🔍 TTLock Key List API Full Response: $responseData');
-
-      // Debug: İlk kilit için tüm alanları logla
-      if (responseData['list'] != null && (responseData['list'] as List).isNotEmpty) {
-        final firstLock = (responseData['list'] as List).first;
-        print('🔍 İlk kilit alanları: ${firstLock.keys.join(', ')}');
-        print('🔍 lockAlias: ${firstLock['lockAlias']}');
-        print('🔍 lockName: ${firstLock['lockName']}');
-        print('🔍 lockNickName: ${firstLock['lockNickName']}');
-        print('🔍 electricQuantity: ${firstLock['electricQuantity']}');
-        print('🔍 battery: ${firstLock['battery']}');
-        print('🔍 keyState: ${firstLock['keyState']}');
-      }
 
       // Check for error in response body
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
@@ -241,11 +251,23 @@ class ApiService {
           // Eğer lockAlias yoksa lockName, o da yoksa diğer alanları kullan.
           final lockAlias = key['lockAlias'] ?? key['lockName'] ?? key['lockNickName'] ?? key['name'] ?? 'TTLock Kilidi';
           
-          final keyStatus = key['keyStatus'] ?? 0;
+          final keyStatus = key['keyStatus']; // Keep raw value
           final electricQuantity = key['electricQuantity'] ?? key['battery'] ?? 0;
+          final userType = key['userType']; // "110301"-admin, "110302"-common
 
-          // Determine if this is a shared key (keyStatus indicates sharing)
-          final isShared = keyStatus == 2 || keyStatus == 3; 
+          // Determine if this is a shared key
+          // Logic update: Check userType or keyStatus if available
+          // userType "110302" is common user (likely shared)
+          // keyStatus "110405" or similar might mean something else
+          // For backwards compatibility, we try to interpret keyStatus as int if possible, 
+          // but relying on userType "110302" for shared status is safer if available.
+          
+          bool isShared = false;
+          if (userType != null) {
+             isShared = userType.toString() == '110302';
+          } else if (keyStatus is int) {
+             isShared = keyStatus == 2 || keyStatus == 3;
+          }
 
           return {
             'lockId': lockId,
@@ -255,6 +277,7 @@ class ApiService {
             'lockMac': key['lockMac'] ?? '',
             'battery': electricQuantity,
             'keyStatus': keyStatus,
+            'userType': userType,
             'source': isShared ? 'ttlock_shared' : 'ttlock',
             'shared': isShared,
             // Orijinal alanları da sakla (lazım olursa)
@@ -272,9 +295,53 @@ class ApiService {
     } else {
       print('❌ Failed to get key list: ${response.statusCode}');
       print('Response: ${response.body}');
-          throw Exception('Failed to get key list from TTLock API');
-        }
+      throw Exception('Failed to get key list from TTLock API');
+    }
+  }
+
+  /// Get one ekey
+  Future<Map<String, dynamic>> getEKey({
+    required int lockId,
+  }) async {
+    print('🔑 Tekil e-key çekiliyor: $lockId');
+
+    // Ensure we have a valid token
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/key/get').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    print('📡 Get eKey API çağrısı: $url');
+
+    final response = await http.get(url);
+
+    print('📨 Get eKey API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Get eKey API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Get eKey API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Get eKey API Error ${responseData['errcode']}: $errorMsg');
       }
+
+      // Successful response returns the key object directly
+      return responseData;
+    } else {
+      print('❌ Failed to get eKey: ${response.statusCode}');
+      throw Exception('Failed to get eKey from TTLock API');
+    }
+  }
 
   /// Get passwords for a specific lock
   Future<List<Map<String, dynamic>>> getLockPasswords({
@@ -697,29 +764,54 @@ class ApiService {
   Future<List<Map<String, dynamic>>> getLockEKeys({
     required String accessToken,
     required String lockId,
+    int pageNo = 1,
+    int pageSize = 200,
+    String? searchStr,
+    int? keyRight, // 0: No, 1: Yes
+    int? orderBy, // 0: by name, 1: reverse by time, 2: reverse by name
   }) async {
-    print('🔑 Elektronik anahtarlar çekiliyor: $lockId');
-    final url = Uri.parse('$_baseUrl/v3/key/list').replace(queryParameters: {
+    print('🔑 Kilit için e-key listesi çekiliyor: $lockId');
+    
+    final Map<String, dynamic> queryParams = {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
-      'pageNo': '1',
-      'pageSize': '50',
+      'pageNo': pageNo.toString(),
+      'pageSize': pageSize.toString(),
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
-    });
+    };
+
+    if (searchStr != null && searchStr.isNotEmpty) {
+      queryParams['searchStr'] = searchStr;
+    }
+
+    if (keyRight != null) {
+      queryParams['keyRight'] = keyRight.toString();
+    }
+
+    if (orderBy != null) {
+      queryParams['orderBy'] = orderBy.toString();
+    }
+
+    // TTLock API endpoint: /v3/lock/listKey
+    final url = Uri.parse('$_baseUrl/v3/lock/listKey').replace(queryParameters: queryParams);
+
+    print('📡 Lock Key List API çağrısı: $url');
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
+      print('🔍 Lock Key List Response: $responseData');
+      
       if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
-        // Filter only e-keys for this specific lock
-        final allKeys = (responseData['list'] as List).cast<Map<String, dynamic>>();
-        return allKeys.where((key) => key['lockId'].toString() == lockId).toList();
+        return (responseData['list'] as List).cast<Map<String, dynamic>>();
       } else {
+        print('⚠️ Lock Key List Error: ${responseData['errmsg']}');
         return [];
       }
     } else {
+      print('❌ Lock Key List HTTP Error: ${response.statusCode}');
       throw Exception('Failed to get lock e-keys');
     }
   }
@@ -730,40 +822,405 @@ class ApiService {
     required String keyId,
   }) async {
     print('🗑️ E-key siliniyor: $keyId');
-    final url = Uri.parse('$_baseUrl/v3/key/delete').replace(queryParameters: {
+    
+    // TTLock API endpoint: /v3/key/delete
+    final url = Uri.parse('$_baseUrl/v3/key/delete');
+
+    // Make parameters part of the body for POST request
+    final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'keyId': keyId,
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
-    });
+    };
 
-    final response = await http.post(url);
+    print('📡 Delete eKey API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Delete eKey API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
+      print('🔍 Delete eKey Response: $responseData');
+      
       if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+        print('✅ E-key başarıyla silindi: $keyId');
         return responseData;
       } else {
+        print('❌ E-key silme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
         throw Exception('Failed to delete e-key: ${responseData['errmsg']}');
       }
     } else {
-      throw Exception('Failed to delete e-key');
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Failed to delete e-key: HTTP ${response.statusCode}');
     }
   }
 
-  /// Share lock with another user
-  Future<Map<String, dynamic>> shareLock({
+  /// Freeze the ekey
+  Future<Map<String, dynamic>> freezeEKey({
+    required String accessToken,
+    required String keyId,
+  }) async {
+    print('❄️ E-key donduruluyor: $keyId');
+    
+    // TTLock API endpoint: /v3/key/freeze
+    final url = Uri.parse('$_baseUrl/v3/key/freeze');
+
+    // Make parameters part of the body for POST request
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'keyId': keyId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Freeze eKey API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Freeze eKey API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 Freeze eKey Response: $responseData');
+      
+      if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+        print('✅ E-key başarıyla donduruldu: $keyId');
+        return responseData;
+      } else {
+        print('❌ E-key dondurma API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('Failed to freeze e-key: ${responseData['errmsg']}');
+      }
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Failed to freeze e-key: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Unfreeze the ekey
+  Future<Map<String, dynamic>> unfreezeEKey({
+    required String accessToken,
+    required String keyId,
+  }) async {
+    print('🔥 E-key dondurması kaldırılıyor (unfreeze): $keyId');
+    
+    // TTLock API endpoint: /v3/key/unfreeze
+    final url = Uri.parse('$_baseUrl/v3/key/unfreeze');
+
+    // Make parameters part of the body for POST request
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'keyId': keyId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Unfreeze eKey API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Unfreeze eKey API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 Unfreeze eKey Response: $responseData');
+      
+      if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+        print('✅ E-key başarıyla dondurmadan kurtarıldı: $keyId');
+        return responseData;
+      } else {
+        print('❌ E-key unfreeze API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('Failed to unfreeze e-key: ${responseData['errmsg']}');
+      }
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Failed to unfreeze e-key: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Modify ekey (rename or change remote enable)
+  Future<Map<String, dynamic>> updateEKey({
+    required String accessToken,
+    required String keyId,
+    String? keyName,
+    int? remoteEnable, // 1-yes, 2-no
+  }) async {
+    print('✏️ E-key güncelleniyor: $keyId');
+    
+    // TTLock API endpoint: /v3/key/update
+    final url = Uri.parse('$_baseUrl/v3/key/update');
+
+    // Make parameters part of the body for POST request
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'keyId': keyId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (keyName != null && keyName.isNotEmpty) {
+      body['keyName'] = keyName;
+    }
+
+    if (remoteEnable != null) {
+      body['remoteEnable'] = remoteEnable.toString();
+    }
+
+    print('📡 Update eKey API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Update eKey API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 Update eKey Response: $responseData');
+      
+      if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+        print('✅ E-key başarıyla güncellendi: $keyId');
+        return responseData;
+      } else {
+        print('❌ E-key güncelleme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('Failed to update e-key: ${responseData['errmsg']}');
+      }
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Failed to update e-key: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Change the valid time of the ekey
+  Future<Map<String, dynamic>> changeEKeyPeriod({
+    required String accessToken,
+    required String keyId,
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    print('🕒 E-key süresi değiştiriliyor: $keyId');
+    
+    // TTLock API endpoint: /v3/key/changePeriod
+    final url = Uri.parse('$_baseUrl/v3/key/changePeriod');
+
+    // Make parameters part of the body for POST request
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'keyId': keyId,
+      'startDate': startDate.millisecondsSinceEpoch.toString(),
+      'endDate': endDate.millisecondsSinceEpoch.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Change eKey Period API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Change eKey Period API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 Change eKey Period Response: $responseData');
+      
+      if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+        print('✅ E-key süresi başarıyla güncellendi: $keyId');
+        return responseData;
+      } else {
+        print('❌ E-key süre güncelleme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('Failed to change e-key period: ${responseData['errmsg']}');
+      }
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Failed to change e-key period: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Authorize ekey (Grant management rights)
+  Future<Map<String, dynamic>> authorizeEKey({
+    required String accessToken,
+    required String lockId,
+    required String keyId,
+  }) async {
+    print('👮 E-key yetkilendiriliyor: $keyId');
+    
+    // TTLock API endpoint: /v3/key/authorize
+    final url = Uri.parse('$_baseUrl/v3/key/authorize');
+
+    // Make parameters part of the body for POST request
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'lockId': lockId,
+      'keyId': keyId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Authorize eKey API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Authorize eKey API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 Authorize eKey Response: $responseData');
+      
+      if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+        print('✅ E-key başarıyla yetkilendirildi: $keyId');
+        return responseData;
+      } else {
+        print('❌ E-key yetkilendirme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('Failed to authorize e-key: ${responseData['errmsg']}');
+      }
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Failed to authorize e-key: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Cancel key authorization
+  Future<Map<String, dynamic>> unauthorizeEKey({
+    required String accessToken,
+    required String lockId,
+    required String keyId,
+  }) async {
+    print('🚫 E-key yetkisi iptal ediliyor: $keyId');
+    
+    // TTLock API endpoint: /v3/key/unauthorize
+    final url = Uri.parse('$_baseUrl/v3/key/unauthorize');
+
+    // Make parameters part of the body for POST request
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'lockId': lockId,
+      'keyId': keyId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Unauthorize eKey API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Unauthorize eKey API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 Unauthorize eKey Response: $responseData');
+      
+      if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+        print('✅ E-key yetkisi başarıyla iptal edildi: $keyId');
+        return responseData;
+      } else {
+        print('❌ E-key yetki iptali API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('Failed to unauthorize e-key: ${responseData['errmsg']}');
+      }
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Failed to unauthorize e-key: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Get the eKey unlocking link
+  Future<Map<String, dynamic>> getUnlockLink({
+    required String accessToken,
+    required String keyId,
+  }) async {
+    print('🔗 E-key kilit açma linki alınıyor: $keyId');
+    
+    // TTLock API endpoint: /v3/key/getUnlockLink
+    final url = Uri.parse('$_baseUrl/v3/key/getUnlockLink');
+
+    // Make parameters part of the body for POST request
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'keyId': keyId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Get Unlock Link API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Get Unlock Link API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 Get Unlock Link Response: $responseData');
+      
+      if (responseData.containsKey('link') && responseData['link'] != null) {
+        print('✅ Link başarıyla alındı: ${responseData['link']}');
+        return responseData;
+      } else if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+         print('❌ Link alma API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+         throw Exception('Failed to get unlock link: ${responseData['errmsg']}');
+      } else {
+        // Fallback for success case where maybe errcode is 0?
+        return responseData;
+      }
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Failed to get unlock link: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Send eKey (Share lock)
+  Future<Map<String, dynamic>> sendEKey({
     required String accessToken,
     required String lockId,
     required String receiverUsername, // Email or phone
-    required int keyRight, // 1: Admin, 2: Normal user, 3: Limited user
-    DateTime? startDate,
-    DateTime? endDate,
+    required String keyName, // Required by API
+    required DateTime startDate, // Required by API
+    required DateTime endDate, // Required by API
+    int keyRight = 0, // 0: Normal user (default), 1: Admin
     String? remarks,
+    int? remoteEnable, // 1-yes, 2-no
+    int createUser = 2, // 1-yes, 2-no (default)
   }) async {
-    print('🔗 Kilit paylaşılıyor: $lockId -> $receiverUsername');
+    print('🔗 E-key gönderiliyor: $lockId -> $receiverUsername');
 
-    // TTLock API endpoint: /v3/key/send (e-key gönderme)
+    // TTLock API endpoint: /v3/key/send
     final url = Uri.parse('$_baseUrl/v3/key/send');
 
     // Parametreleri body olarak gönder (application/x-www-form-urlencoded)
@@ -771,15 +1228,27 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
-      'username': receiverUsername, // TTLock API için 'username' parametresi
-      'keyRight': keyRight.toString(),
-      if (startDate != null) 'startDate': startDate.millisecondsSinceEpoch.toString(),
-      if (endDate != null) 'endDate': endDate.millisecondsSinceEpoch.toString(),
-      if (remarks != null && remarks.isNotEmpty) 'remarks': remarks,
+      'receiverUsername': receiverUsername,
+      'keyName': keyName,
+      'startDate': startDate.millisecondsSinceEpoch.toString(),
+      'endDate': endDate.millisecondsSinceEpoch.toString(),
+      'createUser': createUser.toString(),
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     };
 
-    print('📡 Kilit paylaşım API çağrısı: $url');
+    if (keyRight != 0) {
+      body['keyRight'] = keyRight.toString();
+    }
+    
+    if (remarks != null && remarks.isNotEmpty) {
+      body['remarks'] = remarks;
+    }
+
+    if (remoteEnable != null) {
+      body['remoteEnable'] = remoteEnable.toString();
+    }
+
+    print('📡 Send eKey API çağrısı: $url');
     print('📝 Body parametreleri: $body');
 
     final response = await http.post(
@@ -788,20 +1257,20 @@ class ApiService {
       body: body,
     );
 
-    print('📨 Paylaşım API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    print('📨 Send eKey API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
-        print('✅ Kilit başarıyla paylaşıldı: $lockId');
+        print('✅ E-key başarıyla gönderildi: $lockId');
         return responseData;
       } else {
-        print('❌ Kilit paylaşımı API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-        throw Exception('Kilit paylaşımı başarısız: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        print('❌ E-key gönderme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('E-key gönderme başarısız: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
       }
     } else {
       print('❌ HTTP hatası: ${response.statusCode}');
-      throw Exception('Kilit paylaşımı başarısız: HTTP ${response.statusCode}');
+      throw Exception('E-key gönderm başarısız: HTTP ${response.statusCode}');
     }
   }
 

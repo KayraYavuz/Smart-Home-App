@@ -8,6 +8,7 @@ import 'package:ttlock_flutter_example/ui/pages/lock_settings_page.dart';
 import 'package:ttlock_flutter_example/ui/theme.dart';
 import 'package:ttlock_flutter_example/ui/pages/share_lock_dialog.dart';
 import 'package:ttlock_flutter_example/ui/pages/gateway_management_dialog.dart';
+import 'package:ttlock_flutter_example/ui/pages/ekey_detail_page.dart';
 import 'package:ttlock_flutter_example/api_service.dart';
 import 'package:ttlock_flutter_example/repositories/auth_repository.dart';
 
@@ -633,12 +634,21 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                             fontSize: 12,
                           ),
                         ),
-                        trailing: isOwner
-                            ? IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () => _confirmDeleteEKey(context, eKey),
-                              )
-                            : const Icon(Icons.lock, color: Colors.grey),
+                        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                        onTap: () {
+                           Navigator.pop(context); // Close dialog first
+                           Navigator.push(
+                             context,
+                             MaterialPageRoute(
+                               builder: (context) => EKeyDetailPage(
+                                 eKey: eKey,
+                                 lockId: widget.lock['lockId'].toString(),
+                                 lockName: widget.lock['name'] ?? '',
+                                 isOwner: true, // Assuming current user is admin for now
+                               ),
+                             ),
+                           );
+                        },
                       );
                     },
                   ),
@@ -659,63 +669,8 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     }
   }
 
-  void _confirmDeleteEKey(BuildContext context, Map<String, dynamic> eKey) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('Elektronik Anahtarı Sil', style: TextStyle(color: Colors.white)),
-        content: Text(
-          '${eKey['keyName'] ?? 'Bu anahtar'} silinsin mi?\n\nBu işlem geri alınamaz.',
-          style: const TextStyle(color: Colors.grey),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () => _deleteEKey(eKey),
-            child: const Text('Sil', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
+  // Methods moved to EKeyDetailPage and removed from here
 
-  void _deleteEKey(Map<String, dynamic> eKey) async {
-    try {
-      final apiService = ApiService(AuthRepository());
-      await apiService.getAccessToken();
-
-      final accessToken = apiService.accessToken;
-      if (accessToken == null) {
-        throw Exception('No access token available');
-      }
-
-      await apiService.deleteEKey(
-        accessToken: accessToken,
-        keyId: eKey['keyId'].toString(),
-      );
-
-      if (!mounted) return;
-
-      Navigator.pop(context); // Close confirm dialog
-      Navigator.pop(context); // Close e-keys dialog
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${eKey['keyName'] ?? 'Elektronik anahtar'} silindi'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Silme hatası: $e'), backgroundColor: Colors.red),
-      );
-    }
-  }
 
   void _showPasswords(BuildContext context) async {
     try {

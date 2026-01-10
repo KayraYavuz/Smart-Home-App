@@ -354,6 +354,16 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
       return;
     }
 
+    if (_startDate == null || _endDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Lütfen başlangıç ve bitiş tarihlerini seçin'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     print('✅ Form validasyonu başarılı');
     setState(() {
       _isLoading = true;
@@ -372,22 +382,26 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
       }
       print('✅ Access token alındı');
 
+      final receiver = _emailController.text.trim();
       print('📧 Paylaşım bilgileri:');
       print('  Lock ID: ${widget.lock['lockId']}');
-      print('  Alıcı: ${_emailController.text.trim()}');
+      print('  Alıcı: $receiver');
       print('  Yetki: $_selectedPermission');
       print('  Başlangıç: $_startDate');
       print('  Bitiş: $_endDate');
 
       print('🚀 TTLock /v3/key/send API çağrısı başlatılıyor...');
-      final result = await apiService.shareLock(
+      // Updated to use sendEKey with new parameters
+      final result = await apiService.sendEKey(
         accessToken: accessToken,
         lockId: widget.lock['lockId'].toString(),
-        receiverUsername: _emailController.text.trim(),
+        receiverUsername: receiver,
+        keyName: 'Key for $receiver', // Default key name
+        startDate: _startDate!,
+        endDate: _endDate!,
         keyRight: _selectedPermission,
-        startDate: _startDate,
-        endDate: _endDate,
         remarks: _remarksController.text.trim().isEmpty ? null : _remarksController.text.trim(),
+        createUser: 1, // Auto create user if not exists
       );
 
       print('✅ Paylaşım API yanıtı: $result');
