@@ -392,6 +392,54 @@ class ApiService {
     }
   }
 
+  /// Get lock time (timestamp in millisecond)
+  Future<int> queryLockTime({
+    required String lockId,
+  }) async {
+    print('⏰ Kilit zamanı sorgulanıyor: $lockId');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/lock/queryDate').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    print('📡 Query Lock Time API çağrısı: $url');
+
+    final response = await http.get(url);
+
+    print('📨 Query Lock Time API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Query Lock Time API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Query Lock Time API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Query Lock Time API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      if (responseData.containsKey('date')) {
+        print('✅ Kilit zamanı alındı: ${responseData['date']}');
+        return responseData['date'] as int;
+      } else {
+        print('⚠️ API response does not contain lock time.');
+        throw Exception('API response does not contain lock time.');
+      }
+    } else {
+      print('❌ Failed to get lock time: ${response.statusCode}');
+      throw Exception('Failed to get lock time from TTLock API');
+    }
+  }
+
   /// Get passwords for a specific lock
   Future<List<Map<String, dynamic>>> getLockPasswords({
     required String accessToken,
