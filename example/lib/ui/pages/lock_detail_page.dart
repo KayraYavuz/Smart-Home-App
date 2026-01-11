@@ -62,7 +62,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     });
 
     try {
-      final apiService = ApiService(AuthRepository());
+      final apiService = ApiService(context.read<AuthRepository>());
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
@@ -478,7 +478,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
   void _remoteUnlock(BuildContext context) async {
     try {
       // Önce gateway kontrolü yap
-      final apiService = ApiService(AuthRepository());
+      final apiService = ApiService(context.read<AuthRepository>());
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
@@ -487,7 +487,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       }
 
       // Gateway listesini kontrol et
-      final gateways = await apiService.getGatewayList(accessToken: accessToken);
+      final gateways = await apiService.getGatewayList();
 
       if (gateways.isEmpty) {
         if (!mounted) return;
@@ -542,7 +542,6 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       // TTLock API ile uzaktan açma komutunu gönder
       print('🚀 TTLock /v3/lock/unlock API çağrısı başlatılıyor...');
       await apiService.sendRemoteUnlock(
-        accessToken: accessToken,
         lockId: widget.lock['lockId'].toString(),
       );
 
@@ -579,7 +578,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
   void _showEKeys(BuildContext context) async {
     try {
-      final apiService = ApiService(AuthRepository());
+      final apiService = ApiService(context.read<AuthRepository>());
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
@@ -590,9 +589,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       final eKeys = await apiService.getLockEKeys(
         accessToken: accessToken,
         lockId: widget.lock['lockId'].toString(),
-      );
-
-      if (!mounted) return;
+      );      if (!mounted) return;
 
       showDialog(
         context: context,
@@ -708,7 +705,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
   void _showCards(BuildContext context) async {
     try {
-      final apiService = ApiService(AuthRepository());
+      final apiService = ApiService(context.read<AuthRepository>());
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
@@ -782,7 +779,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
   void _showFingerprint(BuildContext context) async {
     try {
-      final apiService = ApiService(AuthRepository());
+      final apiService = ApiService(context.read<AuthRepository>());
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;

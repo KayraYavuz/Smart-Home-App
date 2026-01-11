@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bmprogresshud/progresshud.dart';
 import 'ui/pages/lock_detail_page.dart';
 import 'ui/pages/add_device_page.dart';
+import 'ui/pages/gateways_page.dart';
 import 'profile_page.dart';
 import 'api_service.dart';
 import 'blocs/ttlock_webhook/ttlock_webhook_bloc.dart';
@@ -62,7 +63,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Future<void> _refreshSharedLocksStatus() async {
     try {
-      final apiService = ApiService(AuthRepository());
+      final apiService = ApiService(context.read<AuthRepository>());
       final allKeys = await apiService.getKeyList();
       final Map<String, Map<String, dynamic>> latestByLockId = {
         for (final k in allKeys) (k['lockId']?.toString() ?? ''): k
@@ -229,7 +230,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               print('🔄 TTLock key listesi çekme işlemi başladı...');
 
               // TTLock key listesini çek (hem kendi hem paylaşılan kilitler)
-              final apiService = ApiService(AuthRepository());
+              final apiService = ApiService(context.read<AuthRepository>());
               final allKeys = await apiService.getKeyList();
 
               // Kilitleri kendi ve paylaşılan olarak ayır
@@ -533,6 +534,23 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
+                  icon: Icon(Icons.router, color: Colors.white),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => GatewaysPage()),
+                    );
+                  },
+                  tooltip: 'Gatewayler',
+                ),
+              ),
+              SizedBox(width: 8), // Spacing between icons
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[850],
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
                   icon: Icon(Icons.add, color: Colors.white),
                   onPressed: () => _addNewDevice(context),
                 ),
@@ -572,7 +590,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             // Lock detail sayfasından dönen sonucu işle
             if (result != null && result is Map<String, dynamic>) {
               if (result['action'] == 'lock_updated') {
-                final updatedLock = result['lock'] as Map<String, dynamic>;
+                final updatedLock = Map<String, dynamic>.from(lock);
                 final deviceId = result['device_id'];
                 final newState = result['new_state'] as bool?;
 
@@ -719,55 +737,52 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ],
               ),
             ),
-            // Battery and Wi-Fi icons at top right
+            // Battery at bottom right
+            Positioned(
+              bottom: 12,
+              right: 12,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(0, 0, 0, 0.3),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _getBatteryIcon(lock['battery'] ?? 0),
+                      color: _getBatteryColor(lock['battery'] ?? 0),
+                      size: 16,
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      '${lock['battery'] ?? 0}%',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Wi-Fi icon at top right
             Positioned(
               top: 12,
               right: 12,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Battery icon
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(0, 0, 0, 0.3),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _getBatteryIcon(lock['battery'] ?? 0),
-                          color: _getBatteryColor(lock['battery'] ?? 0),
-                          size: 16,
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          '${lock['battery'] ?? 0}%',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  // Wi-Fi icon
-                  Container(
-                    padding: EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(0, 0, 0, 0.3),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Icon(
-                      Icons.wifi,
-                      color: Colors.white70,
-                      size: 16,
-                    ),
-                  ),
-                ],
+              child: Container(
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(0, 0, 0, 0.3),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Icon(
+                  Icons.wifi,
+                  color: Colors.white70,
+                  size: 16,
+                ),
               ),
             ),
           ],
@@ -826,7 +841,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Future<void> _cancelLockShare(Map<String, dynamic> lock) async {
     try {
       // TTLock API ile paylaşımı iptal et
-      final apiService = ApiService(AuthRepository());
+      final apiService = ApiService(context.read<AuthRepository>());
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;

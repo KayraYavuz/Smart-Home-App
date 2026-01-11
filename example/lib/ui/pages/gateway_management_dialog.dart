@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GatewayManagementDialog extends StatefulWidget {
   const GatewayManagementDialog({Key? key}) : super(key: key);
@@ -27,7 +28,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
         _errorMessage = null;
       });
 
-      final apiService = ApiService(AuthRepository());
+      final apiService = context.read<ApiService>();
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
@@ -35,7 +36,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
         throw Exception('Access token alınamadı');
       }
 
-      final gateways = await apiService.getGatewayList(accessToken: accessToken);
+      final gateways = await apiService.getGatewayList();
 
       setState(() {
         _gateways = gateways;
@@ -55,7 +56,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
 
   Future<void> _connectGateway(String gatewayId) async {
     try {
-      final apiService = ApiService(AuthRepository());
+      final apiService = context.read<ApiService>();
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
@@ -90,7 +91,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
 
   Future<void> _disconnectGateway(String gatewayId) async {
     try {
-      final apiService = ApiService(AuthRepository());
+      final apiService = context.read<ApiService>();
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
@@ -125,7 +126,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
 
   Future<void> _showGatewayDetail(String gatewayId) async {
     try {
-      final apiService = ApiService(AuthRepository());
+      final apiService = context.read<ApiService>();
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
@@ -134,12 +135,10 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
       }
 
       final detail = await apiService.getGatewayDetail(
-        accessToken: accessToken,
         gatewayId: gatewayId,
       );
 
       final locks = await apiService.getGatewayLocks(
-        accessToken: accessToken,
         gatewayId: gatewayId,
       );
 

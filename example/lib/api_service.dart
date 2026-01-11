@@ -888,14 +888,19 @@ class ApiService {
 
   /// Get gateway details
   Future<Map<String, dynamic>> getGatewayDetail({
-    required String accessToken,
     required String gatewayId,
   }) async {
     print('📋 Gateway detayları alınıyor: $gatewayId');
 
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
     final url = Uri.parse('$_baseUrl/v3/gateway/detail').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
-      'accessToken': accessToken,
+      'accessToken': _accessToken!,
       'gatewayId': gatewayId,
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     });
@@ -904,12 +909,13 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
-        print('✅ Gateway detayları alındı: $gatewayId');
-        return responseData;
-      } else {
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Gateway detayları API hatası: ${responseData['errcode']} - $errorMsg');
         throw Exception('Gateway detayları alınamadı: ${responseData['errmsg']}');
       }
+      print('✅ Gateway detayları alındı: $gatewayId');
+      return responseData;
     } else {
       throw Exception('Gateway detayları alınamadı: HTTP ${response.statusCode}');
     }
@@ -950,19 +956,63 @@ class ApiService {
     }
   }
 
+  /// Get the gateway list of a lock
+  Future<List<Map<String, dynamic>>> getGatewaysByLock({
+    required String lockId,
+  }) async {
+    print('📡 Bir kilide bağlı gateway listesi çekiliyor: lockId=$lockId');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/gateway/listByLock').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    print('📡 Get Gateways by Lock API çağrısı: $url');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if ((responseData.containsKey('errcode') && responseData['errcode'] != 0)) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Get Gateways by Lock API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Get Gateways by Lock API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      if (responseData['list'] != null) {
+        return (responseData['list'] as List).cast<Map<String, dynamic>>();
+      } else {
+        return [];
+      }
+    } else {
+      throw Exception('Failed to get gateways by lock');
+    }
+  }
+
   /// Get locks connected to a gateway
   Future<List<Map<String, dynamic>>> getGatewayLocks({
-    required String accessToken,
     required String gatewayId,
   }) async {
     print('🔗 Gateway\'e bağlı kilitler alınıyor: $gatewayId');
+    
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
 
     final url = Uri.parse('$_baseUrl/v3/gateway/listLock').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
-      'accessToken': accessToken,
+      'accessToken': _accessToken!,
       'gatewayId': gatewayId,
-      'pageNo': '1',
-      'pageSize': '50',
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     });
 
@@ -970,7 +1020,13 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
+      if ((responseData.containsKey('errcode') && responseData['errcode'] != 0)) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Get Gateway Locks API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Get Gateway Locks API Error ${responseData['errcode']}: $errorMsg');
+      }
+      
+      if (responseData['list'] != null) {
         print('✅ Gateway kilitleri alındı: ${responseData['list'].length} kilit');
         return (responseData['list'] as List).cast<Map<String, dynamic>>();
       } else {
@@ -1939,6 +1995,312 @@ class ApiService {
     } else {
       print('❌ Gateway silinemedi: ${responseData['errmsg']}');
       throw Exception('Gateway silinemedi: ${responseData['errmsg']}');
+    }
+  }
+
+  /// Rename gateway
+  Future<Map<String, dynamic>> renameGateway({
+    required String gatewayId,
+    required String gatewayName,
+  }) async {
+    print('✏️ Gateway yeniden adlandırılıyor: $gatewayId, yeni ad: $gatewayName');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/gateway/rename');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'gatewayId': gatewayId,
+      'gatewayName': gatewayName,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Rename Gateway API çağrısı: $url');
+    print('📝 Body parametreleri: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Rename Gateway API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Rename Gateway API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Rename Gateway API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Rename Gateway API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      print('✅ Gateway başarıyla yeniden adlandırıldı');
+      return responseData;
+    } else {
+      print('❌ Failed to rename gateway: ${response.statusCode}');
+      throw Exception('Failed to rename gateway from TTLock API');
+    }
+  }
+
+  /// Transfer gateway to another account
+  Future<Map<String, dynamic>> transferGateway({
+    required String receiverUsername,
+    required List<int> gatewayIdList,
+  }) async {
+    print('🔄 Gateway transfer ediliyor: alıcı=$receiverUsername, gatewayler=$gatewayIdList');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/gateway/transfer');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'receiverUsername': receiverUsername,
+      'gatewayIdList': json.encode(gatewayIdList), // Convert list to JSON string
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Transfer Gateway API çağrısı: $url');
+    print('📝 Body parametreleri: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Transfer Gateway API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Transfer Gateway API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Transfer Gateway API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Transfer Gateway API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      print('✅ Gateway başarıyla transfer edildi');
+      return responseData;
+    } else {
+      print('❌ Failed to transfer gateway: ${response.statusCode}');
+      throw Exception('Failed to transfer gateway from TTLock API');
+    }
+  }
+
+  /// Query the init status of the gateway
+  /// Returns the gatewayId if successfully initialized.
+  Future<int> queryGatewayInitStatus({
+    required String gatewayNetMac,
+  }) async {
+    print('🔍 Gateway başlangıç durumu sorgulanıyor: $gatewayNetMac');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/gateway/isInitSuccess');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'gatewayNetMac': gatewayNetMac,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Query Gateway Init Status API çağrısı: $url');
+    print('📝 Body parametreleri: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Query Gateway Init Status API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Query Gateway Init Status API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Query Gateway Init Status API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Query Gateway Init Status API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      if (responseData.containsKey('gatewayId')) {
+        print('✅ Gateway başarıyla başlatıldı, ID: ${responseData['gatewayId']}');
+        return responseData['gatewayId'] as int;
+      } else {
+        print('⚠️ API response does not contain gatewayId.');
+        throw Exception('API response does not contain gatewayId.');
+      }
+    } else {
+      print('❌ Failed to query gateway init status: ${response.statusCode}');
+      throw Exception('Failed to query gateway init status from TTLock API');
+    }
+  }
+
+  /// Upload the gateway's firmware version info and network name to the cloud server
+  Future<Map<String, dynamic>> uploadGatewayDetail({
+    required String gatewayId,
+    required String modelNum,
+    required String hardwareRevision,
+    required String firmwareRevision,
+    required String networkName,
+  }) async {
+    print('⬆️ Gateway detayları yükleniyor: $gatewayId');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/gateway/uploadDetail');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'gatewayId': gatewayId,
+      'modelNum': modelNum,
+      'hardwareRevision': hardwareRevision,
+      'firmwareRevision': firmwareRevision,
+      'networkName': networkName,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Upload Gateway Detail API çağrısı: $url');
+    print('📝 Body parametreleri: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Upload Gateway Detail API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Upload Gateway Detail API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Upload Gateway Detail API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Upload Gateway Detail API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      print('✅ Gateway detayları başarıyla yüklendi');
+      return responseData;
+    } else {
+      print('❌ Failed to upload gateway detail: ${response.statusCode}');
+      throw Exception('Failed to upload gateway detail from TTLock API');
+    }
+  }
+
+  /// Check if the gateway have a new version of firmware
+  Future<Map<String, dynamic>> gatewayUpgradeCheck({
+    required String gatewayId,
+  }) async {
+    print('🔍 Gateway güncellemesi kontrol ediliyor: $gatewayId');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/gateway/upgradeCheck').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'gatewayId': gatewayId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    print('📡 Gateway Upgrade Check API çağrısı: $url');
+
+    final response = await http.get(url);
+
+    print('📨 Gateway Upgrade Check API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Gateway Upgrade Check API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Gateway Upgrade Check API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Gateway Upgrade Check API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      print('✅ Gateway güncelleme kontrolü başarılı');
+      return responseData;
+    } else {
+      print('❌ Failed to check gateway upgrade: ${response.statusCode}');
+      throw Exception('Failed to check gateway upgrade from TTLock API');
+    }
+  }
+
+  /// Set gateway into upgrade mode
+  Future<Map<String, dynamic>> setGatewayUpgradeMode({
+    required String gatewayId,
+  }) async {
+    print('🔄 Gateway güncelleme moduna alınıyor: $gatewayId');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/gateway/setUpgradeMode');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'gatewayId': gatewayId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Set Gateway Upgrade Mode API çağrısı: $url');
+    print('📝 Body parametreleri: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Set Gateway Upgrade Mode API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Set Gateway Upgrade Mode API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Set Gateway Upgrade Mode API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Set Gateway Upgrade Mode API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      print('✅ Gateway başarıyla güncelleme moduna alındı');
+      return responseData;
+    } else {
+      print('❌ Failed to set gateway upgrade mode: ${response.statusCode}');
+      throw Exception('Failed to set gateway upgrade mode from TTLock API');
     }
   }
 
