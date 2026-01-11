@@ -497,6 +497,54 @@ class ApiService {
     }
   }
 
+  /// Get lock battery (percentage)
+  Future<int> queryLockBattery({
+    required String lockId,
+  }) async {
+    print('🔋 Kilit pil seviyesi sorgulanıyor: $lockId');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/lock/queryElectricQuantity').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    print('📡 Query Lock Battery API çağrısı: $url');
+
+    final response = await http.get(url);
+
+    print('📨 Query Lock Battery API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Query Lock Battery API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Query Lock Battery API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Query Lock Battery API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      if (responseData.containsKey('electricQuantity')) {
+        print('✅ Kilit pil seviyesi alındı: ${responseData['electricQuantity']}%');
+        return responseData['electricQuantity'] as int;
+      } else {
+        print('⚠️ API response does not contain lock battery quantity.');
+        throw Exception('API response does not contain lock battery quantity.');
+      }
+    } else {
+      print('❌ Failed to get lock battery: ${response.statusCode}');
+      throw Exception('Failed to get lock battery from TTLock API');
+    }
+  }
+
   /// Get passwords for a specific lock
   Future<List<Map<String, dynamic>>> getLockPasswords({
     required String accessToken,
