@@ -440,6 +440,63 @@ class ApiService {
     }
   }
 
+  /// Adjust lock time
+  /// Returns the lock time after adjusting (timestamp in millisecond)
+  Future<int> updateLockTime({
+    required String lockId,
+    required int newDate, // Timestamp in millisecond
+  }) async {
+    print('🔄 Kilit zamanı ayarlanıyor: $lockId, yeni zaman: $newDate');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/lock/updateDate');
+
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'date': newDate.toString(), // Use newDate for the request body
+    };
+
+    print('📡 Update Lock Time API çağrısı: $url');
+    print('📝 Body parametreleri: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Update Lock Time API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Update Lock Time API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Update Lock Time API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Update Lock Time API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      if (responseData.containsKey('date')) {
+        print('✅ Kilit zamanı başarıyla ayarlandı: ${responseData['date']}');
+        return responseData['date'] as int;
+      } else {
+        print('⚠️ API response does not contain adjusted lock time.');
+        throw Exception('API response does not contain adjusted lock time.');
+      }
+    } else {
+      print('❌ Failed to adjust lock time: ${response.statusCode}');
+      throw Exception('Failed to adjust lock time from TTLock API');
+    }
+  }
+
   /// Get passwords for a specific lock
   Future<List<Map<String, dynamic>>> getLockPasswords({
     required String accessToken,
