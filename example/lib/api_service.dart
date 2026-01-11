@@ -493,10 +493,15 @@ class ApiService {
 
   /// Send remote unlock command via TTLock API
   Future<Map<String, dynamic>> sendRemoteUnlock({
-    required String accessToken,
     required String lockId,
   }) async {
     print('🔓 Uzaktan açma komutu gönderiliyor: $lockId');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
 
     // TTLock API endpoint: /v3/lock/unlock
     final url = Uri.parse('$_baseUrl/v3/lock/unlock');
@@ -504,7 +509,7 @@ class ApiService {
     // Parametreleri body olarak gönder (application/x-www-form-urlencoded)
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
-      'accessToken': accessToken,
+      'accessToken': _accessToken!,
       'lockId': lockId,
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     };
