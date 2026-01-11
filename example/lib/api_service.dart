@@ -343,6 +343,55 @@ class ApiService {
     }
   }
 
+  /// Get the open state of a lock
+  /// Returns 0-locked, 1-unlocked, 2-unknown
+  Future<int> queryLockOpenState({
+    required String lockId,
+  }) async {
+    print('🔍 Kilit açık durumu sorgulanıyor: $lockId');
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/lock/queryOpenState').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    print('📡 Query Lock Open State API çağrısı: $url');
+
+    final response = await http.get(url);
+
+    print('📨 Query Lock Open State API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 TTLock Query Lock Open State API Full Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Query Lock Open State API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Query Lock Open State API Error ${responseData['errcode']}: $errorMsg');
+      }
+
+      if (responseData.containsKey('state')) {
+        print('✅ Kilit durumu alındı: ${responseData['state']}');
+        return responseData['state'] as int;
+      } else {
+        print('⚠️ API response does not contain lock state.');
+        throw Exception('API response does not contain lock state.');
+      }
+    } else {
+      print('❌ Failed to get lock open state: ${response.statusCode}');
+      throw Exception('Failed to get lock open state from TTLock API');
+    }
+  }
+
   /// Get passwords for a specific lock
   Future<List<Map<String, dynamic>>> getLockPasswords({
     required String accessToken,
