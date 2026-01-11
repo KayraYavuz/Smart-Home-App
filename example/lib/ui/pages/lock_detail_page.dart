@@ -11,6 +11,10 @@ import 'package:yavuz_lock/ui/pages/gateway_management_dialog.dart';
 import 'package:yavuz_lock/ui/pages/ekey_detail_page.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
+import 'package:yavuz_lock/blocs/auth/auth_state.dart';
+import 'package:yavuz_lock/config.dart';
+import 'package:yavuz_lock/passcode_page.dart';
 
 class LockDetailPage extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -433,8 +437,6 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
 
 
-
-
   Widget _buildGridMenuItem(BuildContext context, {required IconData icon, required String label, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -668,18 +670,6 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       );
     }
   }
-
-  // Methods moved to EKeyDetailPage and removed from here
-
-
-  import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
-import 'package:yavuz_lock/blocs/auth/auth_state.dart';
-import 'package:yavuz_lock/config.dart';
-import 'package:yavuz_lock/passcode_page.dart';
-
-// ... (rest of the imports)
-
-// ... (inside _LockDetailPageState class)
 
   void _showPasswords(BuildContext context) {
     final authState = context.read<AuthBloc>().state;
