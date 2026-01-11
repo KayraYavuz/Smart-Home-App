@@ -36,6 +36,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => LocaleProvider()),
         RepositoryProvider.value(value: authRepository),
         RepositoryProvider(create: (context) => ApiService(authRepository)),
+        RepositoryProvider(create: (context) => TTLockRepository()),
         BlocProvider(create: (context) => AuthBloc(authRepository, context.read<ApiService>())..add(AppStarted())),
         BlocProvider(create: (context) => TTLockWebhookBloc(TTLockWebhookService())),
       ],

@@ -672,72 +672,46 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
   // Methods moved to EKeyDetailPage and removed from here
 
 
-  void _showPasswords(BuildContext context) async {
-    try {
-      final apiService = ApiService(AuthRepository());
-      await apiService.getAccessToken();
+  import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
+import 'package:yavuz_lock/blocs/auth/auth_state.dart';
+import 'package:yavuz_lock/config.dart';
+import 'package:yavuz_lock/passcode_page.dart';
 
-      final accessToken = apiService.accessToken;
-      if (accessToken == null) {
-        throw Exception('No access token available');
+// ... (rest of the imports)
+
+// ... (inside _LockDetailPageState class)
+
+  void _showPasswords(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is Authenticated) {
+      final lockIdString = widget.lock['lockId']?.toString();
+      if (lockIdString == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Kilit ID bulunamadı.')),
+        );
+        return;
+      }
+      final lockId = int.tryParse(lockIdString);
+      if (lockId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Geçersiz Kilit ID formatı.')),
+        );
+        return;
       }
 
-      final passwords = await apiService.getLockPasswords(
-        accessToken: accessToken,
-        lockId: widget.lock['lockId'].toString(),
-      );
-
-      if (!mounted) return;
-
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
-          title: const Text('Şifreler', style: TextStyle(color: Colors.white)),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 300,
-            child: passwords.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Bu kilit için tanımlı şifre bulunamadı.',
-                      style: TextStyle(color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: passwords.length,
-                    itemBuilder: (context, index) {
-                      final password = passwords[index];
-                      return ListTile(
-                        title: Text(
-                          password['keyboardPwdName'] ?? 'Şifre ${index + 1}',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        subtitle: Text(
-                          'Geçerli: ${password['startDate'] ?? 'N/A'} - ${password['endDate'] ?? 'N/A'}',
-                          style: const TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                        trailing: Text(
-                          password['keyboardPwd'] ?? '***',
-                          style: const TextStyle(color: Colors.blue, fontSize: 16),
-                        ),
-                      );
-                    },
-                  ),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PasscodePage(
+            lockId: lockId,
+            clientId: ApiConfig.clientId,
+            accessToken: authState.accessToken,
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Tamam', style: TextStyle(color: Colors.blue)),
-                ),
-              ],
-            ),
+        ),
       );
-    } catch (e) {
-      if (!mounted) return;
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Şifre yükleme hatası: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('Şifreleri görmek için giriş yapmalısınız.')),
       );
     }
   }

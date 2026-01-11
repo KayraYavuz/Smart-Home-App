@@ -9,7 +9,7 @@ class LockPage extends StatefulWidget {
       {Key? key,
       required this.title,
       required this.lockData,
-      required this.lockMac})
+      required this.lockMac}) 
       : super(key: key);
   final String title;
   final String lockData;
@@ -381,7 +381,7 @@ class _LockPageState extends State<LockPage> {
           TTLockWebhookService().sendEvent(eventType: 'passcodeReset', data: {
             'lockMac': widget.lockMac,
             'description': 'Şifreler Sıfırlandı',
-            'newLockData': newLockData.substring(0, 50) + '...' // Log partial for debugging
+            'newLockData': newLockData.substring(0, 50) + '...'
           });
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);
