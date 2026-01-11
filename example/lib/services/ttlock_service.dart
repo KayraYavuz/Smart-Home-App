@@ -128,7 +128,7 @@ class TTLockService {
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     };
 
-    try {.
+    try {
       final response = await http.post(uri, headers: _headers, body: body);
 
       if (response.statusCode == 200) {

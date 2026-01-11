@@ -12,6 +12,7 @@ import 'package:yavuz_lock/blocs/auth/auth_state.dart';
 import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_bloc.dart';
 import 'package:yavuz_lock/services/ttlock_webhook_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:yavuz_lock/repositories/ttlock_repository.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/home_page.dart';
 import 'package:yavuz_lock/ui/pages/login_page.dart';
