@@ -668,16 +668,30 @@ class ApiService {
 
   /// Get gateway list for remote control
   Future<List<Map<String, dynamic>>> getGatewayList({
-    required String accessToken,
+    int pageNo = 1,
+    int pageSize = 50,
+    int orderBy = 0, // 0-by name, 1-reverse order by time, 2-reverse order by name
   }) async {
     print('📡 Gateway listesi çekiliyor');
-    final url = Uri.parse('$_baseUrl/v3/gateway/list').replace(queryParameters: {
+
+    await getAccessToken(); // Ensure we have a valid token
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final Map<String, dynamic> queryParams = {
       'clientId': ApiConfig.clientId,
-      'accessToken': accessToken,
-      'pageNo': '1',
-      'pageSize': '50',
+      'accessToken': _accessToken!,
+      'pageNo': pageNo.toString(),
+      'pageSize': pageSize.toString(),
+      'orderBy': orderBy.toString(),
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
-    });
+    };
+
+    final url = Uri.parse('$_baseUrl/v3/gateway/list').replace(queryParameters: queryParams.cast<String, String>());
+
+    print('📡 Gateway list API çağrısı: $url');
 
     final response = await http.get(url);
 
