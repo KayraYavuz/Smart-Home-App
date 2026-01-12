@@ -637,6 +637,63 @@ class ApiService {
     }
   }
 
+  /// Get a list of Identity Cards (IC Cards) for a specific lock from the cloud API.
+  Future<List<Map<String, dynamic>>> listIdentityCards({
+    required String lockId,
+    int pageNo = 1,
+    int pageSize = 20, // Max 200 as per documentation
+    int orderBy = 1, // 0-by name, 1-reverse order by time, 2-reverse order by name
+    String? searchStr,
+  }) async {
+    print('💳 Kimlik Kartları listesi çekiliyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final Map<String, dynamic> queryParams = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'pageNo': pageNo.toString(),
+      'pageSize': pageSize.toString(),
+      'orderBy': orderBy.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (searchStr != null && searchStr.isNotEmpty) {
+      queryParams['searchStr'] = searchStr;
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/identityCard/list').replace(queryParameters: queryParams.cast<String, String>());
+
+    print('📡 List Identity Cards API çağrısı: $url');
+
+    final response = await http.get(url);
+
+    print('📨 List Identity Cards API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Kimlik Kartları listeleme API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Kimlik Kartları listelenemedi: ${responseData['errmsg']}');
+      }
+
+      if (responseData['list'] != null) {
+        print('✅ ${responseData['list'].length} Kimlik Kartı bulundu');
+        return (responseData['list'] as List).cast<Map<String, dynamic>>();
+      } else {
+        return [];
+      }
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Kimlik Kartları listelenemedi: HTTP ${response.statusCode}');
+    }
+  }
+
   /// Get lock fingerprints
   Future<List<Map<String, dynamic>>> getLockFingerprints({
     required String accessToken,
@@ -1814,6 +1871,259 @@ class ApiService {
     } else {
       print('❌ IC Kart eklenemedi: ${responseData['errmsg']}');
       throw Exception('IC Kart eklenemedi: ${responseData['errmsg']}');
+    }
+  }
+
+  /// Add an Identity Card (IC Card) to a lock via the cloud API.
+  /// This method uses the `addForReversedCardNumber` endpoint, which is suitable
+  /// for cards where the number might be reversed depending on the card reader.
+  /// The `addType` is set to 2, indicating addition via gateway or WiFi lock.
+  Future<Map<String, dynamic>> addIdentityCard({
+    required String lockId,
+    required String cardNumber,
+    required int startDate,
+    required int endDate,
+    String? cardName,
+    int cardType = 1, // Default to normal card
+  }) async {
+    print('💳 Kimlik Kartı cloud üzerinden ekleniyor: $cardNumber');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/identityCard/addForReversedCardNumber');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'cardNumber': cardNumber,
+      'cardName': cardName ?? 'New Card',
+      'startDate': startDate.toString(),
+      'endDate': endDate.toString(),
+      'cardType': cardType.toString(),
+      'addType': '2', // 2 = via gateway or WiFi lock
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Add Identity Card API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Add Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Kimlik Kartı ekleme API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Kimlik Kartı eklenemedi: ${responseData['errmsg']}');
+      }
+      print('✅ Kimlik Kartı başarıyla eklendi');
+      return responseData;
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Kimlik Kartı eklenemedi: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Delete an Identity Card (IC Card) from a lock via the cloud API.
+  /// The `deleteType` is set to 2, indicating deletion via gateway or WiFi lock.
+  Future<void> deleteIdentityCard({
+    required String lockId,
+    required int cardId,
+  }) async {
+    print('🗑️ Kimlik Kartı cloud üzerinden siliniyor: $cardId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/identityCard/delete');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'cardId': cardId.toString(),
+      'deleteType': '2', // 2 = via gateway or WiFi lock
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Delete Identity Card API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Delete Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Kimlik Kartı silme API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Kimlik Kartı silinemedi: ${responseData['errmsg']}');
+      }
+      print('✅ Kimlik Kartı başarıyla silindi');
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Kimlik Kartı silinemedi: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Change the validity period of an Identity Card (IC Card) via the cloud API.
+  /// The `changeType` is set to 2, indicating modification via gateway or WiFi lock.
+  Future<void> changeIdentityCardPeriod({
+    required String lockId,
+    required int cardId,
+    required int startDate,
+    required int endDate,
+  }) async {
+    print('🕒 Kimlik Kartı periyodu cloud üzerinden değiştiriliyor: $cardId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/identityCard/changePeriod');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'cardId': cardId.toString(),
+      'startDate': startDate.toString(),
+      'endDate': endDate.toString(),
+      'changeType': '2', // 2 = via gateway or WiFi lock
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Change Identity Card Period API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Change Identity Card Period API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Kimlik Kartı periyodu değiştirme API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Kimlik Kartı periyodu değiştirilemedi: ${responseData['errmsg']}');
+      }
+      print('✅ Kimlik Kartı periyodu başarıyla değiştirildi');
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Kimlik Kartı periyodu değiştirilemedi: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Rename an Identity Card (IC Card) via the cloud API.
+  Future<void> renameIdentityCard({
+    required String lockId,
+    required int cardId,
+    required String cardName,
+  }) async {
+    print('✏️ Kimlik Kartı cloud üzerinden yeniden adlandırılıyor: $cardId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/identityCard/rename');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'cardId': cardId.toString(),
+      'cardName': cardName,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Rename Identity Card API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Rename Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Kimlik Kartı yeniden adlandırma API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Kimlik Kartı yeniden adlandırılamadı: ${responseData['errmsg']}');
+      }
+      print('✅ Kimlik Kartı başarıyla yeniden adlandırıldı');
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Kimlik Kartı yeniden adlandırılamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Clear all Identity Cards (IC Cards) from a lock on the cloud server.
+  /// NOTE: As per documentation, you should clear cards from the lock via SDK first.
+  /// This API call only syncs the clearance with the server.
+  Future<void> clearIdentityCards({
+    required String lockId,
+  }) async {
+    print('🔥 Tüm Kimlik Kartları cloud üzerinden temizleniyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/identityCard/clear');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Clear Identity Cards API çağrısı: $url');
+    print('📝 Body: $body');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Clear Identity Cards API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
+        print('❌ Kimlik Kartları temizleme API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception('Kimlik Kartları temizlenemedi: ${responseData['errmsg']}');
+      }
+      print('✅ Kimlik Kartları başarıyla temizlendi');
+    } else {
+      print('❌ HTTP hatası: ${response.statusCode}');
+      throw Exception('Kimlik Kartları temizlenemedi: HTTP ${response.statusCode}');
     }
   }
 

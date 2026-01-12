@@ -15,9 +15,11 @@ import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_state.dart';
 import 'package:yavuz_lock/config.dart';
 import 'package:yavuz_lock/passcode_page.dart';
+import 'package:yavuz_lock/card_page.dart';
 
 class LockDetailPage extends StatefulWidget {
   final Map<String, dynamic> lock;
+
 
   const LockDetailPage({
     Key? key,
@@ -251,11 +253,11 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
             final isLocked = widget.lock['isLocked'] ?? true;
             return Stack(
               children: [
-                Column(
-                  children: [
-                    // Ana kilit kontrol alanı
-                Expanded(
-                      child: Center(
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // Ana kilit kontrol alanı
+                      Center(
                         child: GestureDetector(
                           onTap: () {
                             if (isLocked) {
@@ -267,6 +269,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                           child: Container(
                             width: 220,
                             height: 220,
+                            margin: const EdgeInsets.only(top: 40, bottom: 40), // Add margin for spacing
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.transparent,
@@ -327,78 +330,78 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                           ),
                         ),
                       ),
-                    ),
 
-                    // Alt kısım - Grid menü
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: GridView.count(
-                        crossAxisCount: 3,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        children: [
-                          _buildGridMenuItem(
-                            context,
-                            icon: Icons.vpn_key,
-                            label: 'Elektronik\nAnahtarlar',
-                            onTap: () => _showEKeys(context),
-                          ),
-                          _buildGridMenuItem(
-                            context,
-                            icon: Icons.password,
-                            label: 'Şifreler',
-                            onTap: () => _showPasswords(context),
-                          ),
-                          _buildGridMenuItem(
-                            context,
-                            icon: Icons.credit_card,
-                            label: 'Kartlar',
-                            onTap: () => _showCards(context),
-                          ),
-                          _buildGridMenuItem(
-                            context,
-                            icon: Icons.fingerprint,
-                            label: 'Parmak\nİzi',
-                            onTap: () => _showFingerprint(context),
-                          ),
-                          _buildGridMenuItem(
-                            context,
-                            icon: Icons.wifi_tethering,
-                            label: 'Uzaktan\nKumanda',
-                            onTap: () => _showRemoteControl(context),
-                          ),
-                          _buildGridMenuItem(
-                            context,
-                            icon: Icons.history,
-                            label: 'Kayıtlar',
-                            onTap: () => _showRecords(context),
-                          ),
-                           _buildGridMenuItem(
-                            context,
-                            icon: Icons.share,
-                            label: 'Paylaş',
-                            onTap: () => _showShareLockDialog(context),
-                          ),
-                          _buildGridMenuItem(
-                            context,
-                            icon: Icons.settings,
-                            label: 'Ayarlar',
-                            onTap: () => _showSettings(context),
-                          ),
-                        ],
+                      // Alt kısım - Grid menü
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        child: GridView.count(
+                          crossAxisCount: 3,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                          children: [
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.vpn_key,
+                              label: 'Elektronik\nAnahtarlar',
+                              onTap: () => _showEKeys(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.password,
+                              label: 'Şifreler',
+                              onTap: () => _showPasswords(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.credit_card,
+                              label: 'Kartlar',
+                              onTap: () => _showCards(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.fingerprint,
+                              label: 'Parmak\nİzi',
+                              onTap: () => _showFingerprint(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.wifi_tethering,
+                              label: 'Uzaktan\nKumanda',
+                              onTap: () => _showRemoteControl(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.history,
+                              label: 'Kayıtlar',
+                              onTap: () => _showRecords(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.share,
+                              label: 'Paylaş',
+                              onTap: () => _showShareLockDialog(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.settings,
+                              label: 'Ayarlar',
+                              onTap: () => _showSettings(context),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 20),
-                  ],
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
 
                 // Büyük kilit butonunun hemen sağ altında Gateway/Remote Unlock butonu
                 Positioned(
                   left: MediaQuery.of(context).size.width / 2 + 80, // Kilit butonunun sağ tarafı
-                  top: MediaQuery.of(context).size.height * 0.4, // Kilit butonunun alt kısmı
+                  top: MediaQuery.of(context).size.height * 0.25, // Adjusted position
                   child: Container(
                     width: 50,
                     height: 50,
@@ -703,78 +706,13 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     }
   }
 
-  void _showCards(BuildContext context) async {
-    try {
-      final apiService = ApiService(context.read<AuthRepository>());
-      await apiService.getAccessToken();
-
-      final accessToken = apiService.accessToken;
-      if (accessToken == null) {
-        throw Exception('No access token available');
-      }
-
-      final cards = await apiService.getLockCards(
-        accessToken: accessToken,
-        lockId: widget.lock['lockId'].toString(),
-      );
-
-      if (!mounted) return;
-
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
-          title: const Text('RFID Kartlar', style: TextStyle(color: Colors.white)),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 300,
-            child: cards.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Bu kilit için tanımlı kart bulunamadı.',
-                      style: TextStyle(color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: cards.length,
-                    itemBuilder: (context, index) {
-                      final card = cards[index];
-                      return ListTile(
-                        leading: const CircleAvatar(
-                          backgroundColor: Colors.green,
-                          child: Icon(Icons.credit_card, color: Colors.white),
-                        ),
-                        title: Text(
-                          card['cardName'] ?? 'Kart ${index + 1}',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        subtitle: Text(
-                          'Kart Numarası: ${card['cardNumber'] ?? 'Bilinmiyor'}',
-                          style: const TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                        trailing: Icon(
-                          card['cardStatus'] == 1 ? Icons.check_circle : Icons.cancel,
-                          color: card['cardStatus'] == 1 ? Colors.green : Colors.red,
-                        ),
-                      );
-                    },
-                  ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Tamam', style: TextStyle(color: Colors.blue)),
-            ),
-          ],
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Kart yükleme hatası: $e'), backgroundColor: Colors.red),
-      );
-    }
+  void _showCards(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CardPage(lockId: widget.lock['lockId'].toString()),
+      ),
+    );
   }
 
   void _showFingerprint(BuildContext context) async {

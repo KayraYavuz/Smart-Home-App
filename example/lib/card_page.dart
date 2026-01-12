@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'add_card_page.dart'; // To be created
+import 'package:provider/provider.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:intl/intl.dart';
+import 'add_card_page.dart';
 
 class CardPage extends StatefulWidget {
-  const CardPage({Key? key}) : super(key: key);
+  final String lockId;
+  const CardPage({Key? key, required this.lockId}) : super(key: key);
 
   @override
   _CardPageState createState() => _CardPageState();
@@ -10,7 +14,7 @@ class CardPage extends StatefulWidget {
 
 class _CardPageState extends State<CardPage> {
   bool _isLoading = true;
-  final List<Map<String, dynamic>> _cards = [];
+  List<Map<String, dynamic>> _cards = [];
 
   @override
   void initState() {
@@ -20,56 +24,232 @@ class _CardPageState extends State<CardPage> {
 
   Future<void> _fetchCards() async {
     setState(() => _isLoading = true);
-    // TODO: Replace with real SDK call: TTLock.getAllValidCards(widget.lockData, ...)
-    await Future.delayed(const Duration(milliseconds: 1500));
-    setState(() {
-      _cards.addAll([
-        {'cardNumber': '10-23-45-67', 'type': 'Sürekli', 'validity': 'Süresiz'},
-        {'cardNumber': '89-AB-CD-EF', 'type': 'Zamanlı', 'validity': '01.03.2026 - 01.04.2026'},
-      ]);
-      _isLoading = false;
-    });
+    try {
+      final apiService = Provider.of<ApiService>(context, listen: false);
+      final fetchedCards = await apiService.listIdentityCards(lockId: widget.lockId);
+      setState(() {
+        _cards = fetchedCards;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Kartlar yüklenemedi: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
+
+  Future<void> _deleteCard(int cardId, String cardNumber) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Kartı Sil'),
+          content: Text('"$cardNumber" numaralı kartı silmek istediğinize emin misiniz?'),
+          actions: <Widget>[
+            TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('İptal')),
+            TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Sil')),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      setState(() => _isLoading = true);
+      try {
+        final apiService = Provider.of<ApiService>(context, listen: false);
+        await apiService.deleteIdentityCard(lockId: widget.lockId, cardId: cardId);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart "$cardNumber" başarıyla silindi.')));
+        await _fetchCards();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart silinemedi: $e')));
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _showEditCardDialog(Map<String, dynamic> card) async {
+    final cardId = card['cardId'] as int;
+    final TextEditingController nameController = TextEditingController(text: card['cardName'] ?? '');
+    DateTime startDate = DateTime.fromMillisecondsSinceEpoch(card['startDate']);
+    DateTime endDate = DateTime.fromMillisecondsSinceEpoch(card['endDate']);
+
+    final bool? save = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setDialogState) {
+          return AlertDialog(
+            title: const Text('Kartı Düzenle'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Kart Adı')),
+                  const SizedBox(height: 20),
+                  ListTile(
+                    title: Text('Başlangıç: ${DateFormat('dd/MM/yyyy').format(startDate)}'),
+                    trailing: const Icon(Icons.calendar_today),
+                    onTap: () async {
+                      final picked = await showDatePicker(context: context, initialDate: startDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
+                      if (picked != null) setDialogState(() => startDate = picked);
+                    },
+                  ),
+                  ListTile(
+                    title: Text('Bitiş: ${DateFormat('dd/MM/yyyy').format(endDate)}'),
+                    trailing: const Icon(Icons.calendar_today),
+                    onTap: () async {
+                      final picked = await showDatePicker(context: context, initialDate: endDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
+                      if (picked != null) setDialogState(() => endDate = picked);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('İptal')),
+              TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Kaydet')),
+            ],
+          );
+        });
+      },
+    );
+
+    if (save == true) {
+      setState(() => _isLoading = true);
+      try {
+        final apiService = Provider.of<ApiService>(context, listen: false);
+        bool needsRefresh = false;
+
+        // Rename if name is different
+        if (nameController.text != (card['cardName'] ?? '')) {
+          await apiService.renameIdentityCard(lockId: widget.lockId, cardId: cardId, cardName: nameController.text);
+          needsRefresh = true;
+        }
+
+        // Change period if dates are different
+        if (startDate.millisecondsSinceEpoch != card['startDate'] || endDate.millisecondsSinceEpoch != card['endDate']) {
+          await apiService.changeIdentityCardPeriod(lockId: widget.lockId, cardId: cardId, startDate: startDate.millisecondsSinceEpoch, endDate: endDate.millisecondsSinceEpoch);
+          needsRefresh = true;
+        }
+
+        if (needsRefresh) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kart başarıyla güncellendi.')));
+          await _fetchCards();
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart güncellenemedi: $e')));
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
+  }
+  
+  Future<void> _clearAllCards() async {
+     final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Tüm Kartları Temizle'),
+          content: const Text('Bu kilitteki tüm kartları sunucudan silmek istediğinizden emin misiniz?\n\nUyarı: Bu işlem geri alınamaz ve API dokümantasyonuna göre önce SDK üzerinden kilit hafızasının temizlenmesi gerekir.'),
+          actions: <Widget>[
+            TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('İptal')),
+            TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Temizle')),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      setState(() => _isLoading = true);
+      try {
+        final apiService = Provider.of<ApiService>(context, listen: false);
+        await apiService.clearIdentityCards(lockId: widget.lockId);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tüm kartlar sunucudan başarıyla temizlendi.')));
+        await _fetchCards();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kartlar temizlenemedi: $e')));
+         if (mounted) setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  String _formatDate(int timestamp) => DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(timestamp));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        title: Text('IC Kartlar'),
+        title: const Text('IC Kartlar'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_sweep),
+            onPressed: _isLoading ? null : _clearAllCards,
+            tooltip: 'Tüm Kartları Temizle',
+          ),
+        ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : _cards.isEmpty
-              ? Center(child: Text('Hiç IC Kart bulunamadı.', style: TextStyle(color: Colors.white)))
-              : ListView.builder(
-                  itemCount: _cards.length,
-                  itemBuilder: (context, index) {
-                    final card = _cards[index];
-                    return ListTile(
-                      leading: Icon(Icons.credit_card, color: Color(0xFF1E90FF)),
-                      title: Text(card['cardNumber']!, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                      subtitle: Text('${card['type']} | ${card['validity']}', style: TextStyle(color: Colors.grey[400])),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete_outline, color: Colors.redAccent),
-                        onPressed: () {
-                          // TODO: Implement delete card functionality
-                          print('Deleting ${card['cardNumber']}');
-                        },
-                      ),
-                    );
-                  },
+              ? const Center(child: Text('Hiç IC Kart bulunamadı.', style: TextStyle(color: Colors.white)))
+              : RefreshIndicator(
+                  onRefresh: _fetchCards,
+                  child: ListView.builder(
+                    itemCount: _cards.length,
+                    itemBuilder: (context, index) {
+                      final card = _cards[index];
+                      final int cardId = card['cardId'] as int;
+                      final String cardName = card['cardName'] ?? 'İsimsiz Kart';
+                      final String cardNumber = card['cardNumber'] ?? 'N/A';
+                      final String startDate = card['startDate'] != null ? _formatDate(card['startDate']) : 'N/A';
+                      final String endDate = card['endDate'] != null ? _formatDate(card['endDate']) : 'N/A';
+
+                      return Card(
+                        color: Colors.grey[850],
+                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        child: ListTile(
+                          leading: const Icon(Icons.credit_card, color: Color(0xFF1E90FF)),
+                          title: Text(cardName, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('No: $cardNumber', style: TextStyle(color: Colors.grey[400])),
+                              Text('Geçerlilik: $startDate - $endDate', style: TextStyle(color: Colors.grey[400])),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.amber),
+                                onPressed: () => _showEditCardDialog(card),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                onPressed: () => _deleteCard(cardId, cardNumber),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddCardPage()),
+            MaterialPageRoute(builder: (context) => AddCardPage(lockId: widget.lockId)),
           );
+          if (result == true) await _fetchCards();
         },
-        child: Icon(Icons.add),
-        backgroundColor: Color(0xFF1E90FF),
+        child: const Icon(Icons.add),
+        backgroundColor: const Color(0xFF1E90FF),
       ),
     );
   }

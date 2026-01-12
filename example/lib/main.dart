@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -71,18 +72,22 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _initializeTTLockSDK() {
-    try {
-      // 1. SDK Yapılandırması
-      TTLock.setupApp(app_config.ApiConfig.clientId, app_config.ApiConfig.clientSecret);
-      
-      // 2. SDK Durum Kontrolü (Başlangıçta bir kez kontrol et)
-      TTLock.getBluetoothState((status) {
-        print("✅ TTLock SDK Bluetooth Başlangıç Durumu: $status");
-      });
+     if (Platform.isIOS || Platform.isAndroid) {
+      try {
+        // 1. SDK Yapılandırması
+        TTLock.setupApp(app_config.ApiConfig.clientId, app_config.ApiConfig.clientSecret);
+        
+        // 2. SDK Durum Kontrolü (Başlangıçta bir kez kontrol et)
+        TTLock.getBluetoothState((status) {
+          print("✅ TTLock SDK Bluetooth Başlangıç Durumu: $status");
+        });
 
-      print('✅ TTLock SDK başarıyla başlatıldı');
-    } catch (e) {
-      print('❌ TTLock SDK başlatma hatası: $e');
+        print('✅ TTLock SDK başarıyla başlatıldı');
+      } catch (e) {
+        print('❌ TTLock SDK başlatma hatası: $e');
+      }
+    } else {
+      print('ℹ️ TTLock SDK initialization is skipped on this platform (${Platform.operatingSystem}).');
     }
   }
 
