@@ -1,3 +1,4 @@
+import 'package:yavuz_lock/fingerprint_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'package:bmprogresshud/progresshud.dart';
@@ -9,7 +10,7 @@ class LockPage extends StatefulWidget {
       {Key? key,
       required this.title,
       required this.lockData,
-      required this.lockMac}) 
+      required this.lockMac})
       : super(key: key);
   final String title;
   final String lockData;
@@ -43,6 +44,7 @@ enum Command {
   deleteFingerprint,
   clearFingerprint,
   getAllValidFingerprint,
+  manageFingerprints,
 
   getLockAutomaticLockingPeriodicTime,
   setLockAutomaticLockingPeriodicTime,
@@ -120,6 +122,7 @@ class _LockPageState extends State<LockPage> {
     {"Get All Fingerprints": Command.getAllValidFingerprint},
     {"Delete Fingerprint": Command.deleteFingerprint},
     {"Cleaer All Fingerprints": Command.clearFingerprint},
+    {"Manage Fingerprints": Command.manageFingerprints},
     {
       "Get Lock Automatic Locking Periodic Time":
           Command.getLockAutomaticLockingPeriodicTime
@@ -476,6 +479,14 @@ class _LockPageState extends State<LockPage> {
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);
         });
+        break;
+      
+      case Command.manageFingerprints:
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    FingerprintPage(lockId: int.parse(widget.title.split("-")[1]), lockData: this.lockData)));
         break;
 
       case Command.getLockAutomaticLockingPeriodicTime:

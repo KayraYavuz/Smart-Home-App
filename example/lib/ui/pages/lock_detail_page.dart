@@ -1,3 +1,4 @@
+import 'package:yavuz_lock/fingerprint_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/blocs/device/device_bloc.dart';
@@ -715,78 +716,16 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     );
   }
 
-  void _showFingerprint(BuildContext context) async {
-    try {
-      final apiService = ApiService(context.read<AuthRepository>());
-      await apiService.getAccessToken();
-
-      final accessToken = apiService.accessToken;
-      if (accessToken == null) {
-        throw Exception('No access token available');
-      }
-
-      final fingerprints = await apiService.getLockFingerprints(
-        accessToken: accessToken,
-        lockId: widget.lock['lockId'].toString(),
-      );
-
-      if (!mounted) return;
-
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
-          title: const Text('Parmak İzi', style: TextStyle(color: Colors.white)),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 300,
-            child: fingerprints.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Bu kilit için tanımlı parmak izi bulunamadı.',
-                      style: TextStyle(color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: fingerprints.length,
-                    itemBuilder: (context, index) {
-                      final fingerprint = fingerprints[index];
-                      return ListTile(
-                        leading: const CircleAvatar(
-                          backgroundColor: Colors.purple,
-                          child: Icon(Icons.fingerprint, color: Colors.white),
-                        ),
-                        title: Text(
-                          fingerprint['fingerprintName'] ?? 'Parmak İzi ${index + 1}',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        subtitle: Text(
-                          'Parmak İzi ID: ${fingerprint['fingerprintId'] ?? 'Bilinmiyor'}',
-                          style: const TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                        trailing: Icon(
-                          fingerprint['fingerprintStatus'] == 1 ? Icons.check_circle : Icons.cancel,
-                          color: fingerprint['fingerprintStatus'] == 1 ? Colors.green : Colors.red,
-                        ),
-                      );
-                    },
-                  ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Tamam', style: TextStyle(color: Colors.blue)),
-            ),
-          ],
+  void _showFingerprint(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FingerprintPage(
+          lockId: int.parse(widget.lock['lockId'].toString()),
+          lockData: widget.lock['lockData'],
         ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Parmak izi yükleme hatası: $e'), backgroundColor: Colors.red),
-      );
-    }
+      ),
+    );
   }
 
   void _showRemoteControl(BuildContext context) {

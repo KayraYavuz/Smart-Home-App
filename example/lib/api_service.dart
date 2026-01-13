@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:yavuz_lock/config.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 
@@ -171,6 +169,210 @@ class ApiService {
 
     return success;
   }
+
+  // --- FINGERPRINT MANAGEMENT ---
+
+  /// Add a fingerprint to the cloud after adding it via APP SDK
+  Future<Map<String, dynamic>> addFingerprint({
+    required int lockId,
+    required String fingerprintNumber,
+    required int fingerprintType, // 1-normal, 4-recurring
+    String? fingerprintName,
+    int? startDate, // timestamp in millisecond
+    int? endDate, // timestamp in millisecond
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) async {
+    print('👆 Parmak izi buluta ekleniyor: $fingerprintNumber');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/fingerprint/add');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'fingerprintNumber': fingerprintNumber,
+      'fingerprintType': fingerprintType.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (fingerprintName != null) {
+      body['fingerprintName'] = fingerprintName;
+    }
+    if (startDate != null) {
+      body['startDate'] = startDate.toString();
+    }
+    if (endDate != null) {
+      body['endDate'] = endDate.toString();
+    }
+    if (cyclicConfig != null) {
+      body['cyclicConfig'] = jsonEncode(cyclicConfig);
+    }
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData.containsKey('fingerprintId')) {
+      print('✅ Parmak izi başarıyla eklendi: ${responseData['fingerprintId']}');
+      return responseData;
+    } else {
+      print('❌ Parmak izi ekleme hatası: ${responseData['errmsg']}');
+      throw Exception('Parmak izi eklenemedi: ${responseData['errmsg']}');
+    }
+  }
+
+  /// Get the fingerprint list of a lock
+  Future<Map<String, dynamic>> getFingerprintList({
+    required int lockId,
+    int pageNo = 1,
+    int pageSize = 20,
+    String? searchStr,
+    int orderBy = 1, // 0-by name, 1-reverse order by time, 2-reverse order by name
+  }) async {
+    print('📋 Parmak izi listesi çekiliyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/fingerprint/list').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'pageNo': pageNo.toString(),
+      'pageSize': pageSize.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      if (searchStr != null) 'searchStr': searchStr,
+      'orderBy': orderBy.toString(),
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        throw Exception('Parmak izi listesi alınamadı: ${responseData['errmsg']}');
+      }
+      return responseData;
+    } else {
+      throw Exception('Parmak izi listesi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  Future<void> changeFingerprintPeriod({
+    required int lockId,
+    required int fingerprintId,
+    required int startDate,
+    required int endDate,
+    int changeType = 1,
+  }) async {
+    print('🔄 Parmak izi geçerlilik süresi değiştiriliyor: $fingerprintId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/fingerprint/changePeriod');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'fingerprintId': fingerprintId.toString(),
+      'startDate': startDate.toString(),
+      'endDate': endDate.toString(),
+      'changeType': changeType.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception(
+          'Parmak izi geçerlilik süresi değiştirilemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Parmak izi geçerlilik süresi değiştirildi');
+  }
+
+  Future<void> clearAllFingerprints(int lockId) async {
+    print('🗑️ Tüm parmak izleri siliniyor');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/fingerprint/clear');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Tüm parmak izleri silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Tüm parmak izleri silindi');
+  }
+
+  Future<void> renameFingerprint({
+    required int lockId,
+    required int fingerprintId,
+    required String fingerprintName,
+  }) async {
+    print('✏️ Parmak izi yeniden adlandırılıyor: $fingerprintId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/fingerprint/rename');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'fingerprintId': fingerprintId.toString(),
+      'fingerprintName': fingerprintName,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception(
+          'Parmak izi yeniden adlandırılamadı: ${responseData['errmsg']}');
+    }
+    print('✅ Parmak izi yeniden adlandırıldı');
+  }
+
+
 
   /// Get user's key list (both owned and shared locks)
   Future<List<Map<String, dynamic>>> getKeyList({

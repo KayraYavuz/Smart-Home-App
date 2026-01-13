@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:yavuz_lock/ui/pages/scan_page.dart';
-import 'package:yavuz_lock/api_service.dart';
 
 class AddDevicePage extends StatefulWidget {
   @override

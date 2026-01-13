@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:yavuz_lock/api_service.dart';
-import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GatewayManagementDialog extends StatefulWidget {

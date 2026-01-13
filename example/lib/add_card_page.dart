@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:intl/intl.dart';
-import 'package:yavuz_lock/home_page.dart';
 
 
 class AddCardPage extends StatefulWidget {

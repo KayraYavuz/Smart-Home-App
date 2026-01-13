@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yavuz_lock/settings_page.dart';
 import 'package:yavuz_lock/ui/pages/account_info_page.dart';
 import 'package:yavuz_lock/ui/pages/customer_service_page.dart';
-import 'package:yavuz_lock/ui/pages/login_page.dart';
 import 'package:yavuz_lock/ui/pages/system_management_page.dart';
 import 'package:yavuz_lock/ui/pages/work_together_page.dart';
 import 'package:yavuz_lock/logs_page.dart';

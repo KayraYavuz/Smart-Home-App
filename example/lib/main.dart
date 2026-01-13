@@ -1,3 +1,4 @@
+import 'package:yavuz_lock/blocs/fingerprint/fingerprint_bloc.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -41,6 +42,7 @@ Future<void> main() async {
         RepositoryProvider(create: (context) => TTLockRepository()),
         BlocProvider(create: (context) => AuthBloc(authRepository, context.read<ApiService>())..add(AppStarted())),
         BlocProvider(create: (context) => TTLockWebhookBloc(TTLockWebhookService())),
+        BlocProvider(create: (context) => FingerprintBloc(context.read<TTLockRepository>(), context.read<ApiService>())),
       ],
       child: MyApp(),
     ),

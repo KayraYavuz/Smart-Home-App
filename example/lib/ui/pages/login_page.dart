@@ -7,7 +7,6 @@ import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_event.dart';
 import 'package:yavuz_lock/blocs/login/login_state.dart';
-import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/register_page.dart';
 
 class LoginPage extends StatefulWidget {

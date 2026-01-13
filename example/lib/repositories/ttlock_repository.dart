@@ -72,4 +72,71 @@ class TTLockRepository {
       keyboardPwdName: keyboardPwdName,
     );
   }
+
+  /// Get the fingerprint list of a lock
+  Future<Map<String, dynamic>> getFingerprintList(String accessToken, int lockId) {
+    return _ttlockService.getFingerprintList(
+        accessToken: accessToken, lockId: lockId);
+  }
+
+  /// Add a fingerprint to the cloud
+  Future<void> addFingerprint({
+    required String accessToken,
+    required int lockId,
+    required String fingerprintNumber,
+    required String fingerprintName,
+    required int startDate,
+    required int endDate,
+  }) {
+    return _ttlockService.addFingerprint(
+      accessToken: accessToken,
+      lockId: lockId,
+      fingerprintNumber: fingerprintNumber,
+      fingerprintName: fingerprintName,
+      startDate: startDate,
+      endDate: endDate,
+    );
+  }
+
+  /// Delete a fingerprint
+  Future<void> deleteFingerprint(
+      String accessToken, int lockId, int fingerprintId) {
+    return _ttlockService.deleteFingerprint(
+        accessToken: accessToken, lockId: lockId, fingerprintId: fingerprintId);
+  }
+
+  Future<void> changeFingerprintPeriod({
+    required String accessToken,
+    required int lockId,
+    required int fingerprintId,
+    required int startDate,
+    required int endDate,
+  }) {
+    return _ttlockService.changeFingerprintPeriod(
+      accessToken: accessToken,
+      lockId: lockId,
+      fingerprintId: fingerprintId,
+      startDate: startDate,
+      endDate: endDate,
+    );
+  }
+
+  Future<void> clearAllFingerprints(String accessToken, int lockId) {
+    return _ttlockService.clearAllFingerprints(
+        accessToken: accessToken, lockId: lockId);
+  }
+
+  Future<void> renameFingerprint({
+    required String accessToken,
+    required int lockId,
+    required int fingerprintId,
+    required String fingerprintName,
+  }) {
+    return _ttlockService.renameFingerprint(
+      accessToken: accessToken,
+      lockId: lockId,
+      fingerprintId: fingerprintId,
+      fingerprintName: fingerprintName,
+    );
+  }
 }
