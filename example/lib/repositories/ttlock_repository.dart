@@ -1,12 +1,118 @@
+import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/services/passcode_model.dart';
 import 'package:yavuz_lock/services/ttlock_service.dart';
 
 class TTLockRepository {
   final TTLockService _ttlockService;
+  final ApiService _apiService;
 
   // TTLockService'i dışarıdan alarak bağımlılığı azaltıyoruz (Dependency Injection)
-  TTLockRepository({TTLockService? ttlockService})
-      : _ttlockService = ttlockService ?? TTLockService();
+  TTLockRepository({TTLockService? ttlockService, required ApiService apiService})
+      : _ttlockService = ttlockService ?? TTLockService(),
+        _apiService = apiService;
+
+  // --- FACE MANAGEMENT ---
+
+  Future<Map<String, dynamic>> getFeatureDataByPhoto({
+    required int lockId,
+    required String imagePath,
+  }) {
+    return _apiService.getFeatureDataByPhoto(
+      lockId: lockId,
+      imagePath: imagePath,
+    );
+  }
+
+  Future<Map<String, dynamic>> addFace({
+    required int lockId,
+    required String featureData,
+    required int addType,
+    String? name,
+    String? faceNumber,
+    int? startDate,
+    int? endDate,
+    int type = 1,
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) {
+    return _apiService.addFace(
+      lockId: lockId,
+      featureData: featureData,
+      addType: addType,
+      name: name,
+      faceNumber: faceNumber,
+      startDate: startDate,
+      endDate: endDate,
+      type: type,
+      cyclicConfig: cyclicConfig,
+    );
+  }
+
+  Future<Map<String, dynamic>> getFaceList({
+    required int lockId,
+    int pageNo = 1,
+    int pageSize = 20,
+    String? searchStr,
+  }) {
+    return _apiService.getFaceList(
+      lockId: lockId,
+      pageNo: pageNo,
+      pageSize: pageSize,
+      searchStr: searchStr,
+    );
+  }
+
+  Future<void> deleteFace({
+    required int lockId,
+    required int faceId,
+    required int type,
+  }) {
+    return _apiService.deleteFace(
+      lockId: lockId,
+      faceId: faceId,
+      type: type,
+    );
+  }
+
+  /// Change the period of validity of face data
+  Future<void> changeFacePeriod({
+    required int lockId,
+    required int faceId,
+    required int startDate,
+    required int endDate,
+    int type = 2,
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) {
+    return _apiService.changeFacePeriod(
+      lockId: lockId,
+      faceId: faceId,
+      startDate: startDate,
+      endDate: endDate,
+      type: type,
+      cyclicConfig: cyclicConfig,
+    );
+  }
+
+  /// Clear all face data from the cloud server
+  Future<void> clearAllFaces({
+    required int lockId,
+  }) {
+    return _apiService.clearAllFaces(
+      lockId: lockId,
+    );
+  }
+
+  /// Modify the face name
+  Future<void> renameFace({
+    required int lockId,
+    required int faceId,
+    required String name,
+  }) {
+    return _apiService.renameFace(
+      lockId: lockId,
+      faceId: faceId,
+      name: name,
+    );
+  }
 
   /// API'den gelen verileri veya hataları iş mantığı katmanına (BLoC) hazırlar.
   Future<List<Passcode>> getPasscodes({

@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:path/path.dart' as path;
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:yavuz_lock/config.dart';
@@ -171,6 +173,307 @@ class ApiService {
   }
 
   // --- FINGERPRINT MANAGEMENT ---
+
+  // --- FACE MANAGEMENT ---
+
+  /// Get feature data by photo
+  Future<Map<String, dynamic>> getFeatureDataByPhoto({
+    required int lockId,
+    required String imagePath,
+  }) async {
+    print('📸 Yüz özellik verisi alınıyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url =
+        Uri.parse('$_baseUrl/v3/face/getFeatureDataByPhoto').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    final imageFile = File(imagePath);
+    if (!await imageFile.exists()) {
+      throw Exception('Image file not found at $imagePath');
+    }
+
+    final request = http.MultipartRequest('POST', url);
+    request.files.add(await http.MultipartFile.fromPath(
+      'image',
+      imageFile.path,
+      filename: path.basename(imageFile.path),
+    ));
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseBody = await response.stream.bytesToString();
+      final responseData = json.decode(responseBody);
+      if (responseData.containsKey('featureData')) {
+        print('✅ Yüz özellik verisi başarıyla alındı');
+        return responseData;
+      } else {
+        print('❌ Yüz özellik verisi alma hatası: ${responseData['errmsg']}');
+        throw Exception(
+            'Yüz özellik verisi alınamadı: ${responseData['errmsg']}');
+      }
+    } else {
+      throw Exception(
+          'Yüz özellik verisi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Add a face to the lock
+  Future<Map<String, dynamic>> addFace({
+    required int lockId,
+    required String featureData,
+    required int addType, // 1-via bluetooth, 2-via gateway/WiFi
+    String? name,
+    String? faceNumber,
+    int? startDate,
+    int? endDate,
+    int type = 1, // 1-normal, 4-cyclic
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) async {
+    print('😀 Yüz ekleniyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/face/add');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'featureData': featureData,
+      'addType': addType.toString(),
+      'type': type.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (name != null) {
+      body['name'] = name;
+    }
+    if (faceNumber != null) {
+      body['faceNumber'] = faceNumber;
+    }
+    if (startDate != null) {
+      body['startDate'] = startDate.toString();
+    }
+    if (endDate != null) {
+      body['endDate'] = endDate.toString();
+    }
+    if (cyclicConfig != null) {
+      body['cyclicConfig'] = jsonEncode(cyclicConfig);
+    }
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData.containsKey('faceId')) {
+      print('✅ Yüz başarıyla eklendi: ${responseData['faceId']}');
+      return responseData;
+    } else {
+      print('❌ Yüz ekleme hatası: ${responseData['errmsg']}');
+      throw Exception('Yüz eklenemedi: ${responseData['errmsg']}');
+    }
+  }
+
+  /// Get the face list of a lock
+  Future<Map<String, dynamic>> getFaceList({
+    required int lockId,
+    int pageNo = 1,
+    int pageSize = 20,
+    String? searchStr,
+  }) async {
+    print('😀 Yüz listesi çekiliyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/face/list').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'pageNo': pageNo.toString(),
+      'pageSize': pageSize.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      if (searchStr != null) 'searchStr': searchStr,
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        throw Exception('Yüz listesi alınamadı: ${responseData['errmsg']}');
+      }
+      return responseData;
+    } else {
+      throw Exception('Yüz listesi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Delete a face from the lock
+  Future<void> deleteFace({
+    required int lockId,
+    required int faceId,
+    required int type, // 1-via bluetooth, 2-via gateway/WiFi
+  }) async {
+    print('😀 Yüz siliniyor: $faceId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/face/delete');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'faceId': faceId.toString(),
+      'type': type.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Yüz silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Yüz silindi');
+  }
+
+  /// Change the period of validity of face data
+  Future<void> changeFacePeriod({
+    required int lockId,
+    required int faceId,
+    required int startDate,
+    required int endDate,
+    int type = 2, // 1-via bluetooth, 2-via gateway/WiFi
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) async {
+    print('😀 Yüz geçerlilik süresi değiştiriliyor: $faceId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/face/changePeriod');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'faceId': faceId.toString(),
+      'startDate': startDate.toString(),
+      'endDate': endDate.toString(),
+      'type': type.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (cyclicConfig != null) {
+      body['cyclicConfig'] = jsonEncode(cyclicConfig);
+    }
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Yüz geçerlilik süresi değiştirilemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Yüz geçerlilik süresi değiştirildi');
+  }
+
+  /// Clear all face data from the cloud server
+  Future<void> clearAllFaces({
+    required int lockId,
+  }) async {
+    print('😀 Tüm yüz verileri siliniyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/face/clear');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Tüm yüz verileri silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Tüm yüz verileri silindi');
+  }
+
+  /// Modify the face name
+  Future<void> renameFace({
+    required int lockId,
+    required int faceId,
+    required String name,
+  }) async {
+    print('😀 Yüz adı değiştiriliyor: $faceId -> $name');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/face/rename');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'faceId': faceId.toString(),
+      'name': name,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Yüz adı değiştirilemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Yüz adı değiştirildi');
+  }
 
   /// Add a fingerprint to the cloud after adding it via APP SDK
   Future<Map<String, dynamic>> addFingerprint({

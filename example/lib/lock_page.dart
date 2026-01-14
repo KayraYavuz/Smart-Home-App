@@ -1,3 +1,4 @@
+import 'package:yavuz_lock/face_page.dart';
 import 'package:yavuz_lock/fingerprint_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter/ttlock.dart';
@@ -45,6 +46,7 @@ enum Command {
   clearFingerprint,
   getAllValidFingerprint,
   manageFingerprints,
+  manageFaces,
 
   getLockAutomaticLockingPeriodicTime,
   setLockAutomaticLockingPeriodicTime,
@@ -123,6 +125,7 @@ class _LockPageState extends State<LockPage> {
     {"Delete Fingerprint": Command.deleteFingerprint},
     {"Cleaer All Fingerprints": Command.clearFingerprint},
     {"Manage Fingerprints": Command.manageFingerprints},
+    {"Manage Faces": Command.manageFaces},
     {
       "Get Lock Automatic Locking Periodic Time":
           Command.getLockAutomaticLockingPeriodicTime
@@ -487,6 +490,14 @@ class _LockPageState extends State<LockPage> {
             MaterialPageRoute(
                 builder: (context) =>
                     FingerprintPage(lockId: int.parse(widget.title.split("-")[1]), lockData: this.lockData)));
+        break;
+
+      case Command.manageFaces:
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    FacePage(lockId: int.parse(widget.title.split("-")[1]))));
         break;
 
       case Command.getLockAutomaticLockingPeriodicTime:

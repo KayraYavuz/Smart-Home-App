@@ -12,6 +12,7 @@ import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_event.dart';
 import 'package:yavuz_lock/blocs/auth/auth_state.dart';
 import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_bloc.dart';
+import 'package:yavuz_lock/blocs/face/face_bloc.dart';
 import 'package:yavuz_lock/services/ttlock_webhook_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/repositories/ttlock_repository.dart';
@@ -39,10 +40,11 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => LocaleProvider()),
         RepositoryProvider.value(value: authRepository),
         RepositoryProvider(create: (context) => ApiService(authRepository)),
-        RepositoryProvider(create: (context) => TTLockRepository()),
+        RepositoryProvider(create: (context) => TTLockRepository(apiService: context.read<ApiService>())),
         BlocProvider(create: (context) => AuthBloc(authRepository, context.read<ApiService>())..add(AppStarted())),
         BlocProvider(create: (context) => TTLockWebhookBloc(TTLockWebhookService())),
         BlocProvider(create: (context) => FingerprintBloc(context.read<TTLockRepository>(), context.read<ApiService>())),
+        BlocProvider(create: (context) => FaceBloc(context.read<TTLockRepository>(), context.read<ApiService>())),
       ],
       child: MyApp(),
     ),

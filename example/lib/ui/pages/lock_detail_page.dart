@@ -17,9 +17,11 @@ import 'package:yavuz_lock/blocs/auth/auth_state.dart';
 import 'package:yavuz_lock/config.dart';
 import 'package:yavuz_lock/passcode_page.dart';
 import 'package:yavuz_lock/card_page.dart';
+import 'package:yavuz_lock/face_page.dart';
 
 class LockDetailPage extends StatefulWidget {
   final Map<String, dynamic> lock;
+
 
 
   const LockDetailPage({
@@ -365,6 +367,12 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                               icon: Icons.fingerprint,
                               label: 'Parmak\nİzi',
                               onTap: () => _showFingerprint(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.face,
+                              label: 'Yüzler',
+                              onTap: () => _showFaces(context),
                             ),
                             _buildGridMenuItem(
                               context,
@@ -723,6 +731,17 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
         builder: (context) => FingerprintPage(
           lockId: int.parse(widget.lock['lockId'].toString()),
           lockData: widget.lock['lockData'],
+        ),
+      ),
+    );
+  }
+
+  void _showFaces(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FacePage(
+          lockId: int.parse(widget.lock['lockId'].toString()),
         ),
       ),
     );
