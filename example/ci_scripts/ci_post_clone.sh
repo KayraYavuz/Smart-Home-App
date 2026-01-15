@@ -39,6 +39,10 @@ echo "Proje dizinine geçildi: $(pwd)"
 echo "Flutter paketleri yükleniyor (flutter pub get)..."
 flutter pub get
 
+# Garanti: Generated.xcconfig dosyasını oluştur
+echo "iOS konfigürasyon dosyaları oluşturuluyor..."
+flutter build ios --config-only --release
+
 # iOS Pod Kurulumu
 cd ios
 echo "iOS dizinine geçildi: $(pwd)"
