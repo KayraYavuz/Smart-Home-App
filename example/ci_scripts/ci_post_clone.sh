@@ -16,8 +16,8 @@ FLUTTER_ROOT="$CI_WORKSPACE/flutter"
 if [ -d "$FLUTTER_ROOT" ]; then
     echo "Flutter klasörü zaten var: $FLUTTER_ROOT"
 else
-    echo "Flutter indiriliyor..."
-    git clone https://github.com/flutter/flutter.git -b stable "$FLUTTER_ROOT"
+    echo "Flutter indiriliyor (Depth 1)..."
+    git clone https://github.com/flutter/flutter.git --depth 1 -b stable "$FLUTTER_ROOT"
 fi
 
 export PATH="$FLUTTER_ROOT/bin:$PATH"
@@ -35,6 +35,9 @@ fi
 
 cd "$PROJECT_DIR"
 echo "Proje dizinine geçildi: $(pwd)"
+
+echo "Flutter precache çalıştırılıyor..."
+flutter precache --ios
 
 echo "Flutter paketleri yükleniyor (flutter pub get)..."
 flutter pub get
