@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ttlock_flutter/ttlock.dart';
+import 'package:bmprogresshud/progresshud.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
@@ -13,6 +15,7 @@ class LockSettingsPage extends StatefulWidget {
 }
 
 class _LockSettingsPageState extends State<LockSettingsPage> {
+  BuildContext? _context;
   late ApiService _apiService;
   bool _isLoading = false;
   

@@ -1085,16 +1085,30 @@ class ApiService {
     required String lockId,
     int pageNo = 1,
     int pageSize = 20,
+    int? startDate, // timestamp in millisecond
+    int? endDate, // timestamp in millisecond
+    int? uid,
+    int? recordType, // -5-face, -4-QR, 4-password, 7-IC card, 8-fingerprint, 55-remote
+    String? searchStr,
   }) async {
     print('📋 Kilit kayıtları çekiliyor: $lockId');
-    final url = Uri.parse('$_baseUrl/v3/lockRecord/list').replace(queryParameters: {
+    
+    final Map<String, String> queryParams = {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
-    });
+    };
+
+    if (startDate != null) queryParams['startDate'] = startDate.toString();
+    if (endDate != null) queryParams['endDate'] = endDate.toString();
+    if (uid != null) queryParams['uid'] = uid.toString();
+    if (recordType != null) queryParams['recordType'] = recordType.toString();
+    if (searchStr != null) queryParams['searchStr'] = searchStr;
+
+    final url = Uri.parse('$_baseUrl/v3/lockRecord/list').replace(queryParameters: queryParams);
 
     final response = await http.get(url);
 
@@ -1108,8 +1122,111 @@ class ApiService {
         return [];
       }
     } else {
-          print('❌ Lock Records HTTP Error: ${response.statusCode}');
-          throw Exception('Failed to get lock records: ${response.statusCode}');
+      print('❌ Lock Records HTTP Error: ${response.statusCode}');
+      throw Exception('Failed to get lock records: ${response.statusCode}');
+    }
+  }
+
+  /// Upload records read from lock by APP SDK to cloud server
+  Future<void> uploadLockRecords({
+    required String accessToken,
+    required String lockId,
+    required List<Map<String, dynamic>> records,
+  }) async {
+    print('📤 Kilit kayıtları buluta yükleniyor: $lockId');
+    
+    final url = Uri.parse('$_baseUrl/v3/lockRecord/upload');
+    
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'lockId': lockId,
+      'records': json.encode(records),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+        throw Exception('Kayıtlar yüklenemedi: ${responseData['errmsg']}');
+      }
+      print('✅ Kayıtlar başarıyla yüklendi');
+    } else {
+      throw Exception('Kayıtlar yüklenemedi: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Delete lock records from cloud server
+  Future<void> deleteLockRecords({
+    required String accessToken,
+    required String lockId,
+    required List<int> recordIdList,
+  }) async {
+    print('🗑️ Kilit kayıtları siliniyor: $lockId, adet: ${recordIdList.length}');
+    
+    final url = Uri.parse('$_baseUrl/v3/lockRecord/delete');
+    
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'lockId': lockId,
+      'recordIdList': json.encode(recordIdList),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+        throw Exception('Kayıtlar silinemedi: ${responseData['errmsg']}');
+      }
+      print('✅ Kayıtlar başarıyla silindi');
+    } else {
+      throw Exception('Kayıtlar silinemedi: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Clear all lock records for a lock from cloud server
+  Future<void> clearLockRecords({
+    required String accessToken,
+    required String lockId,
+  }) async {
+    print('🧹 Tüm kilit kayıtları temizleniyor: $lockId');
+    
+    final url = Uri.parse('$_baseUrl/v3/lockRecord/clear');
+    
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': accessToken,
+      'lockId': lockId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+        throw Exception('Kayıtlar temizlenemedi: ${responseData['errmsg']}');
+      }
+      print('✅ Tüm kayıtlar başarıyla temizlendi');
+    } else {
+      throw Exception('Kayıtlar temizlenemedi: HTTP ${response.statusCode}');
     }
   }
 

@@ -45,7 +45,7 @@ class _LogsPageState extends State<LogsPage> {
         final data = await _apiService.getLockRecords(
           accessToken: accessToken,
           lockId: widget.lockId!,
-          pageSize: 50,
+          pageSize: 100, // Increased page size
         );
         print('✅ LogsPage: Received ${data.length} records');
         setState(() {
@@ -65,7 +65,7 @@ class _LogsPageState extends State<LogsPage> {
             final recs = await _apiService.getLockRecords(
               accessToken: accessToken,
               lockId: key['lockId'].toString(),
-              pageSize: 10,
+              pageSize: 20,
             );
             allRecords.addAll(recs);
           } catch (e) {
@@ -86,6 +86,59 @@ class _LogsPageState extends State<LogsPage> {
         _error = e.toString();
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _showClearConfirmation() async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Text('Kayıtları Temizle', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Tüm kilit kayıtlarını bulut sunucusundan silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz.',
+          style: TextStyle(color: Colors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Temizle', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      _clearRecords();
+    }
+  }
+
+  Future<void> _clearRecords() async {
+    setState(() => _isLoading = true);
+    try {
+      await _apiService.getAccessToken();
+      final accessToken = _apiService.accessToken;
+      if (accessToken == null) throw Exception('Erişim anahtarı alınamadı');
+
+      await _apiService.clearLockRecords(
+        accessToken: accessToken,
+        lockId: widget.lockId!,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tüm kayıtlar başarıyla temizlendi'), backgroundColor: Colors.green),
+      );
+      
+      _fetchRecords();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Temizleme hatası: $e'), backgroundColor: Colors.red),
+      );
+      setState(() => _isLoading = false);
     }
   }
 
@@ -137,6 +190,12 @@ class _LogsPageState extends State<LogsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
+          if (widget.lockId != null)
+            IconButton(
+              icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
+              onPressed: _showClearConfirmation,
+              tooltip: 'Tüm Kayıtları Temizle',
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _fetchRecords,
