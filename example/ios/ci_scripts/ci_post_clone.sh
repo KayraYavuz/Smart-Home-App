@@ -56,7 +56,13 @@ flutter pub get
 # iOS Pod'larını yükle
 echo "iOS klasörüne geçiliyor..."
 cd ios
+
+# Temiz kurulum yap (Eski hataları önlemek için)
+echo "Eski Pod dosyaları temizleniyor..."
+rm -rf Pods
+rm -rf Podfile.lock
+
 echo "Pod install çalıştırılıyor..."
-pod install
+pod install --repo-update
 
 echo "=== BİTİŞ: Başarıyla tamamlandı ==="
