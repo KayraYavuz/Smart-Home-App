@@ -3,21 +3,60 @@
 # Hata olursa durdur
 set -e
 
+echo "=== BAŞLANGIÇ: CI Post Clone Script ==="
+echo "Şu anki dizin: $(pwd)"
+echo "Workspace: $CI_WORKSPACE"
+
+# Dosya yapısını gör (Hata ayıklama için)
+echo "--- Dosya Listesi ---"
+ls -F "$CI_WORKSPACE"
+if [ -d "$CI_WORKSPACE/example" ]; then
+    echo "--- Example Klasörü İçeriği ---"
+    ls -F "$CI_WORKSPACE/example"
+fi
+
 # Flutter'ın kurulacağı yer
 FLUTTER_ROOT="$CI_WORKSPACE/flutter"
 
-# Flutter'ı indir (Stable sürüm)
-git clone https://github.com/flutter/flutter.git -b stable "$FLUTTER_ROOT"
+# Flutter zaten varsa tekrar indirme
+if [ ! -d "$FLUTTER_ROOT" ]; then
+    echo "Flutter indiriliyor..."
+    git clone https://github.com/flutter/flutter.git -b stable "$FLUTTER_ROOT"
+else
+    echo "Flutter zaten var."
+fi
 
-# Flutter'ı PATH'e ekle (Komut olarak çalışması için)
+# Flutter'ı PATH'e ekle
 export PATH="$FLUTTER_ROOT/bin:$PATH"
 
-# Flutter dosyalarını indir (pub get)
-cd "$CI_WORKSPACE/example"
+echo "Flutter versiyonu:"
+flutter --version
+
+# DOĞRU KLASÖRÜ BULMA
+# Projemiz 'example' içindeyse oraya gitmeliyiz.
+# Eğer root'taysa orada kalmalıyız.
+
+if [ -f "$CI_WORKSPACE/example/pubspec.yaml" ]; then
+    echo "Proje 'example' klasöründe bulundu. Oraya gidiliyor..."
+    cd "$CI_WORKSPACE/example"
+elif [ -f "$CI_WORKSPACE/pubspec.yaml" ]; then
+    echo "Proje ana dizinde bulundu."
+    cd "$CI_WORKSPACE"
+else
+    echo "HATA: pubspec.yaml bulunamadı! Neredeyiz?"
+    exit 1
+fi
+
+echo "Aktif dizin: $(pwd)"
+
+# Flutter paketlerini yükle
+echo "Flutter pub get çalıştırılıyor..."
 flutter pub get
 
-# iOS için gerekli dosyaları kur (Pod install)
+# iOS Pod'larını yükle
+echo "iOS klasörüne geçiliyor..."
 cd ios
+echo "Pod install çalıştırılıyor..."
 pod install
 
-echo "Flutter kurulumu ve hazırlığı tamamlandı!"
+echo "=== BİTİŞ: Başarıyla tamamlandı ==="
