@@ -13,7 +13,7 @@ git clone https://github.com/flutter/flutter.git -b stable "$FLUTTER_ROOT"
 export PATH="$FLUTTER_ROOT/bin:$PATH"
 
 # Flutter dosyalarını indir (pub get)
-cd "$CI_WORKSPACE"
+cd "$CI_WORKSPACE/example"
 flutter pub get
 
 # iOS için gerekli dosyaları kur (Pod install)
