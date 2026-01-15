@@ -1,53 +1,60 @@
 #!/bin/sh
 
-# Hata olursa durdur
+# Hata olursa durdur ve her komutu ekrana yaz (Debug modu)
 set -e
+set -x
 
-echo "=== BAŞLANGIÇ: CI Post Clone Script (Root Location) ==="
-echo "Şu anki dizin: $(pwd)"
-echo "Workspace: $CI_WORKSPACE"
+echo "=== BAŞLANGIÇ: CI Post Clone Script ==="
 
-# Dosya yapısını gör (Hata ayıklama için)
-echo "--- Dosya Listesi (Root) ---"
-ls -F "$CI_WORKSPACE"
+# Çalışma dizinini göster
+echo "Başlangıç Dizini: $(pwd)"
+ls -F
 
-# Flutter'ın kurulacağı yer
+# Flutter Kurulumu
 FLUTTER_ROOT="$CI_WORKSPACE/flutter"
 
-# Flutter zaten varsa tekrar indirme
-if [ ! -d "$FLUTTER_ROOT" ]; then
+if [ -d "$FLUTTER_ROOT" ]; then
+    echo "Flutter klasörü zaten var: $FLUTTER_ROOT"
+else
     echo "Flutter indiriliyor..."
     git clone https://github.com/flutter/flutter.git -b stable "$FLUTTER_ROOT"
-else
-    echo "Flutter zaten var."
 fi
 
-# Flutter'ı PATH'e ekle
 export PATH="$FLUTTER_ROOT/bin:$PATH"
 
-echo "Flutter versiyonu:"
-flutter --version
+echo "Flutter Doctor çalıştırılıyor..."
+flutter doctor -v
 
-# Proje 'example' klasörünün içinde
+# Proje Bağımlılıkları
 PROJECT_DIR="$CI_WORKSPACE/example"
 
-echo "Proje dizinine gidiliyor: $PROJECT_DIR"
-cd "$PROJECT_DIR"
+if [ ! -d "$PROJECT_DIR" ]; then
+    echo "HATA: Proje klasörü bulunamadı: $PROJECT_DIR"
+    exit 1
+fi
 
-# Flutter paketlerini yükle
-echo "Flutter pub get çalıştırılıyor..."
+cd "$PROJECT_DIR"
+echo "Proje dizinine geçildi: $(pwd)"
+
+echo "Flutter paketleri yükleniyor (flutter pub get)..."
 flutter pub get
 
-# iOS Pod'larını yükle
-echo "iOS klasörüne geçiliyor..."
+# iOS Pod Kurulumu
 cd ios
+echo "iOS dizinine geçildi: $(pwd)"
 
-# Temiz kurulum yap
-echo "Eski Pod dosyaları temizleniyor..."
-rm -rf Pods
-rm -rf Podfile.lock
+# Temizlik (Hata verirse görmezden gel - güvenli silme)
+rm -rf Pods || true
+rm -rf Podfile.lock || true
 
-echo "Pod install çalıştırılıyor..."
-pod install --repo-update
+echo "CocoaPods kuruluyor (pod install)..."
+# Repo update bazen çok uzun sürer ve hata verir, ilk denemede update yapmadan deneyelim.
+# Eğer başarısız olursa update ile deneriz.
+if pod install; then
+    echo "Pod install başarılı."
+else
+    echo "Pod install başarısız oldu, repo update ile tekrar deneniyor..."
+    pod install --repo-update
+fi
 
-echo "=== BİTİŞ: Başarıyla tamamlandı ==="
+echo "=== BİTİŞ: Script başarıyla tamamlandı ==="
