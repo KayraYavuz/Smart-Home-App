@@ -1230,6 +1230,185 @@ class ApiService {
     }
   }
 
+  // --- GROUP MANAGEMENT ---
+
+  /// Add a new group
+  Future<int> addGroup({
+    required String name,
+  }) async {
+    print('➕ Yeni grup ekleniyor: $name');
+    
+    await getAccessToken();
+    if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
+
+    final url = Uri.parse('$_baseUrl/v3/group/add');
+    
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'name': name,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('groupId')) {
+        final groupId = responseData['groupId'];
+        print('✅ Grup başarıyla oluşturuldu: $groupId');
+        if (groupId is int) return groupId;
+        if (groupId is String) return int.tryParse(groupId) ?? 0;
+        return 0;
+      }
+      throw Exception('Grup oluşturulamadı: ${responseData['errmsg']}');
+    } else {
+      throw Exception('Grup oluşturulamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Get the group list of an account
+  Future<List<Map<String, dynamic>>> getGroupList({
+    int orderBy = 1, // 0-by name, 1-reverse order by time, 2-reverse order by name
+  }) async {
+    print('📋 Grup listesi çekiliyor');
+    
+    await getAccessToken();
+    if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
+
+    final url = Uri.parse('$_baseUrl/v3/group/list').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'orderBy': orderBy.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['list'] != null) {
+        return (responseData['list'] as List).cast<Map<String, dynamic>>();
+      }
+      return [];
+    } else {
+      throw Exception('Grup listesi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Set the group of a lock
+  Future<void> setLockGroup({
+    required String lockId,
+    required String groupId,
+  }) async {
+    print('🔗 Kilit gruba atanıyor: Lock=$lockId -> Group=$groupId');
+    
+    await getAccessToken();
+    if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
+
+    final url = Uri.parse('$_baseUrl/v3/lock/setGroup');
+    
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'groupId': groupId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+        throw Exception('Grup ataması başarısız: ${responseData['errmsg']}');
+      }
+      print('✅ Kilit gruba atandı');
+    } else {
+      throw Exception('Grup ataması başarısız: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Delete a group
+  Future<void> deleteGroup({
+    required String groupId,
+  }) async {
+    print('🗑️ Grup siliniyor: $groupId');
+    
+    await getAccessToken();
+    if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
+
+    final url = Uri.parse('$_baseUrl/v3/group/delete');
+    
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'groupId': groupId,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+        throw Exception('Grup silinemedi: ${responseData['errmsg']}');
+      }
+      print('✅ Grup başarıyla silindi');
+    } else {
+      throw Exception('Grup silinemedi: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Rename a group
+  Future<void> updateGroup({
+    required String groupId,
+    required String newName,
+  }) async {
+    print('✏️ Grup güncelleniyor: $groupId -> $newName');
+    
+    await getAccessToken();
+    if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
+
+    final url = Uri.parse('$_baseUrl/v3/group/update');
+    
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'groupId': groupId,
+      'name': newName,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+        throw Exception('Grup güncellenemedi: ${responseData['errmsg']}');
+      }
+      print('✅ Grup başarıyla güncellendi');
+    } else {
+      throw Exception('Grup güncellenemedi: HTTP ${response.statusCode}');
+    }
+  }
+
   /// Get lock cards (RFID cards)
   Future<List<Map<String, dynamic>>> getLockCards({
     required String accessToken,

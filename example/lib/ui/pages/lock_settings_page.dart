@@ -74,6 +74,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                 subtitle: 'Sunucu ile senkronize et',
                 onTap: _updateBattery,
               ),
+              _buildSettingTile(
+                icon: Icons.folder,
+                title: 'Grup Ayarı',
+                subtitle: 'Grubu Yönet',
+                onTap: _showGroupSelection,
+              ),
 
               const SizedBox(height: 24),
               _buildSectionHeader('Kilitlenme Ayarları'),
@@ -203,6 +209,77 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
             },
             child: const Text('Kaydet'),
           ),
+        ],
+      ),
+    );
+  }
+
+  void _showGroupSelection() async {
+    final groups = await _apiService.getGroupList();
+    
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Grup Seç'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: groups.isEmpty
+              ? const Text('Hiç grup bulunamadı. Önce grup oluşturun.')
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: groups.length,
+                  itemBuilder: (context, index) {
+                    final group = groups[index];
+                    return ListTile(
+                      title: Text(group['name']),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        try {
+                          await _apiService.setLockGroup(
+                            lockId: widget.lock['lockId'].toString(),
+                            groupId: group['groupId'].toString(),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Kilit ${group['name']} grubuna atandı')),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Hata: $e')),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İptal'),
+          ),
+          if (groups.isNotEmpty)
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                // 0 sets to no group
+                try {
+                  await _apiService.setLockGroup(
+                    lockId: widget.lock['lockId'].toString(),
+                    groupId: "0",
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Grup ataması kaldırıldı')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Hata: $e')),
+                  );
+                }
+              },
+              child: const Text('Grubu Kaldır', style: TextStyle(color: Colors.red)),
+            ),
         ],
       ),
     );
