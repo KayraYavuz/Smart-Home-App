@@ -17,7 +17,23 @@ pluginManagement {
 }
 
 plugins {
-    id "dev.flutter.flutter-gradle-plugin" version "1.0.0" apply false
+    id "dev.flutter.flutter-gradle-plugin" apply false
+    id "com.android.application" version "8.2.1" apply false
+    id "com.google.gms.google-services" version "4.4.1" apply false
 }
 
 include ":app"
+
+import groovy.json.JsonSlurper
+
+def flutterProjectRoot = rootProject.projectDir.parentFile
+def pluginsFile = new File(flutterProjectRoot, '.flutter-plugins-dependencies')
+if (pluginsFile.exists()) {
+    def json = new JsonSlurper().parse(pluginsFile)
+    json.plugins.android.each { plugin ->
+        def name = plugin.name
+        def path = plugin.path
+        include ":$name"
+        project(":$name").projectDir = new File(path, 'android')
+    }
+}

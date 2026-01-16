@@ -1,25 +1,9 @@
-buildscript {
-    ext {
-
-        agp_version = '8.6.0'
-    }
-    repositories {
-        mavenCentral()
-        google()
-        jcenter()
-    }
-
-    dependencies {
-        classpath "com.android.tools.build:gradle:$agp_version"
-        classpath 'com.google.gms:google-services:4.4.1'
-    }
-}
-
 allprojects {
     repositories {
         mavenCentral()
         google()
         jcenter()
+        maven { url 'https://storage.googleapis.com/download.flutter.io' }
     }
 }
 

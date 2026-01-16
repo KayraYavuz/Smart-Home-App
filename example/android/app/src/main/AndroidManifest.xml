@@ -16,7 +16,7 @@
 
     <application
         android:label="Yavuz Lock"
-        tools:replace="android:label"
+        tools:replace="android:label,android:icon"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"

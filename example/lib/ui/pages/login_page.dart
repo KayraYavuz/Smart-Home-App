@@ -139,11 +139,11 @@ class _LoginPageState extends State<LoginPage> {
                               SizedBox(height: 40),
                               TextFormField(
                                 controller: _usernameController,
-                                decoration: _buildInputDecoration('TTLock E-posta'),
+                                decoration: _buildInputDecoration('TTLock E-posta veya Telefon'),
                                 keyboardType: TextInputType.emailAddress,
                                 style: TextStyle(color: Colors.white),
                                 validator: (value) =>
-                                    value!.isEmpty ? 'Lütfen TTLock e-posta adresinizi girin' : null,
+                                    value!.isEmpty ? 'Lütfen e-posta veya telefon numaranızı girin' : null,
                               ),
                               SizedBox(height: 20),
                               TextFormField(

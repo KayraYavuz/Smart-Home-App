@@ -3573,95 +3573,98 @@ class ApiService {
   }) async {
     final regions = ['https://euapi.ttlock.com', 'https://api.ttlock.com'];
     
-    for (var regionBaseUrl in regions) {
-      print('🔐 TTLock OAuth2 token isteği deneniyor ($regionBaseUrl)...');
-      
-      final url = Uri.parse('$regionBaseUrl/oauth2/token');
-      // Send both snake_case and camelCase for maximum compatibility
-      final bodyParams = <String, String>{
-        'client_id': ApiConfig.clientId, 
-        'clientId': ApiConfig.clientId,
-        'client_secret': ApiConfig.clientSecret, 
-        'clientSecret': ApiConfig.clientSecret,
-        'username': username.trim(),
-        'password': _generateMd5(password),
-        'grant_type': 'password',
-        'date': DateTime.now().millisecondsSinceEpoch.toString(), 
-      };
+    // Denenecek kullanıcı adı formatlarını belirle
+    Set<String> usernamesToTry = {};
+    String cleanInput = username.trim();
+    
+    // 1. Kullanıcının girdiği ham hali (boşluksuz) ekle
+    usernamesToTry.add(cleanInput);
 
-      print('📡 OAuth2 isteği gönderiliyor ($regionBaseUrl)...');
-      bodyParams.forEach((key, value) {
-        if (key != 'password' && key != 'client_secret' && key != 'clientSecret') {
-          print('   $key: $value');
-        }
-      });
+    // 2. Sadece rakamları ekle (örn: +49... -> 49...)
+    String digitsOnly = cleanInput.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.isNotEmpty) {
+      usernamesToTry.add(digitsOnly);
+    }
 
-      if (ApiConfig.redirectUri.isNotEmpty) {
-        bodyParams['redirect_uri'] = ApiConfig.redirectUri;
-      }
+    // 3. Başında + olan hali ekle (eğer kullanıcı zaten + girdiyse bu adım 1 ile aynı olur)
+    if (!cleanInput.startsWith('+') && digitsOnly.isNotEmpty) {
+       usernamesToTry.add('+$digitsOnly');
+    }
 
-      try {
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-          body: bodyParams,
-        ).timeout(const Duration(seconds: 15));
+    // 4. TR numarası tahminleri
+    if (digitsOnly.length == 10 && digitsOnly.startsWith('5')) {
+      usernamesToTry.add('90$digitsOnly'); // 532... -> 90532...
+      usernamesToTry.add('+90$digitsOnly'); // 532... -> +90532...
+    } else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
+      usernamesToTry.add('90${digitsOnly.substring(1)}'); // 0532... -> 90532...
+      usernamesToTry.add('+90${digitsOnly.substring(1)}'); 
+    }
 
-        if (response.statusCode == 200) {
-          final responseData = json.decode(response.body);
-          
-          if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-            final rawErrcode = responseData['errcode'];
-            final errcode = (rawErrcode is int) ? rawErrcode : (int.tryParse(rawErrcode.toString()) ?? -1);
+    print('👤 Giriş denenecek formatlar: $usernamesToTry');
+
+    // Her bir format için her bölgeyi dene
+    for (var userFormat in usernamesToTry) {
+      for (var regionBaseUrl in regions) {
+        print('🔐 Deneniyor: User="$userFormat", Region="$regionBaseUrl"');
+        
+        final url = Uri.parse('$regionBaseUrl/oauth2/token');
+        final bodyParams = <String, String>{
+          'client_id': ApiConfig.clientId, 
+          'clientId': ApiConfig.clientId,
+          'client_secret': ApiConfig.clientSecret, 
+          'clientSecret': ApiConfig.clientSecret,
+          'username': userFormat,
+          'password': _generateMd5(password),
+          'grant_type': 'password',
+          'date': DateTime.now().millisecondsSinceEpoch.toString(), 
+        };
+
+        try {
+          final response = await http.post(
+            url,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: bodyParams,
+          ).timeout(const Duration(seconds: 10));
+
+          if (response.statusCode == 200) {
+            final responseData = json.decode(response.body);
             
-            print('⚠️  API Hata Yanıtı: errcode=$errcode (${responseData['errmsg'] ?? 'Mesaj yok'})');
-            
-            // If it's an error and not the last region, try next region
-            // Region switch is usually for 10003 (Account not found) or 10005 (Password error in some regions)
-            if (regionBaseUrl != regions.last) {
-              print('⚠️  Bölge hatası veya hesap bulunamadı ($errcode), diğer bölge deneniyor...');
+            // Hata kontrolü
+            if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+              // Bu format/bölge kombinasyonu hatalı, sonrakine geç
+              print('⚠️  Başarısız: errcode=${responseData['errcode']}');
               continue; 
             }
             
-            final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-            throw Exception('API Error $errcode: $errorMsg');
-          }
-          
-          _accessToken = responseData['access_token'];
-          _refreshToken = responseData['refresh_token'];
-          
-          final expiresInValue = responseData['expires_in'];
-          int expiresIn = (expiresInValue is int) ? expiresInValue : (int.tryParse(expiresInValue?.toString() ?? '3600') ?? 3600);
-          _tokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
+            // Başarılı!
+            _accessToken = responseData['access_token'];
+            _refreshToken = responseData['refresh_token'];
+            
+            final expiresInValue = responseData['expires_in'];
+            int expiresIn = (expiresInValue is int) ? expiresInValue : (int.tryParse(expiresInValue?.toString() ?? '3600') ?? 3600);
+            _tokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
 
-          if (_accessToken != null && _refreshToken != null) {
-            _baseUrl = regionBaseUrl; // Store the working region
-            await _authRepository.saveTokens(
-              accessToken: _accessToken!,
-              refreshToken: _refreshToken!,
-              expiry: _tokenExpiry!,
-              baseUrl: _baseUrl,
-            );
-            print('✅ Token başarıyla alındı ($regionBaseUrl)');
-            return true;
+            if (_accessToken != null && _refreshToken != null) {
+              _baseUrl = regionBaseUrl;
+              await _authRepository.saveTokens(
+                accessToken: _accessToken!,
+                refreshToken: _refreshToken!,
+                expiry: _tokenExpiry!,
+                baseUrl: _baseUrl,
+              );
+              print('✅ Giriş BAŞARILI! (Format: $userFormat)');
+              return true;
+            }
           }
-        } else {
-          print('❌ HTTP ${response.statusCode} from $regionBaseUrl: ${response.body}');
-          print('   Response Headers: ${response.headers}');
-          if (regionBaseUrl == regions.last) {
-            String errorInfo = 'Bilinmeyen sunucu hatası (HTTP ${response.statusCode})';
-            try {
-              final data = json.decode(response.body);
-              errorInfo = data['errmsg'] ?? data['error_description'] ?? data['error'] ?? response.body;
-            } catch (_) {}
-            throw Exception('Giriş başarısız ($regionBaseUrl): $errorInfo');
-          }
+        } catch (e) {
+          print('⚠️  Hata: $e');
+          // Ağ hatası vb. durumlarda diğerlerini denemeye devam et
         }
-      } catch (e) {
-        print('⚠️  $regionBaseUrl denemesinde hata: $e');
-        if (regionBaseUrl == regions.last) rethrow;
       }
     }
+    
+    // Hiçbiri tutmadıysa
+    print('❌ Tüm format ve bölgeler denendi, giriş başarısız.');
     return false;
   }
 
