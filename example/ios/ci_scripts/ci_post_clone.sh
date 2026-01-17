@@ -1,20 +1,17 @@
 #!/bin/sh
 
-# Hata olursa dur, ne yaptığını loglara yaz
+# Hata olursa dur ve logları göster
 set -e
 set -x
 
-# 1. Dil Ayarları (CocoaPods hatasını önler)
+# 1. Dil Ayarları
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# 2. Klasör Yollarını Otomatik Bul (EN ÖNEMLİ KISIM)
-# Scriptin nerede olduğunu buluyoruz:
+# 2. Klasör Yollarını Otomatik Bul
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-# Script "ios/ci_scripts" içinde olduğu için bir üst klasör "ios" klasörüdür:
 IOS_DIR=$(dirname "$SCRIPT_DIR")
-# "ios" klasörünün bir üstü de "Flutter Proje Ana Klasörü"dür:
 PROJECT_ROOT=$(dirname "$IOS_DIR")
 
 echo "📍 Script Konumu: $SCRIPT_DIR"
@@ -32,14 +29,17 @@ echo "⬇️ Flutter indiriliyor..."
 git clone https://github.com/flutter/flutter.git --depth 1 -b stable $HOME/flutter
 export PATH="$PATH:$HOME/flutter/bin"
 
-# 5. Flutter Bağımlılıklarını Yükle (Proje ana klasörüne gidip)
-echo "⚙️ Flutter pub get çalıştırılıyor..."
+# 5. Flutter Hazırlığı (DÜZELTME BURADA YAPILDI)
+echo "⚙️ Flutter iOS dosyaları hazırlanıyor..."
 cd "$PROJECT_ROOT"
+flutter precache --ios  # <--- EKSİK OLAN KOMUT BUYDU
 flutter pub get
 
-# 6. iOS Pod'larını Yükle (iOS klasörüne gidip)
+# 6. iOS Pod'larını Yükle
 echo "📦 Pod install çalıştırılıyor..."
 cd "$IOS_DIR"
+# Podfile.lock varsa silip temiz kurulum yapmak bazen daha sağlıklıdır
+# rm -f Podfile.lock 
 pod install --repo-update
 
 echo "✅ Script başarıyla tamamlandı!"
