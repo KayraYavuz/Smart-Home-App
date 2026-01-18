@@ -18,16 +18,20 @@ echo "📍 Script Konumu: $SCRIPT_DIR"
 echo "📍 iOS Klasörü: $IOS_DIR"
 echo "📍 Proje Ana Klasörü: $PROJECT_ROOT"
 
-# --- KRİTİK DÜZELTME: SANDBOXING AYARINI KAPAT ---
-# Xcode Cloud sunucusunda, proje dosyasındaki ayarı bulup 'NO' olarak değiştiriyoruz.
-# Böylece manuel ayar yapmana gerek kalmıyor.
+# --- ADIM 1: GOOGLE SERVICE DOSYASINI OLUŞTUR ---
+# Eğer Environment Variable tanımlıysa dosyayı oluştur
+if [ -n "$GOOGLE_SERVICE_INFO_PLIST" ]; then
+    echo "🔑 GoogleService-Info.plist oluşturuluyor..."
+    echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > "$IOS_DIR/Runner/GoogleService-Info.plist"
+    echo "✅ Dosya başarıyla oluşturuldu."
+else
+    echo "⚠️ UYARI: GOOGLE_SERVICE_INFO_PLIST değişkeni bulunamadı!"
+    echo "Build muhtemelen 65 hatasıyla başarısız olacak."
+fi
+
+# --- ADIM 2: SANDBOXING AYARINI KAPAT ---
 echo "🛡️ User Script Sandboxing ayarı kapatılıyor..."
 sed -i '' 's/ENABLE_USER_SCRIPT_SANDBOXING = YES/ENABLE_USER_SCRIPT_SANDBOXING = NO/g' "$IOS_DIR/Runner.xcodeproj/project.pbxproj" || true
-# Eğer ayar dosyada yoksa ekleyelim (Garanti olsun)
-if ! grep -q "ENABLE_USER_SCRIPT_SANDBOXING" "$IOS_DIR/Runner.xcodeproj/project.pbxproj"; then
-    echo "⚠️ Ayar bulunamadı, manuel ekleme deneniyor..."
-    # Bu kısım biraz risklidir ama genelde üstteki sed komutu yeterlidir.
-fi
 
 # 3. CocoaPods Kontrolü
 if ! command -v pod &> /dev/null; then

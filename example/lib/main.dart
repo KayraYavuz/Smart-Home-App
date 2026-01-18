@@ -24,9 +24,29 @@ import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/locale_provider.dart';
 import 'package:yavuz_lock/config.dart' as app_config;
+import 'package:firebase_core/firebase_core.dart'; // Firebase Import
+import 'package:yavuz_lock/services/notification_service.dart'; // Bildirim Servisi
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  print("🏁 Main fonksiyonu başladı."); // DEBUG LOG
+
+  // Firebase Başlatma
+  try {
+    print("🔥 Firebase.initializeApp() çağrılıyor..."); // DEBUG LOG
+    await Firebase.initializeApp();
+    print("✅ Firebase başarıyla başlatıldı");
+    
+    // Bildirim Servisini Başlat
+    print("🚀 NotificationService başlatılıyor..."); // DEBUG LOG
+    await NotificationService().initialize();
+  } catch (e, stackTrace) {
+    print("❌ Firebase/Notification başlatma hatası: $e");
+    print("Stack Trace: $stackTrace");
+    // Hata olsa bile uygulama açılmalı, bu yüzden burayı sessizce geçebiliriz veya loglayabiliriz
+  }
+
   await dotenv.load(fileName: ".env");
   
   print('🚀 Uygulama başlatılıyor...');
