@@ -13,7 +13,7 @@ echo "📍 iOS Konumu: $IOS_DIR"
 echo "📍 Proje Kökü: $PROJECT_ROOT"
 
 # 2. GoogleService-Info.plist Oluşturma
-TARGET_PATH="$IOS_DIR/Runner/GoogleService-Info.plist"
+TARGET_PATH="$IOS_DIR/GoogleService-Info.plist"
 
 if [ -n "$GOOGLE_SERVICE_INFO_PLIST" ]; then
     echo "🔑 GoogleService-Info.plist yazılıyor..."
