@@ -3,46 +3,54 @@ set -e
 
 echo "⚙️ Script Başlıyor..."
 
-# 1. Scriptin kendi bulunduğu klasörü bul (Örn: .../ios/ci_scripts)
+# 1. Klasör yollarını dinamik olarak bul
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+IOS_DIR="$SCRIPT_DIR/.."
+PROJECT_ROOT="$SCRIPT_DIR/../.."
 
-# 2. Hedef dosya yolunu scriptin konumuna göre ayarla
-# (ci_scripts klasöründen bir yukarı çık (..) -> Runner klasörüne gir)
-TARGET_PATH="$SCRIPT_DIR/../Runner/GoogleService-Info.plist"
+echo "📍 Script Konumu: $SCRIPT_DIR"
+echo "📍 iOS Konumu: $IOS_DIR"
 
-echo "📍 Hedef Yol Belirlendi: $TARGET_PATH"
+# 2. GoogleService-Info.plist Oluşturma
+TARGET_PATH="$IOS_DIR/Runner/GoogleService-Info.plist"
 
-# 3. Dosyayı oluştur
 if [ -n "$GOOGLE_SERVICE_INFO_PLIST" ]; then
     echo "🔑 GoogleService-Info.plist yazılıyor..."
     echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > "$TARGET_PATH"
     echo "✅ Dosya başarıyla oluşturuldu!"
 else
-    echo "❌ HATA: GOOGLE_SERVICE_INFO_PLIST bulunamadı, ancak script devam edecek."
+    echo "❌ HATA: GOOGLE_SERVICE_INFO_PLIST bulunamadı (Environment Variable kontrol edin)."
 fi
 
-# 4. Sandboxing Ayarını Kapat (Garanti olsun)
-# Proje dosyası da scriptin 2 üstünde veya 1 üstünde olabilir, garanti yöntem:
-find "$SCRIPT_DIR/.." -name "project.pbxproj" -print0 | xargs -0 sed -i '' 's/ENABLE_USER_SCRIPT_SANDBOXING = YES/ENABLE_USER_SCRIPT_SANDBOXING = NO/g'
-echo "🛡️ Sandboxing kapatıldı."
+# 3. Sandboxing Ayarını Kapat
+echo "🛡️ Sandboxing kapatılıyor..."
+find "$IOS_DIR" -name "project.pbxproj" -print0 | xargs -0 sed -i '' 's/ENABLE_USER_SCRIPT_SANDBOXING = YES/ENABLE_USER_SCRIPT_SANDBOXING = NO/g'
 
-# 5. Pod Install İşlemleri
-echo "📦 Pod install hazırlanıyor..."
-# ios klasörüne geç (scriptin bir üstü)
-cd "$SCRIPT_DIR/.."
+# 4. Flutter Kurulumu ve Hazırlığı
+echo "📦 Flutter ortamı hazırlanıyor..."
 
-# Flutter ve Pod kurulumu
-if command -v flutter &> /dev/null; then
-    flutter pub get
-else
-    # Eğer flutter path'de yoksa, garanti olması için git clone yapalım
+# Eğer Flutter yoksa indir
+if ! command -v flutter &> /dev/null; then
+    echo "⬇️ Flutter indiriliyor..."
     git clone https://github.com/flutter/flutter.git --depth 1 -b stable $HOME/flutter
     export PATH="$PATH:$HOME/flutter/bin"
-    cd "$CI_PRIMARY_REPOSITORY_PATH" # Ana dizine dön
-    flutter pub get
-    cd "$SCRIPT_DIR/.." # Tekrar ios klasörüne dön
 fi
 
+# --- KRİTİK DÜZELTME BURADA ---
+echo "⬇️ iOS Engine dosyaları indiriliyor (Precache)..."
+flutter precache --ios
+# ------------------------------
+
+# 5. Paketleri Yükle
+echo "📦 Flutter paketleri yükleniyor..."
+# Proje ana dizinine (pubspec.yaml olduğu yere) git
+cd "$PROJECT_ROOT"
+flutter pub get
+
+# 6. CocoaPods Kurulumu
+echo "📦 Pod install çalıştırılıyor..."
+# iOS klasörüne (Podfile olduğu yere) git
+cd "$IOS_DIR"
 pod install --repo-update
 
-echo "✅ Tüm işlemler tamamlandı!"
+echo "✅ Tüm işlemler başarıyla tamamlandı!"
