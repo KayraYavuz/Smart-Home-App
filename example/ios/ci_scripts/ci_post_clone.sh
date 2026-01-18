@@ -1,58 +1,46 @@
 #!/bin/sh
-
-# Hata olursa dur ve logları göster
 set -e
-set -x
 
-# 1. Dil Ayarları
-export LANG=en_US.UTF-8
-export LANGUAGE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+echo "🔍 --- XCODE CLOUD DIAGNOSTIC START ---"
 
-# 2. Klasör Yollarını Otomatik Bul
-SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-IOS_DIR=$(dirname "$SCRIPT_DIR")
-PROJECT_ROOT=$(dirname "$IOS_DIR")
-
-echo "📍 Script Konumu: $SCRIPT_DIR"
-echo "📍 iOS Klasörü: $IOS_DIR"
-echo "📍 Proje Ana Klasörü: $PROJECT_ROOT"
-
-# --- ADIM 1: GOOGLE SERVICE DOSYASINI OLUŞTUR ---
-# Eğer Environment Variable tanımlıysa dosyayı oluştur
-if [ -n "$GOOGLE_SERVICE_INFO_PLIST" ]; then
-    echo "🔑 GoogleService-Info.plist oluşturuluyor..."
-    echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > "$IOS_DIR/Runner/GoogleService-Info.plist"
-    echo "✅ Dosya başarıyla oluşturuldu."
+# 1. Ortamda değişken var mı kontrol et
+if env | grep -q "^GOOGLE_SERVICE_INFO_PLIST="; then
+    echo "✅ Değişken sistemde TANIMLI."
 else
-    echo "⚠️ UYARI: GOOGLE_SERVICE_INFO_PLIST değişkeni bulunamadı!"
-    echo "Build muhtemelen 65 hatasıyla başarısız olacak."
+    echo "❌ HATA: GOOGLE_SERVICE_INFO_PLIST sistemde HİÇ YOK. (Environment Variable ayarlarına bak)"
 fi
 
-# --- ADIM 2: SANDBOXING AYARINI KAPAT ---
-echo "🛡️ User Script Sandboxing ayarı kapatılıyor..."
-sed -i '' 's/ENABLE_USER_SCRIPT_SANDBOXING = YES/ENABLE_USER_SCRIPT_SANDBOXING = NO/g' "$IOS_DIR/Runner.xcodeproj/project.pbxproj" || true
-
-# 3. CocoaPods Kontrolü
-if ! command -v pod &> /dev/null; then
-    echo "CocoaPods yükleniyor..."
-    gem install cocoapods
+# 2. Değişkenin içi dolu mu?
+if [ -z "$GOOGLE_SERVICE_INFO_PLIST" ]; then
+    echo "❌ HATA: Değişken tanımlı ama İÇİ BOŞ!"
+else
+    # Karakter sayısını yazdır (Güvenlik için içeriği yazdırmıyoruz)
+    echo "✅ Değişken dolu. Karakter Uzunluğu: ${#GOOGLE_SERVICE_INFO_PLIST}"
+    
+    # Base64 geçerlilik testi
+    echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "✅ Base64 formatı GEÇERLİ."
+        
+        # Dosyayı oluşturmayı dene
+        echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > $CI_PRIMARY_REPOSITORY_PATH/ios/Runner/GoogleService-Info.plist
+        echo "✅ GoogleService-Info.plist başarıyla oluşturuldu."
+    else
+        echo "❌ HATA: Base64 formatı BOZUK! (Kopyalarken eksik alınmış olabilir)"
+    fi
 fi
 
-# 4. Flutter Kurulumu
-echo "⬇️ Flutter indiriliyor..."
-git clone https://github.com/flutter/flutter.git --depth 1 -b stable $HOME/flutter
-export PATH="$PATH:$HOME/flutter/bin"
+echo "🔍 --- DIAGNOSTIC END ---"
 
-# 5. Flutter Hazırlığı
-echo "⚙️ Flutter iOS dosyaları hazırlanıyor..."
-cd "$PROJECT_ROOT"
-flutter precache --ios
-flutter pub get
+# --- Standart İşlemler Devam Ediyor ---
 
-# 6. iOS Pod'larını Yükle
-echo "📦 Pod install çalıştırılıyor..."
-cd "$IOS_DIR"
+# Sandboxing ayarını kapat (Hata 65'in diğer sebebi)
+echo "🛡️ User Script Sandboxing kapatılıyor..."
+sed -i '' 's/ENABLE_USER_SCRIPT_SANDBOXING = YES/ENABLE_USER_SCRIPT_SANDBOXING = NO/g' $CI_PRIMARY_REPOSITORY_PATH/ios/Runner.xcodeproj/project.pbxproj || true
+
+# CocoaPods kurulumu
+echo "📦 Pod install başlıyor..."
+cd $CI_PRIMARY_REPOSITORY_PATH/ios
 pod install --repo-update
 
-echo "✅ Script başarıyla tamamlandı!"
+echo "✅ Script tamamlandı."
