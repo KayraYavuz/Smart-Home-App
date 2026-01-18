@@ -78,15 +78,28 @@ class _ProfilePageState extends State<ProfilePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          _username,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                _username,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.white54, size: 16),
+                              onPressed: _editUsername,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ],
                         ),
                         Text(
                           _email,
@@ -377,6 +390,45 @@ class _ProfilePageState extends State<ProfilePage> {
       );
       
       // Manuel navigasyon kaldırıldı. Main.dart içindeki BlocBuilder durumu dinleyip sayfayı değiştirecek.
+    }
+  }
+
+  Future<void> _editUsername() async {
+    final TextEditingController controller = TextEditingController(text: _username);
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Text('İsmi Düzenle', style: TextStyle(color: Colors.white)),
+        content: TextField(
+          controller: controller,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            hintText: 'Yeni isim girin',
+            hintStyle: TextStyle(color: Colors.grey),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: const Text('Kaydet', style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      ),
+    );
+
+    if (newName != null && newName.isNotEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('saved_username', newName);
+      setState(() {
+        _username = newName;
+      });
     }
   }
 }

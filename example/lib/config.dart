@@ -16,7 +16,7 @@ class ApiConfig {
 class TTLockConfig {
   // TTLock Webhook Callback URL (kendi sunucunuzun URL'i)
   // Bu URL, TTLock'un olay bildirimlerini göndereceği endpoint
-  static const String webhookCallbackUrl = "https://europe-west3-fenster-berlin-callback.cloudfunctions.net/ttlock-callback";
+  static const String webhookCallbackUrl = "https://ttlockcallback-ehrryn22fa-uc.a.run.app";
 
   // TTLock Webhook Secret (callback doğrulaması için)
   static const String webhookSecret = "your_webhook_secret"; // TTLock portal'dan alın

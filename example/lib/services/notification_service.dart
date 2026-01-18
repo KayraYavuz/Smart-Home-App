@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-// Arka planda gelen mesajları işleyen fonksiyon (Main fonksiyonunun dışında olmalı)
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -22,84 +21,100 @@ class NotificationService {
   bool _isInitialized = false;
 
   Future<void> initialize() async {
-    print("🚀 NotificationService initialize() başladı..."); // DEBUG LOG
+    print("🚀 NotificationService: initialize() başladı...");
     if (_isInitialized) {
-      print("⚠️ NotificationService zaten başlatılmış."); // DEBUG LOG
+      print("⚠️ NotificationService: Zaten başlatılmış.");
       return;
     }
 
     try {
+      // 0. Otomatik Başlatmayı Aç
+      await _firebaseMessaging.setAutoInitEnabled(true);
+
       // 1. İzin İste
-      print("🔔 İzin isteniyor..."); // DEBUG LOG
-      await _requestPermission();
+      NotificationSettings settings = await _firebaseMessaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        provisional: false,
+      );
+      print('🔔 İzin Durumu: ${settings.authorizationStatus}');
 
-      // 2. Arka Plan İşleyicisini Ayarla
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-      print("🌙 Arka plan işleyicisi ayarlandı."); // DEBUG LOG
-
-      // 3. Yerel Bildirimleri (Foreground için) Ayarla
-      await _setupLocalNotifications();
-      print("🔔 Yerel bildirimler ayarlandı."); // DEBUG LOG
-
-      // 4. Token Al (APNs Token Bekleme Eklendi)
-      print("🔥 Token alınıyor... APNs Token bekleniyor..."); // DEBUG LOG
-      
-      // APNs Token'ın gelmesi için kısa bir süre bekle (iOS için kritik)
-      String? apnsToken = await _firebaseMessaging.getAPNSToken();
-      if (apnsToken == null) {
-        print("⏳ APNs Token henüz yok, 3 saniye bekleniyor...");
-        await Future.delayed(const Duration(seconds: 3));
-        apnsToken = await _firebaseMessaging.getAPNSToken();
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        print('✅ Kullanıcı bildirim izni verdi.');
+      } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+        print('⚠️ Kullanıcı geçici izin verdi.');
+      } else {
+        print('❌ Kullanıcı izin vermedi.');
+        return; // İzin yoksa devam etme
       }
 
-      print("🍏 APNs Token: $apnsToken");
+      // 2. Arka Plan İşleyicisi
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-      final token = await _firebaseMessaging.getToken();
+      // 3. Yerel Bildirim Ayarları (Foreground için)
+      await _setupLocalNotifications();
+
+      // 4. Token Alma (Retry Mekanizmalı)
+      String? token;
+      
+      // Önce APNs Token'ı bekle (iOS için zorunlu)
+      print("⏳ APNs Token bekleniyor...");
+      String? apnsToken = await _firebaseMessaging.getAPNSToken();
+      int retry = 0;
+      while (apnsToken == null && retry < 5) {
+        await Future.delayed(const Duration(seconds: 2));
+        apnsToken = await _firebaseMessaging.getAPNSToken();
+        retry++;
+        print("⏳ APNs Token tekrar deneniyor ($retry/5)...");
+      }
+
+      if (apnsToken != null) {
+        print("🍏 APNs Token alındı: $apnsToken");
+        // APNs geldiyse FCM Token'ı al
+        token = await _firebaseMessaging.getToken();
+      } else {
+        print("❌ HATA: APNs Token 10 saniye boyunca alınamadı! (Xcode'da Push Capability ekli mi?)");
+      }
       
       if (token != null) {
-         print("\n\n**************************************************");
-         print("🔥 FCM Token: $token");
-         print("**************************************************\n\n");
+        print("\n🔥 FCM Token: $token\n");
       } else {
-         print("❌ FCM Token hala NULL döndü!");
+        print("❌ FCM Token alınamadı.");
       }
 
-      // 5. Ön Planda (Foreground) Mesaj Dinleme
+      // 5. Foreground Dinleme
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print("☀️ Ön Planda Bildirim Geldi: ${message.notification?.title}");
+        print("☀️ ÖN PLANDA MESAJ GELDİ!");
+        print("☀️ Başlık: ${message.notification?.title}");
+        print("☀️ Body: ${message.notification?.body}");
+        print("☀️ Data: ${message.data}");
         _showLocalNotification(message);
       });
 
-      // 6. Uygulama Bildirime Tıklanarak Açıldığında
+      // 6. Tıklama Dinleme
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        print("👆 Bildirime tıklandı: ${message.data}");
-        // Burada ilgili sayfaya yönlendirme yapabilirsiniz
+        print("👆 Bildirime tıklandı.");
       });
 
       _isInitialized = true;
-      print("✅ NotificationService başarıyla tamamlandı."); // DEBUG LOG
+      print("✅ NotificationService kurulumu tamamlandı.");
 
     } catch (e) {
-      print("❌ NotificationService hatası: $e");
+      print("❌ NotificationService Hatası: $e");
     }
-  }
-
-  Future<void> _requestPermission() async {
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
-    );
-    print('🔔 Bildirim İzni Durumu: ${settings.authorizationStatus}');
   }
 
   Future<void> _setupLocalNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher'); // App icon
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     final DarwinInitializationSettings initializationSettingsDarwin =
-        DarwinInitializationSettings();
+        DarwinInitializationSettings(
+      requestSoundPermission: false,
+      requestBadgePermission: false,
+      requestAlertPermission: false,
+    );
 
     final InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
@@ -108,35 +123,52 @@ class NotificationService {
 
     await _localNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (details) {
-        // Yerel bildirime tıklandığında yapılacaklar
-      },
+      onDidReceiveNotificationResponse: (details) {},
+    );
+    
+    // Android Kanalı Oluştur (Önemli)
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'high_importance_channel',
+      'Acil Bildirimler',
+      description: 'Kapı kilit olayları',
+      importance: Importance.max,
+    );
+    
+    await _localNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+        
+    // iOS için Foreground sunum seçenekleri
+    await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+      alert: true, 
+      badge: true,
+      sound: true,
     );
   }
 
   Future<void> _showLocalNotification(RemoteMessage message) async {
-    // Sadece bildirim içeriği varsa göster
-    if (message.notification == null) return;
+    RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
 
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'high_importance_channel', // id
-      'Acil Bildirimler', // title
-      channelDescription: 'Kapı kilit olayları için bildirimler',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-    );
-
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await _localNotificationsPlugin.show(
-      message.hashCode,
-      message.notification!.title,
-      message.notification!.body,
-      platformChannelSpecifics,
-      payload: jsonEncode(message.data),
-    );
+    if (notification != null) {
+      await _localNotificationsPlugin.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            'high_importance_channel',
+            'Acil Bildirimler',
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+        payload: jsonEncode(message.data),
+      );
+    }
   }
 }

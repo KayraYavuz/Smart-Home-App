@@ -7,7 +7,7 @@ import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_event.dart';
 import 'package:yavuz_lock/blocs/login/login_state.dart';
-import 'package:yavuz_lock/register_page.dart';
+import 'package:url_launcher/url_launcher.dart'; // Yönlendirme için eklendi
 
 class LoginPage extends StatefulWidget {
   @override
@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                               Icon(Icons.lock, color: Color(0xFF1E90FF), size: 80),
                               SizedBox(height: 20),
                               Text(
-                                'TTLock\'a Hoş Geldiniz',
+                                'Yavuz Lock\'a Hoş Geldiniz',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                               SizedBox(height: 40),
                               TextFormField(
                                 controller: _usernameController,
-                                decoration: _buildInputDecoration('TTLock E-posta veya Telefon'),
+                                decoration: _buildInputDecoration('E-posta veya Telefon'),
                                 keyboardType: TextInputType.emailAddress,
                                 style: TextStyle(color: Colors.white),
                                 validator: (value) =>
@@ -149,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextFormField(
                                 controller: _passwordController,
                                 decoration: _buildInputDecoration(
-                                  'TTLock Şifre',
+                                  'Şifre',
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -181,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                                     activeColor: Color(0xFF1E90FF),
                                   ),
                                   Text(
-                                    'TTLock Bilgilerimi Hatırla',
+                                    'Bilgilerimi Hatırla',
                                     style: TextStyle(color: Colors.white70, fontSize: 14),
                                   ),
                                 ],
@@ -212,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                                     }
                                   },
                                   child: Text(
-                                    'TTLock ile Giriş Yap',
+                                    'Giriş Yap',
                                     style: TextStyle(fontSize: 16, color: Colors.white),
                                   ),
                                 ),
@@ -241,16 +241,17 @@ class _LoginPageState extends State<LoginPage> {
                               ],
                               SizedBox(height: 20),
                               TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => RegisterPage(),
-                                    ),
-                                  );
+                                onPressed: () async {
+                                  // TTLock Kayıt Sayfasına Yönlendirme
+                                  final Uri url = Uri.parse('https://lock-admin.ttlock.com/user/reg');
+                                  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Bağlantı açılamadı: $url')),
+                                    );
+                                  }
                                 },
                                 child: Text(
-                                  'TTLock Hesabınız Yok Mu?',
+                                  'Hesabınız Yok Mu? Kayıt Olun',
                                   style: TextStyle(color: Color(0xFF1E90FF)),
                                 ),
                               ),

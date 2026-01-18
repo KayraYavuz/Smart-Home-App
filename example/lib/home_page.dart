@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bmprogresshud/progresshud.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'ui/pages/lock_detail_page.dart';
 import 'ui/pages/add_device_page.dart';
 import 'ui/pages/gateways_page.dart';
@@ -315,6 +316,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 _locks = allLocks;
                 _isLoading = false;
               });
+
+              // Bildirimler için kilit konularına (topic) abone ol
+              _subscribeToLockTopics(allLocks);
 
               print('✅ Toplam ${allLocks.length} TTLock cihazı yüklendi');
               print('  - ${ttlockDevices.length} TTLock kendi kilidi');
@@ -968,6 +972,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (battery >= 50) return Colors.green;
     if (battery >= 20) return Colors.orange;
     return Colors.red;
+  }
+
+  // Her kilit için FCM topic aboneliği yap
+  void _subscribeToLockTopics(List<Map<String, dynamic>> locks) {
+    for (var lock in locks) {
+      final lockId = lock['lockId']?.toString();
+      if (lockId != null && lockId.isNotEmpty) {
+        FirebaseMessaging.instance.subscribeToTopic('lock_$lockId');
+        print('🔔 Subscribed to topic: lock_$lockId');
+      }
+    }
   }
 
   // Unused debug method removed
