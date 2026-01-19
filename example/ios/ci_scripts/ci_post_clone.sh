@@ -16,6 +16,9 @@ if [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" ]; then
     echo "✅ GoogleService-Info.plist başarıyla oluşturuldu."
 else
     echo "⚠️ UYARI: GOOGLE_SERVICE_INFO_PLIST_CONTENT değişkeni bulunamadı. GoogleService-Info.plist oluşturulamadı."
+    echo "⚠️ Build hatasını önlemek için boş bir GoogleService-Info.plist oluşturuluyor."
+    # Geçerli bir XML yapısı oluştur ki Xcode hata vermesin
+    echo '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict></dict></plist>' > ../GoogleService-Info.plist
 fi
 
 if [ -n "$ENV_FILE_CONTENT" ]; then
