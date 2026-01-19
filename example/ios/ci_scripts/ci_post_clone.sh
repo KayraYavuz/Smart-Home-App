@@ -9,21 +9,28 @@ echo "=== BAŞLANGIÇ: CI Post Clone Script ==="
 # 1. GoogleService-Info.plist ve .env dosyalarını oluştur
 # Bu kısım ios/ci_scripts dizininde çalıştığı için yollar buna göre ayarlandı.
 
-if [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" ]; then
-    echo "GoogleService-Info.plist dosyası oluşturuluyor..."
-    # ios/ dizinine yazar
+# GoogleService-Info.plist
+if [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" ]; then
+    echo "GoogleService-Info.plist (Base64) decode ediliyor..."
+    echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" | base64 --decode > ../GoogleService-Info.plist
+    echo "✅ GoogleService-Info.plist başarıyla oluşturuldu."
+elif [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" ]; then
+    echo "GoogleService-Info.plist (Düz Metin) dosyası oluşturuluyor..."
     echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" > ../GoogleService-Info.plist
     echo "✅ GoogleService-Info.plist başarıyla oluşturuldu."
 else
     echo "⚠️ UYARI: GOOGLE_SERVICE_INFO_PLIST_CONTENT değişkeni bulunamadı. GoogleService-Info.plist oluşturulamadı."
     echo "⚠️ Build hatasını önlemek için boş bir GoogleService-Info.plist oluşturuluyor."
-    # Geçerli bir XML yapısı oluştur ki Xcode hata vermesin
     echo '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict></dict></plist>' > ../GoogleService-Info.plist
 fi
 
-if [ -n "$ENV_FILE_CONTENT" ]; then
-    echo ".env dosyası oluşturuluyor..."
-    # example/ (proje kök) dizinine yazar
+# .env
+if [ -n "$ENV_FILE_CONTENT_BASE64" ]; then
+    echo ".env (Base64) decode ediliyor..."
+    echo "$ENV_FILE_CONTENT_BASE64" | base64 --decode > ../../.env
+    echo "✅ .env başarıyla oluşturuldu."
+elif [ -n "$ENV_FILE_CONTENT" ]; then
+    echo ".env (Düz Metin) dosyası oluşturuluyor..."
     echo "$ENV_FILE_CONTENT" > ../../.env
     echo "✅ .env başarıyla oluşturuldu."
 else
