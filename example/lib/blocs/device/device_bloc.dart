@@ -26,6 +26,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
         lockData: lockData,
         lockMac: lockMac,
         lockId: lockId,
+        onlyBluetooth: event.onlyBluetooth,
       );
 
       if (result.success) {
@@ -53,6 +54,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
         lockData: lockData,
         lockMac: lockMac,
         lockId: lockId,
+        onlyBluetooth: event.onlyBluetooth,
       );
 
       if (result.success) {

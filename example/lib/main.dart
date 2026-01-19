@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:ttlock_flutter/ttlock.dart'; // TTLock SDK import
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -22,7 +23,7 @@ import 'package:yavuz_lock/ui/pages/login_page.dart';
 import 'package:yavuz_lock/ui/pages/splash_page.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
-import 'package:yavuz_lock/locale_provider.dart';
+import 'package:yavuz_lock/providers/language_provider.dart';
 import 'package:yavuz_lock/config.dart' as app_config;
 import 'package:firebase_core/firebase_core.dart'; // Firebase Import
 import 'package:yavuz_lock/services/notification_service.dart'; // Bildirim Servisi
@@ -57,7 +58,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => LocaleProvider()),
+        ChangeNotifierProvider(create: (context) => LanguageProvider()),
         RepositoryProvider.value(value: authRepository),
         RepositoryProvider(create: (context) => ApiService(authRepository)),
         RepositoryProvider(create: (context) => TTLockRepository(apiService: context.read<ApiService>())),
@@ -95,9 +96,12 @@ class _MyAppState extends State<MyApp> {
     context.read<AuthBloc>().add(AppStarted());
   }
 
-  void _initializeTTLockSDK() {
+  void _initializeTTLockSDK() async {
      if (Platform.isIOS || Platform.isAndroid) {
       try {
+        // Request permissions first
+        await _requestPermissions();
+
         // 1. SDK Yapılandırması
         TTLock.setupApp(app_config.ApiConfig.clientId, app_config.ApiConfig.clientSecret);
         
@@ -115,6 +119,21 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> _requestPermissions() async {
+    if (Platform.isAndroid) {
+        await [
+          Permission.bluetoothScan,
+          Permission.bluetoothConnect,
+          Permission.location,
+        ].request();
+    } else if (Platform.isIOS) {
+        await [
+          Permission.bluetooth,
+          Permission.location,
+        ].request();
+    }
+  }
+
   @override
   void dispose() {
     TTLockWebhookService().stopListening();
@@ -123,20 +142,17 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<LocaleProvider>(context);
+    final languageProvider = Provider.of<LanguageProvider>(context);
 
     return MaterialApp(
-      locale: provider.locale,
+      locale: languageProvider.locale,
       localizationsDelegates: [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      supportedLocales: [
-        const Locale('en', ''), // English
-        const Locale('de', ''), // German
-      ],
+      supportedLocales: LanguageProvider.supportedLocales,
       theme: AppTheme.darkTheme,
       home: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {

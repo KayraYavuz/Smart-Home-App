@@ -8,7 +8,6 @@ import 'package:yavuz_lock/logs_page.dart';
 import 'package:yavuz_lock/ui/pages/lock_settings_page.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/ui/pages/share_lock_dialog.dart';
-import 'package:yavuz_lock/ui/pages/gateway_management_dialog.dart';
 import 'package:yavuz_lock/ui/pages/ekey_detail_page.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
@@ -18,6 +17,7 @@ import 'package:yavuz_lock/config.dart';
 import 'package:yavuz_lock/passcode_page.dart';
 import 'package:yavuz_lock/card_page.dart';
 import 'package:yavuz_lock/face_page.dart';
+import 'package:yavuz_lock/ui/pages/feature_pages.dart';
 
 class LockDetailPage extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -264,9 +264,9 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                         child: GestureDetector(
                           onTap: () {
                             if (isLocked) {
-                              context.read<DeviceBloc>().add(UnlockDevice(widget.lock));
+                              context.read<DeviceBloc>().add(UnlockDevice(widget.lock, onlyBluetooth: true));
                             } else {
-                              context.read<DeviceBloc>().add(LockDevice(widget.lock));
+                              context.read<DeviceBloc>().add(LockDevice(widget.lock, onlyBluetooth: true));
                             }
                           },
                           child: Container(
@@ -293,7 +293,8 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                               builder: (context, child) {
                                 return Container(
                                   transform: Matrix4.identity()..scale(
-                                    (_isLoadingConnectivity || state is DeviceLoading) ? _pulseAnimation.value : 1.0
+                                    (_isLoadingConnectivity || state is DeviceLoading) ? _pulseAnimation.value : 1.0,
+                                    (_isLoadingConnectivity || state is DeviceLoading) ? _pulseAnimation.value : 1.0,
                                   ),
                                   transformAlignment: Alignment.center,
                                   decoration: BoxDecoration(
@@ -333,6 +334,51 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                           ),
                         ),
                       ),
+
+                      const SizedBox(height: 10),
+                      
+                      // Küçük Kilit Butonu (Uzaktan Erişim)
+                      Center(
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0xFF1E1E1E), // Dark background
+                                border: Border.all(
+                                  color: Colors.blue.withValues(alpha: 0.6),
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blue.withValues(alpha: 0.2),
+                                    blurRadius: 10,
+                                    spreadRadius: 2,
+                                  ),
+                                ],
+                              ),
+                              child: IconButton(
+                                onPressed: () => _remoteUnlock(context),
+                                icon: const Icon(Icons.wifi_tethering, color: Colors.blue, size: 28),
+                                tooltip: 'Uzaktan Aç',
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Uzaktan Erişim',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 20),
 
                       // Alt kısım - Grid menü
                       Container(
@@ -382,6 +428,24 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                             ),
                             _buildGridMenuItem(
                               context,
+                              icon: Icons.keyboard_alt,
+                              label: 'Kablosuz\nTuş Takımı',
+                              onTap: () => _showWirelessKeypad(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.sensor_door,
+                              label: 'Kapı\nSensörü',
+                              onTap: () => _showDoorSensor(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.qr_code,
+                              label: 'QR\nKod',
+                              onTap: () => _showQrCode(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
                               icon: Icons.history,
                               label: 'Kayıtlar',
                               onTap: () => _showRecords(context),
@@ -404,37 +468,6 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
                       const SizedBox(height: 20),
                     ],
-                  ),
-                ),
-
-                // Büyük kilit butonunun hemen sağ altında Gateway/Remote Unlock butonu
-                Positioned(
-                  left: MediaQuery.of(context).size.width / 2 + 80, // Kilit butonunun sağ tarafı
-                  top: MediaQuery.of(context).size.height * 0.25, // Adjusted position
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue.withValues(alpha: 0.95),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.4),
-                        width: 2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.blue.withValues(alpha: 0.5),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      onPressed: () => _remoteUnlock(context),
-                      icon: const Icon(Icons.wifi_tethering, color: Colors.white, size: 24),
-                      tooltip: 'Uzaktan Aç (TTLock API)',
-                      padding: EdgeInsets.zero,
-                    ),
                   ),
                 ),
               ],
@@ -498,58 +531,16 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
         throw Exception('No access token available');
       }
 
-      // Gateway listesini kontrol et
-      final gateways = await apiService.getGatewayList();
-
-      if (gateways.isEmpty) {
-        if (!mounted) return;
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor: const Color(0xFF1E1E1E),
-            title: const Text('Gateway Gerekli', style: TextStyle(color: Colors.white)),
-            content: const Text(
-              'Bu kilidi uzaktan açmak için Gateway cihazı gerekli.\n\nÖnce resmi TTLock uygulaması ile kilide bağlanıp "Uzaktan Açma" özelliğini etkinleştirin.',
-              style: TextStyle(color: Colors.grey),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Tamam', style: TextStyle(color: Colors.blue)),
-              ),
-            ],
-          ),
-        );
-        return;
-      }
+      // Gateway listesini kontrol et (Opsiyonel: Kullanıcıyı bilgilendirmek için, ama engellemek için değil)
+      // final gateways = await apiService.getGatewayList();
 
       // Connectivity kontrolü
-      final isConnected = await apiService.checkDeviceConnectivity(
-        accessToken: accessToken,
-        lockId: widget.lock['lockId'].toString(),
-      );
+      // final isConnected = await apiService.checkDeviceConnectivity(
+      //   accessToken: accessToken,
+      //   lockId: widget.lock['lockId'].toString(),
+      // );
 
-      if (!isConnected) {
-        if (!mounted) return;
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            backgroundColor: const Color(0xFF1E1E1E),
-            title: const Text('Bağlantı Hatası', style: TextStyle(color: Colors.white)),
-            content: const Text(
-              'Kilit çevrimiçi değil. Uzaktan açma için Gateway\'in aktif olması gerekir.',
-              style: TextStyle(color: Colors.grey),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Tamam', style: TextStyle(color: Colors.orange)),
-              ),
-            ],
-          ),
-        );
-        return;
-      }
+      // if (!isConnected) { ... } // Bu kontrolü de esnetebiliriz, belki kilit Wi-Fi kilididir.
 
       // TTLock API ile uzaktan açma komutunu gönder
       print('🚀 TTLock /v3/lock/unlock API çağrısı başlatılıyor...');
@@ -579,9 +570,18 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
     } catch (e) {
       if (!mounted) return;
+      
+      // Hata mesajını ayrıştır
+      String errorMessage = 'Uzaktan kontrol hatası';
+      if (e.toString().contains('Gateway') || e.toString().contains('gateway')) {
+         errorMessage = 'Gateway veya Wi-Fi bağlantısı kurulamadı. Lütfen Gateway cihazınızı kontrol edin.';
+      } else {
+         errorMessage = 'Hata: $e';
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Uzaktan kontrol hatası: $e'),
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
         ),
       );
@@ -748,9 +748,38 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
   }
 
   void _showRemoteControl(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const GatewayManagementDialog(),
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => RemoteListPage(lockId: int.parse(widget.lock['lockId'].toString())),
+        ),
+    );
+  }
+
+  void _showWirelessKeypad(BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => WirelessKeypadPage(lockId: int.parse(widget.lock['lockId'].toString())),
+        ),
+    );
+  }
+
+  void _showDoorSensor(BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DoorSensorPage(lockId: int.parse(widget.lock['lockId'].toString())),
+        ),
+    );
+  }
+
+  void _showQrCode(BuildContext context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => QrCodePage(lockId: int.parse(widget.lock['lockId'].toString())),
+        ),
     );
   }
 

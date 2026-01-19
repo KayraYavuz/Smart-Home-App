@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_tr.dart';
 
 // ignore_for_file: type=lint
 
@@ -95,26 +96,129 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('de'),
-    Locale('en')
+    Locale('en'),
+    Locale('tr')
   ];
 
-  /// No description provided for @profile.
+  /// The title of the application
+  ///
+  /// In en, this message translates to:
+  /// **'Yavuz Lock'**
+  String get appTitle;
+
+  /// Settings menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// Option to change the app language
+  ///
+  /// In en, this message translates to:
+  /// **'Change Language'**
+  String get changeLanguage;
+
+  /// Button to unlock the door
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Door'**
+  String get unlockDoor;
+
+  /// Button to lock the door
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Door'**
+  String get lockDoor;
+
+  /// Home navigation item
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// Devices section
+  ///
+  /// In en, this message translates to:
+  /// **'Devices'**
+  String get devices;
+
+  /// My locks section title
+  ///
+  /// In en, this message translates to:
+  /// **'My Locks'**
+  String get myLocks;
+
+  /// Add device button
+  ///
+  /// In en, this message translates to:
+  /// **'Add Device'**
+  String get addDevice;
+
+  /// Profile section
   ///
   /// In en, this message translates to:
   /// **'Profile'**
   String get profile;
 
-  /// No description provided for @systemManagement.
+  /// Logout button
   ///
   /// In en, this message translates to:
-  /// **'System Management'**
-  String get systemManagement;
+  /// **'Logout'**
+  String get logout;
 
-  /// No description provided for @settings.
+  /// Language setting label
   ///
   /// In en, this message translates to:
-  /// **'Settings'**
-  String get settings;
+  /// **'Language'**
+  String get language;
+
+  /// English language option
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// German language option
+  ///
+  /// In en, this message translates to:
+  /// **'German'**
+  String get german;
+
+  /// Turkish language option
+  ///
+  /// In en, this message translates to:
+  /// **'Turkish'**
+  String get turkish;
+
+  /// Dialog title for language selection
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get selectLanguage;
+
+  /// Cancel button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Save button
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// Online status
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
+
+  /// Offline status
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offline;
 }
 
 class _AppLocalizationsDelegate
@@ -128,7 +232,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['de', 'en'].contains(locale.languageCode);
+      <String>['de', 'en', 'tr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -141,6 +245,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsDe();
     case 'en':
       return AppLocalizationsEn();
+    case 'tr':
+      return AppLocalizationsTr();
   }
 
   throw FlutterError(

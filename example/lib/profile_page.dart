@@ -148,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const AccountInfoPage()),
-                      );
+                      ).then((_) => _loadUserInfo());
                     },
                   ),
                   const SizedBox(height: 8),

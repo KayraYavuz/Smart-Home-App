@@ -1,6 +1,83 @@
 {
-    "@@locale": "en",
-    "profile": "Profile",
-    "systemManagement": "System Management",
-    "settings": "Settings"
+  "@@locale": "en",
+  "appTitle": "Yavuz Lock",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings menu item"
+  },
+  "changeLanguage": "Change Language",
+  "@changeLanguage": {
+    "description": "Option to change the app language"
+  },
+  "unlockDoor": "Unlock Door",
+  "@unlockDoor": {
+    "description": "Button to unlock the door"
+  },
+  "lockDoor": "Lock Door",
+  "@lockDoor": {
+    "description": "Button to lock the door"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home navigation item"
+  },
+  "devices": "Devices",
+  "@devices": {
+    "description": "Devices section"
+  },
+  "myLocks": "My Locks",
+  "@myLocks": {
+    "description": "My locks section title"
+  },
+  "addDevice": "Add Device",
+  "@addDevice": {
+    "description": "Add device button"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile section"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language setting label"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "german": "German",
+  "@german": {
+    "description": "German language option"
+  },
+  "turkish": "Turkish",
+  "@turkish": {
+    "description": "Turkish language option"
+  },
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Dialog title for language selection"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button"
+  },
+  "online": "Online",
+  "@online": {
+    "description": "Online status"
+  },
+  "offline": "Offline",
+  "@offline": {
+    "description": "Offline status"
+  }
 }

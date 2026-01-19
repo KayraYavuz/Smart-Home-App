@@ -1,0 +1,23 @@
+{
+  "@@locale": "tr",
+  "appTitle": "Yavuz Kilit",
+  "settings": "Ayarlar",
+  "changeLanguage": "Dil Değiştir",
+  "unlockDoor": "Kapıyı Aç",
+  "lockDoor": "Kapıyı Kilitle",
+  "home": "Ana Sayfa",
+  "devices": "Cihazlar",
+  "myLocks": "Kilitelerim",
+  "addDevice": "Cihaz Ekle",
+  "profile": "Profil",
+  "logout": "Çıkış Yap",
+  "language": "Dil",
+  "english": "İngilizce",
+  "german": "Almanca",
+  "turkish": "Türkçe",
+  "selectLanguage": "Dil Seçin",
+  "cancel": "İptal",
+  "save": "Kaydet",
+  "online": "Çevrimiçi",
+  "offline": "Çevrimdışı"
+}

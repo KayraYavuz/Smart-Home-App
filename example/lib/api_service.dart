@@ -5395,6 +5395,1185 @@ class ApiService {
     print('✅ Kablosuz tuş takımı güncelleme başarıyla bildirildi');
   }
 
+  // --- REMOTE MANAGEMENT ---
+
+  /// Upload the remote's info to the cloud server
+  Future<Map<String, dynamic>> addRemote({
+    required int lockId,
+    required String number,
+    required String mac,
+    required int electricQuantity,
+    required Map<String, dynamic> firmwareInfo,
+    String? name,
+    int? startDate,
+    int? endDate,
+    int? type, // 1-normal, 4-recurring
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) async {
+    print('🎮 Kumanda buluta ekleniyor: $number');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/remote/add');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'number': number,
+      'mac': mac,
+      'electricQuantity': electricQuantity.toString(),
+      'firmwareInfo': jsonEncode(firmwareInfo),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (name != null) body['name'] = name;
+    if (startDate != null) body['startDate'] = startDate.toString();
+    if (endDate != null) body['endDate'] = endDate.toString();
+    if (type != null) body['type'] = type.toString();
+    if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData.containsKey('remoteId')) {
+      print('✅ Kumanda başarıyla eklendi: ${responseData['remoteId']}');
+      return responseData;
+    } else {
+      print('❌ Kumanda ekleme hatası: ${responseData['errmsg']}');
+      throw Exception('Kumanda eklenemedi: ${responseData['errmsg']}');
+    }
+  }
+
+  /// List all remotes added to a lock
+  Future<Map<String, dynamic>> getRemoteList({
+    required int lockId,
+    int pageNo = 1,
+    int pageSize = 20,
+    int orderBy = 1, // 0-by name, 1-reverse order by time, 2-reverse order by name
+  }) async {
+    print('📋 Kumanda listesi çekiliyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/remote/listByLock').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'pageNo': pageNo.toString(),
+      'pageSize': pageSize.toString(),
+      'orderBy': orderBy.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        throw Exception('Kumanda listesi alınamadı: ${responseData['errmsg']}');
+      }
+      return responseData;
+    } else {
+      throw Exception('Kumanda listesi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Delete a remote from the cloud server
+  Future<void> deleteRemote({
+    required int remoteId,
+  }) async {
+    print('🗑️ Kumanda siliniyor: $remoteId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/remote/delete');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'remoteId': remoteId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Kumanda silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Kumanda silindi');
+  }
+
+  /// Clear all remotes of a lock
+  Future<void> clearRemotes({
+    required int lockId,
+  }) async {
+    print('🗑️ Tüm kumandalar siliniyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/remote/clear');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Tüm kumandalar silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Tüm kumandalar silindi');
+  }
+
+  /// Update the name or valid time period of a remote
+  Future<void> updateRemote({
+    required int remoteId,
+    String? name,
+    int? startDate,
+    int? endDate,
+    List<Map<String, dynamic>>? cyclicConfig,
+    int changeType = 1, // 1-via phone bluetooth, 2-via gateway/WiFi
+  }) async {
+    print('✏️ Kumanda güncelleniyor: $remoteId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/remote/update');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'remoteId': remoteId.toString(),
+      'changeType': changeType.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (name != null) body['name'] = name;
+    if (startDate != null) body['startDate'] = startDate.toString();
+    if (endDate != null) body['endDate'] = endDate.toString();
+    if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Kumanda güncellenemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Kumanda güncellendi');
+  }
+
+  /// Check firmware upgrade for remote
+  Future<Map<String, dynamic>> checkRemoteUpgrade({
+    required int remoteId,
+    String? modelNum,
+    String? hardwareRevision,
+    String? firmwareRevision,
+  }) async {
+    print('🔄 Kumanda güncellemeleri kontrol ediliyor: $remoteId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/remote/upgradeCheck');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'remoteId': remoteId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (modelNum != null) body['modelNum'] = modelNum;
+    if (hardwareRevision != null) body['hardwareRevision'] = hardwareRevision;
+    if (firmwareRevision != null) body['firmwareRevision'] = firmwareRevision;
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    
+    if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+       throw Exception('Kumanda güncelleme kontrolü başarısız: ${responseData['errmsg']}');
+    }
+
+    return responseData;
+  }
+
+  /// Report successful remote upgrade
+  Future<void> setRemoteUpgradeSuccess({
+    required int remoteId,
+    int? slotNumber,
+    int? featureValue,
+  }) async {
+    print('✅ Kumanda güncelleme başarısı bildiriliyor: $remoteId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/remote/upgradeSuccess');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'remoteId': remoteId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (slotNumber != null) body['slotNumber'] = slotNumber.toString();
+    if (featureValue != null) body['featureValue'] = featureValue.toString();
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Kumanda güncelleme bildirimi başarısız: ${responseData['errmsg']}');
+    }
+    print('✅ Kumanda güncelleme başarıyla bildirildi');
+  }
+
+  // --- DOOR SENSOR MANAGEMENT ---
+
+  /// Upload the door sensor's info to the cloud server
+  Future<Map<String, dynamic>> addDoorSensor({
+    required int lockId,
+    required String number,
+    required String mac,
+    required int electricQuantity,
+    required Map<String, dynamic> firmwareInfo,
+    String? name,
+  }) async {
+    print('🚪 Kapı sensörü buluta ekleniyor: $number');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/doorSensor/add');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'number': number,
+      'mac': mac,
+      'electricQuantity': electricQuantity.toString(),
+      'firmwareInfo': jsonEncode(firmwareInfo),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (name != null) body['name'] = name;
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData.containsKey('doorSensorId')) {
+      print('✅ Kapı sensörü başarıyla eklendi: ${responseData['doorSensorId']}');
+      return responseData;
+    } else {
+      print('❌ Kapı sensörü ekleme hatası: ${responseData['errmsg']}');
+      throw Exception('Kapı sensörü eklenemedi: ${responseData['errmsg']}');
+    }
+  }
+
+  /// Query the door sensor of a lock
+  Future<Map<String, dynamic>> queryDoorSensor({
+    required int lockId,
+  }) async {
+    print('🔍 Kapı sensörü sorgulanıyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/doorSensor/query');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    
+    // API returns the object directly or error
+    if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+       // If no sensor is found, it might return a specific error or empty. 
+       // Documentation implies it returns sensor or error.
+       throw Exception('Kapı sensörü sorgulanamadı: ${responseData['errmsg']}');
+    }
+
+    return responseData;
+  }
+
+  /// Delete a door sensor from the cloud server
+  Future<void> deleteDoorSensor({
+    required int doorSensorId,
+  }) async {
+    print('🗑️ Kapı sensörü siliniyor: $doorSensorId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/doorSensor/delete');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'doorSensorId': doorSensorId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Kapı sensörü silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Kapı sensörü silindi');
+  }
+
+  /// Rename door sensor
+  Future<void> renameDoorSensor({
+    required int doorSensorId,
+    String? name,
+  }) async {
+    print('✏️ Kapı sensörü yeniden adlandırılıyor: $doorSensorId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/doorSensor/update');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'doorSensorId': doorSensorId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (name != null) body['name'] = name;
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Kapı sensörü yeniden adlandırılamadı: ${responseData['errmsg']}');
+    }
+    print('✅ Kapı sensörü yeniden adlandırıldı');
+  }
+
+  /// Check firmware upgrade for door sensor
+  Future<Map<String, dynamic>> checkDoorSensorUpgrade({
+    required int doorSensorId,
+    String? modelNum,
+    String? hardwareRevision,
+    String? firmwareRevision,
+  }) async {
+    print('🔄 Kapı sensörü güncellemeleri kontrol ediliyor: $doorSensorId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/doorSensor/upgradeCheck');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'doorSensorId': doorSensorId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (modelNum != null) body['modelNum'] = modelNum;
+    if (hardwareRevision != null) body['hardwareRevision'] = hardwareRevision;
+    if (firmwareRevision != null) body['firmwareRevision'] = firmwareRevision;
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    
+    if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+       throw Exception('Kapı sensörü güncelleme kontrolü başarısız: ${responseData['errmsg']}');
+    }
+
+    return responseData;
+  }
+
+  /// Report successful door sensor upgrade
+  Future<void> setDoorSensorUpgradeSuccess({
+    required int doorSensorId,
+  }) async {
+    print('✅ Kapı sensörü güncelleme başarısı bildiriliyor: $doorSensorId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/doorSensor/upgradeSuccess');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'doorSensorId': doorSensorId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Kapı sensörü güncelleme bildirimi başarısız: ${responseData['errmsg']}');
+    }
+    print('✅ Kapı sensörü güncelleme başarıyla bildirildi');
+  }
+
+  // --- NB-IoT LOCK MANAGEMENT ---
+
+  /// Register NB-IoT Device to NB-IoT Cloud Server
+  Future<void> registerNbLock({
+    required int lockId,
+    required String nbNodeId,
+    required String nbCardNumber,
+    required String nbOperator,
+    required int nbRssi,
+  }) async {
+    print('📡 NB-IoT kilit kaydediliyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/lock/registerNb');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'nbNodeId': nbNodeId,
+      'nbCardNumber': nbCardNumber,
+      'nbOperator': nbOperator,
+      'nbRssi': nbRssi.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('NB-IoT kilit kaydı başarısız: ${responseData['errmsg']}');
+    }
+    print('✅ NB-IoT kilit kaydedildi');
+  }
+
+  /// Get NB-IoT Lock Device Info
+  Future<Map<String, dynamic>> getNbLockDeviceInfo({
+    required int lockId,
+  }) async {
+    print('ℹ️ NB-IoT cihaz bilgisi alınıyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/lock/getNbDeviceInfo').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        throw Exception('NB-IoT cihaz bilgisi alınamadı: ${responseData['errmsg']}');
+      }
+      return responseData;
+    } else {
+      throw Exception('NB-IoT cihaz bilgisi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Get NB-IoT Cloud Server Info (IP and Port)
+  Future<List<dynamic>> getNbPlatformIpAndPort() async {
+    print('🌐 NB-IoT sunucu bilgileri alınıyor...');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/lock/getNbPlatformIpAndPort').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+         throw Exception('NB-IoT sunucu bilgileri alınamadı: ${responseData['errmsg']}');
+      }
+      
+      if (responseData['list'] != null) {
+        return responseData['list'];
+      }
+      return [];
+    } else {
+      throw Exception('NB-IoT sunucu bilgileri alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  // --- QR CODE MANAGEMENT ---
+
+  /// Add QR code
+  Future<Map<String, dynamic>> addQrCode({
+    required int lockId,
+    required int type, // 1-period, 2-permanent, 4-cyclic
+    String? name,
+    int? startDate,
+    int? endDate,
+    List<Map<String, dynamic>>? cyclicConfig,
+    int addType = 0, // 0-Cloud, 1-APP Bluetooth, 2-Gateway/WiFi
+    String? qrCodeNumber,
+  }) async {
+    print('🔳 QR kod oluşturuluyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/qrCode/add');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'type': type.toString(),
+      'addType': addType.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (name != null) body['name'] = name;
+    if (startDate != null) body['startDate'] = startDate.toString();
+    if (endDate != null) body['endDate'] = endDate.toString();
+    if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
+    if (qrCodeNumber != null) body['qrCodeNumber'] = qrCodeNumber;
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData.containsKey('qrCodeId')) {
+      print('✅ QR kod başarıyla oluşturuldu: ${responseData['qrCodeId']}');
+      return responseData;
+    } else {
+      print('❌ QR kod oluşturma hatası: ${responseData['errmsg']}');
+      throw Exception('QR kod oluşturulamadı: ${responseData['errmsg']}');
+    }
+  }
+
+  /// List QR code of a lock
+  Future<Map<String, dynamic>> getQrCodeList({
+    required int lockId,
+    int pageNo = 1,
+    int pageSize = 20,
+    String? name,
+  }) async {
+    print('📋 QR kod listesi çekiliyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/qrCode/list').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'pageNo': pageNo.toString(),
+      'pageSize': pageSize.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      if (name != null) 'name': name,
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        throw Exception('QR kod listesi alınamadı: ${responseData['errmsg']}');
+      }
+      return responseData;
+    } else {
+      throw Exception('QR kod listesi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Get Data of Qr Code
+  Future<Map<String, dynamic>> getQrCodeData({
+    required int qrCodeId,
+  }) async {
+    print('ℹ️ QR kod verisi alınıyor: $qrCodeId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/qrCode/getData').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'qrCodeId': qrCodeId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+       // API might return standard error format or direct object. 
+       // If no error, it returns object with qrCodeContent
+       // Checking for errcode just in case it's in the response structure for errors
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        throw Exception('QR kod verisi alınamadı: ${responseData['errmsg']}');
+      }
+      return responseData;
+    } else {
+       throw Exception('QR kod verisi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Update QR code
+  Future<void> updateQrCode({
+    required int qrCodeId,
+    required int type, // 1-Time-limited, 2-Permanent, 4-Recurring
+    required int changeType, // 0-Cloud, 1-APP Bluetooth, 2-Gateway/WiFi
+    String? name,
+    int? startDate,
+    int? endDate,
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) async {
+    print('✏️ QR kod güncelleniyor: $qrCodeId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/qrCode/update');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'qrCodeId': qrCodeId.toString(),
+      'type': type.toString(),
+      'changeType': changeType.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (name != null) body['name'] = name;
+    if (startDate != null) body['startDate'] = startDate.toString();
+    if (endDate != null) body['endDate'] = endDate.toString();
+    if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('QR kod güncellenemedi: ${responseData['errmsg']}');
+    }
+    print('✅ QR kod güncellendi');
+  }
+
+  /// Delete QR code
+  Future<void> deleteQrCode({
+    required int lockId,
+    required int qrCodeId,
+    int deleteType = 0, // 0-Cloud, 1-APP Bluetooth, 2-Gateway/WiFi
+  }) async {
+    print('🗑️ QR kod siliniyor: $qrCodeId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/qrCode/delete');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'qrCodeId': qrCodeId.toString(),
+      'deleteType': deleteType.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('QR kod silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ QR kod silindi');
+  }
+
+  /// Clear QR code (delete all)
+  Future<void> clearQrCodes({
+    required int lockId,
+    int type = 0, // 0-Cloud, 1-APP Bluetooth, 2-Gateway
+  }) async {
+    print('🗑️ Tüm QR kodlar siliniyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/qrCode/clear');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'type': type.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Tüm QR kodlar silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Tüm QR kodlar silindi');
+  }
+
+  // --- WI-FI LOCK MANAGEMENT ---
+
+  /// Update the network info of a Wifi lock
+  Future<void> updateWifiLockNetwork({
+    required int lockId,
+    String? networkName,
+    String? wifiMac,
+    int? rssi,
+    bool? useStaticIp,
+    String? ip,
+    String? subnetMask,
+    String? defaultGateway,
+    String? preferredDns,
+    String? alternateDns,
+  }) async {
+    print('📶 Wi-Fi ağ bilgisi güncelleniyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/wifiLock/updateNetwork');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (networkName != null) body['networkName'] = networkName;
+    if (wifiMac != null) body['wifiMac'] = wifiMac;
+    if (rssi != null) body['rssi'] = rssi.toString();
+    if (useStaticIp != null) body['useStaticIp'] = useStaticIp.toString();
+    if (ip != null) body['ip'] = ip;
+    if (subnetMask != null) body['subnetMask'] = subnetMask;
+    if (defaultGateway != null) body['defaultGateway'] = defaultGateway;
+    if (preferredDns != null) body['preferredDns'] = preferredDns;
+    if (alternateDns != null) body['alternateDns'] = alternateDns;
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Wi-Fi ağ bilgisi güncellenemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Wi-Fi ağ bilgisi güncellendi');
+  }
+
+  /// Get the detailed info of a Wifi lock
+  Future<Map<String, dynamic>> getWifiLockDetail({
+    required int lockId,
+  }) async {
+    print('ℹ️ Wi-Fi kilit detayları alınıyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/wifiLock/detail');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+      throw Exception('Wi-Fi kilit detayları alınamadı: ${responseData['errmsg']}');
+    }
+
+    return responseData;
+  }
+
+  // --- PALM VEIN MANAGEMENT ---
+
+  /// Get Palm vein list of a lock
+  Future<Map<String, dynamic>> getPalmVeinList({
+    required int lockId,
+    int pageNo = 1,
+    int pageSize = 20,
+    String? searchStr,
+  }) async {
+    print('✋ Palm Vein listesi çekiliyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/palmVein/list');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'pageNo': pageNo.toString(),
+      'pageSize': pageSize.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (searchStr != null) body['searchStr'] = searchStr;
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData.containsKey('list')) {
+      return responseData;
+    } else {
+       // Check for error code if list is missing
+       if(responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+          throw Exception('Palm Vein listesi alınamadı: ${responseData['errmsg']}');
+       }
+       // If no list and no error, return empty format or handle as error depending on API behavior.
+       // Assuming standard success structure will contain list.
+       return responseData;
+    }
+  }
+
+  /// Add A Palm Vein
+  Future<Map<String, dynamic>> addPalmVein({
+    required int lockId,
+    required String number,
+    required int startDate,
+    required int endDate,
+    String? name,
+    int type = 1, // 1-Normal, 4-Recurring
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) async {
+    print('✋ Palm Vein ekleniyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/palmVein/add');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'number': number,
+      'startDate': startDate.toString(),
+      'endDate': endDate.toString(),
+      'type': type.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (name != null) body['name'] = name;
+    if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData.containsKey('id')) {
+      print('✅ Palm Vein başarıyla eklendi: ${responseData['id']}');
+      return responseData;
+    } else {
+      throw Exception('Palm Vein eklenemedi: ${responseData['errmsg']}');
+    }
+  }
+
+  /// Rename Palm Vein
+  Future<void> renamePalmVein({
+    required int palmVeinId,
+    String? name,
+  }) async {
+    print('✏️ Palm Vein yeniden adlandırılıyor: $palmVeinId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/palmVein/rename');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'id': palmVeinId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (name != null) body['name'] = name;
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Palm Vein yeniden adlandırılamadı: ${responseData['errmsg']}');
+    }
+    print('✅ Palm Vein yeniden adlandırıldı');
+  }
+
+  /// Change the period of a palm vein
+  Future<void> changePalmVeinPeriod({
+    required int palmVeinId,
+    required int startDate,
+    required int endDate,
+    int? type, // 1-APP, 2-remote, 4-WiFi
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) async {
+    print('⏳ Palm Vein süresi güncelleniyor: $palmVeinId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/palmVein/changePeriod');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'id': palmVeinId.toString(),
+      'startDate': startDate.toString(),
+      'endDate': endDate.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (type != null) body['type'] = type.toString();
+    if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Palm Vein süresi güncellenemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Palm Vein süresi güncellendi');
+  }
+
+  /// Delete Palm Vein
+  Future<void> deletePalmVein({
+    required int palmVeinId,
+    int? type, // 1-APP, 2-remote, 4-WiFi
+  }) async {
+    print('🗑️ Palm Vein siliniyor: $palmVeinId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/palmVein/delete');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'id': palmVeinId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+    
+    if (type != null) body['type'] = type.toString();
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Palm Vein silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Palm Vein silindi');
+  }
+
+  /// Clear Palm Vein
+  Future<void> clearPalmVein({
+    required int lockId,
+  }) async {
+    print('🗑️ Tüm Palm Vein verileri siliniyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/palmVein/clear');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Tüm Palm Vein verileri silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Tüm Palm Vein verileri silindi');
+  }
+
   // TTLock event type parser (yerel fonksiyon)
   static TTLockWebhookEventType _parseTTLockEventTypeLocal(String eventType) {
     switch (eventType) {

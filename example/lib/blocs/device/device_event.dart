@@ -9,18 +9,20 @@ abstract class DeviceEvent extends Equatable {
 
 class UnlockDevice extends DeviceEvent {
   final Map<String, dynamic> lock;
+  final bool onlyBluetooth;
 
-  const UnlockDevice(this.lock);
+  const UnlockDevice(this.lock, {this.onlyBluetooth = false});
 
   @override
-  List<Object> get props => [lock];
+  List<Object> get props => [lock, onlyBluetooth];
 }
 
 class LockDevice extends DeviceEvent {
     final Map<String, dynamic> lock;
+    final bool onlyBluetooth;
 
-  const LockDevice(this.lock);
+  const LockDevice(this.lock, {this.onlyBluetooth = false});
 
   @override
-  List<Object> get props => [lock];
+  List<Object> get props => [lock, onlyBluetooth];
 }

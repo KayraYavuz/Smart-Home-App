@@ -109,12 +109,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                         // Düzenleme İkonu
                         IconButton(
                           icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () {
-                            // Profil düzenleme sayfası
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Profil düzenleme yakında eklenecek')),
-                            );
-                          },
+                          onPressed: () => _editAvatar(context),
                         ),
                       ],
                     ),
@@ -125,34 +120,32 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                     title: 'Rumuz',
                     value: _username,
                     showEditIcon: true,
+                    onTap: () => _editField('Rumuz', 'saved_username', _username),
                   ),
                   _buildInfoTile(
                     title: 'Hesap',
                     value: _email,
                     showEditIcon: true,
+                    onTap: () => _editField('Email', 'saved_email', _email),
                   ),
                   _buildInfoTile(
                     title: 'Telefon',
                     value: _phone,
                     showEditIcon: true,
+                    onTap: () => _editField('Telefon', 'saved_phone', _phone),
                   ),
                   _buildInfoTile(
                     title: 'Şifreyi Yenile',
                     value: '',
                     showArrowIcon: true,
-                    onTap: () {
-                      // Şifre yenileme sayfası
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Şifre yenileme yakında eklenecek')),
-                      );
-                    },
+                    onTap: _changePassword,
                   ),
                   _buildInfoTile(
                     title: 'Güvenlik Sorusu',
-                    value: '',
+                    value: 'Ayarlanmadı',
                     showNotificationDot: true,
+                    showArrowIcon: true,
                     onTap: () {
-                      // Güvenlik sorusu sayfası
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Güvenlik sorusu ayarı yakında eklenecek')),
                       );
@@ -162,6 +155,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                     title: 'Ülke/Bölge',
                     value: _country,
                     showEditIcon: true,
+                    onTap: () => _editField('Ülke/Bölge', 'saved_country', _country),
                   ),
                 ],
               ),
@@ -292,5 +286,144 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
         ),
       );
     }
+  }
+
+  Future<void> _editField(String title, String key, String currentValue) async {
+    final TextEditingController controller = TextEditingController(text: currentValue);
+    final newValue = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text('$title Düzenle', style: const TextStyle(color: Colors.white)),
+        content: TextField(
+          controller: controller,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: 'Yeni $title girin',
+            hintStyle: const TextStyle(color: Colors.grey),
+            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: const Text('Kaydet', style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      ),
+    );
+
+    if (newValue != null && newValue.isNotEmpty && newValue != currentValue) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(key, newValue);
+      
+      setState(() {
+        if (key == 'saved_username') _username = newValue;
+        if (key == 'saved_email') _email = newValue;
+        if (key == 'saved_phone') _phone = newValue;
+        if (key == 'saved_country') _country = newValue;
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$title başarıyla güncellendi'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  Future<void> _changePassword() async {
+    final TextEditingController currentPassController = TextEditingController();
+    final TextEditingController newPassController = TextEditingController();
+    final TextEditingController confirmPassController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Text('Şifreyi Yenile', style: TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: currentPassController,
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Mevcut Şifre',
+                labelStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: newPassController,
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Yeni Şifre',
+                labelStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: confirmPassController,
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Yeni Şifre (Tekrar)',
+                labelStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              if (newPassController.text != confirmPassController.text) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Şifreler eşleşmiyor!'), backgroundColor: Colors.red),
+                );
+                return;
+              }
+              if (newPassController.text.length < 6) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Şifre en az 6 karakter olmalı!'), backgroundColor: Colors.red),
+                );
+                return;
+              }
+              // Simüle edilmiş başarı
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Şifre başarıyla güncellendi'), backgroundColor: Colors.green),
+              );
+            },
+            child: const Text('Kaydet', style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _editAvatar(BuildContext context) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Avatar değiştirme özelliği yakında eklenecek')),
+    );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:yavuz_lock/providers/language_provider.dart';
 import 'package:yavuz_lock/ui/pages/login_page.dart';
 import 'package:yavuz_lock/ui/pages/gateway_management_dialog.dart';
 
@@ -338,6 +340,19 @@ class _SettingsPageState extends State<SettingsPage> {
                 onTap: () {
                   setState(() => _selectedLanguage = language);
                   _saveSetting('selected_language', language);
+                  
+                  // Update LanguageProvider
+                  final provider = Provider.of<LanguageProvider>(context, listen: false);
+                  if (language == 'Otomatik') {
+                    provider.resetLocale();
+                  } else if (language == 'Türkçe') {
+                    provider.setLocale(const Locale('tr'));
+                  } else if (language == 'English') {
+                    provider.setLocale(const Locale('en'));
+                  } else if (language == 'Deutsch') {
+                    provider.setLocale(const Locale('de'));
+                  }
+
                   Navigator.of(context).pop();
                 },
               )),

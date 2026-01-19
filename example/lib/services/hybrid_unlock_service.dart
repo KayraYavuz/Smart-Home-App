@@ -13,12 +13,13 @@ class HybridUnlockService {
 
   HybridUnlockService(this._apiService);
 
-  /// Unlock the lock using TTLock approach: Bluetooth first, then Gateway API
+  /// Unlock the lock using TTLock approach: Bluetooth first, then Gateway API (optional)
   /// Returns true if successful, false otherwise
   Future<UnlockResult> unlock({
     required String lockData,
     required String lockMac,
     String? lockId,
+    bool onlyBluetooth = false,
   }) async {
     // First, try Bluetooth unlock
     print('Attempting Bluetooth unlock for lock: $lockMac');
@@ -27,6 +28,15 @@ class HybridUnlockService {
     if (bluetoothResult.success) {
       print('Bluetooth unlock successful');
       return bluetoothResult;
+    }
+
+    if (onlyBluetooth) {
+      print('Bluetooth unlock failed and fallback is disabled.');
+      return UnlockResult(
+        success: false,
+        error: bluetoothResult.error ?? 'Bluetooth unlock failed',
+        method: 'bluetooth',
+      );
     }
 
     // If Bluetooth fails, try Gateway API unlock
@@ -48,17 +58,26 @@ class HybridUnlockService {
     );
   }
 
-  /// Lock the lock using TTLock approach: Bluetooth first, then Gateway API
+  /// Lock the lock using TTLock approach: Bluetooth first, then Gateway API (optional)
   Future<UnlockResult> lock({
     required String lockData,
     required String lockMac,
     String? lockId,
+    bool onlyBluetooth = false,
   }) async {
     print('Attempting Bluetooth lock for lock: $lockMac');
     final bluetoothResult = await _tryBluetoothLock(lockData, lockMac);
 
     if (bluetoothResult.success) {
       return bluetoothResult;
+    }
+
+    if (onlyBluetooth) {
+       return UnlockResult(
+        success: false,
+        error: bluetoothResult.error ?? 'Bluetooth lock failed',
+        method: 'bluetooth',
+      );
     }
 
     // If Bluetooth fails, try Gateway API lock

@@ -4,6 +4,7 @@ import 'package:bmprogresshud/progresshud.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
+import 'package:yavuz_lock/ui/pages/feature_pages.dart';
 
 class LockSettingsPage extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -79,6 +80,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                 title: 'Grup Ayarı',
                 subtitle: 'Grubu Yönet',
                 onTap: _showGroupSelection,
+              ),
+              _buildSettingTile(
+                icon: Icons.wifi,
+                title: 'Wi-Fi Ayarları',
+                subtitle: 'Wi-Fi bağlantısını yönet',
+                onTap: _showWifiSettings,
               ),
 
               const SizedBox(height: 24),
@@ -476,6 +483,15 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
             child: const Text('SİL', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showWifiSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WifiLockPage(lockId: int.parse(widget.lock['lockId'].toString())),
       ),
     );
   }

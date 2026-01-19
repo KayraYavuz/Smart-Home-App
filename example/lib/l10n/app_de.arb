@@ -1,6 +1,23 @@
 {
-    "@@locale": "de",
-    "profile": "Profil",
-    "systemManagement": "Systemverwaltung",
-    "settings": "Einstellungen"
+  "@@locale": "de",
+  "appTitle": "Yavuz Schloss",
+  "settings": "Einstellungen",
+  "changeLanguage": "Sprache ändern",
+  "unlockDoor": "Tür entriegeln",
+  "lockDoor": "Tür verriegeln",
+  "home": "Startseite",
+  "devices": "Geräte",
+  "myLocks": "Meine Schlösser",
+  "addDevice": "Gerät hinzufügen",
+  "profile": "Profil",
+  "logout": "Abmelden",
+  "language": "Sprache",
+  "english": "Englisch",
+  "german": "Deutsch",
+  "turkish": "Türkisch",
+  "selectLanguage": "Sprache auswählen",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "online": "Online",
+  "offline": "Offline"
 }

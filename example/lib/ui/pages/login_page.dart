@@ -43,14 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
     
-    // Fallback to .env config if exists and fields are empty
-    if (_usernameController.text.isEmpty && app_config.ApiConfig.username.isNotEmpty) {
-      setState(() {
-        _usernameController.text = app_config.ApiConfig.username;
-        _passwordController.text = app_config.ApiConfig.password;
-        _rememberMe = true;
-      });
-    }
+    
   }
 
   Future<void> _saveCredentials() async {
