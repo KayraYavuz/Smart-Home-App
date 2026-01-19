@@ -5084,6 +5084,94 @@ class ApiService {
     }
   }
 
+  /// Check to see whether there is any upgrade for a lock.
+  /// If there is no version info on the server, returns 'unknown' (needUpgrade=2).
+  /// In this case, you need to call APP SDK method to get lockData,
+  /// and then request cloud API: Upgrade recheck to recheck for upgrading.
+  Future<Map<String, dynamic>> upgradeCheck({
+    required int lockId,
+  }) async {
+    print('🔄 Firmware güncellemesi kontrol ediliyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/lock/upgradeCheck');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    
+    // Check for explicit error code if present
+    if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+       print('❌ Upgrade check hatası: ${responseData['errmsg']}');
+       throw Exception('Upgrade check failed: ${responseData['errmsg']}');
+    }
+
+    if (responseData.containsKey('needUpgrade')) {
+      print('✅ Upgrade check başarılı. Durum: ${responseData['needUpgrade']}'); // 0-No, 1-Yes, 2-Unknown
+      return responseData;
+    } 
+    
+    return responseData;
+  }
+
+  /// When "unknown" is returned requesting Upgrade check,
+  /// you have to call APP SDK method to get new lockData,
+  /// and request this API to see whether there is any upgrade for a lock.
+  Future<Map<String, dynamic>> upgradeRecheck({
+    required int lockId,
+    required String lockData,
+  }) async {
+    print('🔄 Firmware güncellemesi tekrar kontrol ediliyor (Recheck): $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/lock/upgradeRecheck');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'lockData': lockData,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    
+    if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+       print('❌ Upgrade recheck hatası: ${responseData['errmsg']}');
+       throw Exception('Upgrade recheck failed: ${responseData['errmsg']}');
+    }
+
+    if (responseData.containsKey('needUpgrade')) {
+      print('✅ Upgrade recheck başarılı. Durum: ${responseData['needUpgrade']}');
+      return responseData;
+    }
+    
+    return responseData;
+  }
+
   // TTLock event type parser (yerel fonksiyon)
   static TTLockWebhookEventType _parseTTLockEventTypeLocal(String eventType) {
     switch (eventType) {
