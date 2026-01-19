@@ -5172,6 +5172,229 @@ class ApiService {
     return responseData;
   }
 
+  // --- WIRELESS KEYPAD MANAGEMENT ---
+
+  /// Upload the wireless keypad's info to the cloud server
+  Future<Map<String, dynamic>> addWirelessKeypad({
+    required int lockId,
+    required String wirelessKeypadNumber,
+    required String wirelessKeypadName,
+    required String wirelessKeypadMac,
+    required String wirelessKeypadFeatureValue,
+    int? electricQuantity,
+  }) async {
+    print('🔢 Kablosuz tuş takımı buluta ekleniyor: $wirelessKeypadNumber');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/wirelessKeypad/add');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'wirelessKeypadNumber': wirelessKeypadNumber,
+      'wirelessKeypadName': wirelessKeypadName,
+      'wirelessKeypadMac': wirelessKeypadMac,
+      'wirelessKeypadFeatureValue': wirelessKeypadFeatureValue,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (electricQuantity != null) {
+      body['electricQuantity'] = electricQuantity.toString();
+    }
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData.containsKey('wirelessKeypadId')) {
+      print('✅ Kablosuz tuş takımı başarıyla eklendi: ${responseData['wirelessKeypadId']}');
+      return responseData;
+    } else {
+      print('❌ Kablosuz tuş takımı ekleme hatası: ${responseData['errmsg']}');
+      throw Exception('Kablosuz tuş takımı eklenemedi: ${responseData['errmsg']}');
+    }
+  }
+
+  /// List all wireless keypads added to a lock
+  Future<Map<String, dynamic>> getWirelessKeypadList({
+    required int lockId,
+  }) async {
+    print('📋 Kablosuz tuş takımı listesi çekiliyor: $lockId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/wirelessKeypad/listByLock').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        throw Exception('Kablosuz tuş takımı listesi alınamadı: ${responseData['errmsg']}');
+      }
+      return responseData;
+    } else {
+      throw Exception('Kablosuz tuş takımı listesi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Delete a wireless keypad from the cloud server
+  Future<void> deleteWirelessKeypad({
+    required int wirelessKeypadId,
+  }) async {
+    print('🗑️ Kablosuz tuş takımı siliniyor: $wirelessKeypadId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/wirelessKeypad/delete');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'wirelessKeypadId': wirelessKeypadId.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Kablosuz tuş takımı silinemedi: ${responseData['errmsg']}');
+    }
+    print('✅ Kablosuz tuş takımı silindi');
+  }
+
+  /// Rename a wireless keypad
+  Future<void> renameWirelessKeypad({
+    required int wirelessKeypadId,
+    required String wirelessKeypadName,
+  }) async {
+    print('✏️ Kablosuz tuş takımı yeniden adlandırılıyor: $wirelessKeypadId -> $wirelessKeypadName');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/wirelessKeypad/rename');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'wirelessKeypadId': wirelessKeypadId.toString(),
+      'wirelessKeypadName': wirelessKeypadName,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Kablosuz tuş takımı yeniden adlandırılamadı: ${responseData['errmsg']}');
+    }
+    print('✅ Kablosuz tuş takımı yeniden adlandırıldı');
+  }
+
+  /// Check firmware upgrade for wireless keypad
+  Future<Map<String, dynamic>> checkWirelessKeypadUpgrade({
+    required int wirelessKeypadId,
+    required int slotNumber,
+  }) async {
+    print('🔄 Kablosuz tuş takımı güncellemeleri kontrol ediliyor: $wirelessKeypadId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/wirelessKeypad/upgradeCheck');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'wirelessKeypadId': wirelessKeypadId.toString(),
+      'slotNumber': slotNumber.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    
+    if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+       throw Exception('Kablosuz tuş takımı güncelleme kontrolü başarısız: ${responseData['errmsg']}');
+    }
+
+    return responseData;
+  }
+
+  /// Report successful wireless keypad upgrade
+  Future<void> setWirelessKeypadUpgradeSuccess({
+    required int wirelessKeypadId,
+    required int slotNumber,
+    int? featureValue,
+  }) async {
+    print('✅ Kablosuz tuş takımı güncelleme başarısı bildiriliyor: $wirelessKeypadId');
+    await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/wirelessKeypad/upgradeSuccess');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'wirelessKeypadId': wirelessKeypadId.toString(),
+      'slotNumber': slotNumber.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    if (featureValue != null) {
+      body['featureValue'] = featureValue.toString();
+    }
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    final responseData = json.decode(response.body);
+    if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+      throw Exception('Kablosuz tuş takımı güncelleme bildirimi başarısız: ${responseData['errmsg']}');
+    }
+    print('✅ Kablosuz tuş takımı güncelleme başarıyla bildirildi');
+  }
+
   // TTLock event type parser (yerel fonksiyon)
   static TTLockWebhookEventType _parseTTLockEventTypeLocal(String eventType) {
     switch (eventType) {
