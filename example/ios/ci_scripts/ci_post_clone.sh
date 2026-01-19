@@ -26,7 +26,20 @@ if [ -n "$ENV_FILE_CONTENT" ]; then
 fi
 
 # 2. Flutter Kurulumu
+# Scriptin bulunduğu dizini al
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # CI_WORKSPACE repo kök dizinidir (ttlock_flutter-master)
+# Xcode Cloud'da CI_PRIMARY_REPOSITORY_PATH kullanılır.
+if [ -z "$CI_WORKSPACE" ]; then
+    if [ -n "$CI_PRIMARY_REPOSITORY_PATH" ]; then
+        CI_WORKSPACE="$CI_PRIMARY_REPOSITORY_PATH"
+    else
+        # Script example/ios/ci_scripts dizininde, repo root 3 seviye yukarıda
+        CI_WORKSPACE="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+    fi
+fi
+
 FLUTTER_ROOT="$CI_WORKSPACE/flutter"
 
 if [ -d "$FLUTTER_ROOT" ]; then
@@ -42,8 +55,10 @@ echo "Flutter Doctor çalıştırılıyor..."
 flutter doctor -v
 
 # 3. Proje Bağımlılıkları ve Konfigürasyon
-# Example projesi CI_WORKSPACE/example dizinindedir.
-PROJECT_DIR="$CI_WORKSPACE/example"
+# Example projesi CI_WORKSPACE/example dizinindedir veya script'e göre 2 seviye yukarıdadır.
+if [ -z "$PROJECT_DIR" ]; then
+    PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+fi
 
 if [ ! -d "$PROJECT_DIR" ]; then
     echo "HATA: Proje klasörü bulunamadı: $PROJECT_DIR"
