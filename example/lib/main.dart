@@ -48,10 +48,15 @@ Future<void> main() async {
     // Hata olsa bile uygulama açılmalı, bu yüzden burayı sessizce geçebiliriz veya loglayabiliriz
   }
 
-  await dotenv.load(fileName: ".env");
+  try {
+    await dotenv.load(fileName: ".env");
+    print('📝 .env yüklendi: ${dotenv.env.keys.length} adet anahtar bulundu.');
+  } catch (e) {
+    print('❌ .env yükleme hatası: $e');
+    // .env yüklenemese bile uygulama çalışmaya devam etsin (fallback değerlerle)
+  }
   
   print('🚀 Uygulama başlatılıyor...');
-  print('📝 .env yüklendi: ${dotenv.env.keys.length} adet anahtar bulundu.');
   print('⚙️  API Config: ClientId=${app_config.ApiConfig.clientId.isNotEmpty ? "OK" : "BOŞ"}, Username=${app_config.ApiConfig.username.isNotEmpty ? "OK" : "BOŞ"}');
 
   final authRepository = AuthRepository();
