@@ -14,10 +14,14 @@ if [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" ]; then
     echo "GoogleService-Info.plist (Base64) decode ediliyor..."
     echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" | base64 --decode > ../GoogleService-Info.plist
     echo "✅ GoogleService-Info.plist başarıyla oluşturuldu."
+    echo "📄 Dosya Kontrolü (İlk 5 Satır):"
+    head -n 5 ../GoogleService-Info.plist
 elif [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" ]; then
     echo "GoogleService-Info.plist (Düz Metin) dosyası oluşturuluyor..."
     echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" > ../GoogleService-Info.plist
     echo "✅ GoogleService-Info.plist başarıyla oluşturuldu."
+    echo "📄 Dosya Kontrolü (İlk 5 Satır):"
+    head -n 5 ../GoogleService-Info.plist
 else
     echo "⚠️ UYARI: GOOGLE_SERVICE_INFO_PLIST_CONTENT değişkeni bulunamadı. GoogleService-Info.plist oluşturulamadı."
     echo "⚠️ Build hatasını önlemek için boş bir GoogleService-Info.plist oluşturuluyor."
@@ -29,10 +33,14 @@ if [ -n "$ENV_FILE_CONTENT_BASE64" ]; then
     echo ".env (Base64) decode ediliyor..."
     echo "$ENV_FILE_CONTENT_BASE64" | base64 --decode > ../../.env
     echo "✅ .env başarıyla oluşturuldu."
+    echo "📄 Dosya Kontrolü (İlk 2 Satır):"
+    head -n 2 ../../.env
 elif [ -n "$ENV_FILE_CONTENT" ]; then
     echo ".env (Düz Metin) dosyası oluşturuluyor..."
     echo "$ENV_FILE_CONTENT" > ../../.env
     echo "✅ .env başarıyla oluşturuldu."
+    echo "📄 Dosya Kontrolü (İlk 2 Satır):"
+    head -n 2 ../../.env
 else
     echo "⚠️ UYARI: ENV_FILE_CONTENT değişkeni bulunamadı."
     echo "⚠️ Build hatasını önlemek için boş bir .env oluşturuluyor."
