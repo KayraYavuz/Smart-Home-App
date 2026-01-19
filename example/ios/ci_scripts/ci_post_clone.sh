@@ -23,6 +23,10 @@ if [ -n "$ENV_FILE_CONTENT" ]; then
     # example/ (proje kök) dizinine yazar
     echo "$ENV_FILE_CONTENT" > ../../.env
     echo "✅ .env başarıyla oluşturuldu."
+else
+    echo "⚠️ UYARI: ENV_FILE_CONTENT değişkeni bulunamadı."
+    echo "⚠️ Build hatasını önlemek için boş bir .env oluşturuluyor."
+    touch ../../.env
 fi
 
 # 2. Flutter Kurulumu
