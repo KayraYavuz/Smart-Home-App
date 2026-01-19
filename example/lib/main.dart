@@ -35,9 +35,14 @@ Future<void> main() async {
 
   // Firebase Başlatma
   try {
-    print("🔥 Firebase.initializeApp() çağrılıyor..."); // DEBUG LOG
-    await Firebase.initializeApp();
-    print("✅ Firebase başarıyla başlatıldı");
+    print("🔥 Firebase.initializeApp() kontrol ediliyor..."); // DEBUG LOG
+    if (Firebase.apps.isEmpty) {
+      print("🔥 Firebase henüz başlatılmamış, başlatılıyor...");
+      await Firebase.initializeApp();
+      print("✅ Firebase başarıyla başlatıldı");
+    } else {
+      print("ℹ️ Firebase zaten başlatılmış, işlem atlanıyor.");
+    }
     
     // Bildirim Servisini Başlat
     print("🚀 NotificationService başlatılıyor..."); // DEBUG LOG
