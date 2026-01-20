@@ -116,7 +116,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gatewayManagementSubtitle =>
-      'Manage and connect your TTLock Gateways';
+      'Manage and connect your Yavuz Lock Gateways';
 
   @override
   String get deleteAccount => 'Delete Account';
@@ -375,7 +375,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cloudApiDesc =>
-      'Connect your server to TTLock cloud for centralized management.';
+      'Connect your server to Yavuz Lock cloud for centralized management.';
 
   @override
   String get desktopSdkDesc =>

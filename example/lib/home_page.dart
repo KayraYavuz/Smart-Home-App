@@ -64,6 +64,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _refreshSharedLocksStatus() async {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     try {
       final apiService = ApiService(context.read<AuthRepository>());
       final allKeys = await apiService.getKeyList();
@@ -78,7 +80,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         if (latest == null) continue;
         final keyState = latest['keyState'] ?? 0;
         final isLocked = keyState == 0 || keyState == 2;
-        final status = isLocked ? 'Kilitli' : 'Açık';
+        final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
         final battery = latest['electricQuantity'] ?? latest['battery'] ?? _locks[i]['battery'] ?? 0;
         if (_locks[i]['isLocked'] != isLocked || _locks[i]['status'] != status || _locks[i]['battery'] != battery) {
           _locks[i]['isLocked'] = isLocked;
@@ -105,6 +107,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
 
   void _handleTTLockWebhookEvent(TTLockWebhookEventData event) {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     // TTLock webhook event'ini işle ve UI'ı güncelle
     final deviceIndex = _locks.indexWhere((lock) => lock['lockId'] == event.lockId);
 
@@ -117,11 +121,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           case '5': // lockOpenedFromFingerprint
           case '6': // lockOpenedFromCard
             _locks[deviceIndex]['isLocked'] = false;
-            _locks[deviceIndex]['status'] = 'Açık';
+            _locks[deviceIndex]['status'] = l10n.statusUnlocked;
             break;
           case '2': // lockClosed
             _locks[deviceIndex]['isLocked'] = true;
-            _locks[deviceIndex]['status'] = 'Kilitli';
+            _locks[deviceIndex]['status'] = l10n.statusLocked;
             break;
           case '7': // lowBattery
             // Düşük pil uyarısı - pil seviyesini güncelle
@@ -131,7 +135,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             break;
           case '8': // lockTampered
             // Kilit manipülasyon uyarısı
-            _locks[deviceIndex]['status'] = 'Güvenlik Uyarısı';
+            _locks[deviceIndex]['status'] = l10n.statusSecurityWarning;
             break;
           default:
             break;
@@ -145,58 +149,60 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
 
   void _showTTLockWebhookNotification(TTLockWebhookEventData event) {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     String message = '';
     Color backgroundColor = Colors.blue;
     IconData iconData = Icons.lock;
 
     final lockName = _locks.firstWhere(
       (lock) => lock['lockId'] == event.lockId,
-      orElse: () => {'name': 'Bilinmeyen Kilit'}
+      orElse: () => {'name': l10n.unknownLock}
     )['name'];
 
     switch (event.eventType) {
       case '1': // lockOpened
-        message = '$lockName açıldı';
+        message = l10n.lockOpened(lockName);
         backgroundColor = Colors.green;
         iconData = Icons.lock_open;
         break;
       case '2': // lockClosed
-        message = '$lockName kilitlendi';
+        message = l10n.lockClosed(lockName);
         backgroundColor = Colors.red;
         iconData = Icons.lock;
         break;
       case '3': // lockOpenedFromApp
-        message = '$lockName uygulamadan açıldı';
+        message = l10n.lockOpenedApp(lockName);
         backgroundColor = Colors.blue;
         iconData = Icons.phone_android;
         break;
       case '4': // lockOpenedFromKeypad
-        message = '$lockName tuş takımıyla açıldı';
+        message = l10n.lockOpenedKeypad(lockName);
         backgroundColor = Colors.orange;
         iconData = Icons.dialpad;
         break;
       case '5': // lockOpenedFromFingerprint
-        message = '$lockName parmak iziyle açıldı';
+        message = l10n.lockOpenedFingerprint(lockName);
         backgroundColor = Colors.purple;
         iconData = Icons.fingerprint;
         break;
       case '6': // lockOpenedFromCard
-        message = '$lockName kart ile açıldı';
+        message = l10n.lockOpenedCard(lockName);
         backgroundColor = Colors.teal;
         iconData = Icons.credit_card;
         break;
       case '7': // lowBattery
-        message = '$lockName düşük pil seviyesi';
+        message = l10n.lowBatteryWarning(lockName);
         backgroundColor = Colors.amber;
         iconData = Icons.battery_alert;
         break;
       case '8': // lockTampered
-        message = '$lockName güvenlik uyarısı!';
+        message = l10n.lockTamperedWarning(lockName);
         backgroundColor = Colors.red;
         iconData = Icons.warning;
         break;
       default:
-        message = '$lockName durumu güncellendi';
+        message = l10n.lockStatusUpdated(lockName);
         backgroundColor = Colors.grey;
         iconData = Icons.info;
     }
@@ -224,6 +230,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _fetchAndSetLocks() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isLoading = true;
     });
@@ -263,12 +270,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               // TTLock kendi cihazlarını ekle
               for (final lock in ttlockDevices) {
                 final lockId = lock['lockId']?.toString() ?? '';
-                final lockAlias = lock['name'] ?? 'Yavuz Lock'; // ApiService'den gelen name'i kullan
+                final lockAlias = lock['name'] ?? l10n.defaultLockName; // ApiService'den gelen name'i kullan
                 final keyState = lock['keyState'] ?? 0;
                 final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
 
                 final isLocked = keyState == 0 || keyState == 2; 
-                final status = isLocked ? 'Kilitli' : 'Açık';
+                final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
                 print('🔋 Kilit ${lockId}: keyState=${keyState}, battery=${electricQuantity}');
                 print('🏷️  Kilit adı: $lockAlias');
@@ -290,12 +297,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               // TTLock paylaşılmış cihazlarını ekle
               for (final lock in sharedTTLockDevices) {
                 final lockId = lock['lockId']?.toString() ?? '';
-                final lockAlias = lock['name'] ?? 'Paylaşılmış Yavuz Lock'; // ApiService'den gelen name'i kullan
+                final lockAlias = lock['name'] ?? l10n.defaultSharedLockName; // ApiService'den gelen name'i kullan
                 final keyState = lock['keyState'] ?? 0;
                 final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
 
                 final isLocked = keyState == 0 || keyState == 2; 
-                final status = isLocked ? 'Kilitli' : 'Açık';
+                final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
                 print('🔋 Paylaşılan kilit ${lockId}: keyState=${keyState}, battery=${electricQuantity}');
 
@@ -342,11 +349,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       _isLoading = false;
     });
 
-              String errorMessage = 'Cihazlar yüklenirken bir hata oluştu';
+              String errorMessage = l10n.errorDevicesLoading;
               if (e.toString().contains('network') || e.toString().contains('connection')) {
-                errorMessage = 'İnternet bağlantınızı kontrol edin';
+                errorMessage = l10n.errorInternetConnection;
               } else if (e.toString().contains('timeout')) {
-                errorMessage = 'Sunucu yanıt vermedi, tekrar deneyin';
+                errorMessage = l10n.errorServerTimeout;
               }
 
               if (mounted) {
@@ -355,7 +362,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     content: Text(errorMessage),
                     backgroundColor: Colors.red,
                     action: SnackBarAction(
-                      label: 'Tekrar Dene',
+                      label: l10n.retry,
                       textColor: Colors.white,
                       onPressed: _fetchAndSetLocks,
                     ),
@@ -366,6 +373,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           }
 
   Future<void> _addNewDevice(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     // Navigates to the new AddDevicePage and waits for result
     final result = await Navigator.push(
       context,
@@ -389,8 +397,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               // Add new Seam device
               final properties = device['properties'] ?? {};
               _locks.add({
-                'name': device['display_name'] ?? 'Seam Kilit',
-                'status': properties['locked'] == true ? 'Kilitli' : 'Açık',
+                'name': device['display_name'] ?? l10n.seamLockDefaultName,
+                'status': properties['locked'] == true ? l10n.statusLocked : l10n.statusUnlocked,
                 'isLocked': properties['locked'] ?? false,
                 'battery': (properties['battery_level'] as num?)?.toInt() ?? 0,
                 'lockData': device['device_id'] ?? '',
@@ -406,7 +414,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${seamDevices.length} Seam cihazı eklendi'),
+            content: Text(l10n.seamDevicesAdded(seamDevices.length)),
             backgroundColor: Colors.green,
           ),
         );
@@ -430,8 +438,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Yavuz Lock kilidi başarıyla eklendi'),
+          SnackBar(
+            content: Text(l10n.lockAddedSuccess),
             backgroundColor: Colors.green,
           ),
         );
@@ -580,7 +588,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     print('   All keys: ${lock.keys.join(', ')}');
 
     String statusText = '';
-    if (lock['status'] == 'Güvenlik Uyarısı') {
+    if (lock['status'] == l10n.statusSecurityWarning) {
       statusText = l10n.securityWarning;
     } else {
       statusText = lock['isLocked'] == true ? l10n.locked : l10n.unlocked;
@@ -621,14 +629,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     // Sadece durumu güncelle, diğer bilgileri koru
                     if (newState != null) {
                       _locks[index]['isLocked'] = newState;
-                      _locks[index]['status'] = newState ? 'Kilitli' : 'Açık';
+                      _locks[index]['status'] = newState ? l10n.statusLocked : l10n.statusUnlocked;
                     }
                   }
                 });
 
                 // Başarılı işlem için bildirim göster
                 if (newState != null) {
-                  final lockName = updatedLock['name'] ?? 'Kilit';
+                  final lockName = updatedLock['name'] ?? l10n.unknownLock;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('$lockName ${newState ? l10n.locked.toLowerCase() : l10n.unlocked.toLowerCase()}'),
@@ -678,13 +686,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: const Color.fromRGBO(76, 175, 80, 0.3), width: 1),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.lock_outline, color: Colors.green, size: 12),
                               SizedBox(width: 4),
                               Text(
-                                'Yavuz Lock',
+                                l10n.defaultLockName,
                                 style: TextStyle(
                                   color: Colors.green,
                                   fontSize: 10,
@@ -743,7 +751,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         ),
                         if (lock['deviceType'] != null)
                           Text(
-                            'Tip: ${lock['deviceType']}',
+                            l10n.deviceTypeLabel(lock['deviceType']),
                             style: TextStyle(color: Colors.grey[500], fontSize: 12),
                         ),
                       ],
@@ -890,7 +898,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Paylaşım iptali hatası: $e'), // Error message often technical, keeping as is or generic
+          content: Text(l10n.shareCancelError(e.toString())), // Error message often technical, keeping as is or generic
           backgroundColor: Colors.red,
         ),
       );

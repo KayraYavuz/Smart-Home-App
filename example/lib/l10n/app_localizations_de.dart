@@ -118,7 +118,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get gatewayManagementSubtitle =>
-      'Verwalten und verbinden Sie Ihre TTLock-Gateways';
+      'Verwalten und verbinden Sie Ihre Yavuz Lock-Gateways';
 
   @override
   String get deleteAccount => 'Konto löschen';
@@ -371,7 +371,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reminderSent => 'Zahlungserinnerung gesendet';
 
   @override
-  String get addProperty => 'Immobilie hinzufügen';
+  String get addProperty => 'Eigentum hinzufügen';
 
   @override
   String get appSdkDesc =>
@@ -379,7 +379,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get cloudApiDesc =>
-      'Verbinden Sie Ihren Server mit der TTLock-Cloud für eine zentrale Verwaltung.';
+      'Verbinden Sie Ihren Server mit der Yavuz Lock-Cloud für eine zentrale Verwaltung.';
 
   @override
   String get desktopSdkDesc =>
@@ -387,7 +387,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get developerPortalInfo =>
-      'Für weitere technische Informationen und Zugangsdaten besuchen Sie das Entwicklerportal.';
+      'Besuchen Sie das Entwicklerportal für weitere technische Informationen und Anmeldeinformationen.';
 
   @override
   String get visitPortal => 'Entwicklerportal besuchen';

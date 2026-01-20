@@ -27,8 +27,8 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-    android {
-    compileSdkVersion 34
+android {
+    compileSdkVersion 36
 
     lintOptions {
         disable 'InvalidPackage'
@@ -38,7 +38,7 @@ if (flutterVersionName == null) {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.yavuz.yavuz_lock"
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 34
+        targetSdkVersion 36
         versionCode 1
         versionName "1.0"
     }
@@ -49,9 +49,23 @@ if (flutterVersionName == null) {
         coreLibraryDesugaringEnabled true
     }
 
+    signingConfigs {
+        release {
+            def keystoreProperties = new Properties()
+            def keystorePropertiesFile = rootProject.file('key.properties')
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+            }
+            keyAlias = keystoreProperties['keyAlias']
+            keyPassword = keystoreProperties['keyPassword']
+            storeFile = keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword = keystoreProperties['storePassword']
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             shrinkResources false
             minifyEnabled false
         }
@@ -73,13 +87,6 @@ if (flutterVersionName == null) {
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':ttlock_flutter')
-    // Attempting to add standard plugins based on typical naming. 
-    // If these names are wrong, Gradle will complain, and I'll fix them.
-    implementation project(':flutter_plugin_android_lifecycle')
-    implementation project(':image_picker_android')
-    implementation project(':shared_preferences_android')
-    implementation project(':url_launcher_android')
 }
 
 repositories {

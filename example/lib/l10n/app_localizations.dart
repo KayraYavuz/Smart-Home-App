@@ -313,7 +313,7 @@ abstract class AppLocalizations {
   /// No description provided for @gatewayManagementSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Manage and connect your TTLock Gateways'**
+  /// **'Manage and connect your Yavuz Lock Gateways'**
   String get gatewayManagementSubtitle;
 
   /// No description provided for @deleteAccount.
@@ -823,7 +823,7 @@ abstract class AppLocalizations {
   /// No description provided for @cloudApiDesc.
   ///
   /// In en, this message translates to:
-  /// **'Connect your server to TTLock cloud for centralized management.'**
+  /// **'Connect your server to Yavuz Lock cloud for centralized management.'**
   String get cloudApiDesc;
 
   /// No description provided for @desktopSdkDesc.

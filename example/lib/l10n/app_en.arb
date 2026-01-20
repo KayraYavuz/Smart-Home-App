@@ -216,5 +216,113 @@
   "loginIdNote": "Please note this ID. You must use this to login.",
   "loginBtn": "Login",
   "enterCodePlaceholder": "Enter Code",
-  "errorLabel": "Error"
+  "errorLabel": "Error",
+  "statusLocked": "Locked",
+  "statusUnlocked": "Unlocked",
+  "statusSecurityWarning": "Security Warning",
+  "lockOpened": "{lockName} opened",
+  "@lockOpened": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockClosed": "{lockName} locked",
+  "@lockClosed": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockOpenedApp": "{lockName} opened from app",
+  "@lockOpenedApp": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockOpenedKeypad": "{lockName} opened with keypad",
+  "@lockOpenedKeypad": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockOpenedFingerprint": "{lockName} opened with fingerprint",
+  "@lockOpenedFingerprint": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockOpenedCard": "{lockName} opened with card",
+  "@lockOpenedCard": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lowBatteryWarning": "{lockName} low battery",
+  "@lowBatteryWarning": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockTamperedWarning": "{lockName} security warning!",
+  "@lockTamperedWarning": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockStatusUpdated": "{lockName} status updated",
+  "@lockStatusUpdated": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownLock": "Unknown Lock",
+  "defaultLockName": "Yavuz Lock",
+  "defaultSharedLockName": "Shared Yavuz Lock",
+  "seamLockDefaultName": "Seam Lock",
+  "seamDevicesAdded": "{count} Seam devices added",
+  "@seamDevicesAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lockAddedSuccess": "Yavuz Lock successfully added",
+  "deviceTypeLabel": "Type: {type}",
+  "@deviceTypeLabel": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCancelError": "Share cancellation error: {error}",
+  "@shareCancelError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDevicesLoading": "Error loading devices",
+  "errorInternetConnection": "Check your internet connection",
+  "errorServerTimeout": "Server timeout, please try again",
+  "retry": "Retry"
 }
