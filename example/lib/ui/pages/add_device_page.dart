@@ -92,7 +92,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
               ),
               const SizedBox(width: 12),
               const Text(
-                'TTLock Kilidi Tara',
+                'Yavuz Lock Kilidi Tara',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -103,7 +103,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Bluetooth ile çevredeki TTLock kilitlerini tara ve uygulamanıza ekleyin.',
+            'Bluetooth ile çevredeki Yavuz Lock kilitlerini tara ve uygulamanıza ekleyin.',
             style: TextStyle(
               color: Colors.grey,
               fontSize: 14,

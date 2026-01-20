@@ -126,7 +126,7 @@
   "visitPortal": "Geliştirici Portalını Ziyaret Et",
   "viewDocumentation": "Dökümantasyonu Görüntüle",
   "noLocksFound": "API'den kilit bulunamadı.",
-  "allLocks": "Tüm Kilitler",
+  "allLocks": "Yavuz Lock",
   "refreshLocks": "Kilitleri Yenile",
   "gateways": "Gatewayler",
   "securityWarning": "Güvenlik Uyarısı",
