@@ -37,9 +37,21 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadUserInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      String loadedEmail = prefs.getString('saved_email') ?? 'kullanici@ornek.com';
+      String loadedUsername = prefs.getString('saved_username') ?? '';
+
+      // Eğer kullanıcı adı kayıtlı değilse veya varsayılan ise, e-postadan üret
+      if (loadedUsername.isEmpty || loadedUsername == 'Kullanıcı') {
+        if (loadedEmail.contains('@')) {
+          loadedUsername = loadedEmail.split('@')[0];
+        } else {
+          loadedUsername = 'Kullanıcı';
+        }
+      }
+
       setState(() {
-        _username = prefs.getString('saved_username') ?? 'Kullanıcı';
-        _email = prefs.getString('saved_email') ?? 'kullanici@ornek.com';
+        _username = loadedUsername;
+        _email = loadedEmail;
       });
     } catch (e) {
       // Hata durumunda varsayılan değerler kullanılır
