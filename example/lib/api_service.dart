@@ -3931,19 +3931,6 @@ class ApiService {
       rethrow;
     }
   }
-        } else {
-           print('❌ Reset Password API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Password reset failed: ${responseData['errmsg']}');
-        }
-      } else {
-        print('❌ HTTP hatası: ${response.statusCode}');
-        throw Exception('HTTP error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('❌ Şifre sıfırlama istisnası: $e');
-      rethrow;
-    }
-  }
 
   /// Get list of users registered via cloud API
   Future<Map<String, dynamic>> getUserList({
