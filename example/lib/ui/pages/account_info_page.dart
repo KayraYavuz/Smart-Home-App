@@ -10,10 +10,10 @@ class AccountInfoPage extends StatefulWidget {
 }
 
 class _AccountInfoPageState extends State<AccountInfoPage> {
-  String _username = 'ahmetkayrayavuz';
-  String _email = 'ahmet@example.com';
-  String _phone = '+90 555 123 4567';
-  String _country = 'Turkey';
+  String _username = 'Kullanıcı';
+  String _email = 'kullanici@ornek.com';
+  String _phone = '+90 5XX XXX XX XX';
+  String _country = 'Türkiye';
 
   @override
   void initState() {
@@ -23,11 +23,23 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
 
   Future<void> _loadUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
+    String loadedEmail = prefs.getString('saved_email') ?? 'kullanici@ornek.com';
+    String loadedUsername = prefs.getString('saved_username') ?? '';
+
+    // Eğer kullanıcı adı kayıtlı değilse veya varsayılan ise, e-postadan üret
+    if (loadedUsername.isEmpty || loadedUsername == 'Kullanıcı') {
+      if (loadedEmail.contains('@')) {
+        loadedUsername = loadedEmail.split('@')[0];
+      } else {
+        loadedUsername = 'Kullanıcı';
+      }
+    }
+
     setState(() {
-      _username = prefs.getString('saved_username') ?? 'ahmetkayrayavuz';
-      _email = prefs.getString('saved_email') ?? 'ahmet@example.com';
-      _phone = prefs.getString('saved_phone') ?? '+90 555 123 4567';
-      _country = prefs.getString('saved_country') ?? 'Turkey';
+      _username = loadedUsername;
+      _email = loadedEmail;
+      _phone = prefs.getString('saved_phone') ?? '+90 5XX XXX XX XX';
+      _country = prefs.getString('saved_country') ?? 'Türkiye';
     });
   }
 
