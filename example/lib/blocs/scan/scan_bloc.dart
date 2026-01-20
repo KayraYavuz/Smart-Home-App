@@ -147,7 +147,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         // 2. Bluetooth'tan alınan lockData'yı TTLock Cloud'a kaydet
         final apiResult = await apiService.initializeLock(
           lockData: lockData,
-          lockAlias: event.lock.lockName.isNotEmpty ? event.lock.lockName : 'TTLock Kilidi',
+          lockAlias: event.lock.lockName.isNotEmpty ? event.lock.lockName : 'Yavuz Lock',
         );
 
         if (emit.isDone) return;

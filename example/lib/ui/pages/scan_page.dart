@@ -180,7 +180,7 @@ class ScanPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Çevredeki TTLock kilitlerini taradık ancak hiç kilit bulunamadı.',
+                        'Çevredeki Yavuz Lock kilitlerini taradık ancak hiç kilit bulunamadı.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.grey[400],

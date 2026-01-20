@@ -397,7 +397,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noLocksFound => 'API\'den kilit bulunamadı.';
 
   @override
-  String get allLocks => 'Tüm Kilitler';
+  String get allLocks => 'Yavuz Lock';
 
   @override
   String get refreshLocks => 'Kilitleri Yenile';

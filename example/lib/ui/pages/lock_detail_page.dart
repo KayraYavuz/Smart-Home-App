@@ -114,7 +114,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
               // Kilit adı
               Expanded(
                 child: Text(
-                  widget.lock['name'] ?? 'TTLock Kilidi',
+                  widget.lock['name'] ?? 'Yavuz Lock',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,

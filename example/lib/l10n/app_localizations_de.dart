@@ -399,7 +399,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noLocksFound => 'Keine Schlösser von der API gefunden.';
 
   @override
-  String get allLocks => 'Alle Schlösser';
+  String get allLocks => 'Yavuz Lock';
 
   @override
   String get refreshLocks => 'Schlösser aktualisieren';

@@ -859,7 +859,7 @@ abstract class AppLocalizations {
   /// No description provided for @allLocks.
   ///
   /// In en, this message translates to:
-  /// **'All Locks'**
+  /// **'Yavuz Lock'**
   String get allLocks;
 
   /// No description provided for @refreshLocks.

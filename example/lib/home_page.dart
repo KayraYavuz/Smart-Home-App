@@ -263,7 +263,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               // TTLock kendi cihazlarını ekle
               for (final lock in ttlockDevices) {
                 final lockId = lock['lockId']?.toString() ?? '';
-                final lockAlias = lock['name'] ?? 'TTLock Kilit'; // ApiService'den gelen name'i kullan
+                final lockAlias = lock['name'] ?? 'Yavuz Lock'; // ApiService'den gelen name'i kullan
                 final keyState = lock['keyState'] ?? 0;
                 final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
 
@@ -290,7 +290,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               // TTLock paylaşılmış cihazlarını ekle
               for (final lock in sharedTTLockDevices) {
                 final lockId = lock['lockId']?.toString() ?? '';
-                final lockAlias = lock['name'] ?? 'Paylaşılmış TTLock Kilit'; // ApiService'den gelen name'i kullan
+                final lockAlias = lock['name'] ?? 'Paylaşılmış Yavuz Lock'; // ApiService'den gelen name'i kullan
                 final keyState = lock['keyState'] ?? 0;
                 final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
 
@@ -431,7 +431,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('TTLock kilidi başarıyla eklendi'),
+            content: Text('Yavuz Lock kilidi başarıyla eklendi'),
             backgroundColor: Colors.green,
           ),
         );
@@ -684,7 +684,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               Icon(Icons.lock_outline, color: Colors.green, size: 12),
                               SizedBox(width: 4),
                               Text(
-                                'TTLock',
+                                'Yavuz Lock',
                                 style: TextStyle(
                                   color: Colors.green,
                                   fontSize: 10,

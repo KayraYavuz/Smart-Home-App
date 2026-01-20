@@ -855,7 +855,7 @@ class ApiService {
           
           // TTLock Cloud API'de lockAlias orijinal adı temsil eder.
           // Eğer lockAlias yoksa lockName, o da yoksa diğer alanları kullan.
-          final lockAlias = key['lockAlias'] ?? key['lockName'] ?? key['lockNickName'] ?? key['name'] ?? 'TTLock Kilidi';
+          final lockAlias = key['lockAlias'] ?? key['lockName'] ?? key['lockNickName'] ?? key['name'] ?? 'Yavuz Lock';
           
           final keyStatus = key['keyStatus']; // Keep raw value
           final electricQuantity = key['electricQuantity'] ?? key['battery'] ?? 0;
@@ -1737,7 +1737,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockData': lockData,
-      'lockAlias': lockAlias ?? 'TTLock Kilidi',
+      'lockAlias': lockAlias ?? 'Yavuz Lock',
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     };
 
@@ -5095,7 +5095,7 @@ class ApiService {
 
               return {
                 'lockId': lock['lockId'],
-                'name': lock['lockAlias'] ?? (isShared ? 'Paylaşılmış Kilit' : 'TTLock Kilit'),
+                'name': lock['lockAlias'] ?? (isShared ? 'Paylaşılmış Kilit' : 'Yavuz Lock'),
                 'status': status,
                 'isLocked': isLocked,
                 'battery': lock['electricQuantity'] ?? 0,

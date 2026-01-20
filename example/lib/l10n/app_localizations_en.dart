@@ -395,7 +395,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noLocksFound => 'No locks found from API.';
 
   @override
-  String get allLocks => 'All Locks';
+  String get allLocks => 'Yavuz Lock';
 
   @override
   String get refreshLocks => 'Refresh Locks';
