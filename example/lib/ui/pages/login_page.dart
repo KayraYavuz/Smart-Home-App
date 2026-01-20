@@ -233,11 +233,21 @@ class _LoginPageState extends State<LoginPage> {
                               ],
                               SizedBox(height: 20),
                               TextButton(
-                                onPressed: () {
-                                  Navigator.push(
+                                onPressed: () async {
+                                  final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => RegisterPage()),
                                   );
+
+                                  if (result != null && result is Map<String, String>) {
+                                    setState(() {
+                                      _usernameController.text = result['username'] ?? '';
+                                      _passwordController.text = result['password'] ?? '';
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Bilgiler dolduruldu, giriş yapabilirsiniz.')),
+                                    );
+                                  }
                                 },
                                 child: Text(
                                   'Hesabınız Yok Mu? Kayıt Olun',

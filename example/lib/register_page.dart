@@ -24,21 +24,75 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       final apiService = ApiService(context.read<AuthRepository>());
-      await apiService.registerUser(
+      final result = await apiService.registerUser(
         username: _usernameController.text.trim(),
         password: _passwordController.text,
       );
 
+      final String prefixedUsername = result['username'] ?? '';
+
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Kayıt başarılı! Şimdi giriş yapabilirsiniz.'),
-          backgroundColor: Colors.green,
+      // Kayıt başarılı diyaloğu göster
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: const Text('Kayıt Başarılı!', style: TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Hesabınız başarıyla oluşturuldu.', style: TextStyle(color: Colors.grey)),
+              const SizedBox(height: 16),
+              const Text('Giriş Kimliğiniz:', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        prefixedUsername,
+                        style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy, size: 20, color: Colors.blue),
+                      onPressed: () {
+                        // Panoya kopyalama eklenebilir
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Lütfen bu kimliği not edin. Giriş yaparken bu ismi kullanmalısınız.',
+                style: TextStyle(color: Colors.orangeAccent, fontSize: 12),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Diyaloğu kapat
+                Navigator.of(context).pop({
+                  'username': prefixedUsername,
+                  'password': _passwordController.text,
+                }); // Giriş sayfasına dön ve bilgileri gönder
+              },
+              child: const Text('Giriş Yap', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+            ),
+          ],
         ),
       );
-
-      Navigator.of(context).pop(); // Giriş sayfasına dön
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
