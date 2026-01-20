@@ -109,6 +109,11 @@ class _MyAppState extends State<MyApp> {
   void _initializeTTLockSDK() async {
      if (Platform.isIOS || Platform.isAndroid) {
       try {
+        if (app_config.ApiConfig.clientId.isEmpty) {
+          print('❌ TTLock Client ID boş! SDK başlatılmıyor. .env dosyasını kontrol edin.');
+          return;
+        }
+
         // Request permissions first
         await _requestPermissions();
 
