@@ -443,4 +443,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get undo => 'Undo';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot Password';
+
+  @override
+  String get emailOrPhone => 'Email or Phone';
+
+  @override
+  String get sendCode => 'Send Code';
+
+  @override
+  String get codeSent => 'Code Sent';
+
+  @override
+  String get verifyCodeLabel => 'Verification Code';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get resetPasswordBtn => 'Reset Password';
+
+  @override
+  String get passwordResetSuccess => 'Password reset successfully!';
+
+  @override
+  String get createAccountTitle => 'Create Account';
+
+  @override
+  String get usernameRequired => 'Username required';
+
+  @override
+  String get codeRequired => 'Enter code';
+
+  @override
+  String get passwordMismatch => 'Passwords do not match';
+
+  @override
+  String get registerBtn => 'Register';
+
+  @override
+  String get registrationSuccess => 'Registration Successful!';
+
+  @override
+  String get registrationSuccessMsg =>
+      'Your account has been created successfully.';
+
+  @override
+  String get loginIdLabel => 'Your Login ID:';
+
+  @override
+  String get loginIdNote => 'Please note this ID. You must use this to login.';
+
+  @override
+  String get loginBtn => 'Login';
+
+  @override
+  String get enterCodePlaceholder => 'Enter Code';
+
+  @override
+  String get errorLabel => 'Error';
 }

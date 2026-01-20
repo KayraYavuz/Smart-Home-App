@@ -38,8 +38,8 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
-        _username = prefs.getString('saved_username') ?? 'ahmetkayrayavuz';
-        _email = prefs.getString('saved_email') ?? 'ahmet@example.com';
+        _username = prefs.getString('saved_username') ?? 'Kullanıcı';
+        _email = prefs.getString('saved_email') ?? 'kullanici@ornek.com';
       });
     } catch (e) {
       // Hata durumunda varsayılan değerler kullanılır

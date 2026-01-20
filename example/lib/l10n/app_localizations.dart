@@ -951,6 +951,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Undo'**
   String get undo;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @emailOrPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or Phone'**
+  String get emailOrPhone;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Code'**
+  String get sendCode;
+
+  /// No description provided for @codeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Code Sent'**
+  String get codeSent;
+
+  /// No description provided for @verifyCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Code'**
+  String get verifyCodeLabel;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPassword;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @resetPasswordBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPasswordBtn;
+
+  /// No description provided for @passwordResetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successfully!'**
+  String get passwordResetSuccess;
+
+  /// No description provided for @createAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccountTitle;
+
+  /// No description provided for @usernameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Username required'**
+  String get usernameRequired;
+
+  /// No description provided for @codeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter code'**
+  String get codeRequired;
+
+  /// No description provided for @passwordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordMismatch;
+
+  /// No description provided for @registerBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get registerBtn;
+
+  /// No description provided for @registrationSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Successful!'**
+  String get registrationSuccess;
+
+  /// No description provided for @registrationSuccessMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been created successfully.'**
+  String get registrationSuccessMsg;
+
+  /// No description provided for @loginIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Login ID:'**
+  String get loginIdLabel;
+
+  /// No description provided for @loginIdNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Please note this ID. You must use this to login.'**
+  String get loginIdNote;
+
+  /// No description provided for @loginBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get loginBtn;
+
+  /// No description provided for @enterCodePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Code'**
+  String get enterCodePlaceholder;
+
+  /// No description provided for @errorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorLabel;
 }
 
 class _AppLocalizationsDelegate

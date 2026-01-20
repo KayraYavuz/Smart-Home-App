@@ -14,7 +14,7 @@ class _TTRentingPageState extends State<TTRentingPage> {
     {
       'id': '1',
       'name': 'Daire 5 - Kadıköy',
-      'tenant': 'Ayşe Yılmaz',
+      'tenant': 'Kiracı A',
       'status': 'rented',
       'rentAmount': 15000,
       'dueDate': DateTime.now().add(const Duration(days: 5)),
@@ -32,7 +32,7 @@ class _TTRentingPageState extends State<TTRentingPage> {
     {
       'id': '3',
       'name': 'Yazlık - Bodrum',
-      'tenant': 'Can Demir',
+      'tenant': 'Kiracı B',
       'status': 'rented',
       'rentAmount': 25000,
       'dueDate': DateTime.now().subtract(const Duration(days: 2)),

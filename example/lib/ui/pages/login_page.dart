@@ -7,6 +7,7 @@ import 'package:yavuz_lock/blocs/login/login_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_event.dart';
 import 'package:yavuz_lock/blocs/login/login_state.dart';
 import 'package:yavuz_lock/register_page.dart'; // Import RegisterPage
+import 'package:yavuz_lock/ui/pages/forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -162,19 +163,33 @@ class _LoginPageState extends State<LoginPage> {
                               SizedBox(height: 12),
                               // Remember Me checkbox
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Checkbox(
-                                    value: _rememberMe,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _rememberMe = value ?? false;
-                                      });
-                                    },
-                                    activeColor: Color(0xFF1E90FF),
+                                  Row(
+                                    children: [
+                                      Checkbox(
+                                        value: _rememberMe,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _rememberMe = value ?? false;
+                                          });
+                                        },
+                                        activeColor: Color(0xFF1E90FF),
+                                      ),
+                                      Text(
+                                        'Bilgilerimi Hatırla',
+                                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    'Bilgilerimi Hatırla',
-                                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                                      );
+                                    },
+                                    child: const Text('Şifremi Unuttum', style: TextStyle(color: Colors.white70)),
                                   ),
                                 ],
                               ),

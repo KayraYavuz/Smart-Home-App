@@ -97,6 +97,56 @@ class ApiService {
     return md5.convert(utf8.encode(input)).toString().toLowerCase();
   }
 
+  /// Get verification code for registration
+  Future<bool> getVerifyCode({
+    required String username,
+  }) async {
+    print('📧 Kayıt doğrulama kodu isteniyor: $username');
+    // Not: v3/user/getRegisterCode genellikle App SDK kullanıcıları içindir.
+    // Open Platform kullanıcıları için bu endpoint çalışmayabilir veya farklı davranabilir.
+    // Ancak kullanıcı isteği üzerine eklenmiştir.
+    
+    final url = Uri.parse('$_baseUrl/v3/user/getRegisterCode');
+    final now = DateTime.now().millisecondsSinceEpoch;
+    
+    final body = {
+      'clientId': ApiConfig.clientId,
+      'clientSecret': ApiConfig.clientSecret,
+      'username': username,
+      'date': now.toString(),
+    };
+
+    final formBody = body.map((key, value) => MapEntry(key, value.toString()));
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: formBody,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+          print('✅ Doğrulama kodu gönderildi');
+          return true;
+        } else {
+          // Hata durumunda (örneğin bu client için desteklenmiyorsa) false dönelim
+          // veya kullanıcıya özel bir mesaj gösterelim.
+          print('❌ Kod gönderme hatası: ${responseData['errmsg']}');
+          // Eğer API desteklemiyorsa, sessizce geçiştirip manuel kayıt akışına devam edebiliriz
+          // veya hatayı fırlatabiliriz. Kullanıcı "mutlaka kod olsun" dediği için hatayı gösterelim.
+          throw Exception('${responseData['errmsg']}');
+        }
+      } else {
+        throw Exception('HTTP error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ İstisna: $e');
+      rethrow;
+    }
+  }
+
   /// Register a new user
   Future<Map<String, dynamic>> registerUser({
     required String username,
@@ -3780,11 +3830,56 @@ class ApiService {
     return false;
   }
 
+  /// Get verification code for password reset
+  /// Returns true if code is sent successfully
+  Future<bool> getResetPasswordCode({
+    required String username,
+  }) async {
+    print('📧 Şifre sıfırlama kodu isteniyor: $username');
+    
+    final url = Uri.parse('$_baseUrl/v3/user/getResetPasswordCode');
+    final now = DateTime.now().millisecondsSinceEpoch;
+    
+    final body = {
+      'clientId': ApiConfig.clientId,
+      'clientSecret': ApiConfig.clientSecret,
+      'username': username,
+      'date': now.toString(),
+    };
+
+    final formBody = body.map((key, value) => MapEntry(key, value.toString()));
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: formBody,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+          print('✅ Şifre sıfırlama kodu gönderildi');
+          return true;
+        } else {
+          print('❌ Kod gönderme hatası: ${responseData['errmsg']}');
+          throw Exception('${responseData['errmsg']}');
+        }
+      } else {
+        throw Exception('HTTP error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ İstisna: $e');
+      rethrow;
+    }
+  }
+
   /// Reset password for a cloud-registered user
   /// Returns true if successful
   Future<bool> resetPassword({
     required String username,
     required String newPassword,
+    String? verifyCode,
   }) async {
     print('🔐 Şifre sıfırlama işlemi: $username');
     
@@ -3798,6 +3893,10 @@ class ApiService {
       'password': _generateMd5(newPassword), // Password must be MD5 encrypted
       'date': now.toString(),
     };
+
+    if (verifyCode != null) {
+      body['verifyCode'] = verifyCode;
+    }
 
     print('📡 Reset Password API çağrısı: $url');
     // Ensure all values are strings
@@ -3819,6 +3918,19 @@ class ApiService {
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           print('✅ Şifre başarıyla sıfırlandı');
           return true;
+        } else {
+          print('❌ Şifre sıfırlama hatası: ${responseData['errmsg']}');
+          throw Exception('Şifre sıfırlanamadı: ${responseData['errmsg']}');
+        }
+      } else {
+        print('❌ HTTP hatası: ${response.statusCode}');
+        throw Exception('HTTP error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Şifre sıfırlama istisnası: $e');
+      rethrow;
+    }
+  }
         } else {
            print('❌ Reset Password API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
            throw Exception('Password reset failed: ${responseData['errmsg']}');

@@ -11,11 +11,11 @@ class HotelPMSPage extends StatefulWidget {
 class _HotelPMSPageState extends State<HotelPMSPage> {
   // Demo data for hotel rooms
   final List<Map<String, dynamic>> _rooms = [
-    {'number': '101', 'status': 'occupied', 'guest': 'Ahmet Yılmaz'},
+    {'number': '101', 'status': 'occupied', 'guest': 'Misafir A'},
     {'number': '102', 'status': 'vacant', 'guest': null},
     {'number': '103', 'status': 'cleaning', 'guest': null},
     {'number': '201', 'status': 'vacant', 'guest': null},
-    {'number': '202', 'status': 'occupied', 'guest': 'Mehmet Demir'},
+    {'number': '202', 'status': 'occupied', 'guest': 'Misafir B'},
     {'number': '203', 'status': 'vacant', 'guest': null},
   ];
 

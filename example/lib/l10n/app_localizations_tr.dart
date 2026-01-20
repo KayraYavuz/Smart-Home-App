@@ -445,4 +445,68 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get undo => 'Geri Al';
+
+  @override
+  String get forgotPasswordTitle => 'Şifremi Unuttum';
+
+  @override
+  String get emailOrPhone => 'E-posta veya Telefon';
+
+  @override
+  String get sendCode => 'Kod Gönder';
+
+  @override
+  String get codeSent => 'Kod Gönderildi';
+
+  @override
+  String get verifyCodeLabel => 'Doğrulama Kodu';
+
+  @override
+  String get newPassword => 'Yeni Şifre';
+
+  @override
+  String get confirmPassword => 'Şifreyi Onayla';
+
+  @override
+  String get resetPasswordBtn => 'Şifreyi Yenile';
+
+  @override
+  String get passwordResetSuccess => 'Şifreniz başarıyla sıfırlandı!';
+
+  @override
+  String get createAccountTitle => 'Hesap Oluştur';
+
+  @override
+  String get usernameRequired => 'Kullanıcı adı gerekli';
+
+  @override
+  String get codeRequired => 'Kodu girin';
+
+  @override
+  String get passwordMismatch => 'Şifreler eşleşmiyor';
+
+  @override
+  String get registerBtn => 'Kayıt Ol';
+
+  @override
+  String get registrationSuccess => 'Kayıt Başarılı!';
+
+  @override
+  String get registrationSuccessMsg => 'Hesabınız başarıyla oluşturuldu.';
+
+  @override
+  String get loginIdLabel => 'Giriş Kimliğiniz:';
+
+  @override
+  String get loginIdNote =>
+      'Lütfen bu kimliği not edin. Giriş yaparken bu ismi kullanmalısınız.';
+
+  @override
+  String get loginBtn => 'Giriş Yap';
+
+  @override
+  String get enterCodePlaceholder => 'Kodu Girin';
+
+  @override
+  String get errorLabel => 'Hata';
 }

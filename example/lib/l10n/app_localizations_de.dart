@@ -447,4 +447,68 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get undo => 'Rückgängig';
+
+  @override
+  String get forgotPasswordTitle => 'Passwort vergessen';
+
+  @override
+  String get emailOrPhone => 'E-Mail oder Telefon';
+
+  @override
+  String get sendCode => 'Code senden';
+
+  @override
+  String get codeSent => 'Code gesendet';
+
+  @override
+  String get verifyCodeLabel => 'Bestätigungscode';
+
+  @override
+  String get newPassword => 'Neues Passwort';
+
+  @override
+  String get confirmPassword => 'Passwort bestätigen';
+
+  @override
+  String get resetPasswordBtn => 'Passwort zurücksetzen';
+
+  @override
+  String get passwordResetSuccess => 'Passwort erfolgreich zurückgesetzt!';
+
+  @override
+  String get createAccountTitle => 'Konto erstellen';
+
+  @override
+  String get usernameRequired => 'Benutzername erforderlich';
+
+  @override
+  String get codeRequired => 'Code eingeben';
+
+  @override
+  String get passwordMismatch => 'Passwörter stimmen nicht überein';
+
+  @override
+  String get registerBtn => 'Registrieren';
+
+  @override
+  String get registrationSuccess => 'Registrierung erfolgreich!';
+
+  @override
+  String get registrationSuccessMsg => 'Ihr Konto wurde erfolgreich erstellt.';
+
+  @override
+  String get loginIdLabel => 'Ihre Login-ID:';
+
+  @override
+  String get loginIdNote =>
+      'Bitte notieren Sie diese ID. Sie benötigen sie zum Anmelden.';
+
+  @override
+  String get loginBtn => 'Anmelden';
+
+  @override
+  String get enterCodePlaceholder => 'Code eingeben';
+
+  @override
+  String get errorLabel => 'Fehler';
 }
