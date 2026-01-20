@@ -6,7 +6,7 @@ import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_event.dart';
 import 'package:yavuz_lock/blocs/login/login_state.dart';
-import 'package:url_launcher/url_launcher.dart'; // Yönlendirme için eklendi
+import 'package:yavuz_lock/register_page.dart'; // Import RegisterPage
 
 class LoginPage extends StatefulWidget {
   @override
@@ -233,14 +233,11 @@ class _LoginPageState extends State<LoginPage> {
                               ],
                               SizedBox(height: 20),
                               TextButton(
-                                onPressed: () async {
-                                  // TTLock Kayıt Sayfasına Yönlendirme
-                                  final Uri url = Uri.parse('https://lock-admin.ttlock.com/user/reg');
-                                  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Bağlantı açılamadı: $url')),
-                                    );
-                                  }
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => RegisterPage()),
+                                  );
                                 },
                                 child: Text(
                                   'Hesabınız Yok Mu? Kayıt Olun',

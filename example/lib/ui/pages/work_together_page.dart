@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
+import 'package:yavuz_lock/ui/pages/work_together/query_lock_page.dart';
+import 'package:yavuz_lock/ui/pages/work_together/utility_meter_page.dart';
+import 'package:yavuz_lock/ui/pages/work_together/card_encoder_page.dart';
+import 'package:yavuz_lock/ui/pages/work_together/hotel_pms_page.dart';
+import 'package:yavuz_lock/ui/pages/work_together/third_party_device_page.dart';
+import 'package:yavuz_lock/ui/pages/work_together/tt_renting_page.dart';
+import 'package:yavuz_lock/ui/pages/work_together/open_platform_page.dart';
 
 class WorkTogetherPage extends StatelessWidget {
   const WorkTogetherPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Koyu tema
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: const Text(
-          'Birlikte çalışmak',
-          style: TextStyle(
+        title: Text(
+          l10n.workTogetherTitle,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -31,11 +40,12 @@ class WorkTogetherPage extends StatelessWidget {
             _buildPartnerService(
               icon: Icons.search,
               iconColor: Colors.blue,
-              title: 'Kilidi sorgula',
-              description: 'Bir kilidin eklenme zamanını sorgula',
+              title: l10n.queryLock,
+              description: l10n.queryLockDesc,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kilit sorgulama özelliği yakında eklenecek')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const QueryLockPage()),
                 );
               },
             ),
@@ -43,11 +53,12 @@ class WorkTogetherPage extends StatelessWidget {
             _buildPartnerService(
               icon: Icons.electrical_services,
               iconColor: Colors.orange,
-              title: 'Utility sayacı',
-              description: 'Utility sayacı kullanmak apartman yönetimini daha kolay hale getirir.',
+              title: l10n.utilityMeter,
+              description: l10n.utilityMeterDesc,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Utility sayacı özelliği yakında eklenecek')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UtilityMeterPage()),
                 );
               },
             ),
@@ -55,11 +66,12 @@ class WorkTogetherPage extends StatelessWidget {
             _buildPartnerService(
               icon: Icons.contactless,
               iconColor: Colors.green,
-              title: 'Kart kodlayıcı',
-              description: 'Ağ geçidi olmadan kart kodlayıcılı sorun kartı',
+              title: l10n.cardEncoder,
+              description: l10n.cardEncoderDesc,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kart kodlayıcı özelliği yakında eklenecek')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CardEncoderPage()),
                 );
               },
             ),
@@ -67,11 +79,12 @@ class WorkTogetherPage extends StatelessWidget {
             _buildPartnerService(
               icon: Icons.hotel,
               iconColor: Colors.purple,
-              title: 'Otel PMS',
-              description: 'Otel yönetim sistemi',
+              title: l10n.hotelPMS,
+              description: l10n.hotelPMSDesc,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Otel PMS entegrasyonu yakında eklenecek')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HotelPMSPage()),
                 );
               },
             ),
@@ -79,11 +92,12 @@ class WorkTogetherPage extends StatelessWidget {
             _buildPartnerService(
               icon: Icons.devices_other,
               iconColor: Colors.teal,
-              title: 'Üçüncü taraf cihaz',
-              description: 'Üçüncü taraf cihazlarla kapı aç',
+              title: l10n.thirdPartyDevice,
+              description: l10n.thirdPartyDeviceDesc,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Üçüncü taraf cihaz entegrasyonu yakında eklenecek')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ThirdPartyDevicePage()),
                 );
               },
             ),
@@ -91,11 +105,12 @@ class WorkTogetherPage extends StatelessWidget {
             _buildPartnerService(
               icon: Icons.home,
               iconColor: Colors.indigo,
-              title: 'TTRenting',
-              description: 'Long-term Rental Management System',
+              title: l10n.ttRenting,
+              description: l10n.ttRentingDesc,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('TTRenting entegrasyonu yakında eklenecek')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TTRentingPage()),
                 );
               },
             ),
@@ -103,11 +118,12 @@ class WorkTogetherPage extends StatelessWidget {
             _buildPartnerService(
               icon: Icons.code,
               iconColor: Colors.red,
-              title: 'Açık platform',
-              description: 'APP SDK, Cloud API, DLL',
+              title: l10n.openPlatform,
+              description: l10n.openPlatformDesc,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Açık platform bilgileri yakında eklenecek')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const OpenPlatformPage()),
                 );
               },
             ),

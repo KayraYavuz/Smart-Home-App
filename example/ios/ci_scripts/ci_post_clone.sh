@@ -132,9 +132,13 @@ flutter precache --ios
 echo "Flutter paketleri yükleniyor (flutter pub get)..."
 flutter pub get
 
+# ÖNEMLİ: Yerelleştirme dosyalarını oluştur
+echo "Yerelleştirme dosyaları oluşturuluyor (flutter gen-l10n)..."
+flutter gen-l10n
+
 # Garanti: Generated.xcconfig dosyasını oluştur (iOS build için kritik)
 echo "iOS konfigürasyon dosyaları oluşturuluyor..."
-flutter build ios --config-only --release
+flutter build ios --config-only --no-codesign
 
 # 4. iOS Pod Kurulumu
 cd ios

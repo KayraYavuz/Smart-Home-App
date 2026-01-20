@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/settings_page.dart';
 import 'package:yavuz_lock/ui/pages/account_info_page.dart';
 import 'package:yavuz_lock/ui/pages/customer_service_page.dart';
@@ -47,6 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Koyu tema
       body: SafeArea(
@@ -143,7 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildMenuItem(
                     icon: Icons.message,
                     iconColor: Colors.blue,
-                    title: 'Hesap bilgisi',
+                    title: l10n.accountInfo,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -155,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildMenuItem(
                     icon: Icons.diamond,
                     iconColor: Colors.blue,
-                    title: 'Hizmetler',
+                    title: l10n.services,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -167,7 +169,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildMenuItem(
                     icon: Icons.history,
                     iconColor: Colors.blue,
-                    title: 'Tüm Kayıtlar',
+                    title: l10n.allRecords,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -177,20 +179,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 8),
                   _buildMenuItem(
-                    icon: Icons.mic,
-                    iconColor: Colors.blue,
-                    title: 'Sesli Asistan',
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Sesli asistan yakında eklenecek')),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  _buildMenuItem(
                     icon: Icons.settings,
                     iconColor: Colors.blue,
-                    title: 'Sistem Yönetimi',
+                    title: l10n.systemManagement,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -202,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildMenuItem(
                     icon: Icons.folder_shared,
                     iconColor: Colors.blue,
-                    title: 'Grup Yönetimi',
+                    title: l10n.groupManagement,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -214,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildMenuItem(
                     icon: Icons.apps,
                     iconColor: Colors.blue,
-                    title: 'Birlikte çalışmak',
+                    title: l10n.workTogether,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -226,7 +217,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildMenuItem(
                     icon: Icons.settings,
                     iconColor: Colors.blue,
-                    title: 'Ayarlar',
+                    title: l10n.settings,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -248,9 +239,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Çıkış Yap',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      child: Text(
+                        l10n.logout,
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ),
                   ),
@@ -266,9 +257,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Hesabı Sil',
-                        style: TextStyle(color: Colors.red, fontSize: 16),
+                      child: Text(
+                        l10n.deleteAccount,
+                        style: const TextStyle(color: Colors.red, fontSize: 16),
                       ),
                     ),
                   ),
@@ -326,6 +317,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _logout(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     // SharedPreferences temizleme ve AuthService token temizleme işlemi
     // AuthBloc'un LoggedOut eventi içinde yapılıyor (AuthRepository.deleteTokens)
     // Bu yüzden buradaki manuel temizlemeye gerek yok, veya sadece UI state için kalabilir.
@@ -336,8 +328,8 @@ class _ProfilePageState extends State<ProfilePage> {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Çıkış yapıldı'),
+      SnackBar(
+        content: Text(l10n.loggedOutMessage),
         backgroundColor: Colors.green,
       ),
     );
@@ -346,6 +338,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _deleteAccount(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -353,23 +346,23 @@ class _ProfilePageState extends State<ProfilePage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          'Hesabı Sil',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          l10n.deleteAccount,
+          style: const TextStyle(color: Colors.white),
         ),
-        content: const Text(
-          'Hesabınızı silmek istediğinizden emin misiniz?',
-          style: TextStyle(color: Colors.grey),
+        content: Text(
+          l10n.deleteAccountConfirmation,
+          style: const TextStyle(color: Colors.grey),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Sil'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -383,8 +376,8 @@ class _ProfilePageState extends State<ProfilePage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Hesap silindi'),
+        SnackBar(
+          content: Text(l10n.accountDeletedMessage),
           backgroundColor: Colors.red,
         ),
       );
@@ -394,30 +387,31 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _editUsername() async {
+    final l10n = AppLocalizations.of(context)!;
     final TextEditingController controller = TextEditingController(text: _username);
     final newName = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('İsmi Düzenle', style: TextStyle(color: Colors.white)),
+        title: Text(l10n.editName, style: const TextStyle(color: Colors.white)),
         content: TextField(
           controller: controller,
           style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'Yeni isim girin',
-            hintStyle: TextStyle(color: Colors.grey),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+          decoration: InputDecoration(
+            hintText: l10n.enterNewName,
+            hintStyle: const TextStyle(color: Colors.grey),
+            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Kaydet', style: TextStyle(color: Colors.blue)),
+            child: Text(l10n.save, style: const TextStyle(color: Colors.blue)),
           ),
         ],
       ),

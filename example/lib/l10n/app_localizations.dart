@@ -208,17 +208,749 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
-  /// Online status
+  /// No description provided for @online.
   ///
   /// In en, this message translates to:
   /// **'Online'**
   String get online;
 
-  /// Offline status
+  /// No description provided for @offline.
   ///
   /// In en, this message translates to:
   /// **'Offline'**
   String get offline;
+
+  /// No description provided for @generalSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'General Settings'**
+  String get generalSettings;
+
+  /// No description provided for @sound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get sound;
+
+  /// No description provided for @soundSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn app sounds on/off'**
+  String get soundSubtitle;
+
+  /// No description provided for @touchToUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Touch to Unlock'**
+  String get touchToUnlock;
+
+  /// No description provided for @touchToUnlockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable touch to unlock feature'**
+  String get touchToUnlockSubtitle;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @notificationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive notifications for lock events'**
+  String get notificationsSubtitle;
+
+  /// No description provided for @personalizedSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized Suggestions'**
+  String get personalizedSuggestions;
+
+  /// No description provided for @personalizedSuggestionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show suggestions based on your usage'**
+  String get personalizedSuggestionsSubtitle;
+
+  /// No description provided for @preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// No description provided for @languages.
+  ///
+  /// In en, this message translates to:
+  /// **'Languages'**
+  String get languages;
+
+  /// No description provided for @screenLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen Lock'**
+  String get screenLock;
+
+  /// No description provided for @hideInvalidAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Invalid Access'**
+  String get hideInvalidAccess;
+
+  /// No description provided for @deviceManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Management'**
+  String get deviceManagement;
+
+  /// No description provided for @gatewayManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway Management'**
+  String get gatewayManagement;
+
+  /// No description provided for @gatewayManagementSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage and connect your TTLock Gateways'**
+  String get gatewayManagementSubtitle;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account?'**
+  String get deleteAccountConfirmation;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @loggedOutMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged out'**
+  String get loggedOutMessage;
+
+  /// No description provided for @accountDeletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted'**
+  String get accountDeletedMessage;
+
+  /// No description provided for @screenLockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen Lock'**
+  String get screenLockTitle;
+
+  /// No description provided for @hideInvalidAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Invalid Access'**
+  String get hideInvalidAccessTitle;
+
+  /// No description provided for @auto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get auto;
+
+  /// No description provided for @off.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get off;
+
+  /// No description provided for @on.
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get on;
+
+  /// No description provided for @seconds30.
+  ///
+  /// In en, this message translates to:
+  /// **'30 seconds'**
+  String get seconds30;
+
+  /// No description provided for @minute1.
+  ///
+  /// In en, this message translates to:
+  /// **'1 minute'**
+  String get minute1;
+
+  /// No description provided for @minutes5.
+  ///
+  /// In en, this message translates to:
+  /// **'5 minutes'**
+  String get minutes5;
+
+  /// No description provided for @accountInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Info'**
+  String get accountInfo;
+
+  /// No description provided for @services.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get services;
+
+  /// No description provided for @allRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'All Records'**
+  String get allRecords;
+
+  /// No description provided for @voiceAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice Assistant'**
+  String get voiceAssistant;
+
+  /// No description provided for @systemManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'System Management'**
+  String get systemManagement;
+
+  /// No description provided for @groupManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Management'**
+  String get groupManagement;
+
+  /// No description provided for @workTogether.
+  ///
+  /// In en, this message translates to:
+  /// **'Work Together'**
+  String get workTogether;
+
+  /// No description provided for @voiceAssistantComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice assistant coming soon'**
+  String get voiceAssistantComingSoon;
+
+  /// No description provided for @workTogetherTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Work Together'**
+  String get workTogetherTitle;
+
+  /// No description provided for @queryLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Query Lock'**
+  String get queryLock;
+
+  /// No description provided for @queryLockDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Query the addition time of a lock'**
+  String get queryLockDesc;
+
+  /// No description provided for @utilityMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Utility Meter'**
+  String get utilityMeter;
+
+  /// No description provided for @utilityMeterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Using utility meters makes apartment management easier.'**
+  String get utilityMeterDesc;
+
+  /// No description provided for @cardEncoder.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Encoder'**
+  String get cardEncoder;
+
+  /// No description provided for @cardEncoderDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue cards with card encoder without gateway'**
+  String get cardEncoderDesc;
+
+  /// No description provided for @hotelPMS.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel PMS'**
+  String get hotelPMS;
+
+  /// No description provided for @hotelPMSDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel management system'**
+  String get hotelPMSDesc;
+
+  /// No description provided for @thirdPartyDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Third Party Device'**
+  String get thirdPartyDevice;
+
+  /// No description provided for @thirdPartyDeviceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Open door with third party devices'**
+  String get thirdPartyDeviceDesc;
+
+  /// No description provided for @ttRenting.
+  ///
+  /// In en, this message translates to:
+  /// **'TTRenting'**
+  String get ttRenting;
+
+  /// No description provided for @ttRentingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Long-term Rental Management System'**
+  String get ttRentingDesc;
+
+  /// No description provided for @openPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Platform'**
+  String get openPlatform;
+
+  /// No description provided for @openPlatformDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'APP SDK, Cloud API, DLL'**
+  String get openPlatformDesc;
+
+  /// No description provided for @featureComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature coming soon'**
+  String get featureComingSoon;
+
+  /// No description provided for @editName.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Name'**
+  String get editName;
+
+  /// No description provided for @enterNewName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new name'**
+  String get enterNewName;
+
+  /// No description provided for @selectLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Lock'**
+  String get selectLock;
+
+  /// No description provided for @lockId.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock ID'**
+  String get lockId;
+
+  /// No description provided for @macAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'MAC Address'**
+  String get macAddress;
+
+  /// No description provided for @lockTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Time'**
+  String get lockTime;
+
+  /// No description provided for @batteryLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery Level'**
+  String get batteryLevel;
+
+  /// No description provided for @noMetersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No meters found.'**
+  String get noMetersFound;
+
+  /// No description provided for @lastReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Reading'**
+  String get lastReading;
+
+  /// No description provided for @addMeter.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Meter'**
+  String get addMeter;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @encoderConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Encoder Connected'**
+  String get encoderConnected;
+
+  /// No description provided for @encoderNotConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Encoder Not Connected'**
+  String get encoderNotConnected;
+
+  /// No description provided for @connectEncoder.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Encoder'**
+  String get connectEncoder;
+
+  /// No description provided for @scanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning...'**
+  String get scanning;
+
+  /// No description provided for @issueCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue Card'**
+  String get issueCard;
+
+  /// No description provided for @readCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Read Card'**
+  String get readCard;
+
+  /// No description provided for @clearCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Card'**
+  String get clearCard;
+
+  /// No description provided for @disconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get disconnect;
+
+  /// No description provided for @occupied.
+  ///
+  /// In en, this message translates to:
+  /// **'Occupied'**
+  String get occupied;
+
+  /// No description provided for @vacant.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacant'**
+  String get vacant;
+
+  /// No description provided for @cleaning.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleaning'**
+  String get cleaning;
+
+  /// No description provided for @checkIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in'**
+  String get checkIn;
+
+  /// No description provided for @checkOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-out'**
+  String get checkOut;
+
+  /// No description provided for @checkInConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to check-in this room?'**
+  String get checkInConfirm;
+
+  /// No description provided for @checkOutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to check-out this room?'**
+  String get checkOutConfirm;
+
+  /// No description provided for @roomCleaning.
+  ///
+  /// In en, this message translates to:
+  /// **'Room Cleaning'**
+  String get roomCleaning;
+
+  /// No description provided for @finishCleaningConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark room as clean?'**
+  String get finishCleaningConfirm;
+
+  /// No description provided for @checkInSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in successful'**
+  String get checkInSuccess;
+
+  /// No description provided for @checkOutSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-out successful'**
+  String get checkOutSuccess;
+
+  /// No description provided for @finish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get finish;
+
+  /// No description provided for @noDevicesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No devices found.'**
+  String get noDevicesFound;
+
+  /// No description provided for @turnedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'turned on'**
+  String get turnedOn;
+
+  /// No description provided for @turnedOff.
+  ///
+  /// In en, this message translates to:
+  /// **'turned off'**
+  String get turnedOff;
+
+  /// No description provided for @noPropertiesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No properties found.'**
+  String get noPropertiesFound;
+
+  /// No description provided for @rented.
+  ///
+  /// In en, this message translates to:
+  /// **'Rented'**
+  String get rented;
+
+  /// No description provided for @tenant.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenant'**
+  String get tenant;
+
+  /// No description provided for @rentDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due Date'**
+  String get rentDueDate;
+
+  /// No description provided for @paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paid;
+
+  /// No description provided for @unpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid'**
+  String get unpaid;
+
+  /// No description provided for @sendKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Key'**
+  String get sendKey;
+
+  /// No description provided for @remind.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind'**
+  String get remind;
+
+  /// No description provided for @readyForRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for rent'**
+  String get readyForRent;
+
+  /// No description provided for @keySent.
+  ///
+  /// In en, this message translates to:
+  /// **'Digital key sent'**
+  String get keySent;
+
+  /// No description provided for @reminderSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment reminder sent'**
+  String get reminderSent;
+
+  /// No description provided for @addProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Property'**
+  String get addProperty;
+
+  /// No description provided for @appSdkDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Integrate lock management directly into your own mobile application.'**
+  String get appSdkDesc;
+
+  /// No description provided for @cloudApiDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your server to TTLock cloud for centralized management.'**
+  String get cloudApiDesc;
+
+  /// No description provided for @desktopSdkDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop solutions and hardware integrations via DLL/SDK.'**
+  String get desktopSdkDesc;
+
+  /// No description provided for @developerPortalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'For more technical information and credentials, visit the Developer Portal.'**
+  String get developerPortalInfo;
+
+  /// No description provided for @visitPortal.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit Developer Portal'**
+  String get visitPortal;
+
+  /// No description provided for @viewDocumentation.
+  ///
+  /// In en, this message translates to:
+  /// **'View Documentation'**
+  String get viewDocumentation;
+
+  /// No description provided for @noLocksFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No locks found from API.'**
+  String get noLocksFound;
+
+  /// No description provided for @allLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'All Locks'**
+  String get allLocks;
+
+  /// No description provided for @refreshLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh Locks'**
+  String get refreshLocks;
+
+  /// No description provided for @gateways.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateways'**
+  String get gateways;
+
+  /// No description provided for @securityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Warning'**
+  String get securityWarning;
+
+  /// No description provided for @locked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get locked;
+
+  /// No description provided for @unlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get unlocked;
+
+  /// No description provided for @sharedLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Lock'**
+  String get sharedLock;
+
+  /// No description provided for @sharedWithYou.
+  ///
+  /// In en, this message translates to:
+  /// **'shared with you.'**
+  String get sharedWithYou;
+
+  /// No description provided for @whatDoYouWantToDo.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you want to do?'**
+  String get whatDoYouWantToDo;
+
+  /// No description provided for @cancelShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Share'**
+  String get cancelShare;
+
+  /// No description provided for @shareCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Share cancelled'**
+  String get shareCancelled;
+
+  /// No description provided for @deleteDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Device'**
+  String get deleteDevice;
+
+  /// No description provided for @deleteDeviceConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove this device from the app?'**
+  String get deleteDeviceConfirmation;
+
+  /// No description provided for @deleteDeviceDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'This action only removes it from this app, the device is not physically affected.'**
+  String get deleteDeviceDisclaimer;
+
+  /// No description provided for @deviceRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'device removed'**
+  String get deviceRemoved;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
 }
 
 class _AppLocalizationsDelegate

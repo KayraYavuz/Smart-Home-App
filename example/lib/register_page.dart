@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -8,58 +10,45 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   Future<void> _register() async {
-    // Loading göstergesi
-    setState(() {
-      _isLoading = true;
-    });
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
 
     try {
-      // TTLock web kayıt sayfasına yönlendirme
-      const ttlockRegisterUrl = 'https://euapi.ttlock.com/register';
+      final apiService = ApiService(context.read<AuthRepository>());
+      await apiService.registerUser(
+        username: _usernameController.text.trim(),
+        password: _passwordController.text,
+      );
 
-      final uri = Uri.parse(ttlockRegisterUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-
-        // Kullanıcıya bilgi ver
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('TTLock kayıt sayfası açıldı. Kayıt olduktan sonra uygulamaya geri dönün.'),
-            backgroundColor: Color(0xFF1E90FF),
-            duration: Duration(seconds: 5),
-          ),
-        );
-
-        // Kullanıcının geri dönmesi için biraz bekle
-        await Future.delayed(Duration(seconds: 2));
-
-        // Giriş sayfasına dön
-        Navigator.of(context).pop();
-
-      } else {
-        throw Exception('TTLock kayıt sayfası açılamadı');
-      }
-
-    } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('TTLock kayıt sayfası açılamadı: $e'),
+          content: Text('Kayıt başarılı! Şimdi giriş yapabilirsiniz.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.of(context).pop(); // Giriş sayfasına dön
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceAll('Exception: ', '')),
           backgroundColor: Colors.red,
         ),
       );
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -68,7 +57,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
+          // Arka plan
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -86,216 +75,133 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-          // Dark overlay for better text readability
-          Positioned.fill(
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.6),
-            ),
-          ),
-          // Content
+          Positioned.fill(child: Container(color: Colors.black.withValues(alpha: 0.5))),
+          
           SafeArea(
-            child: Column(
-              children: [
-                // Custom AppBar
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Row(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Hesap Oluştur',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Form content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          // Logo/Icon
-                          Container(
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                colors: [Color(0xFF1E90FF), Color(0xFF4169E1)],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color(0xFF1E90FF).withValues(alpha: 0.3),
-                                  blurRadius: 20,
-                                  spreadRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.account_circle,
-                              color: Colors.white,
-                              size: 40,
-                            ),
+                      // Header
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back, color: Colors.white),
+                            onPressed: () => Navigator.of(context).pop(),
                           ),
-                          SizedBox(height: 20),
                           Text(
-                            'TTLock Hesabı Oluştur',
-                            textAlign: TextAlign.center,
+                            'Hesap Oluştur',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            'TTLock web sitesinde hesap oluşturun',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          Container(
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Color(0xFF1E90FF).withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Color(0xFF1E90FF).withValues(alpha: 0.3),
-                              ),
-                            ),
-                            child: Text(
-                              'Kayıt işlemi TTLock\'un resmi web sitesi üzerinden yapılır. '
-                              'Kayıt olduktan sonra bu uygulamada giriş yapabilirsiniz.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                height: 1.4,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-
-                          // Bilgilendirme metni
-                          Container(
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.1),
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.info_outline,
-                                  color: Color(0xFF1E90FF),
-                                  size: 32,
-                                ),
-                                SizedBox(height: 12),
-                                Text(
-                                  'TTLock Hesap Oluşturma',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(height: 12),
-                                Text(
-                                  'Kayıt işlemi TTLock\'un resmi web sitesi üzerinden yapılır.',
-                                  style: TextStyle(
-                                    color: Colors.grey[300],
-                                    fontSize: 14,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: 16),
-                                Container(
-                                  padding: EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF1E90FF).withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: Color(0xFF1E90FF).withValues(alpha: 0.3),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Web sitesinde hesap oluşturduktan sonra bu uygulamada giriş yapabilirsiniz.',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 30),
-
-                          // Register button
-                          _isLoading
-                              ? Center(
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1E90FF)),
-                                  ),
-                                )
-                              : ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF1E90FF),
-                                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    elevation: 8,
-                                    shadowColor: Color(0xFF1E90FF).withValues(alpha: 0.3),
-                                  ),
-                                  icon: Icon(Icons.open_in_browser, color: Colors.white),
-                                  label: Text(
-                                    'TTLock Kayıt Sayfasına Git',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  onPressed: _register,
-                                ),
-
-                          SizedBox(height: 20),
-
-                          // Terms and conditions
-                          Text(
-                            'Kayıt olarak kullanım koşullarını kabul etmiş olursunuz.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 12,
-                            ),
-                          ),
                         ],
                       ),
-                    ),
+                      SizedBox(height: 40),
+                      
+                      // Kullanıcı Adı
+                      TextFormField(
+                        controller: _usernameController,
+                        decoration: _buildInputDecoration('E-posta veya Telefon'),
+                        style: TextStyle(color: Colors.white),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Lütfen bir kullanıcı adı girin';
+                          }
+                          if (value.length < 4) {
+                            return 'Kullanıcı adı en az 4 karakter olmalı';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+
+                      // Şifre
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration: _buildInputDecoration(
+                          'Şifre',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.grey[400],
+                            ),
+                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          ),
+                        ),
+                        style: TextStyle(color: Colors.white),
+                        obscureText: _obscurePassword,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Lütfen bir şifre girin';
+                          }
+                          if (value.length < 6) {
+                            return 'Şifre en az 6 karakter olmalı';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+
+                      // Şifre Tekrar
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        decoration: _buildInputDecoration(
+                          'Şifreyi Onayla',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.grey[400],
+                            ),
+                            onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                          ),
+                        ),
+                        style: TextStyle(color: Colors.white),
+                        obscureText: _obscureConfirmPassword,
+                        validator: (value) {
+                          if (value != _passwordController.text) {
+                            return 'Şifreler eşleşmiyor';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 40),
+
+                      // Kayıt Ol Butonu
+                      ElevatedButton(
+                        onPressed: _isLoading ? null : _register,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF1E90FF),
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 8,
+                          shadowColor: Color(0xFF1E90FF).withValues(alpha: 0.3),
+                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                              )
+                            : Text(
+                                'Kayıt Ol',
+                                style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -303,5 +209,33 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-
+  InputDecoration _buildInputDecoration(String label, {Widget? suffixIcon}) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.grey[400]),
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.1),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Color(0xFF1E90FF)),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.red.withValues(alpha: 0.5)),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.red),
+      ),
+    );
+  }
 }

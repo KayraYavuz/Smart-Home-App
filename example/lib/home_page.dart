@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bmprogresshud/progresshud.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'ui/pages/lock_detail_page.dart';
 import 'ui/pages/add_device_page.dart';
 import 'ui/pages/gateways_page.dart';
@@ -478,17 +479,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Widget _buildMainContent(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // This is the content for the first tab (index 0)
     return Column(
       children: [
-        _buildHeader(),
+        _buildHeader(context),
         Expanded(
           child: _isLoading
               ? Center(child: CircularProgressIndicator(color: Colors.white))
               : _locks.isEmpty
                   ? Center(
                       child: Text(
-                        'API\'den kilit bulunamadı.',
+                        l10n.noLocksFound,
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     )
@@ -496,7 +498,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       padding: const EdgeInsets.all(8.0),
                       itemCount: _locks.length,
                       itemBuilder: (context, index) {
-                        return _buildLockListItem(_locks[index]);
+                        return _buildLockListItem(_locks[index], context);
                       },
                     ),
         ),
@@ -504,14 +506,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Tüm Kilitler',
+            l10n.allLocks,
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -528,7 +531,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 child: IconButton(
                   icon: Icon(Icons.cloud_sync, color: Colors.white),
                   onPressed: _fetchAndSetLocks,
-                  tooltip: 'Kilitleri Yenile',
+                  tooltip: l10n.refreshLocks,
                 ),
               ),
               SizedBox(width: 8), // Spacing between icons
@@ -545,7 +548,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       MaterialPageRoute(builder: (context) => GatewaysPage()),
                     );
                   },
-                  tooltip: 'Gatewayler',
+                  tooltip: l10n.gateways,
                 ),
               ),
               SizedBox(width: 8), // Spacing between icons
@@ -566,7 +569,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildLockListItem(Map<String, dynamic> lock) {
+  Widget _buildLockListItem(Map<String, dynamic> lock, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isTTLockDevice = lock['source'] == 'ttlock';
     final isSharedTTLockDevice = lock['source'] == 'ttlock_shared';
 
@@ -574,6 +578,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     print('🔍 Building lock item: ${lock['name']} (ID: ${lock['lockId']})');
     print('   Source: ${lock['source']}, Shared: ${lock['shared']}');
     print('   All keys: ${lock.keys.join(', ')}');
+
+    String statusText = '';
+    if (lock['status'] == 'Güvenlik Uyarısı') {
+      statusText = l10n.securityWarning;
+    } else {
+      statusText = lock['isLocked'] == true ? l10n.locked : l10n.unlocked;
+    }
 
     return Card(
       elevation: 4,
@@ -620,7 +631,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   final lockName = updatedLock['name'] ?? 'Kilit';
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('$lockName ${newState ? 'kilitlendi' : 'açıldı'}'),
+                      content: Text('$lockName ${newState ? l10n.locked.toLowerCase() : l10n.unlocked.toLowerCase()}'),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -692,13 +703,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: const Color.fromRGBO(255, 152, 0, 0.3), width: 1),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.share, color: Colors.orange, size: 12),
                               SizedBox(width: 4),
                               Text(
-                                'Paylaşılmış',
+                                l10n.sharedLock,
                                 style: TextStyle(
                                   color: Colors.orange,
                                   fontSize: 10,
@@ -727,7 +738,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          lock['status'],
+                          statusText,
                           style: TextStyle(color: Colors.grey[400], fontSize: 14),
                         ),
                         if (lock['deviceType'] != null)
@@ -796,6 +807,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<String?> _showSharedLockOptionsDialog(BuildContext context, Map<String, dynamic> lock) async {
+    final l10n = AppLocalizations.of(context)!;
     return await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -809,7 +821,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               Icon(Icons.share, color: Colors.orange),
               SizedBox(width: 12),
               Text(
-                'Paylaşılan Kilit',
+                l10n.sharedLock,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -818,21 +830,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ],
           ),
           content: Text(
-            '${lock['name']} kilidi sizinle paylaşılmış.\n\nNe yapmak istiyorsunuz?',
+            '${lock['name']} ${l10n.sharedWithYou}\n\n${l10n.whatDoYouWantToDo}',
             style: TextStyle(color: Colors.grey[400]),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                'İptal',
+                l10n.cancel,
                 style: TextStyle(color: Colors.grey[400]),
               ),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop('cancel_share'),
               child: Text(
-                'Paylaşımı İptal Et',
+                l10n.cancelShare,
                 style: TextStyle(color: Colors.orange),
               ),
             ),
@@ -843,6 +855,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _cancelLockShare(Map<String, dynamic> lock) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       // TTLock API ile paylaşımı iptal et
       final apiService = ApiService(context.read<AuthRepository>());
@@ -869,7 +882,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${lock['name']} paylaşımı iptal edildi'),
+          content: Text('${lock['name']} ${l10n.shareCancelled}'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -877,7 +890,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Paylaşım iptali hatası: $e'),
+          content: Text('Paylaşım iptali hatası: $e'), // Error message often technical, keeping as is or generic
           backgroundColor: Colors.red,
         ),
       );
@@ -888,6 +901,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
 
   Future<bool> _showDeleteConfirmationDialog(Map<String, dynamic> lock) async {
+    final l10n = AppLocalizations.of(context)!;
     return await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -901,7 +915,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               Icon(Icons.warning, color: Colors.redAccent),
               SizedBox(width: 12),
               Text(
-                'Cihazı Sil',
+                l10n.deleteDevice,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -910,21 +924,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ],
           ),
           content: Text(
-            '${lock['name']} cihazını uygulamadan kaldırmak istediğinizden emin misiniz?\n\nBu işlem sadece bu uygulamadan kaldırır, cihaz fiziksel olarak etkilenmez.',
+            '${lock['name']} ${l10n.deleteDeviceConfirmation}\n\n${l10n.deleteDeviceDisclaimer}',
             style: TextStyle(color: Colors.grey[400]),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
-                'İptal',
+                l10n.cancel,
                 style: TextStyle(color: Colors.grey[400]),
               ),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(
-                'Sil',
+                l10n.delete,
                 style: TextStyle(color: Colors.redAccent),
               ),
             ),
@@ -935,6 +949,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void _removeDevice(Map<String, dynamic> lock) {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _locks.removeWhere((device) =>
         device['name'] == lock['name'] &&
@@ -944,10 +959,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${lock['name']} cihazı kaldırıldı'),
+        content: Text('${lock['name']} ${l10n.deviceRemoved}'),
         backgroundColor: Colors.redAccent,
         action: SnackBarAction(
-          label: 'Geri Al',
+          label: l10n.undo,
           textColor: Colors.white,
           onPressed: () {
             setState(() {
@@ -988,6 +1003,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   // Unused debug method removed
 
   Widget _buildBottomNavigationBar() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -1035,7 +1051,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     size: _bottomNavIndex == 0 ? 26 : 22,
                   ),
                 ),
-                label: 'Cihazlar',
+                label: l10n.devices,
               ),
               BottomNavigationBarItem(
                 icon: Container(
@@ -1051,7 +1067,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     size: _bottomNavIndex == 1 ? 26 : 22,
                   ),
                 ),
-                label: 'Ben',
+                label: l10n.profile,
               ),
             ],
           ),

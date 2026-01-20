@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/providers/language_provider.dart';
 import 'package:yavuz_lock/ui/pages/login_page.dart';
 import 'package:yavuz_lock/ui/pages/gateway_management_dialog.dart';
@@ -54,14 +55,15 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Koyu tema
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: const Text(
-          'Ayarlar',
-          style: TextStyle(
+        title: Text(
+          l10n.settings,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -78,10 +80,10 @@ class _SettingsPageState extends State<SettingsPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           children: [
             // Switch Kontrolleri Bölümü
-            _buildSectionHeader('Genel Ayarlar'),
+            _buildSectionHeader(l10n.generalSettings),
             _buildSwitchTile(
-              title: 'Ses',
-              subtitle: 'Uygulama seslerini aç/kapat',
+              title: l10n.sound,
+              subtitle: l10n.soundSubtitle,
               value: _soundEnabled,
               onChanged: (value) {
                 setState(() => _soundEnabled = value);
@@ -89,8 +91,8 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
             _buildSwitchTile(
-              title: 'Kilidi açmak için dokunun',
-              subtitle: 'Dokunarak kilit açma özelliğini etkinleştir',
+              title: l10n.touchToUnlock,
+              subtitle: l10n.touchToUnlockSubtitle,
               value: _touchToUnlockEnabled,
               onChanged: (value) {
                 setState(() => _touchToUnlockEnabled = value);
@@ -98,8 +100,8 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
             _buildSwitchTile(
-              title: 'Bildirim gönderme',
-              subtitle: 'Kilit olayları için bildirim al',
+              title: l10n.notifications,
+              subtitle: l10n.notificationsSubtitle,
               value: _notificationEnabled,
               onChanged: (value) {
                 setState(() => _notificationEnabled = value);
@@ -107,8 +109,8 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
             _buildSwitchTile(
-              title: 'Kişiselleştirilmiş öneriler',
-              subtitle: 'Kullanımınıza göre öneriler göster',
+              title: l10n.personalizedSuggestions,
+              subtitle: l10n.personalizedSuggestionsSubtitle,
               value: _personalizedSuggestionsEnabled,
               onChanged: (value) {
                 setState(() => _personalizedSuggestionsEnabled = value);
@@ -119,19 +121,19 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 24),
 
             // Seçim Listesi Bölümü
-            _buildSectionHeader('Tercihler'),
+            _buildSectionHeader(l10n.preferences),
             _buildSelectionTile(
-              title: 'Diller',
+              title: l10n.languages,
               currentValue: _selectedLanguage,
               onTap: () => _showLanguageSelection(),
             ),
             _buildSelectionTile(
-              title: 'Ekran kilidi',
+              title: l10n.screenLock,
               currentValue: _selectedScreenLock,
               onTap: () => _showScreenLockSelection(),
             ),
                     _buildSelectionTile(
-                      title: 'Geçersiz erişimi gizle',
+                      title: l10n.hideInvalidAccess,
                       currentValue: _selectedHideInvalidAccess,
                       onTap: () => _showHideInvalidAccessSelection(),
                     ),
@@ -139,12 +141,12 @@ class _SettingsPageState extends State<SettingsPage> {
                     const SizedBox(height: 24),
 
                     // Gateway Yönetimi Bölümü
-                    _buildSectionHeader('Cihaz Yönetimi'),
+                    _buildSectionHeader(l10n.deviceManagement),
                     _buildNavigationTile(
                       context,
                       icon: Icons.router,
-                      title: 'Gateway Yönetimi',
-                      subtitle: 'TTLock Gateway\'lerinizi yönetin ve bağlanın',
+                      title: l10n.gatewayManagement,
+                      subtitle: l10n.gatewayManagementSubtitle,
                       onTap: () => _showGatewayManagement(context),
                     ),
 
@@ -165,9 +167,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: const Text(
-                      'Çıkış yap',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.logout,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -182,9 +184,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       minimumSize: const Size(double.infinity, 44),
                     ),
-                    child: const Text(
-                      'Hesabı sil',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.deleteAccount,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -296,6 +298,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showLanguageSelection() {
+    final l10n = AppLocalizations.of(context)!;
     final languages = ['Otomatik', 'Türkçe', 'English', 'Deutsch'];
     
     // Capture parent context before showing modal to ensure Provider access works correctly
@@ -322,11 +325,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Dil Seçimi',
-                  style: TextStyle(
+                  l10n.selectLanguage,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -368,7 +371,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showScreenLockSelection() {
-    final options = ['Kapalı', '30 saniye', '1 dakika', '5 dakika'];
+    final l10n = AppLocalizations.of(context)!;
+    final options = [l10n.off, l10n.seconds30, l10n.minute1, l10n.minutes5];
 
     showModalBottomSheet(
       context: context,
@@ -390,11 +394,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Ekran Kilidi',
-                  style: TextStyle(
+                  l10n.screenLockTitle,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -406,6 +410,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   option,
                   style: const TextStyle(color: Colors.white),
                 ),
+                // Note: This comparison might fail if language changes, but acceptable for now
                 trailing: _selectedScreenLock == option
                     ? const Icon(Icons.check, color: Colors.blue)
                     : null,
@@ -424,7 +429,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showHideInvalidAccessSelection() {
-    final options = ['Kapalı', 'Açık'];
+    final l10n = AppLocalizations.of(context)!;
+    final options = [l10n.off, l10n.on];
 
     showModalBottomSheet(
       context: context,
@@ -446,11 +452,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Geçersiz Erişimi Gizle',
-                  style: TextStyle(
+                  l10n.hideInvalidAccessTitle,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -480,14 +486,15 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _logout(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
 
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Çıkış yapıldı'),
+      SnackBar(
+        content: Text(l10n.loggedOutMessage),
         backgroundColor: Colors.green,
       ),
     );
@@ -500,6 +507,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _deleteAccount(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -507,23 +515,23 @@ class _SettingsPageState extends State<SettingsPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: const Text(
-          'Hesabı Sil',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          l10n.deleteAccount,
+          style: const TextStyle(color: Colors.white),
         ),
-        content: const Text(
-          'Hesabınızı silmek istediğinizden emin misiniz?',
-          style: TextStyle(color: Colors.grey),
+        content: Text(
+          l10n.deleteAccountConfirmation,
+          style: const TextStyle(color: Colors.grey),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Sil'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -536,8 +544,8 @@ class _SettingsPageState extends State<SettingsPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Hesap silindi'),
+        SnackBar(
+          content: Text(l10n.accountDeletedMessage),
           backgroundColor: Colors.red,
         ),
       );

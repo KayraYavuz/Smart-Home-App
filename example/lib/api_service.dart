@@ -97,6 +97,57 @@ class ApiService {
     return md5.convert(utf8.encode(input)).toString().toLowerCase();
   }
 
+  /// Register a new user
+  Future<Map<String, dynamic>> registerUser({
+    required String username,
+    required String password,
+  }) async {
+    print('📝 Yeni kullanıcı kaydı yapılıyor: $username');
+
+    final url = Uri.parse('$_baseUrl/v3/user/register');
+    final String passwordMd5 = _generateMd5(password);
+
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'clientSecret': ApiConfig.clientSecret,
+      'username': username,
+      'password': passwordMd5,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    print('📡 Register API çağrısı: $url');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    print('📨 Register API yanıtı - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('🔍 Register Response: $responseData');
+
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        // Eğer kullanıcı zaten varsa (errcode: 10003 - User already exists)
+        if (responseData['errcode'] == 10003) {
+           throw Exception('Bu kullanıcı adı zaten alınmış.');
+        }
+        throw Exception('Kayıt başarısız: ${responseData['errmsg']}');
+      }
+
+      if (responseData.containsKey('username')) {
+        print('✅ Kullanıcı başarıyla oluşturuldu: ${responseData['username']}');
+        return responseData;
+      } else {
+        throw Exception('Kayıt başarısız: Beklenmeyen yanıt formatı');
+      }
+    } else {
+      throw Exception('Kayıt başarısız: HTTP ${response.statusCode}');
+    }
+  }
+
   /// Initialize tokens from persistent storage
   Future<void> initializeTokens() async {
     _accessToken = await _authRepository.getAccessToken();
@@ -3727,65 +3778,6 @@ class ApiService {
     _tokenExpiry = null;
     await _authRepository.deleteTokens();
     return false;
-  }
-
-  /// Register a new user in TTLock cloud
-  /// Returns the prefixed username from the API response
-  Future<String> registerUser({
-    required String username,
-    required String password,
-  }) async {
-    print('👤 Kullanıcı kaydı yapılıyor: $username');
-    
-    final url = Uri.parse('$_baseUrl/v3/user/register');
-    final now = DateTime.now().millisecondsSinceEpoch;
-    
-    final body = {
-      'clientId': ApiConfig.clientId,
-      'clientSecret': ApiConfig.clientSecret,
-      'username': username,
-      'password': _generateMd5(password), // Password must be MD5 encrypted
-      'date': now.toString(),
-    };
-
-    print('📡 Register API çağrısı: $url');
-    // Ensure all values are strings
-    final formBody = body.map((key, value) => MapEntry(key, value.toString()));
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: formBody,
-      );
-
-      print('📨 Register API yanıtı - Status: ${response.statusCode}');
-      print('   Body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        
-        // TTLock API error handling
-        if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-           print('❌ Register API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Registration failed: ${responseData['errmsg']}');
-        }
-
-        if (responseData.containsKey('username')) {
-          final prefixedUsername = responseData['username'];
-          print('✅ Kullanıcı başarıyla kaydedildi. Yeni kullanıcı adı: $prefixedUsername');
-          return prefixedUsername;
-        } else {
-           throw Exception('Registration success but username missing in response');
-        }
-      } else {
-        print('❌ HTTP hatası: ${response.statusCode}');
-        throw Exception('HTTP error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('❌ Kayıt işlemi istisnası: $e');
-      rethrow;
-    }
   }
 
   /// Reset password for a cloud-registered user
