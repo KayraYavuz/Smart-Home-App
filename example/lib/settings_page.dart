@@ -297,14 +297,18 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _showLanguageSelection() {
     final languages = ['Otomatik', 'Türkçe', 'English', 'Deutsch'];
+    
+    // Capture parent context before showing modal to ensure Provider access works correctly
+    final parentContext = context;
+    final provider = Provider.of<LanguageProvider>(parentContext, listen: false);
 
     showModalBottomSheet(
-      context: context,
+      context: parentContext,
       backgroundColor: const Color(0xFF1E1E1E),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) {
+      builder: (modalContext) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -341,8 +345,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   setState(() => _selectedLanguage = language);
                   _saveSetting('selected_language', language);
                   
-                  // Update LanguageProvider
-                  final provider = Provider.of<LanguageProvider>(context, listen: false);
+                  // Update LanguageProvider using parent context
                   if (language == 'Otomatik') {
                     provider.resetLocale();
                   } else if (language == 'Türkçe') {
@@ -353,7 +356,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     provider.setLocale(const Locale('de'));
                   }
 
-                  Navigator.of(context).pop();
+                  Navigator.of(modalContext).pop();
                 },
               )),
               const SizedBox(height: 16),

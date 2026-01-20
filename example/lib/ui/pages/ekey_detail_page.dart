@@ -94,7 +94,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isFrozen ? Colors.red.withOpacity(0.2) : Colors.green.withOpacity(0.2),
+                      color: isFrozen ? Colors.red.withValues(alpha: 0.2) : Colors.green.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isFrozen ? Colors.red : Colors.green,
@@ -269,7 +269,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: color, size: 24),
@@ -499,7 +499,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                     onChanged: (val) {
                       setStateSB(() => remoteEnabled = val);
                     },
-                    activeColor: Colors.blue,
+                    activeTrackColor: Colors.blue,
                   ),
                 ],
               ),

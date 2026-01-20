@@ -291,32 +291,30 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                             child: AnimatedBuilder(
                               animation: _pulseAnimation,
                               builder: (context, child) {
-                                return Container(
-                                  transform: Matrix4.identity()..scale(
-                                    (_isLoadingConnectivity || state is DeviceLoading) ? _pulseAnimation.value : 1.0,
-                                    (_isLoadingConnectivity || state is DeviceLoading) ? _pulseAnimation.value : 1.0,
-                                  ),
-                                  transformAlignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: _isOnline
-                                          ? AppColors.primary.withValues(alpha: 0.6)
-                                          : AppColors.error.withValues(alpha: 0.5),
-                                      width: 3,
+                                return Transform.scale(
+                                  scale: (_isLoadingConnectivity || state is DeviceLoading) ? _pulseAnimation.value : 1.0,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: _isOnline
+                                            ? AppColors.primary.withValues(alpha: 0.6)
+                                            : AppColors.error.withValues(alpha: 0.5),
+                                        width: 3,
+                                      ),
+                                      gradient: RadialGradient(
+                                        colors: [
+                                          _isOnline
+                                              ? AppColors.primary.withValues(alpha: 0.15)
+                                              : AppColors.error.withValues(alpha: 0.15),
+                                          _isOnline
+                                              ? AppColors.primary.withValues(alpha: 0.05)
+                                              : AppColors.error.withValues(alpha: 0.05),
+                                        ],
+                                      ),
                                     ),
-                                    gradient: RadialGradient(
-                                      colors: [
-                                        _isOnline
-                                            ? AppColors.primary.withValues(alpha: 0.15)
-                                            : AppColors.error.withValues(alpha: 0.15),
-                                        _isOnline
-                                            ? AppColors.primary.withValues(alpha: 0.05)
-                                            : AppColors.error.withValues(alpha: 0.05),
-                                      ],
-                                    ),
+                                    child: child,
                                   ),
-                                  child: child,
                                 );
                               },
                               child: Center(

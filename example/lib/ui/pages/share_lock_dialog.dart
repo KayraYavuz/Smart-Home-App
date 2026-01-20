@@ -109,56 +109,52 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 ),
                 const SizedBox(height: 12),
 
-                RadioListTile<int>(
-                  title: Text(
-                    _permissionOptions[1]!,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                  value: 1,
+                RadioGroup<int>(
                   groupValue: _selectedPermission,
                   onChanged: (value) {
-                    setState(() {
-                      _selectedPermission = value!;
-                    });
+                    if (value != null) {
+                      setState(() {
+                        _selectedPermission = value;
+                      });
+                    }
                   },
-                  activeColor: Colors.blue,
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-                RadioListTile<int>(
-                  title: Text(
-                    _permissionOptions[2]!,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                  child: Column(
+                    children: [
+                      RadioListTile<int>(
+                        title: Text(
+                          _permissionOptions[1]!,
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                        value: 1,
+                        activeColor: Colors.blue,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        controlAffinity: ListTileControlAffinity.leading,
+                      ),
+                      RadioListTile<int>(
+                        title: Text(
+                          _permissionOptions[2]!,
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                        value: 2,
+                        activeColor: Colors.blue,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        controlAffinity: ListTileControlAffinity.leading,
+                      ),
+                      RadioListTile<int>(
+                        title: Text(
+                          _permissionOptions[3]!,
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                        value: 3,
+                        activeColor: Colors.blue,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        controlAffinity: ListTileControlAffinity.leading,
+                      ),
+                    ],
                   ),
-                  value: 2,
-                  groupValue: _selectedPermission,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedPermission = value!;
-                    });
-                  },
-                  activeColor: Colors.blue,
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-                RadioListTile<int>(
-                  title: Text(
-                    _permissionOptions[3]!,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                  value: 3,
-                  groupValue: _selectedPermission,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedPermission = value!;
-                    });
-                  },
-                  activeColor: Colors.blue,
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  controlAffinity: ListTileControlAffinity.leading,
                 ),
 
                 const SizedBox(height: 20),
