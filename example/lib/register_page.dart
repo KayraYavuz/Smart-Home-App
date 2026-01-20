@@ -263,7 +263,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       TextFormField(
                         controller: _passwordController,
                         decoration: _buildInputDecoration(
-                          l10n.settings, // Wait, this key is for "Settings". Should be l10n.password but I don't have it. Reusing "Şifre" logic.
+                          l10n.newPassword,
                           suffixIcon: IconButton(
                             icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey[400]),
                             onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
