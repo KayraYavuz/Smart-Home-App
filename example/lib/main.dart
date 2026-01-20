@@ -35,8 +35,6 @@ Future<void> main() async {
 
   // Firebase Başlatma
   try {
-    print("⚠️ Firebase ve Notification servisi geçici olarak devre dışı bırakıldı.");
-    /*
     print("🔥 Firebase.initializeApp() kontrol ediliyor..."); // DEBUG LOG
     if (Firebase.apps.isEmpty) {
       print("🔥 Firebase henüz başlatılmamış, başlatılıyor...");
@@ -49,7 +47,6 @@ Future<void> main() async {
     // Bildirim Servisini Başlat
     print("🚀 NotificationService başlatılıyor..."); // DEBUG LOG
     await NotificationService().initialize();
-    */
   } catch (e, stackTrace) {
     print("❌ Firebase/Notification başlatma hatası: $e");
     print("Stack Trace: $stackTrace");

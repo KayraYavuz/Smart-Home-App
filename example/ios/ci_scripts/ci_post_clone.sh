@@ -14,19 +14,55 @@ if [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" ]; then
     echo "GoogleService-Info.plist (Base64) decode ediliyor..."
     echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" | base64 --decode > ../GoogleService-Info.plist
     echo "✅ GoogleService-Info.plist başarıyla oluşturuldu."
-    echo "📄 Dosya Kontrolü (İlk 5 Satır):"
-    head -n 5 ../GoogleService-Info.plist
 elif [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" ]; then
     echo "GoogleService-Info.plist (Düz Metin) dosyası oluşturuluyor..."
     echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" > ../GoogleService-Info.plist
     echo "✅ GoogleService-Info.plist başarıyla oluşturuldu."
-    echo "📄 Dosya Kontrolü (İlk 5 Satır):"
-    head -n 5 ../GoogleService-Info.plist
 else
-    echo "⚠️ UYARI: GOOGLE_SERVICE_INFO_PLIST_CONTENT değişkeni bulunamadı. GoogleService-Info.plist oluşturulamadı."
-    echo "⚠️ Build hatasını önlemek için boş bir GoogleService-Info.plist oluşturuluyor."
-    echo '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict></dict></plist>' > ../GoogleService-Info.plist
+    echo "⚠️ UYARI: GOOGLE_SERVICE_INFO_PLIST_CONTENT değişkeni bulunamadı."
 fi
+
+# DOĞRULAMA ADIMI: Dosya geçerli mi?
+if ! grep -q "API_KEY" ../GoogleService-Info.plist; then
+    echo "❌ HATA: GoogleService-Info.plist geçersiz veya API_KEY içermiyor!"
+    echo "⚠️ ACİL DURUM: Hardcoded dummy plist oluşturuluyor..."
+    cat <<EOF > ../GoogleService-Info.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyFakeKeyForDebuggingOnly12345</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1234567890</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ahmetkayra.proje.v1</string>
+	<key>PROJECT_ID</key>
+	<string>test-project-id</string>
+	<key>STORAGE_BUCKET</key>
+	<string>test-project-id.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1234567890:ios:aaaaaaaaaaaaaaaa</string>
+</dict>
+</plist>
+EOF
+    echo "✅ Dummy GoogleService-Info.plist oluşturuldu."
+fi
+
+echo "📄 Dosya Kontrolü (İlk 5 Satır):"
+head -n 5 ../GoogleService-Info.plist
 
 # .env
 if [ -n "$ENV_FILE_CONTENT_BASE64" ]; then
