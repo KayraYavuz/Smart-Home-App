@@ -35,15 +35,9 @@ Future<void> main() async {
 
   // Firebase Başlatma
   try {
-    print("🔥 Firebase.initializeApp() kontrol ediliyor..."); // DEBUG LOG
-    // NOT: AppDelegate.swift içinde FirebaseApp.configure() yapıldığı için
-    // burada tekrar başlatmaya gerek yok. Sadece app var mı diye bakıyoruz.
-    if (Firebase.apps.isNotEmpty) {
-       print("✅ Native tarafta başlatılmış Firebase algılandı.");
-    } else {
-       print("⚠️ Firebase Dart tarafında henüz görünmüyor, Native init bekleniyor.");
-       // await Firebase.initializeApp(); // Native init ile çakışmayı önlemek için kapalı
-    }
+    print("🔥 Firebase.initializeApp() başlatılıyor..."); // DEBUG LOG
+    await Firebase.initializeApp();
+    print("✅ Firebase başarıyla başlatıldı");
     
     // Bildirim Servisini Başlat
     print("🚀 NotificationService başlatılıyor..."); // DEBUG LOG
