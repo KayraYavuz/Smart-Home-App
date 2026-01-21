@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class AccountInfoPage extends StatefulWidget {
   const AccountInfoPage({super.key});
@@ -10,10 +11,10 @@ class AccountInfoPage extends StatefulWidget {
 }
 
 class _AccountInfoPageState extends State<AccountInfoPage> {
-  String _username = 'Kullanıcı';
-  String _email = 'kullanici@ornek.com';
-  String _phone = '+90 5XX XXX XX XX';
-  String _country = 'Türkiye';
+  String _username = '';
+  String _email = '';
+  String _phone = '';
+  String _country = '';
 
   @override
   void initState() {
@@ -23,36 +24,36 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
 
   Future<void> _loadUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
-    String loadedEmail = prefs.getString('saved_email') ?? 'kullanici@ornek.com';
-    String loadedUsername = prefs.getString('saved_username') ?? '';
-
-    // Eğer kullanıcı adı kayıtlı değilse veya varsayılan ise, e-postadan üret
-    if (loadedUsername.isEmpty || loadedUsername == 'Kullanıcı') {
-      if (loadedEmail.contains('@')) {
-        loadedUsername = loadedEmail.split('@')[0];
-      } else {
-        loadedUsername = 'Kullanıcı';
-      }
-    }
-
     setState(() {
-      _username = loadedUsername;
-      _email = loadedEmail;
-      _phone = prefs.getString('saved_phone') ?? '+90 5XX XXX XX XX';
+      _email = prefs.getString('saved_email') ?? '';
+      _username = prefs.getString('saved_username') ?? '';
+      _phone = prefs.getString('saved_phone') ?? '';
       _country = prefs.getString('saved_country') ?? 'Türkiye';
+      
+      // Eski hardcoded veya istenmeyen verileri temizle
+      if (_phone.contains('5XX XXX') || _phone.contains('05316305072') || _phone.contains('05326305072')) {
+         _phone = '';
+         prefs.remove('saved_phone');
+      }
+      
+      // Eğer username boşsa ve email varsa, email'in başını kullan
+      if (_username.isEmpty && _email.contains('@')) {
+        _username = _email.split('@')[0];
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Koyu tema
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: const Text(
-          'Hesap bilgisi',
-          style: TextStyle(
+        title: Text(
+          l10n.accountInfo,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -84,7 +85,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                         // Avatar
                         CircleAvatar(
                           radius: 24,
-                          backgroundColor: Colors.blue.withValues(alpha: 0.2),
+                          backgroundColor: Colors.blue.withOpacity(0.2),
                           child: Text(
                             _username.isNotEmpty ? _username[0].toUpperCase() : 'U',
                             style: const TextStyle(
@@ -129,31 +130,31 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
 
                   // Hesap Bilgileri Listesi
                   _buildInfoTile(
-                    title: 'Rumuz',
+                    title: l10n.accountInfoUsername,
                     value: _username,
                     showEditIcon: true,
-                    onTap: () => _editField('Rumuz', 'saved_username', _username),
+                    onTap: () => _editField(l10n.accountInfoUsername, 'saved_username', _username),
                   ),
                   _buildInfoTile(
-                    title: 'Hesap',
+                    title: l10n.accountInfoEmail,
                     value: _email,
                     showEditIcon: true,
-                    onTap: () => _editField('Email', 'saved_email', _email),
+                    onTap: () => _editField(l10n.accountInfoEmail, 'saved_email', _email),
                   ),
                   _buildInfoTile(
-                    title: 'Telefon',
+                    title: l10n.accountInfoPhone,
                     value: _phone,
                     showEditIcon: true,
-                    onTap: () => _editField('Telefon', 'saved_phone', _phone),
+                    onTap: () => _editField(l10n.accountInfoPhone, 'saved_phone', _phone),
                   ),
                   _buildInfoTile(
-                    title: 'Şifreyi Yenile',
+                    title: l10n.resetPasswordBtn,
                     value: '',
                     showArrowIcon: true,
                     onTap: _changePassword,
                   ),
                   _buildInfoTile(
-                    title: 'Güvenlik Sorusu',
+                    title: 'Güvenlik Sorusu', // Henüz l10n'de yok
                     value: 'Ayarlanmadı',
                     showNotificationDot: true,
                     showArrowIcon: true,
@@ -164,7 +165,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                     },
                   ),
                   _buildInfoTile(
-                    title: 'Ülke/Bölge',
+                    title: 'Ülke/Bölge', // Henüz l10n'de yok
                     value: _country,
                     showEditIcon: true,
                     onTap: () => _editField('Ülke/Bölge', 'saved_country', _country),
@@ -252,7 +253,14 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                   fontSize: 14,
                 ),
               )
-            : null,
+            : const Text(
+                'Ekle',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -291,6 +299,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('URL açılamadı: $url'),
@@ -352,84 +361,9 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
   }
 
   Future<void> _changePassword() async {
-    final TextEditingController currentPassController = TextEditingController();
-    final TextEditingController newPassController = TextEditingController();
-    final TextEditingController confirmPassController = TextEditingController();
-
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('Şifreyi Yenile', style: TextStyle(color: Colors.white)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: currentPassController,
-              obscureText: true,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'Mevcut Şifre',
-                labelStyle: TextStyle(color: Colors.grey),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: newPassController,
-              obscureText: true,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'Yeni Şifre',
-                labelStyle: TextStyle(color: Colors.grey),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: confirmPassController,
-              obscureText: true,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'Yeni Şifre (Tekrar)',
-                labelStyle: TextStyle(color: Colors.grey),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () {
-              if (newPassController.text != confirmPassController.text) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Şifreler eşleşmiyor!'), backgroundColor: Colors.red),
-                );
-                return;
-              }
-              if (newPassController.text.length < 6) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Şifre en az 6 karakter olmalı!'), backgroundColor: Colors.red),
-                );
-                return;
-              }
-              // Simüle edilmiş başarı
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Şifre başarıyla güncellendi'), backgroundColor: Colors.green),
-              );
-            },
-            child: const Text('Kaydet', style: TextStyle(color: Colors.blue)),
-          ),
-        ],
-      ),
+    // Burada şifre değiştirme dialogu olabilir veya Firebase'e yönlendirilebilir
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Şifre değiştirme işlemi için giriş sayfasındaki "Şifremi Unuttum" özelliğini kullanın.')),
     );
   }
 

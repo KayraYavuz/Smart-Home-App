@@ -603,4 +603,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get verificationEmailSent => 'Verification email sent';
+
+  @override
+  String get checkInbox => 'Please check your inbox';
+
+  @override
+  String get checkVerification => 'Check Verification';
+
+  @override
+  String get verificationSuccessTitle => 'Email Verified';
+
+  @override
+  String get verificationSuccessMsg => 'Account created successfully';
+
+  @override
+  String get emailNotVerified => 'Email not verified yet';
+
+  @override
+  String get changeEmail => 'Change Email';
+
+  @override
+  String get loginSuccess => 'Login Successful';
+
+  @override
+  String get loginFailed => 'Login Failed';
+
+  @override
+  String get passwordSyncError => 'Password synchronization error';
+
+  @override
+  String get accountInfoPhone => 'Phone';
+
+  @override
+  String get accountInfoEmail => 'Email';
+
+  @override
+  String get accountInfoUsername => 'Username';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get saveSuccess => 'Saved successfully';
+
+  @override
+  String get sentLink => 'Link Sent';
+
+  @override
+  String get checkInboxForLink => 'Please check your email and click the link.';
+
+  @override
+  String get backToLogin => 'Back to Login';
 }

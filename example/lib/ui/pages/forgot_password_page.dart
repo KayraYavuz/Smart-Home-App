@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:yavuz_lock/api_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
-import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -14,14 +12,12 @@ class ForgotPasswordPage extends StatefulWidget {
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
-  final _codeController = TextEditingController();
-  final _passwordController = TextEditingController();
-  
   bool _isLoading = false;
-  bool _codeSent = false;
-  bool _obscurePassword = true;
+  bool _linkSent = false;
 
-  Future<void> _getResetCode() async {
+  final _auth = FirebaseAuth.instance;
+
+  Future<void> _sendResetLink() async {
     final l10n = AppLocalizations.of(context)!;
     if (_usernameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -33,62 +29,38 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     setState(() => _isLoading = true);
 
     try {
-      final apiService = ApiService(context.read<AuthRepository>());
-      await apiService.getResetPasswordCode(username: _usernameController.text.trim());
+      // Firebase Şifre Sıfırlama Maili Gönder
+      await _auth.sendPasswordResetEmail(
+        email: _usernameController.text.trim(),
+      );
       
       setState(() {
-        _codeSent = true;
+        _linkSent = true;
         _isLoading = false;
       });
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.codeSent), backgroundColor: Colors.green),
+        SnackBar(
+          content: Text('${l10n.sentLink}. ${l10n.checkInboxForLink}'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() => _isLoading = false);
+      String message = l10n.errorLabel;
+      if (e.code == 'user-not-found') message = 'Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı.';
+      
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     } catch (e) {
       setState(() => _isLoading = false);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l10n.errorLabel}: ${e.toString().replaceAll('Exception: ', '')}'), backgroundColor: Colors.red),
+        SnackBar(content: Text('${l10n.errorLabel}: $e'), backgroundColor: Colors.red),
       );
-    }
-  }
-
-  Future<void> _resetPassword() async {
-    final l10n = AppLocalizations.of(context)!;
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isLoading = true);
-
-    try {
-      final apiService = ApiService(context.read<AuthRepository>());
-      // Not: TTLock resetPassword API'si 'code' parametresi ister mi?
-      // ApiService içindeki resetPassword metodunu kontrol etmeliyim.
-      // Eğer code parametresi yoksa, normalde v3/user/resetPassword code ile çalışır.
-      // ApiService'i güncellemem gerekebilir. Şimdilik varsayılan metodu kullanıyorum.
-      
-      // API servisine username, yeni şifre ve doğrulama kodunu gönderiyoruz
-      await apiService.resetPassword(
-        username: _usernameController.text.trim(),
-        newPassword: _passwordController.text,
-        verifyCode: _codeController.text.trim(),
-      );
-
-      if (!mounted) return;
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.passwordResetSuccess), backgroundColor: Colors.green),
-      );
-      
-      Navigator.of(context).pop(); // Giriş ekranına dön
-
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l10n.errorLabel}: ${e.toString().replaceAll('Exception: ', '')}'), backgroundColor: Colors.red),
-      );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -116,27 +88,29 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               const Icon(Icons.lock_reset, size: 80, color: Colors.blue),
               const SizedBox(height: 32),
               
-              // Kullanıcı Adı
-              TextFormField(
-                controller: _usernameController,
-                enabled: !_codeSent,
-                decoration: InputDecoration(
-                  labelText: l10n.emailOrPhone,
-                  labelStyle: TextStyle(color: Colors.grey[400]),
-                  filled: true,
-                  fillColor: Colors.white.withValues(alpha: 0.1),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  prefixIcon: const Icon(Icons.person, color: Colors.white70),
+              if (!_linkSent) ...[
+                Text(
+                  'Şifrenizi sıfırlamak için kayıtlı e-posta adresinizi girin. Size bir sıfırlama bağlantısı göndereceğiz.', // Bunu da l10n'e eklemek lazım ama şimdilik kalsın
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[400]),
                 ),
-                style: const TextStyle(color: Colors.white),
-                validator: (value) => value!.isEmpty ? l10n.usernameRequired : null,
-              ),
-              const SizedBox(height: 16),
-
-              // Kod Gönder Butonu (Henüz gönderilmediyse)
-              if (!_codeSent)
+                const SizedBox(height: 32),
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    labelText: l10n.emailOrPhone,
+                    labelStyle: TextStyle(color: Colors.grey[400]),
+                    filled: true,
+                    fillColor: Colors.white.withValues(alpha: 0.1),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    prefixIcon: const Icon(Icons.person, color: Colors.white70),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                  validator: (value) => value!.isEmpty ? l10n.usernameRequired : null,
+                ),
+                const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _getResetCode,
+                  onPressed: _isLoading ? null : _sendResetLink,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -144,55 +118,31 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                   child: _isLoading
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(l10n.sendCode, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                      : Text(l10n.sendCode, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)), // Bağlantı Gönder -> Send Code (veya Link)
                 ),
-
-              // Kod ve Yeni Şifre Alanları (Kod gönderildiyse)
-              if (_codeSent) ...[
-                TextFormField(
-                  controller: _codeController,
-                  decoration: InputDecoration(
-                    labelText: l10n.verifyCodeLabel,
-                    labelStyle: TextStyle(color: Colors.grey[400]),
-                    filled: true,
-                    fillColor: Colors.white.withValues(alpha: 0.1),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    prefixIcon: const Icon(Icons.security, color: Colors.white70),
-                  ),
-                  style: const TextStyle(color: Colors.white),
-                  keyboardType: TextInputType.number,
-                  validator: (value) => value!.isEmpty ? l10n.codeRequired : null,
+              ] else ...[
+                const Icon(Icons.check_circle, color: Colors.green, size: 64),
+                const SizedBox(height: 24),
+                Text(
+                  l10n.sentLink,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: l10n.newPassword,
-                    labelStyle: TextStyle(color: Colors.grey[400]),
-                    filled: true,
-                    fillColor: Colors.white.withValues(alpha: 0.1),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    prefixIcon: const Icon(Icons.lock, color: Colors.white70),
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    ),
-                  ),
-                  style: const TextStyle(color: Colors.white),
-                  validator: (value) => value!.length < 6 ? 'En az 6 karakter' : null,
+                Text(
+                  l10n.checkInboxForLink,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white70),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 ElevatedButton(
-                  onPressed: _isLoading ? null : _resetPassword,
+                  onPressed: () => Navigator.of(context).pop(),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.blue,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(l10n.resetPasswordBtn, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                  child: Text(l10n.backToLogin, style: const TextStyle(color: Colors.white)),
                 ),
               ],
             ],

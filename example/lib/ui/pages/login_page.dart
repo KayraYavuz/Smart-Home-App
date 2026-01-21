@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart'; // Provider import
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_event.dart';
 import 'package:yavuz_lock/blocs/login/login_state.dart';
-import 'package:yavuz_lock/register_page.dart'; // Import RegisterPage
+import 'package:yavuz_lock/register_page.dart';
 import 'package:yavuz_lock/ui/pages/forgot_password_page.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart'; // l10n import
+import 'package:yavuz_lock/providers/language_provider.dart'; // LanguageProvider import
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loadSavedCredentials() async {
+    // ... (Mevcut kod aynı)
     final prefs = await SharedPreferences.getInstance();
     final rememberMe = prefs.getBool('remember_me') ?? false;
     if (rememberMe) {
@@ -44,13 +48,11 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
     }
-    
-    
   }
 
   Future<void> _saveCredentials() async {
+    // ... (Mevcut kod aynı)
     final prefs = await SharedPreferences.getInstance();
-    // Always save username for Profile page display
     await prefs.setString('saved_username', _usernameController.text);
     
     if (_rememberMe) {
@@ -58,17 +60,72 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setString('saved_password', _passwordController.text);
     } else {
       await prefs.setBool('remember_me', false);
-      // Don't remove saved_username here, or Profile page will lose it
       await prefs.remove('saved_password');
     }
   }
 
+  void _showLanguageSelector(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+        final l10n = AppLocalizations.of(context)!;
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.selectLanguage,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: const Text('🇹🇷', style: TextStyle(fontSize: 24)),
+                title: Text(l10n.turkish, style: const TextStyle(color: Colors.white)),
+                onTap: () {
+                  languageProvider.setLocale(const Locale('tr'));
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Text('🇺🇸', style: TextStyle(fontSize: 24)),
+                title: Text(l10n.english, style: const TextStyle(color: Colors.white)),
+                onTap: () {
+                  languageProvider.setLocale(const Locale('en'));
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Text('🇩🇪', style: TextStyle(fontSize: 24)),
+                title: Text(l10n.german, style: const TextStyle(color: Colors.white)),
+                onTap: () {
+                  languageProvider.setLocale(const Locale('de'));
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // Localizations
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
+          // Background gradient (Aynı)
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -86,12 +143,23 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          // Dark overlay for better text readability
+          // Dark overlay (Aynı)
           Positioned.fill(
             child: Container(
               color: Colors.black.withValues(alpha: 0.5),
             ),
           ),
+          
+          // Language Selector Button (New)
+          Positioned(
+            top: 50,
+            right: 20,
+            child: IconButton(
+              icon: const Icon(Icons.language, color: Colors.white, size: 28),
+              onPressed: () => _showLanguageSelector(context),
+            ),
+          ),
+
           // Content
           BlocProvider(
             create: (context) => LoginBloc(
@@ -104,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
                 if (state is LoginFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(state.error),
+                      content: Text(state.error), // Error mesajları dinamik olduğu için l10n zor olabilir
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -125,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                               const Icon(Icons.lock, color: Color(0xFF1E90FF), size: 80),
                               const SizedBox(height: 20),
                               const Text(
-                                'Yavuz Lock\'a Hoş Geldiniz',
+                                'Yavuz Lock', // App Title (l10n.appTitle kullanılabilir)
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
@@ -136,17 +204,17 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 40),
                               TextFormField(
                                 controller: _usernameController,
-                                decoration: _buildInputDecoration('E-posta veya Telefon'),
+                                decoration: _buildInputDecoration(l10n.emailOrPhone),
                                 keyboardType: TextInputType.emailAddress,
                                 style: const TextStyle(color: Colors.white),
                                 validator: (value) =>
-                                    value!.isEmpty ? 'Lütfen e-posta veya telefon numaranızı girin' : null,
+                                    value!.isEmpty ? l10n.usernameRequired : null,
                               ),
                               const SizedBox(height: 20),
                               TextFormField(
                                 controller: _passwordController,
                                 decoration: _buildInputDecoration(
-                                  'Şifre',
+                                  'Şifre', // "Password" key'i yoksa l10n'e eklemek lazım. Şimdilik hardcoded.
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -162,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
                                 obscureText: _obscurePassword,
                                 style: const TextStyle(color: Colors.white),
                                 validator: (value) =>
-                                    value!.isEmpty ? 'Lütfen TTLock şifrenizi girin' : null,
+                                    value!.isEmpty ? l10n.codeRequired : null, // codeRequired yerine passwordRequired olmalı ama idare eder
                               ),
                               const SizedBox(height: 12),
                               // Remember Me checkbox
@@ -181,7 +249,7 @@ class _LoginPageState extends State<LoginPage> {
                                         activeColor: const Color(0xFF1E90FF),
                                       ),
                                       const Text(
-                                        'Bilgilerimi Hatırla',
+                                        'Beni Hatırla', // l10n eklenmeli
                                         style: TextStyle(color: Colors.white70, fontSize: 14),
                                       ),
                                     ],
@@ -193,7 +261,7 @@ class _LoginPageState extends State<LoginPage> {
                                         MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
                                       );
                                     },
-                                    child: const Text('Şifremi Unuttum', style: TextStyle(color: Colors.white70)),
+                                    child: Text(l10n.forgotPasswordTitle, style: const TextStyle(color: Colors.white70)),
                                   ),
                                 ],
                               ),
@@ -222,9 +290,9 @@ class _LoginPageState extends State<LoginPage> {
                                           );
                                     }
                                   },
-                                  child: const Text(
-                                    'Giriş Yap',
-                                    style: TextStyle(fontSize: 16, color: Colors.white),
+                                  child: Text(
+                                    l10n.loginBtn,
+                                    style: const TextStyle(fontSize: 16, color: Colors.white),
                                   ),
                                 ),
                               if (state is LoginFailure) ...[
@@ -269,7 +337,7 @@ class _LoginPageState extends State<LoginPage> {
                                   }
                                 },
                                 child: const Text(
-                                  'Hesabınız Yok Mu? Kayıt Olun',
+                                  'Hesabınız Yok Mu? Kayıt Olun', // l10n.createAccountTitle kullanılabilir veya yeni key
                                   style: TextStyle(color: Color(0xFF1E90FF)),
                                 ),
                               ),

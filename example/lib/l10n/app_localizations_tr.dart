@@ -605,4 +605,59 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get retry => 'Tekrar Dene';
+
+  @override
+  String get verificationEmailSent => 'Doğrulama e-postası gönderildi';
+
+  @override
+  String get checkInbox => 'Lütfen gelen kutunuzu kontrol edin';
+
+  @override
+  String get checkVerification => 'Doğrulamayı Kontrol Et';
+
+  @override
+  String get verificationSuccessTitle => 'E-posta Doğrulandı';
+
+  @override
+  String get verificationSuccessMsg => 'Hesap başarıyla oluşturuldu';
+
+  @override
+  String get emailNotVerified => 'E-posta henüz doğrulanmamış';
+
+  @override
+  String get changeEmail => 'E-posta adresini değiştir';
+
+  @override
+  String get loginSuccess => 'Giriş Başarılı';
+
+  @override
+  String get loginFailed => 'Giriş Başarısız';
+
+  @override
+  String get passwordSyncError => 'Şifre senkronizasyonu hatası';
+
+  @override
+  String get accountInfoPhone => 'Telefon';
+
+  @override
+  String get accountInfoEmail => 'E-posta';
+
+  @override
+  String get accountInfoUsername => 'Kullanıcı Adı';
+
+  @override
+  String get edit => 'Düzenle';
+
+  @override
+  String get saveSuccess => 'Başarıyla kaydedildi';
+
+  @override
+  String get sentLink => 'Bağlantı Gönderildi';
+
+  @override
+  String get checkInboxForLink =>
+      'Lütfen e-postanızı kontrol edin ve linke tıklayın.';
+
+  @override
+  String get backToLogin => 'Giriş Ekranına Dön';
 }

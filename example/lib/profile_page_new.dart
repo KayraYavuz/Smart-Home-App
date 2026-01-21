@@ -76,18 +76,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          _username,
+                          _email,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          _email,
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 14,
                           ),
                         ),
                       ],

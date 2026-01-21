@@ -1,6 +1,7 @@
-const { onRequest } = require("firebase-functions/v2/https");
+const { onRequest, onCall } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
+const nodemailer = require('nodemailer');
 
 admin.initializeApp();
 
@@ -78,10 +79,6 @@ exports.ttlockCallback = onRequest(async (req, res) => {
         console.error("JSON parse hatası:", e);
       }
     } 
-    // 2. Eğer "key" ile ilgili bir olay geldiyse (Kilit Paylaşımı)
-    // TTLock bazen farklı formatta veri atar. Örneğin: eKey gönderildiğinde.
-    // Ancak standart webhook genellikle record gönderir. 
-    // Eğer TTLock'tan "eKey sent" webhook'u gelirse (notifyType farklı olabilir), onu da burada yakalayabiliriz.
     
     // Mesajları Gönder
     for (const msg of messagesToSend) {
@@ -124,5 +121,49 @@ exports.ttlockCallback = onRequest(async (req, res) => {
   } catch (error) {
     console.error("❌ Hata:", error);
     return res.status(500).send("Error");
+  }
+});
+
+// E-posta Gönderme Fonksiyonu (Flutter'dan çağrılır)
+exports.sendVerificationCode = onCall(async (request) => {
+  const email = request.data.email;
+  const code = request.data.code;
+
+  if (!email || !code) {
+    throw new Error('Email ve kod gerekli.');
+  }
+
+  // Gmail Transporter Ayarları
+  // GÜVENLİK NOTU: Prodüksiyonda bu şifreleri "Firebase Secrets" ile saklayın.
+  // LÜTFEN AŞAĞIDAKİ BİLGİLERİ GÜNCELLEYİN
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'ahmetkayrayavuz@gmail.com', // Gönderici Gmail Adresi
+      pass: 'xxxx xxxx xxxx xxxx'     // 16 Haneli Uygulama Şifresi
+    }
+  });
+
+  const mailOptions = {
+    from: '"Yavuz Lock" <ahmetkayrayavuz@gmail.com>',
+    to: email,
+    subject: `Doğrulama Kodunuz: ${code}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+        <h2 style="color: #333;">Yavuz Lock Doğrulama</h2>
+        <p>Merhaba,</p>
+        <p>Hesabınızı doğrulamak için kullanacağınız kod:</p>
+        <h1 style="color: #1E90FF; letter-spacing: 5px;">${code}</h1>
+        <p style="color: #666; font-size: 12px;">Bu kodu kimseyle paylaşmayın.</p>
+      </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return { success: true, message: 'Mail gönderildi.' };
+  } catch (error) {
+    console.error('Mail gönderme hatası:', error);
+    throw new Error(`Mail gönderilemedi: ${error.message}`);
   }
 });

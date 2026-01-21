@@ -607,4 +607,59 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get verificationEmailSent => 'Bestätigungs-E-Mail gesendet';
+
+  @override
+  String get checkInbox => 'Bitte überprüfen Sie Ihren Posteingang';
+
+  @override
+  String get checkVerification => 'Bestätigung prüfen';
+
+  @override
+  String get verificationSuccessTitle => 'E-Mail bestätigt';
+
+  @override
+  String get verificationSuccessMsg => 'Konto erfolgreich erstellt';
+
+  @override
+  String get emailNotVerified => 'E-Mail noch nicht bestätigt';
+
+  @override
+  String get changeEmail => 'E-Mail ändern';
+
+  @override
+  String get loginSuccess => 'Anmeldung erfolgreich';
+
+  @override
+  String get loginFailed => 'Anmeldung fehlgeschlagen';
+
+  @override
+  String get passwordSyncError => 'Fehler bei der Passwortsynchronisierung';
+
+  @override
+  String get accountInfoPhone => 'Telefon';
+
+  @override
+  String get accountInfoEmail => 'E-Mail';
+
+  @override
+  String get accountInfoUsername => 'Benutzername';
+
+  @override
+  String get edit => 'Bearbeiten';
+
+  @override
+  String get saveSuccess => 'Erfolgreich gespeichert';
+
+  @override
+  String get sentLink => 'Link gesendet';
+
+  @override
+  String get checkInboxForLink =>
+      'Bitte überprüfen Sie Ihre E-Mails und klicken Sie auf den Link.';
+
+  @override
+  String get backToLogin => 'Zurück zur Anmeldung';
 }

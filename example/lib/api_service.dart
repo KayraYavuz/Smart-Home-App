@@ -106,7 +106,8 @@ class ApiService {
     // Open Platform kullanıcıları için bu endpoint çalışmayabilir veya farklı davranabilir.
     // Ancak kullanıcı isteği üzerine eklenmiştir.
     
-    final url = Uri.parse('$_baseUrl/v3/user/getRegisterCode');
+    // Doğrulama kodları genellikle ana sunucudan yönetilir, bu yüzden api.ttlock.com deniyoruz.
+    final url = Uri.parse('https://api.ttlock.com/v3/user/getRegisterCode');
     final now = DateTime.now().millisecondsSinceEpoch;
     
     final body = {
@@ -153,7 +154,8 @@ class ApiService {
   }) async {
     print('📧 Şifre sıfırlama kodu isteniyor: $username');
     
-    final url = Uri.parse('$_baseUrl/v3/user/getResetPasswordCode');
+    // Doğrulama kodları genellikle ana sunucudan yönetilir, bu yüzden api.ttlock.com deniyoruz.
+    final url = Uri.parse('https://api.ttlock.com/v3/user/getResetPasswordCode');
     final now = DateTime.now().millisecondsSinceEpoch;
     
     final body = {
@@ -190,15 +192,14 @@ class ApiService {
     }
   }
 
-  /// Reset password
+  /// Reset password for a cloud-registered user
   Future<void> resetPassword({
     required String username,
     required String newPassword,
-    required String verifyCode,
   }) async {
-    print('🔐 Şifre sıfırlanıyor: $username');
+    print('🔐 Şifre sıfırlanıyor (Cloud API): $username');
 
-    final url = Uri.parse('$_baseUrl/v3/user/resetPassword');
+    final url = Uri.parse('https://api.ttlock.com/v3/user/resetPassword');
     final String passwordMd5 = _generateMd5(newPassword);
 
     final Map<String, String> body = {
@@ -206,7 +207,6 @@ class ApiService {
       'clientSecret': ApiConfig.clientSecret,
       'username': username,
       'password': passwordMd5,
-      'verifyCode': verifyCode,
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     };
 
@@ -235,7 +235,8 @@ class ApiService {
   }) async {
     print('📝 Yeni kullanıcı kaydı yapılıyor: $username');
 
-    final url = Uri.parse('$_baseUrl/v3/user/register');
+    // Kayıt işlemi genellikle ana sunucudan yönetilir.
+    final url = Uri.parse('https://api.ttlock.com/v3/user/register');
     final String passwordMd5 = _generateMd5(password);
 
     final Map<String, String> body = {
@@ -3786,6 +3787,15 @@ class ApiService {
       usernamesToTry.add('+90${digitsOnly.substring(1)}'); 
     }
 
+    // 5. E-posta adresindeki özel karakterleri temizle (TTLock username formatı için)
+    // Sadece gerçekten e-posta formatındaysa temizlenmiş halini ekle
+    if (cleanInput.contains('@')) {
+      String sanitizedEmail = cleanInput.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      if (sanitizedEmail.isNotEmpty && sanitizedEmail != cleanInput) {
+        usernamesToTry.add(sanitizedEmail);
+      }
+    }
+
     print('👤 Giriş denenecek formatlar: $usernamesToTry');
 
     // Her bir format için her bölgeyi dene
@@ -3915,107 +3925,7 @@ class ApiService {
     return false;
   }
 
-  /// Get verification code for password reset
-  /// Returns true if code is sent successfully
-  Future<bool> getResetPasswordCode({
-    required String username,
-  }) async {
-    print('📧 Şifre sıfırlama kodu isteniyor: $username');
-    
-    final url = Uri.parse('$_baseUrl/v3/user/getResetPasswordCode');
-    final now = DateTime.now().millisecondsSinceEpoch;
-    
-    final body = {
-      'clientId': ApiConfig.clientId,
-      'clientSecret': ApiConfig.clientSecret,
-      'username': username,
-      'date': now.toString(),
-    };
 
-    final formBody = body.map((key, value) => MapEntry(key, value.toString()));
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: formBody,
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
-          print('✅ Şifre sıfırlama kodu gönderildi');
-          return true;
-        } else {
-          print('❌ Kod gönderme hatası: ${responseData['errmsg']}');
-          throw Exception('${responseData['errmsg']}');
-        }
-      } else {
-        throw Exception('HTTP error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('❌ İstisna: $e');
-      rethrow;
-    }
-  }
-
-  /// Reset password for a cloud-registered user
-  /// Returns true if successful
-  Future<bool> resetPassword({
-    required String username,
-    required String newPassword,
-    String? verifyCode,
-  }) async {
-    print('🔐 Şifre sıfırlama işlemi: $username');
-    
-    final url = Uri.parse('$_baseUrl/v3/user/resetPassword');
-    final now = DateTime.now().millisecondsSinceEpoch;
-    
-    final body = {
-      'clientId': ApiConfig.clientId,
-      'clientSecret': ApiConfig.clientSecret,
-      'username': username,
-      'password': _generateMd5(newPassword), // Password must be MD5 encrypted
-      'date': now.toString(),
-    };
-
-    if (verifyCode != null) {
-      body['verifyCode'] = verifyCode;
-    }
-
-    print('📡 Reset Password API çağrısı: $url');
-    // Ensure all values are strings
-    final formBody = body.map((key, value) => MapEntry(key, value.toString()));
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: formBody,
-      );
-
-      print('📨 Reset Password API yanıtı - Status: ${response.statusCode}');
-      print('   Body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        
-        if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
-          print('✅ Şifre başarıyla sıfırlandı');
-          return true;
-        } else {
-          print('❌ Şifre sıfırlama hatası: ${responseData['errmsg']}');
-          throw Exception('Şifre sıfırlanamadı: ${responseData['errmsg']}');
-        }
-      } else {
-        print('❌ HTTP hatası: ${response.statusCode}');
-        throw Exception('HTTP error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('❌ Şifre sıfırlama istisnası: $e');
-      rethrow;
-    }
-  }
 
   /// Get list of users registered via cloud API
   Future<Map<String, dynamic>> getUserList({

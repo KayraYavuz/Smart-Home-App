@@ -4,8 +4,12 @@ class ApiConfig {
   static String clientId = (dotenv.env['TTLOCK_CLIENT_ID'] ?? '').trim();
   static String clientSecret = (dotenv.env['TTLOCK_CLIENT_SECRET'] ?? '').trim();
   static String redirectUri = ''; 
-  static String username = (dotenv.env['TTLOCK_USERNAME'] ?? '').trim();
-  static String password = (dotenv.env['TTLOCK_PASSWORD'] ?? '').trim();
+  static String username = ''; // Boş bırakıldı
+  static String password = ''; // Boş bırakıldı
+
+  // Email Config for Verification Codes
+  static String smtpUser = 'your_email@gmail.com'; 
+  static String smtpPassword = 'your_app_password'; 
 }
   // DEBUG: Test credentials (TTLock test account)
   // Uncomment to test with TTLock test account

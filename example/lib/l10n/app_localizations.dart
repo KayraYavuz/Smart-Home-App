@@ -1221,6 +1221,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @verificationEmailSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification email sent'**
+  String get verificationEmailSent;
+
+  /// No description provided for @checkInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your inbox'**
+  String get checkInbox;
+
+  /// No description provided for @checkVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Verification'**
+  String get checkVerification;
+
+  /// No description provided for @verificationSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Verified'**
+  String get verificationSuccessTitle;
+
+  /// No description provided for @verificationSuccessMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created successfully'**
+  String get verificationSuccessMsg;
+
+  /// No description provided for @emailNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Email not verified yet'**
+  String get emailNotVerified;
+
+  /// No description provided for @changeEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Email'**
+  String get changeEmail;
+
+  /// No description provided for @loginSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Successful'**
+  String get loginSuccess;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Failed'**
+  String get loginFailed;
+
+  /// No description provided for @passwordSyncError.
+  ///
+  /// In en, this message translates to:
+  /// **'Password synchronization error'**
+  String get passwordSyncError;
+
+  /// No description provided for @accountInfoPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get accountInfoPhone;
+
+  /// No description provided for @accountInfoEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get accountInfoEmail;
+
+  /// No description provided for @accountInfoUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get accountInfoUsername;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @saveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved successfully'**
+  String get saveSuccess;
+
+  /// No description provided for @sentLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Link Sent'**
+  String get sentLink;
+
+  /// No description provided for @checkInboxForLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your email and click the link.'**
+  String get checkInboxForLink;
+
+  /// No description provided for @backToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Login'**
+  String get backToLogin;
 }
 
 class _AppLocalizationsDelegate

@@ -45,6 +45,8 @@ dependencies:
   firebase_messaging: ^15.1.0
   flutter_local_notifications: ^19.5.0
   permission_handler: ^11.3.0
+  mailer: ^6.6.0
+  firebase_auth: ^5.2.0
 
 
 dev_dependencies:
