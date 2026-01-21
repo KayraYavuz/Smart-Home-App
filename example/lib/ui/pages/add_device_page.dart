@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:yavuz_lock/ui/pages/scan_page.dart';
 
 class AddDevicePage extends StatefulWidget {
+  const AddDevicePage({super.key});
+
   @override
   _AddDevicePageState createState() => _AddDevicePageState();
 }
@@ -57,7 +59,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
               'Sayaçlar',
               _buildMeters(context),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -116,7 +118,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ScanPage()),
+                  MaterialPageRoute(builder: (context) => const ScanPage()),
                 ).then((result) {
                   if (result != null && result is Map<String, dynamic>) {
                     // Scan sayfasından geri dönüldü, cihaz eklendi
@@ -153,7 +155,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
           child: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -164,7 +166,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: GridView.count(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
@@ -179,31 +181,31 @@ class _AddDevicePageState extends State<AddDevicePage> {
   List<Widget> _buildLockTypes(BuildContext context) {
     return [
       _buildDeviceButton(context, 'Tüm kilitler', Icons.lock, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ScanPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, 'Kapı kilidi', Icons.door_front_door, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ScanPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, 'Asma kilit', Icons.lock_outline, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ScanPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, 'Güvenli kilit', Icons.security, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ScanPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, 'Kilit silindiri', Icons.vpn_key, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ScanPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, 'Park kilidi', Icons.local_parking, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ScanPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, 'Dolap Kilidi', Icons.inventory_2, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ScanPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, 'Bisiklet kilidi', Icons.pedal_bike, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ScanPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, 'Uzaktan kumanda', Icons.settings_remote, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ScanPage()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
     ];
   }
@@ -235,12 +237,12 @@ class _AddDevicePageState extends State<AddDevicePage> {
     return [
       _buildDeviceButton(context, 'TC2', Icons.videocam, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('TC2 kamera tarama başlatılıyor...')),
+          const SnackBar(content: Text('TC2 kamera tarama başlatılıyor...')),
         );
       }),
       _buildDeviceButton(context, 'DB2', Icons.doorbell, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('DB2 kapı zili tarama başlatılıyor...')),
+          const SnackBar(content: Text('DB2 kapı zili tarama başlatılıyor...')),
         );
       }),
     ];
@@ -250,7 +252,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
     return [
       _buildDeviceButton(context, 'Kapı sensörü', Icons.sensors, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Kapı sensörü tarama başlatılıyor...')),
+          const SnackBar(content: Text('Kapı sensörü tarama başlatılıyor...')),
         );
       }),
     ];
@@ -260,12 +262,12 @@ class _AddDevicePageState extends State<AddDevicePage> {
     return [
       _buildDeviceButton(context, 'Elektrik', Icons.electrical_services, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Elektrik sayacı tarama başlatılıyor...')),
+          const SnackBar(content: Text('Elektrik sayacı tarama başlatılıyor...')),
         );
       }),
       _buildDeviceButton(context, 'Su', Icons.water_drop, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Su sayacı tarama başlatılıyor...')),
+          const SnackBar(content: Text('Su sayacı tarama başlatılıyor...')),
         );
       }),
     ];
@@ -282,25 +284,25 @@ class _AddDevicePageState extends State<AddDevicePage> {
       borderRadius: BorderRadius.circular(8),
       child: Container(
         decoration: BoxDecoration(
-          color: Color.fromRGBO(30, 30, 30, 0.9),
+          color: const Color.fromRGBO(30, 30, 30, 0.9),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Icon(icon, color: Colors.white70, size: 20),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
           ],
         ),
       ),
@@ -311,7 +313,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ScanPage(), // TODO: Pass gateway type
+        builder: (context) => const ScanPage(), // TODO: Pass gateway type
       ),
     );
   }

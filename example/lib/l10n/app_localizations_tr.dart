@@ -509,4 +509,100 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get errorLabel => 'Hata';
+
+  @override
+  String get statusLocked => 'Kilitli';
+
+  @override
+  String get statusUnlocked => 'Açık';
+
+  @override
+  String get statusSecurityWarning => 'Güvenlik Uyarısı';
+
+  @override
+  String lockOpened(String lockName) {
+    return '$lockName açıldı';
+  }
+
+  @override
+  String lockClosed(String lockName) {
+    return '$lockName kilitlendi';
+  }
+
+  @override
+  String lockOpenedApp(String lockName) {
+    return '$lockName uygulamadan açıldı';
+  }
+
+  @override
+  String lockOpenedKeypad(String lockName) {
+    return '$lockName tuş takımıyla açıldı';
+  }
+
+  @override
+  String lockOpenedFingerprint(String lockName) {
+    return '$lockName parmak iziyle açıldı';
+  }
+
+  @override
+  String lockOpenedCard(String lockName) {
+    return '$lockName kart ile açıldı';
+  }
+
+  @override
+  String lowBatteryWarning(String lockName) {
+    return '$lockName düşük pil seviyesi';
+  }
+
+  @override
+  String lockTamperedWarning(String lockName) {
+    return '$lockName güvenlik uyarısı!';
+  }
+
+  @override
+  String lockStatusUpdated(String lockName) {
+    return '$lockName durumu güncellendi';
+  }
+
+  @override
+  String get unknownLock => 'Bilinmeyen Kilit';
+
+  @override
+  String get defaultLockName => 'Yavuz Lock';
+
+  @override
+  String get defaultSharedLockName => 'Paylaşılmış Yavuz Lock';
+
+  @override
+  String get seamLockDefaultName => 'Seam Kilit';
+
+  @override
+  String seamDevicesAdded(int count) {
+    return '$count Seam cihazı eklendi';
+  }
+
+  @override
+  String get lockAddedSuccess => 'Yavuz Lock kilidi başarıyla eklendi';
+
+  @override
+  String deviceTypeLabel(String type) {
+    return 'Tip: $type';
+  }
+
+  @override
+  String shareCancelError(String error) {
+    return 'Paylaşım iptali hatası: $error';
+  }
+
+  @override
+  String get errorDevicesLoading => 'Cihazlar yüklenirken bir hata oluştu';
+
+  @override
+  String get errorInternetConnection => 'İnternet bağlantınızı kontrol edin';
+
+  @override
+  String get errorServerTimeout => 'Sunucu yanıt vermedi, tekrar deneyin';
+
+  @override
+  String get retry => 'Tekrar Dene';
 }

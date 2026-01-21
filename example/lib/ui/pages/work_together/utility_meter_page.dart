@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class UtilityMeterPage extends StatefulWidget {
-  const UtilityMeterPage({Key? key}) : super(key: key);
+  const UtilityMeterPage({super.key});
 
   @override
   _UtilityMeterPageState createState() => _UtilityMeterPageState();

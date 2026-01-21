@@ -8,7 +8,7 @@ import 'package:yavuz_lock/repositories/ttlock_repository.dart';
 
 class AddFacePage extends StatefulWidget {
   final int lockId;
-  const AddFacePage({Key? key, required this.lockId}) : super(key: key);
+  const AddFacePage({super.key, required this.lockId});
 
   @override
   _AddFacePageState createState() => _AddFacePageState();
@@ -30,7 +30,7 @@ class _AddFacePageState extends State<AddFacePage> {
     super.initState();
     _startDateController.text = DateTime.now().millisecondsSinceEpoch.toString();
     _endDateController.text =
-        DateTime.now().add(Duration(days: 365)).millisecondsSinceEpoch.toString();
+        DateTime.now().add(const Duration(days: 365)).millisecondsSinceEpoch.toString();
   }
 
   Future<void> _pickImage() async {
@@ -50,7 +50,7 @@ class _AddFacePageState extends State<AddFacePage> {
           _isProcessing = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Face feature data obtained successfully.')));
+            const SnackBar(content: Text('Face feature data obtained successfully.')));
       } catch (e) {
         setState(() {
           _isProcessing = false;
@@ -80,7 +80,7 @@ class _AddFacePageState extends State<AddFacePage> {
           _isProcessing = false;
         });
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Face added successfully.')));
+            .showSnackBar(const SnackBar(content: Text('Face added successfully.')));
         Navigator.pop(context, true);
       } catch (e) {
         setState(() {
@@ -91,7 +91,7 @@ class _AddFacePageState extends State<AddFacePage> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please select an image and get feature data first.')));
+          const SnackBar(content: Text('Please select an image and get feature data first.')));
     }
   }
 
@@ -99,7 +99,7 @@ class _AddFacePageState extends State<AddFacePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Face'),
+        title: const Text('Add Face'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -110,15 +110,15 @@ class _AddFacePageState extends State<AddFacePage> {
               children: [
                 if (_imageFile != null)
                   Image.file(File(_imageFile!.path), height: 150, width: 150),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _pickImage,
-                  child: Text('Pick Image'),
+                  child: const Text('Pick Image'),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _nameController,
-                  decoration: InputDecoration(labelText: 'Face Name'),
+                  decoration: const InputDecoration(labelText: 'Face Name'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a name';
@@ -128,25 +128,25 @@ class _AddFacePageState extends State<AddFacePage> {
                 ),
                 TextFormField(
                   controller: _startDateController,
-                  decoration: InputDecoration(labelText: 'Start Date (ms)'),
+                  decoration: const InputDecoration(labelText: 'Start Date (ms)'),
                   keyboardType: TextInputType.number,
                 ),
                 TextFormField(
                   controller: _endDateController,
-                  decoration: InputDecoration(labelText: 'End Date (ms)'),
+                  decoration: const InputDecoration(labelText: 'End Date (ms)'),
                   keyboardType: TextInputType.number,
                 ),
-                SizedBox(height: 20),
-                if (_isProcessing) CircularProgressIndicator(),
+                const SizedBox(height: 20),
+                if (_isProcessing) const CircularProgressIndicator(),
                 if (_featureData != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
                     child: Icon(Icons.check_circle, color: Colors.green, size: 40),
                   ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _isProcessing ? null : _addFace,
-                  child: Text('Add Face'),
+                  child: const Text('Add Face'),
                 ),
               ],
             ),

@@ -25,9 +25,9 @@ class LockDetailPage extends StatefulWidget {
 
 
   const LockDetailPage({
-    Key? key,
+    super.key,
     required this.lock,
-  }) : super(key: key);
+  });
 
   @override
   _LockDetailPageState createState() => _LockDetailPageState();
@@ -226,7 +226,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
           listener: (context, state) {
             if (state is DeviceSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('İşlem başarılı')),
+                const SnackBar(content: Text('İşlem başarılı')),
               );
 
               // Ana sayfaya güncellenmiş kilit bilgilerini gönder
@@ -684,14 +684,14 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       final lockIdString = widget.lock['lockId']?.toString();
       if (lockIdString == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Kilit ID bulunamadı.')),
+          const SnackBar(content: Text('Kilit ID bulunamadı.')),
         );
         return;
       }
       final lockId = int.tryParse(lockIdString);
       if (lockId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Geçersiz Kilit ID formatı.')),
+          const SnackBar(content: Text('Geçersiz Kilit ID formatı.')),
         );
         return;
       }
@@ -708,7 +708,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Şifreleri görmek için giriş yapmalısınız.')),
+        const SnackBar(content: Text('Şifreleri görmek için giriş yapmalısınız.')),
       );
     }
   }

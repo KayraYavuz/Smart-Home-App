@@ -6,7 +6,7 @@ import 'package:ttlock_flutter/ttlock.dart';
 import 'config.dart';
 
 class GatewayPage extends StatefulWidget {
-  GatewayPage({required this.type, this.wifi}) : super();
+  const GatewayPage({super.key, required this.type, this.wifi});
   final String? wifi;
   final TTGatewayType type;
   @override
@@ -33,11 +33,11 @@ class _GatewayPageState extends State<GatewayPage> {
   }
 
   void _initGateway_2(String? wifi, String? wifiPassword) {
-    if (_wifi == null || _wifiPassword != null || _wifiPassword!.length == 0) {
+    if (_wifi == null || _wifiPassword != null || _wifiPassword!.isEmpty) {
       _showAndDismiss(ProgressHudType.error, '"wifi or password cant be empty');
     }
 
-    Map paramMap = Map();
+    Map paramMap = {};
     paramMap["wifi"] = wifi;
     paramMap["wifiPassword"] = wifiPassword;
     paramMap["type"] = _type!.index;
@@ -48,7 +48,7 @@ class _GatewayPageState extends State<GatewayPage> {
   }
 
   void _initGateway_3_4() {
-    Map paramMap = Map();
+    Map paramMap = {};
     paramMap["type"] = _type!.index;
     paramMap["gatewayName"] = GatewayConfig.gatewayName;
     paramMap["uid"] = GatewayConfig.uid;
@@ -85,7 +85,7 @@ class _GatewayPageState extends State<GatewayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Gateway"),
+          title: const Text("Gateway"),
         ),
         body: Material(child: ProgressHud(
           child: Container(
@@ -107,13 +107,13 @@ class _GatewayPageState extends State<GatewayPage> {
     TextField wifiPasswordTextField = TextField(
         textAlign: TextAlign.center,
         controller: TextEditingController(text: _wifiPassword),
-        decoration: InputDecoration(hintText: 'Input wifi password'),
+        decoration: const InputDecoration(hintText: 'Input wifi password'),
         onChanged: (String content) {
           _wifiPassword = content;
         });
 
     ElevatedButton initGatewayButton = ElevatedButton(
-      child: Text('Init Gateway'),
+      child: const Text('Init Gateway'),
       onPressed: () {
         FocusScope.of(_context!).requestFocus(FocusNode());
         //g2

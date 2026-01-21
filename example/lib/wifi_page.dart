@@ -5,7 +5,7 @@ import 'package:ttlock_flutter/ttgateway.dart';
 import 'package:bmprogresshud/progresshud.dart';
 
 class WifiPage extends StatefulWidget {
-  WifiPage({required this.mac}) : super();
+  const WifiPage({super.key, required this.mac});
   final String mac;
   @override
   _WifiPageState createState() => _WifiPageState();
@@ -32,7 +32,7 @@ class _WifiPageState extends State<WifiPage> {
 
   void _pushGatewayPage(String wifi) {
     Navigator.push(context,
-        new MaterialPageRoute(builder: (BuildContext context) {
+        MaterialPageRoute(builder: (BuildContext context) {
       return GatewayPage(type: TTGatewayType.g2, wifi: wifi);
     }));
   }
@@ -41,7 +41,7 @@ class _WifiPageState extends State<WifiPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Select Wifi'),
+          title: const Text('Select Wifi'),
         ),
         body: Material(child: ProgressHud(
           child: Container(
@@ -56,7 +56,7 @@ class _WifiPageState extends State<WifiPage> {
   Widget getList() {
     return ListView.builder(
         itemCount: _wifiList.length,
-        padding: new EdgeInsets.all(5.0),
+        padding: const EdgeInsets.all(5.0),
         itemExtent: 50.0,
         itemBuilder: (context, index) {
           Map wifiMap = _wifiList[index];

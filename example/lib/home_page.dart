@@ -1,9 +1,11 @@
  import 'dart:ui';
  import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bmprogresshud/progresshud.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'ui/pages/lock_detail_page.dart';
 import 'ui/pages/add_device_page.dart';
@@ -16,7 +18,7 @@ import 'blocs/ttlock_webhook/ttlock_webhook_state.dart';
 import 'repositories/auth_repository.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -33,12 +35,44 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Seam cihazlarını otomatik olarak yükle
-    _fetchAndSetLocks();
+    
+    // Önce önbelleği yükle, sonra güncel veriyi çek
+    _loadCachedLocks().then((_) {
+      _fetchAndSetLocks();
+    });
 
     // Webhook bağlantısını başlat (test için simüle edilmiş URL)
     _initializeWebhookConnection();
     _startRealtimeSync();
+  }
+
+  Future<void> _loadCachedLocks() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? cachedLocksString = prefs.getString('cached_locks');
+      if (cachedLocksString != null) {
+        final List<dynamic> decoded = json.decode(cachedLocksString);
+        if (mounted) {
+          setState(() {
+            _locks = decoded.cast<Map<String, dynamic>>();
+          });
+        }
+        print('✅ Önbellekten ${_locks.length} kilit yüklendi.');
+      }
+    } catch (e) {
+      print('❌ Önbellek yükleme hatası: $e');
+    }
+  }
+
+  Future<void> _cacheLocks(List<Map<String, dynamic>> locks) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String encoded = json.encode(locks);
+      await prefs.setString('cached_locks', encoded);
+      print('💾 Kilitler önbelleğe kaydedildi.');
+    } catch (e) {
+      print('❌ Önbellek kaydetme hatası: $e');
+    }
   }
 
   @override
@@ -257,7 +291,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 for (var i = 0; i < allKeys.length; i++) {
                   final lock = allKeys[i];
                   final sharedText = lock['shared'] ? '[PAYLAŞILAN]' : '[KENDİ]';
-                  print('  ${i + 1}. ${sharedText} ID: ${lock['lockId']}, KeyID: ${lock['keyId']}, İsim: ${lock['name']}');
+                  print('  ${i + 1}. $sharedText ID: ${lock['lockId']}, KeyID: ${lock['keyId']}, İsim: ${lock['name']}');
                 }
               } else {
                 print('⚠️  TTLock hesabında hiç kilit bulunamadı!');
@@ -277,7 +311,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 final isLocked = keyState == 0 || keyState == 2; 
                 final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
-                print('🔋 Kilit ${lockId}: keyState=${keyState}, battery=${electricQuantity}');
+                print('🔋 Kilit $lockId: keyState=$keyState, battery=$electricQuantity');
                 print('🏷️  Kilit adı: $lockAlias');
 
                 allLocks.add({
@@ -304,7 +338,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 final isLocked = keyState == 0 || keyState == 2; 
                 final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
-                print('🔋 Paylaşılan kilit ${lockId}: keyState=${keyState}, battery=${electricQuantity}');
+                print('🔋 Paylaşılan kilit $lockId: keyState=$keyState, battery=$electricQuantity');
 
                 allLocks.add({
                   'name': lockAlias,
@@ -324,6 +358,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 _locks = allLocks;
                 _isLoading = false;
               });
+
+              // Kilitleri önbelleğe kaydet
+              _cacheLocks(allLocks);
 
               // Bildirimler için kilit konularına (topic) abone ol
               _subscribeToLockTopics(allLocks);
@@ -354,6 +391,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 errorMessage = l10n.errorInternetConnection;
               } else if (e.toString().contains('timeout')) {
                 errorMessage = l10n.errorServerTimeout;
+              } else {
+                errorMessage = '$errorMessage: ${e.toString()}';
               }
 
               if (mounted) {
@@ -377,7 +416,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     // Navigates to the new AddDevicePage and waits for result
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddDevicePage()),
+      MaterialPageRoute(builder: (context) => const AddDevicePage()),
     );
 
     // Handle different device addition types
@@ -451,9 +490,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
 
     // The body of the Scaffold will now be determined by the selected page
-    final List<Widget> _pages = [
+    final List<Widget> pages = [
       _buildMainContent(context), // Ana sayfa - Cihaz listesi
-      ProfilePage(), // Profil sayfası - Ben
+      const ProfilePage(), // Profil sayfası - Ben
     ];
 
     return ProgressHud(
@@ -464,11 +503,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/background.png'),
+                  image: const AssetImage('assets/images/background.png'),
                   fit: BoxFit.cover,
                   onError: (exception, stackTrace) {},
                 ),
-                color: Color(0xFF1A1A1A),
+                color: const Color(0xFF1A1A1A),
               ),
             ),
           ),
@@ -476,7 +515,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             backgroundColor: Colors.transparent,
             // The body is now one of the pages from the list
             body: SafeArea(
-              child: _pages[_bottomNavIndex],
+              child: pages[_bottomNavIndex],
             ),
             bottomNavigationBar: _buildBottomNavigationBar(),
             // Debug FAB removed for production
@@ -492,14 +531,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Column(
       children: [
         _buildHeader(context),
+        if (_isLoading && _locks.isNotEmpty)
+           const LinearProgressIndicator(minHeight: 2, color: Color(0xFF1E90FF), backgroundColor: Colors.transparent),
         Expanded(
-          child: _isLoading
-              ? Center(child: CircularProgressIndicator(color: Colors.white))
+          child: _isLoading && _locks.isEmpty
+              ? const Center(child: CircularProgressIndicator(color: Colors.white))
               : _locks.isEmpty
                   ? Center(
                       child: Text(
                         l10n.noLocksFound,
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: const TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     )
                   : ListView.builder(
@@ -523,7 +564,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         children: [
           Text(
             l10n.allLocks,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -537,36 +578,36 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.cloud_sync, color: Colors.white),
+                  icon: const Icon(Icons.cloud_sync, color: Colors.white),
                   onPressed: _fetchAndSetLocks,
                   tooltip: l10n.refreshLocks,
                 ),
               ),
-              SizedBox(width: 8), // Spacing between icons
+              const SizedBox(width: 8), // Spacing between icons
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[850],
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.router, color: Colors.white),
+                  icon: const Icon(Icons.router, color: Colors.white),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => GatewaysPage()),
+                      MaterialPageRoute(builder: (context) => const GatewaysPage()),
                     );
                   },
                   tooltip: l10n.gateways,
                 ),
               ),
-              SizedBox(width: 8), // Spacing between icons
+              const SizedBox(width: 8), // Spacing between icons
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[850],
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.add, color: Colors.white),
+                  icon: const Icon(Icons.add, color: Colors.white),
                   onPressed: () => _addNewDevice(context),
                 ),
               ),
@@ -597,7 +638,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-      color: Color.fromRGBO(30, 30, 30, 0.85), // Dark semi-transparent background
+      color: const Color.fromRGBO(30, 30, 30, 0.85), // Dark semi-transparent background
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
           onTap: () async {
@@ -674,7 +715,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 children: [
                   Icon(
                     lock['isLocked'] ? Icons.lock : Icons.lock_open,
-                    color: lock['isLocked'] ? Color(0xFF1E90FF) : Colors.amber,
+                    color: lock['isLocked'] ? const Color(0xFF1E90FF) : Colors.amber,
                     size: 40,
                         ),
                       if (isTTLockDevice)
@@ -689,11 +730,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.lock_outline, color: Colors.green, size: 12),
-                              SizedBox(width: 4),
+                              const Icon(Icons.lock_outline, color: Colors.green, size: 12),
+                              const SizedBox(width: 4),
                               Text(
                                 l10n.defaultLockName,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.green,
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -714,11 +755,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.share, color: Colors.orange, size: 12),
-                              SizedBox(width: 4),
+                              const Icon(Icons.share, color: Colors.orange, size: 12),
+                              const SizedBox(width: 4),
                               Text(
                                 l10n.sharedLock,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.orange,
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -729,7 +770,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         ),
                     ],
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -744,7 +785,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           statusText,
                           style: TextStyle(color: Colors.grey[400], fontSize: 14),
@@ -765,7 +806,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               bottom: 12,
               right: 12,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color.fromRGBO(0, 0, 0, 0.3),
                   borderRadius: BorderRadius.circular(4),
@@ -778,10 +819,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       color: _getBatteryColor(lock['battery'] ?? 0),
                       size: 16,
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
                       '${lock['battery'] ?? 0}%',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -796,12 +837,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               top: 12,
               right: 12,
               child: Container(
-                padding: EdgeInsets.all(6),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: const Color.fromRGBO(0, 0, 0, 0.3),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.wifi,
                   color: Colors.white70,
                   size: 16,
@@ -826,11 +867,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
           title: Row(
             children: [
-              Icon(Icons.share, color: Colors.orange),
-              SizedBox(width: 12),
+              const Icon(Icons.share, color: Colors.orange),
+              const SizedBox(width: 12),
               Text(
                 l10n.sharedLock,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -853,7 +894,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               onPressed: () => Navigator.of(context).pop('cancel_share'),
               child: Text(
                 l10n.cancelShare,
-                style: TextStyle(color: Colors.orange),
+                style: const TextStyle(color: Colors.orange),
               ),
             ),
           ],
@@ -920,11 +961,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
           title: Row(
             children: [
-              Icon(Icons.warning, color: Colors.redAccent),
-              SizedBox(width: 12),
+              const Icon(Icons.warning, color: Colors.redAccent),
+              const SizedBox(width: 12),
               Text(
                 l10n.deleteDevice,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
@@ -947,7 +988,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(
                 l10n.delete,
-                style: TextStyle(color: Colors.redAccent),
+                style: const TextStyle(color: Colors.redAccent),
               ),
             ),
           ],
@@ -1015,7 +1056,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         border: Border.all(
           color: const Color.fromRGBO(255, 255, 255, 0.1),
           width: 1,
@@ -1024,12 +1065,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 10,
-            offset: Offset(0, -5),
+            offset: const Offset(0, -5),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: BottomNavigationBar(
@@ -1039,7 +1080,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             },
             backgroundColor: Colors.black.withValues(alpha: 0.9),
             elevation: 0,
-            selectedItemColor: Color(0xFF1E90FF),
+            selectedItemColor: const Color(0xFF1E90FF),
             unselectedItemColor: Colors.grey[500],
             showSelectedLabels: true,
             showUnselectedLabels: true,
@@ -1050,7 +1091,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   padding: EdgeInsets.all(_bottomNavIndex == 0 ? 8 : 6),
                   decoration: BoxDecoration(
                     color: _bottomNavIndex == 0
-                        ? Color(0xFF1E90FF).withValues(alpha: 0.2)
+                        ? const Color(0xFF1E90FF).withValues(alpha: 0.2)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -1066,7 +1107,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   padding: EdgeInsets.all(_bottomNavIndex == 1 ? 8 : 6),
                   decoration: BoxDecoration(
                     color: _bottomNavIndex == 1
-                        ? Color(0xFF1E90FF).withValues(alpha: 0.2)
+                        ? const Color(0xFF1E90FF).withValues(alpha: 0.2)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(12),
                   ),

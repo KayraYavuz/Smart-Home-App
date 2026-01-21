@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class HotelPMSPage extends StatefulWidget {
-  const HotelPMSPage({Key? key}) : super(key: key);
+  const HotelPMSPage({super.key});
 
   @override
   _HotelPMSPageState createState() => _HotelPMSPageState();

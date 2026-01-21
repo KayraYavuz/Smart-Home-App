@@ -11,11 +11,11 @@ class PasscodePage extends StatelessWidget {
   final String accessToken;
 
   const PasscodePage({
-    Key? key,
+    super.key,
     required this.lockId,
     required this.clientId,
     required this.accessToken,
-  }) : super(key: key);
+  });
 
   String _getPasscodeType(int type) {
     switch (type) {
@@ -36,24 +36,24 @@ class PasscodePage extends StatelessWidget {
       create: (context) => PasscodeCubit(context.read<TTLockRepository>())
         ..fetchPasscodes(lockId, clientId, accessToken),
       child: Scaffold(
-        backgroundColor: Color(0xFF121212),
+        backgroundColor: const Color(0xFF121212),
         appBar: AppBar(
           backgroundColor: Colors.grey[900],
-          title: Text('Şifreler'),
+          title: const Text('Şifreler'),
         ),
         body: BlocBuilder<PasscodeCubit, PasscodeState>(
           builder: (context, state) {
             if (state is PasscodeLoading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
             if (state is PasscodeLoadFailure) {
               return Center(
                   child: Text(state.error,
-                      style: TextStyle(color: Colors.redAccent)));
+                      style: const TextStyle(color: Colors.redAccent)));
             }
             if (state is PasscodeLoadSuccess) {
               if (state.passcodes.isEmpty) {
-                return Center(
+                return const Center(
                     child: Text('Hiç şifre bulunamadı.',
                         style: TextStyle(color: Colors.white)));
               }
@@ -62,9 +62,9 @@ class PasscodePage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final Passcode passcode = state.passcodes[index];
                   return ListTile(
-                    leading: Icon(Icons.password, color: Color(0xFF1E90FF)),
+                    leading: const Icon(Icons.password, color: Color(0xFF1E90FF)),
                     title: Text(passcode.keyboardPwd,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold)),
@@ -72,7 +72,7 @@ class PasscodePage extends StatelessWidget {
                         '${passcode.keyboardPwdName} | Tip: ${_getPasscodeType(passcode.keyboardPwdType)}',
                         style: TextStyle(color: Colors.grey[400])),
                     trailing: IconButton(
-                      icon: Icon(Icons.delete_outline, color: Colors.redAccent),
+                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                       onPressed: () {
                         // TODO: Implement delete passcode functionality using Cubit
                         print('Deleting ${passcode.keyboardPwd}');
@@ -82,7 +82,7 @@ class PasscodePage extends StatelessWidget {
                 },
               );
             }
-            return Center(child: Text('Başlarken...'));
+            return const Center(child: Text('Başlarken...'));
           },
         ),
         floatingActionButton: FloatingActionButton(
@@ -90,11 +90,11 @@ class PasscodePage extends StatelessWidget {
             // TODO: Ensure CreatePasscodePage can get lockId and credentials
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CreatePasscodePage()),
+              MaterialPageRoute(builder: (context) => const CreatePasscodePage()),
             );
           },
-          child: Icon(Icons.add),
-          backgroundColor: Color(0xFF1E90FF),
+          backgroundColor: const Color(0xFF1E90FF),
+          child: const Icon(Icons.add),
         ),
       ),
     );

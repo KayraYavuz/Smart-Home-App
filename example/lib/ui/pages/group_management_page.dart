@@ -5,7 +5,7 @@ import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 
 class GroupManagementPage extends StatefulWidget {
-  const GroupManagementPage({Key? key}) : super(key: key);
+  const GroupManagementPage({super.key});
 
   @override
   _GroupManagementPageState createState() => _GroupManagementPageState();

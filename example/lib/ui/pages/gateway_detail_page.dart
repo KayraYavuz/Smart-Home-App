@@ -9,7 +9,7 @@ import 'package:yavuz_lock/repositories/auth_repository.dart';
 class GatewayDetailPage extends StatefulWidget {
   final Map<String, dynamic> gateway;
 
-  const GatewayDetailPage({Key? key, required this.gateway}) : super(key: key);
+  const GatewayDetailPage({super.key, required this.gateway});
 
   @override
   _GatewayDetailPageState createState() => _GatewayDetailPageState();
@@ -58,7 +58,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
         title: Text(widget.gateway['gatewayName'] ?? 'Gateway Detail'),
@@ -69,17 +69,17 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_errorMessage.isNotEmpty) {
       return Center(
-        child: Text(_errorMessage, style: TextStyle(color: Colors.red)),
+        child: Text(_errorMessage, style: const TextStyle(color: Colors.red)),
       );
     }
     
     if (_gatewayDetails == null) {
-      return Center(
+      return const Center(
         child: Text('Gateway details not found.', style: TextStyle(color: Colors.white)),
       );
     }
@@ -87,24 +87,24 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
     return ListView(
       children: [
         ListTile(
-          title: Text('Gateway Name', style: TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['gatewayName'] ?? 'N/A', style: TextStyle(color: Colors.grey)),
+          title: const Text('Gateway Name', style: TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['gatewayName'] ?? 'N/A', style: const TextStyle(color: Colors.grey)),
         ),
         ListTile(
-          title: Text('Gateway MAC', style: TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['gatewayMac'] ?? 'N/A', style: TextStyle(color: Colors.grey)),
+          title: const Text('Gateway MAC', style: TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['gatewayMac'] ?? 'N/A', style: const TextStyle(color: Colors.grey)),
         ),
         ListTile(
-          title: Text('Network Name', style: TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['networkName'] ?? 'N/A', style: TextStyle(color: Colors.grey)),
+          title: const Text('Network Name', style: TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['networkName'] ?? 'N/A', style: const TextStyle(color: Colors.grey)),
         ),
         ListTile(
-          title: Text('Is Online', style: TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['isOnline'] == 1 ? 'Yes' : 'No', style: TextStyle(color: Colors.grey)),
+          title: const Text('Is Online', style: TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['isOnline'] == 1 ? 'Yes' : 'No', style: const TextStyle(color: Colors.grey)),
         ),
         ListTile(
-          title: Text('Lock Count', style: TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['lockNum']?.toString() ?? 'N/A', style: TextStyle(color: Colors.grey)),
+          title: const Text('Lock Count', style: TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['lockNum']?.toString() ?? 'N/A', style: const TextStyle(color: Colors.grey)),
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
@@ -113,24 +113,24 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
             children: [
               ElevatedButton(
                 onPressed: _renameGateway,
-                child: Text('Rename Gateway'),
+                child: const Text('Rename Gateway'),
               ),
               ElevatedButton(
                 onPressed: _deleteGateway,
-                child: Text('Delete Gateway'),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text('Delete Gateway'),
               ),
               ElevatedButton(
                 onPressed: _transferGateway,
-                child: Text('Transfer Gateway'),
+                child: const Text('Transfer Gateway'),
               ),
               ElevatedButton(
                 onPressed: _checkUpgrade,
-                child: Text('Check for Upgrade'),
+                child: const Text('Check for Upgrade'),
               ),
               ElevatedButton(
                 onPressed: _setUpgradeMode,
-                child: Text('Set to Upgrade Mode'),
+                child: const Text('Set to Upgrade Mode'),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -144,7 +144,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                     ),
                   );
                 },
-                child: Text('View Locks'),
+                child: const Text('View Locks'),
               ),
             ],
           ),
@@ -154,20 +154,20 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
   }
 
   void _renameGateway() {
-    final TextEditingController _nameController = TextEditingController();
+    final TextEditingController nameController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Rename Gateway'),
+          title: const Text('Rename Gateway'),
           content: TextField(
-            controller: _nameController,
-            decoration: InputDecoration(hintText: "Enter new gateway name"),
+            controller: nameController,
+            decoration: const InputDecoration(hintText: "Enter new gateway name"),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
@@ -177,12 +177,12 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                     final apiService = ApiService(context.read<AuthRepository>());
                     await apiService.renameGateway(
                       gatewayId: widget.gateway['gatewayId'].toString(),
-                      gatewayName: _nameController.text,
+                      gatewayName: nameController.text,
                     );
                     Navigator.of(context).pop();
                     _fetchGatewayDetails();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Gateway renamed successfully')),
+                      const SnackBar(content: Text('Gateway renamed successfully')),
                     );
                   } catch (e) {
                     Navigator.of(context).pop();
@@ -192,7 +192,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                   }
                 }
               },
-              child: Text('Rename'),
+              child: const Text('Rename'),
             ),
           ],
         );
@@ -205,12 +205,12 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Delete Gateway'),
-          content: Text('Are you sure you want to delete this gateway?'),
+          title: const Text('Delete Gateway'),
+          content: const Text('Are you sure you want to delete this gateway?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
@@ -224,7 +224,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop(); // Go back to the gateways list
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Gateway deleted successfully')),
+                      const SnackBar(content: Text('Gateway deleted successfully')),
                     );
                   } catch (e) {
                     Navigator.of(context).pop();
@@ -234,8 +234,8 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                   }
                 }
               },
-              child: Text('Delete'),
               style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -244,20 +244,20 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
   }
 
   void _transferGateway() {
-    final TextEditingController _usernameController = TextEditingController();
+    final TextEditingController usernameController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Transfer Gateway'),
+          title: const Text('Transfer Gateway'),
           content: TextField(
-            controller: _usernameController,
-            decoration: InputDecoration(hintText: "Enter receiver's username"),
+            controller: usernameController,
+            decoration: const InputDecoration(hintText: "Enter receiver's username"),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
@@ -266,13 +266,13 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                   try {
                     final apiService = ApiService(context.read<AuthRepository>());
                     await apiService.transferGateway(
-                      receiverUsername: _usernameController.text,
+                      receiverUsername: usernameController.text,
                       gatewayIdList: [widget.gateway['gatewayId'] as int],
                     );
                     Navigator.of(context).pop();
                     Navigator.of(context).pop(); // Go back to the gateways list
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Gateway transferred successfully')),
+                      const SnackBar(content: Text('Gateway transferred successfully')),
                     );
                   } catch (e) {
                     Navigator.of(context).pop();
@@ -282,7 +282,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                   }
                 }
               },
-              child: Text('Transfer'),
+              child: const Text('Transfer'),
             ),
           ],
         );
@@ -302,7 +302,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('Upgrade Check'),
+              title: const Text('Upgrade Check'),
               content: Text(
                   'Need Upgrade: ${result['needUpgrade'] == 1 ? 'Yes' : 'No'}\n'
                   'Version: ${result['version'] ?? 'N/A'}'
@@ -310,7 +310,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -333,7 +333,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
           gatewayId: widget.gateway['gatewayId'].toString(),
         );
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gateway is set to upgrade mode')),
+          const SnackBar(content: Text('Gateway is set to upgrade mode')),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class ThirdPartyDevicePage extends StatefulWidget {
-  const ThirdPartyDevicePage({Key? key}) : super(key: key);
+  const ThirdPartyDevicePage({super.key});
 
   @override
   _ThirdPartyDevicePageState createState() => _ThirdPartyDevicePageState();

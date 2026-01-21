@@ -6,7 +6,7 @@ import 'package:yavuz_lock/blocs/scan/scan_event.dart';
 import 'package:yavuz_lock/blocs/scan/scan_state.dart';
 
 class ScanPage extends StatelessWidget {
-  const ScanPage({Key? key}) : super(key: key);
+  const ScanPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -309,15 +309,15 @@ class ScanPage extends StatelessWidget {
                 ],
               );
             }
-            return Center(
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CircularProgressIndicator(
+                  CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
+                  SizedBox(height: 16),
+                  Text(
                     'Tarama başlatılıyor...',
                     style: TextStyle(
                       color: Colors.white,

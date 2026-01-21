@@ -7,7 +7,7 @@ import 'package:yavuz_lock/ui/pages/feature_pages.dart';
 class LockSettingsPage extends StatefulWidget {
   final Map<String, dynamic> lock;
 
-  const LockSettingsPage({Key? key, required this.lock}) : super(key: key);
+  const LockSettingsPage({super.key, required this.lock});
 
   @override
   _LockSettingsPageState createState() => _LockSettingsPageState();
@@ -141,7 +141,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       padding: const EdgeInsets.only(bottom: 8, left: 4),
       child: Text(
         title.toUpperCase(),
-        style: TextStyle(
+        style: const TextStyle(
           color: AppColors.primary,
           fontSize: 12,
           fontWeight: FontWeight.bold,

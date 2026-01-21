@@ -6,9 +6,9 @@ class ShareLockDialog extends StatefulWidget {
   final Map<String, dynamic> lock;
 
   const ShareLockDialog({
-    Key? key,
+    super.key,
     required this.lock,
-  }) : super(key: key);
+  });
 
   @override
   _ShareLockDialogState createState() => _ShareLockDialogState();
@@ -51,7 +51,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 // Header
                 Row(
                   children: [
-                    Icon(Icons.share, color: Colors.blue, size: 28),
+                    const Icon(Icons.share, color: Colors.blue, size: 28),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(

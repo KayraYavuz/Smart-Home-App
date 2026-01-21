@@ -1077,6 +1077,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error'**
   String get errorLabel;
+
+  /// No description provided for @statusLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get statusLocked;
+
+  /// No description provided for @statusUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get statusUnlocked;
+
+  /// No description provided for @statusSecurityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Warning'**
+  String get statusSecurityWarning;
+
+  /// No description provided for @lockOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} opened'**
+  String lockOpened(String lockName);
+
+  /// No description provided for @lockClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} locked'**
+  String lockClosed(String lockName);
+
+  /// No description provided for @lockOpenedApp.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} opened from app'**
+  String lockOpenedApp(String lockName);
+
+  /// No description provided for @lockOpenedKeypad.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} opened with keypad'**
+  String lockOpenedKeypad(String lockName);
+
+  /// No description provided for @lockOpenedFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} opened with fingerprint'**
+  String lockOpenedFingerprint(String lockName);
+
+  /// No description provided for @lockOpenedCard.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} opened with card'**
+  String lockOpenedCard(String lockName);
+
+  /// No description provided for @lowBatteryWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} low battery'**
+  String lowBatteryWarning(String lockName);
+
+  /// No description provided for @lockTamperedWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} security warning!'**
+  String lockTamperedWarning(String lockName);
+
+  /// No description provided for @lockStatusUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} status updated'**
+  String lockStatusUpdated(String lockName);
+
+  /// No description provided for @unknownLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Lock'**
+  String get unknownLock;
+
+  /// No description provided for @defaultLockName.
+  ///
+  /// In en, this message translates to:
+  /// **'Yavuz Lock'**
+  String get defaultLockName;
+
+  /// No description provided for @defaultSharedLockName.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Yavuz Lock'**
+  String get defaultSharedLockName;
+
+  /// No description provided for @seamLockDefaultName.
+  ///
+  /// In en, this message translates to:
+  /// **'Seam Lock'**
+  String get seamLockDefaultName;
+
+  /// No description provided for @seamDevicesAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Seam devices added'**
+  String seamDevicesAdded(int count);
+
+  /// No description provided for @lockAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Yavuz Lock successfully added'**
+  String get lockAddedSuccess;
+
+  /// No description provided for @deviceTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type: {type}'**
+  String deviceTypeLabel(String type);
+
+  /// No description provided for @shareCancelError.
+  ///
+  /// In en, this message translates to:
+  /// **'Share cancellation error: {error}'**
+  String shareCancelError(String error);
+
+  /// No description provided for @errorDevicesLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading devices'**
+  String get errorDevicesLoading;
+
+  /// No description provided for @errorInternetConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection'**
+  String get errorInternetConnection;
+
+  /// No description provided for @errorServerTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Server timeout, please try again'**
+  String get errorServerTimeout;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate

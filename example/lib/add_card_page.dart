@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 class AddCardPage extends StatefulWidget {
   final String lockId;
-  const AddCardPage({Key? key, required this.lockId}) : super(key: key);
+  const AddCardPage({super.key, required this.lockId});
 
   @override
   _AddCardPageState createState() => _AddCardPageState();

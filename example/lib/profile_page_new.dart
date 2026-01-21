@@ -7,7 +7,7 @@ import 'package:yavuz_lock/ui/pages/system_management_page.dart';
 import 'package:yavuz_lock/ui/pages/work_together_page.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -136,7 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CustomerServicePage()),
+                        MaterialPageRoute(builder: (context) => const CustomerServicePage()),
                       );
                     },
                   ),
@@ -292,7 +292,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => LoginPage()),
+      MaterialPageRoute(builder: (_) => const LoginPage()),
       (route) => false,
     );
   }
@@ -341,7 +341,7 @@ class _ProfilePageState extends State<ProfilePage> {
       );
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => LoginPage()),
+        MaterialPageRoute(builder: (_) => const LoginPage()),
         (route) => false,
       );
     }

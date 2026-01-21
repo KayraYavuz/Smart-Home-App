@@ -9,7 +9,7 @@ import 'package:yavuz_lock/ui/pages/work_together/tt_renting_page.dart';
 import 'package:yavuz_lock/ui/pages/work_together/open_platform_page.dart';
 
 class WorkTogetherPage extends StatelessWidget {
-  const WorkTogetherPage({Key? key}) : super(key: key);
+  const WorkTogetherPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -511,4 +511,100 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get errorLabel => 'Fehler';
+
+  @override
+  String get statusLocked => 'Locked';
+
+  @override
+  String get statusUnlocked => 'Unlocked';
+
+  @override
+  String get statusSecurityWarning => 'Security Warning';
+
+  @override
+  String lockOpened(String lockName) {
+    return '$lockName opened';
+  }
+
+  @override
+  String lockClosed(String lockName) {
+    return '$lockName locked';
+  }
+
+  @override
+  String lockOpenedApp(String lockName) {
+    return '$lockName opened from app';
+  }
+
+  @override
+  String lockOpenedKeypad(String lockName) {
+    return '$lockName opened with keypad';
+  }
+
+  @override
+  String lockOpenedFingerprint(String lockName) {
+    return '$lockName opened with fingerprint';
+  }
+
+  @override
+  String lockOpenedCard(String lockName) {
+    return '$lockName opened with card';
+  }
+
+  @override
+  String lowBatteryWarning(String lockName) {
+    return '$lockName low battery';
+  }
+
+  @override
+  String lockTamperedWarning(String lockName) {
+    return '$lockName security warning!';
+  }
+
+  @override
+  String lockStatusUpdated(String lockName) {
+    return '$lockName status updated';
+  }
+
+  @override
+  String get unknownLock => 'Unknown Lock';
+
+  @override
+  String get defaultLockName => 'Yavuz Lock';
+
+  @override
+  String get defaultSharedLockName => 'Shared Yavuz Lock';
+
+  @override
+  String get seamLockDefaultName => 'Seam Lock';
+
+  @override
+  String seamDevicesAdded(int count) {
+    return '$count Seam devices added';
+  }
+
+  @override
+  String get lockAddedSuccess => 'Yavuz Lock successfully added';
+
+  @override
+  String deviceTypeLabel(String type) {
+    return 'Type: $type';
+  }
+
+  @override
+  String shareCancelError(String error) {
+    return 'Share cancellation error: $error';
+  }
+
+  @override
+  String get errorDevicesLoading => 'Error loading devices';
+
+  @override
+  String get errorInternetConnection => 'Check your internet connection';
+
+  @override
+  String get errorServerTimeout => 'Server timeout, please try again';
+
+  @override
+  String get retry => 'Retry';
 }

@@ -34,7 +34,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     if (emit.isDone) return;
 
     if (btState != TTBluetoothState.turnOn) {
-      emit(ScanFailure('Bluetooth kapalı veya yetkisiz. Lütfen Bluetooth\'u açın.'));
+      emit(const ScanFailure('Bluetooth kapalı veya yetkisiz. Lütfen Bluetooth\'u açın.'));
       return;
     }
 
@@ -107,11 +107,11 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
           print('🔍 Ham Hata Alındı - Kod: $errorCode (${errorCode.runtimeType}), Mesaj: $errorMsg');
 
           // TTLock spesifik hata kodlarını anlamlandır
-          if (errorCode.toString().contains('4') || errorCode == 4) {
+          if (errorCode.toString().contains('4')) {
             detailedError = 'Kilit ayar modunda değil. Lütfen tuş takımına dokunup ışıkları yaktıktan sonra tekrar deneyin.';
-          } else if (errorCode.toString().contains('5') || errorCode == 5) {
+          } else if (errorCode.toString().contains('5')) {
             detailedError = 'Bu kilit zaten başka bir hesaba veya bu hesaba kayıtlı. Önce kilidi sıfırlamanız gerekir.';
-          } else if (errorCode.toString().contains('1') || errorCode == 1) {
+          } else if (errorCode.toString().contains('1')) {
             detailedError = 'Bluetooth bağlantısı kilit tarafından reddedildi veya zaman aşımına uğradı.';
           } else {
             // Bilinmeyen veya 'fail' durumları için daha açıklayıcı olalım

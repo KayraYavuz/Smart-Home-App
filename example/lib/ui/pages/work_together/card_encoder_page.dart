@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class CardEncoderPage extends StatefulWidget {
-  const CardEncoderPage({Key? key}) : super(key: key);
+  const CardEncoderPage({super.key});
 
   @override
   _CardEncoderPageState createState() => _CardEncoderPageState();

@@ -10,6 +10,8 @@ import 'package:yavuz_lock/register_page.dart'; // Import RegisterPage
 import 'package:yavuz_lock/ui/pages/forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -48,13 +50,15 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _saveCredentials() async {
     final prefs = await SharedPreferences.getInstance();
+    // Always save username for Profile page display
+    await prefs.setString('saved_username', _usernameController.text);
+    
     if (_rememberMe) {
       await prefs.setBool('remember_me', true);
-      await prefs.setString('saved_username', _usernameController.text);
       await prefs.setString('saved_password', _passwordController.text);
     } else {
       await prefs.setBool('remember_me', false);
-      await prefs.remove('saved_username');
+      // Don't remove saved_username here, or Profile page will lose it
       await prefs.remove('saved_password');
     }
   }
@@ -72,12 +76,12 @@ class _LoginPageState extends State<LoginPage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF1E90FF).withValues(alpha: 0.8),
-                    Color(0xFF4169E1).withValues(alpha: 0.6),
-                    Color(0xFF000428).withValues(alpha: 0.9),
-                    Color(0xFF004e92).withValues(alpha: 0.8),
+                    const Color(0xFF1E90FF).withValues(alpha: 0.8),
+                    const Color(0xFF4169E1).withValues(alpha: 0.6),
+                    const Color(0xFF000428).withValues(alpha: 0.9),
+                    const Color(0xFF004e92).withValues(alpha: 0.8),
                   ],
-                  stops: [0.0, 0.3, 0.7, 1.0],
+                  stops: const [0.0, 0.3, 0.7, 1.0],
                 ),
               ),
             ),
@@ -100,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                 if (state is LoginFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('${state.error}'),
+                      content: Text(state.error),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -118,9 +122,9 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                              Icon(Icons.lock, color: Color(0xFF1E90FF), size: 80),
-                              SizedBox(height: 20),
-                              Text(
+                              const Icon(Icons.lock, color: Color(0xFF1E90FF), size: 80),
+                              const SizedBox(height: 20),
+                              const Text(
                                 'Yavuz Lock\'a Hoş Geldiniz',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -129,16 +133,16 @@ class _LoginPageState extends State<LoginPage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 40),
+                              const SizedBox(height: 40),
                               TextFormField(
                                 controller: _usernameController,
                                 decoration: _buildInputDecoration('E-posta veya Telefon'),
                                 keyboardType: TextInputType.emailAddress,
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                                 validator: (value) =>
                                     value!.isEmpty ? 'Lütfen e-posta veya telefon numaranızı girin' : null,
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               TextFormField(
                                 controller: _passwordController,
                                 decoration: _buildInputDecoration(
@@ -156,11 +160,11 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 obscureText: _obscurePassword,
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                                 validator: (value) =>
                                     value!.isEmpty ? 'Lütfen TTLock şifrenizi girin' : null,
                               ),
-                              SizedBox(height: 12),
+                              const SizedBox(height: 12),
                               // Remember Me checkbox
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -174,9 +178,9 @@ class _LoginPageState extends State<LoginPage> {
                                             _rememberMe = value ?? false;
                                           });
                                         },
-                                        activeColor: Color(0xFF1E90FF),
+                                        activeColor: const Color(0xFF1E90FF),
                                       ),
-                                      Text(
+                                      const Text(
                                         'Bilgilerimi Hatırla',
                                         style: TextStyle(color: Colors.white70, fontSize: 14),
                                       ),
@@ -193,19 +197,19 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               if (state is LoginLoading)
-                                CircularProgressIndicator()
+                                const CircularProgressIndicator()
                               else
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF1E90FF),
-                                    padding: EdgeInsets.symmetric(vertical: 16),
+                                    backgroundColor: const Color(0xFF1E90FF),
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     elevation: 8,
-                                    shadowColor: Color(0xFF1E90FF).withValues(alpha: 0.3),
+                                    shadowColor: const Color(0xFF1E90FF).withValues(alpha: 0.3),
                                   ),
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
@@ -218,15 +222,15 @@ class _LoginPageState extends State<LoginPage> {
                                           );
                                     }
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     'Giriş Yap',
                                     style: TextStyle(fontSize: 16, color: Colors.white),
                                   ),
                                 ),
                               if (state is LoginFailure) ...[
-                                SizedBox(height: 16),
+                                const SizedBox(height: 16),
                                 Container(
-                                  padding: EdgeInsets.all(12),
+                                  padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
                                     color: Colors.red.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
@@ -234,8 +238,8 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.error_outline, color: Colors.red),
-                                      SizedBox(width: 8),
+                                      const Icon(Icons.error_outline, color: Colors.red),
+                                      const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
                                           state.error,
@@ -246,12 +250,12 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                               ],
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               TextButton(
                                 onPressed: () async {
                                   final result = await Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => RegisterPage()),
+                                    MaterialPageRoute(builder: (context) => const RegisterPage()),
                                   );
 
                                   if (result != null && result is Map<String, String>) {
@@ -260,11 +264,11 @@ class _LoginPageState extends State<LoginPage> {
                                       _passwordController.text = result['password'] ?? '';
                                     });
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Bilgiler dolduruldu, giriş yapabilirsiniz.')),
+                                      const SnackBar(content: Text('Bilgiler dolduruldu, giriş yapabilirsiniz.')),
                                     );
                                   }
                                 },
-                                child: Text(
+                                child: const Text(
                                   'Hesabınız Yok Mu? Kayıt Olun',
                                   style: TextStyle(color: Color(0xFF1E90FF)),
                                 ),
@@ -301,7 +305,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Color(0xFF1E90FF)),
+        borderSide: const BorderSide(color: Color(0xFF1E90FF)),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -309,7 +313,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.red),
+        borderSide: const BorderSide(color: Colors.red),
       ),
     );
   }

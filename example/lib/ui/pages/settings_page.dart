@@ -4,7 +4,7 @@ import 'package:yavuz_lock/providers/language_provider.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -10,7 +10,7 @@ class FeatureBasePage extends StatelessWidget {
   final Widget body;
   final List<Widget>? actions;
 
-  const FeatureBasePage({Key? key, required this.title, required this.body, this.actions}) : super(key: key);
+  const FeatureBasePage({super.key, required this.title, required this.body, this.actions});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class FeatureBasePage extends StatelessWidget {
 // --- Remote List Page ---
 class RemoteListPage extends StatefulWidget {
   final int lockId;
-  const RemoteListPage({Key? key, required this.lockId}) : super(key: key);
+  const RemoteListPage({super.key, required this.lockId});
 
   @override
   _RemoteListPageState createState() => _RemoteListPageState();
@@ -112,7 +112,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
 // --- Wireless Keypad Page ---
 class WirelessKeypadPage extends StatefulWidget {
   final int lockId;
-  const WirelessKeypadPage({Key? key, required this.lockId}) : super(key: key);
+  const WirelessKeypadPage({super.key, required this.lockId});
 
   @override
   _WirelessKeypadPageState createState() => _WirelessKeypadPageState();
@@ -191,7 +191,7 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
 // --- Door Sensor Page ---
 class DoorSensorPage extends StatefulWidget {
   final int lockId;
-  const DoorSensorPage({Key? key, required this.lockId}) : super(key: key);
+  const DoorSensorPage({super.key, required this.lockId});
 
   @override
   _DoorSensorPageState createState() => _DoorSensorPageState();
@@ -230,7 +230,7 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _sensor == null
-              ? Center(child: Text('Sensör bulunamadı', style: TextStyle(color: Colors.grey)))
+              ? const Center(child: Text('Sensör bulunamadı', style: TextStyle(color: Colors.grey)))
               : ListView(
                 children: [
                    Card(
@@ -264,7 +264,7 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
 // --- QR Code Page ---
 class QrCodePage extends StatefulWidget {
   final int lockId;
-  const QrCodePage({Key? key, required this.lockId}) : super(key: key);
+  const QrCodePage({super.key, required this.lockId});
 
   @override
   _QrCodePageState createState() => _QrCodePageState();
@@ -375,7 +375,7 @@ class _QrCodePageState extends State<QrCodePage> {
 // --- Wi-Fi Lock Page ---
 class WifiLockPage extends StatefulWidget {
   final int lockId;
-  const WifiLockPage({Key? key, required this.lockId}) : super(key: key);
+  const WifiLockPage({super.key, required this.lockId});
 
   @override
   _WifiLockPageState createState() => _WifiLockPageState();

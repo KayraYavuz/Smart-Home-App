@@ -6,7 +6,7 @@ import 'add_card_page.dart';
 
 class CardPage extends StatefulWidget {
   final String lockId;
-  const CardPage({Key? key, required this.lockId}) : super(key: key);
+  const CardPage({super.key, required this.lockId});
 
   @override
   _CardPageState createState() => _CardPageState();
@@ -248,8 +248,8 @@ class _CardPageState extends State<CardPage> {
           );
           if (result == true) await _fetchCards();
         },
-        child: const Icon(Icons.add),
         backgroundColor: const Color(0xFF1E90FF),
+        child: const Icon(Icons.add),
       ),
     );
   }

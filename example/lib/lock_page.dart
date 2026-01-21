@@ -7,12 +7,11 @@ import 'package:yavuz_lock/services/ttlock_webhook_service.dart';
 
 
 class LockPage extends StatefulWidget {
-  LockPage(
-      {Key? key,
+  const LockPage(
+      {super.key,
       required this.title,
       required this.lockData,
-      required this.lockMac})
-      : super(key: key);
+      required this.lockMac});
   final String title;
   final String lockData;
   final String lockMac;
@@ -99,7 +98,7 @@ enum Command {
 }
 
 class _LockPageState extends State<LockPage> {
-  List<Map<String, Command>> _commandList = [
+  final List<Map<String, Command>> _commandList = [
     {"Reset Lock": Command.resetLock},
     {"Unlock": Command.unlock},
     {"Get Power": Command.getLockPower},
@@ -382,12 +381,12 @@ class _LockPageState extends State<LockPage> {
           // This syncs the new passcode key data with the server
           // TODO: Replace 'lockId' with actual lock ID from your data model
           // ApiService().updateLockData(lockId: 'YOUR_LOCK_ID', lockData: newLockData);
-          this.lockData = newLockData; // Update local lockData
+          lockData = newLockData; // Update local lockData
           _showSuccessAndDismiss("Success - LockData güncellendi");
           TTLockWebhookService().sendEvent(eventType: 'passcodeReset', data: {
             'lockMac': widget.lockMac,
             'description': 'Şifreler Sıfırlandı',
-            'newLockData': newLockData.substring(0, 50) + '...'
+            'newLockData': '${newLockData.substring(0, 50)}...'
           });
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);
@@ -443,7 +442,7 @@ class _LockPageState extends State<LockPage> {
             (currentCount, totalCount) {
           _showLoading("currentCount:$currentCount  totalCount:$totalCount");
         }, (fingerprintNumber) {
-          this.addFingerprintNumber = fingerprintNumber;
+          addFingerprintNumber = fingerprintNumber;
           _showSuccessAndDismiss("fingerprintNumber: $fingerprintNumber");
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);
@@ -489,7 +488,7 @@ class _LockPageState extends State<LockPage> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    FingerprintPage(lockId: int.parse(widget.title.split("-")[1]), lockData: this.lockData)));
+                    FingerprintPage(lockId: int.parse(widget.title.split("-")[1]), lockData: lockData)));
         break;
 
       case Command.manageFaces:
@@ -635,7 +634,7 @@ class _LockPageState extends State<LockPage> {
         });
         break;
       case Command.setPowerSaverControlAbleLock:
-        TTLock.setPowerSaverControlAbleLock(this.lockMac, lockData, () {
+        TTLock.setPowerSaverControlAbleLock(lockMac, lockData, () {
           _showSuccessAndDismiss("Success");
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);
@@ -777,7 +776,7 @@ class _LockPageState extends State<LockPage> {
         });
         break;
       case Command.configIp:
-        Map paramMap = Map();
+        Map paramMap = {};
         paramMap["type"] = TTIpSettingType.DHCP.index;
         //for static ip setting
         // paramMap["type"] = TTIpSettingType.STATIC_IP.index;
@@ -798,10 +797,10 @@ class _LockPageState extends State<LockPage> {
         TTLock.addFace(null, startDate, endDate, lockData,
             (state, faceErrorCode) {
           _showSuccessAndDismiss(
-              "add face progress state :" + state.toString());
+              "add face progress state :$state");
         }, (faceNumber) {
           addFaceNumber = faceNumber;
-          _showSuccessAndDismiss("add face success :" + faceNumber);
+          _showSuccessAndDismiss("add face success :$faceNumber");
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);
         });
@@ -854,12 +853,12 @@ class _LockPageState extends State<LockPage> {
   Widget getListView() {
     return ListView.separated(
         separatorBuilder: (BuildContext context, int index) {
-          return Divider(height: 2, color: Colors.green);
+          return const Divider(height: 2, color: Colors.green);
         },
         itemCount: _commandList.length,
         itemBuilder: (context, index) {
           Map<String, Command> map = _commandList[index];
-          String title = '${map.keys.first}';
+          String title = map.keys.first;
           String subtitle = index == 0 ? note : '';
           return ListTile(
             title: Text(title),
@@ -875,7 +874,7 @@ class _LockPageState extends State<LockPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Lock'),
+          title: const Text('Lock'),
         ),
         body: Material(child: ProgressHud(
           child: Container(

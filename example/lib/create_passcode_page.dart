@@ -6,7 +6,7 @@ class CreatePasscodePage extends StatefulWidget {
   // final String lockData;
   // const CreatePasscodePage({Key? key, required this.lockData}) : super(key: key);
 
-  const CreatePasscodePage({Key? key}) : super(key: key);
+  const CreatePasscodePage({super.key});
 
   @override
   _CreatePasscodePageState createState() => _CreatePasscodePageState();
@@ -16,7 +16,7 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> {
   final _formKey = GlobalKey<FormState>();
   String _passcode = '';
   DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now().add(Duration(days: 30));
+  DateTime _endDate = DateTime.now().add(const Duration(days: 30));
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     final DateTime? picked = await showDatePicker(
@@ -49,9 +49,9 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: Text('Yeni Şifre Oluştur'),
+        title: const Text('Yeni Şifre Oluştur'),
         backgroundColor: Colors.grey[900],
       ),
       body: SingleChildScrollView(
@@ -64,7 +64,7 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> {
               TextFormField(
                 decoration: _buildInputDecoration('Şifre (4-9 haneli)'),
                 keyboardType: TextInputType.number,
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Lütfen bir şifre girin';
@@ -76,30 +76,30 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> {
                 },
                 onSaved: (value) => _passcode = value!,
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Text('Geçerlilik Başlangıcı', style: TextStyle(color: Colors.grey[400])),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[800]),
                 onPressed: () => _selectDate(context, true),
-                child: Text(DateFormat('dd.MM.yyyy').format(_startDate), style: TextStyle(color: Colors.white)),
+                child: Text(DateFormat('dd.MM.yyyy').format(_startDate), style: const TextStyle(color: Colors.white)),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Text('Geçerlilik Bitişi', style: TextStyle(color: Colors.grey[400])),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[800]),
                 onPressed: () => _selectDate(context, false),
-                child: Text(DateFormat('dd.MM.yyyy').format(_endDate), style: TextStyle(color: Colors.white)),
+                child: Text(DateFormat('dd.MM.yyyy').format(_endDate), style: const TextStyle(color: Colors.white)),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF1E90FF),
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFF1E90FF),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: _createPasscode,
-                child: Text('Oluştur', style: TextStyle(fontSize: 16, color: Colors.white)),
+                child: const Text('Oluştur', style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ],
           ),

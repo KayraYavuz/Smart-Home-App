@@ -9,8 +9,7 @@ class FingerprintPage extends StatefulWidget {
   final int lockId;
   final String lockData;
   const FingerprintPage(
-      {Key? key, required this.lockId, required this.lockData})
-      : super(key: key);
+      {super.key, required this.lockId, required this.lockData});
 
   @override
   _FingerprintPageState createState() => _FingerprintPageState();
@@ -27,21 +26,21 @@ class _FingerprintPageState extends State<FingerprintPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Fingerprints'),
+        title: const Text('Fingerprints'),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete_forever),
+            icon: const Icon(Icons.delete_forever),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text('Clear All Fingerprints'),
-                  content: Text(
+                  title: const Text('Clear All Fingerprints'),
+                  content: const Text(
                       'Are you sure you want to clear all fingerprints?'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel'),
+                      child: const Text('Cancel'),
                     ),
                     TextButton(
                       onPressed: () {
@@ -50,7 +49,7 @@ class _FingerprintPageState extends State<FingerprintPage> {
                             .add(ClearAllFingerprints(widget.lockId));
                         Navigator.pop(context);
                       },
-                      child: Text('Clear'),
+                      child: const Text('Clear'),
                     ),
                   ],
                 ),
@@ -67,7 +66,7 @@ class _FingerprintPageState extends State<FingerprintPage> {
         },
         builder: (context, state) {
           if (state is FingerprintLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (state is FingerprintsLoaded) {
             final fingerprints = state.fingerprints;
@@ -79,7 +78,7 @@ class _FingerprintPageState extends State<FingerprintPage> {
                   title: Text(fingerprint['fingerprintName'] ?? 'No Name'),
                   subtitle: Text(fingerprint['fingerprintNumber']),
                   trailing: IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     onPressed: () {
                       context.read<FingerprintBloc>().add(DeleteFingerprint(
                           widget.lockId, fingerprint['fingerprintId']));
@@ -88,10 +87,10 @@ class _FingerprintPageState extends State<FingerprintPage> {
                   onLongPress: () {
                     showMenu(
                       context: context,
-                      position: RelativeRect.fromLTRB(100, 400, 100, 100),
+                      position: const RelativeRect.fromLTRB(100, 400, 100, 100),
                       items: [
                         PopupMenuItem(
-                          child: Text('Rename'),
+                          child: const Text('Rename'),
                           onTap: () {
                             _showRenameDialog(
                                 context,
@@ -101,7 +100,7 @@ class _FingerprintPageState extends State<FingerprintPage> {
                           },
                         ),
                         PopupMenuItem(
-                          child: Text('Change Period'),
+                          child: const Text('Change Period'),
                           onTap: () {
                             _showChangePeriodDialog(
                                 context,
@@ -133,36 +132,36 @@ class _FingerprintPageState extends State<FingerprintPage> {
             ),
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
 
   void _showRenameDialog(BuildContext context, int lockId, int fingerprintId, String currentName) {
-    final _nameController = TextEditingController(text: currentName);
+    final nameController = TextEditingController(text: currentName);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Rename Fingerprint'),
+        title: const Text('Rename Fingerprint'),
         content: TextField(
-          controller: _nameController,
-          decoration: InputDecoration(labelText: 'New Name'),
+          controller: nameController,
+          decoration: const InputDecoration(labelText: 'New Name'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               context.read<FingerprintBloc>().add(RenameFingerprint(
                     lockId: lockId,
                     fingerprintId: fingerprintId,
-                    fingerprintName: _nameController.text,
+                    fingerprintName: nameController.text,
                   ));
               Navigator.pop(context);
             },
-            child: Text('Rename'),
+            child: const Text('Rename'),
           ),
         ],
       ),
@@ -170,23 +169,23 @@ class _FingerprintPageState extends State<FingerprintPage> {
   }
 
   void _showChangePeriodDialog(BuildContext context, int lockId, int fingerprintId) {
-    final _startDateController = TextEditingController();
-    final _endDateController = TextEditingController();
+    final startDateController = TextEditingController();
+    final endDateController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Change Period'),
+        title: const Text('Change Period'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: _startDateController,
-              decoration: InputDecoration(labelText: 'Start Date (ms)'),
+              controller: startDateController,
+              decoration: const InputDecoration(labelText: 'Start Date (ms)'),
               keyboardType: TextInputType.number,
             ),
             TextField(
-              controller: _endDateController,
-              decoration: InputDecoration(labelText: 'End Date (ms)'),
+              controller: endDateController,
+              decoration: const InputDecoration(labelText: 'End Date (ms)'),
               keyboardType: TextInputType.number,
             ),
           ],
@@ -194,19 +193,19 @@ class _FingerprintPageState extends State<FingerprintPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               context.read<FingerprintBloc>().add(ChangeFingerprintPeriod(
                     lockId: lockId,
                     fingerprintId: fingerprintId,
-                    startDate: int.parse(_startDateController.text),
-                    endDate: int.parse(_endDateController.text),
+                    startDate: int.parse(startDateController.text),
+                    endDate: int.parse(endDateController.text),
                   ));
               Navigator.pop(context);
             },
-            child: Text('Change'),
+            child: const Text('Change'),
           ),
         ],
       ),

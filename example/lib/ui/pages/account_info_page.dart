@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AccountInfoPage extends StatefulWidget {
-  const AccountInfoPage({Key? key}) : super(key: key);
+  const AccountInfoPage({super.key});
 
   @override
   _AccountInfoPageState createState() => _AccountInfoPageState();

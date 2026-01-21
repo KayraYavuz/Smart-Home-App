@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class TTRentingPage extends StatefulWidget {
-  const TTRentingPage({Key? key}) : super(key: key);
+  const TTRentingPage({super.key});
 
   @override
   _TTRentingPageState createState() => _TTRentingPageState();

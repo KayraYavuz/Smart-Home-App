@@ -7,7 +7,7 @@ import 'package:yavuz_lock/blocs/fingerprint/fingerprint_event.dart';
 class AddFingerprintPage extends StatefulWidget {
   final int lockId;
   final String lockData;
-  const AddFingerprintPage({Key? key, required this.lockId, required this.lockData}) : super(key: key);
+  const AddFingerprintPage({super.key, required this.lockId, required this.lockData});
 
   @override
   _AddFingerprintPageState createState() => _AddFingerprintPageState();
@@ -25,14 +25,14 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
   void initState() {
     super.initState();
     _startDateController.text = DateTime.now().millisecondsSinceEpoch.toString();
-    _endDateController.text = DateTime.now().add(Duration(days: 30)).millisecondsSinceEpoch.toString();
+    _endDateController.text = DateTime.now().add(const Duration(days: 30)).millisecondsSinceEpoch.toString();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Fingerprint'),
+        title: const Text('Add Fingerprint'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -42,7 +42,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Fingerprint Name'),
+                decoration: const InputDecoration(labelText: 'Fingerprint Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a name';
@@ -52,7 +52,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
               ),
               TextFormField(
                 controller: _startDateController,
-                decoration: InputDecoration(labelText: 'Start Date (ms)'),
+                decoration: const InputDecoration(labelText: 'Start Date (ms)'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -63,7 +63,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
               ),
               TextFormField(
                 controller: _endDateController,
-                decoration: InputDecoration(labelText: 'End Date (ms)'),
+                decoration: const InputDecoration(labelText: 'End Date (ms)'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -72,7 +72,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   TTLock.addFingerprint(null, int.parse(_startDateController.text), int.parse(_endDateController.text), widget.lockData,
@@ -86,11 +86,11 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
                     // _showErrorAndDismiss(errorCode, errorMsg);
                   });
                 },
-                child: Text('Get Fingerprint Number'),
+                child: const Text('Get Fingerprint Number'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               if (_fingerprintNumber != null) Text('Fingerprint Number: $_fingerprintNumber'),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate() && _fingerprintNumber != null) {
@@ -106,7 +106,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
                     Navigator.pop(context);
                   }
                 },
-                child: Text('Add Fingerprint'),
+                child: const Text('Add Fingerprint'),
               ),
             ],
           ),

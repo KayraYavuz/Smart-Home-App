@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SystemManagementPage extends StatefulWidget {
-  const SystemManagementPage({Key? key}) : super(key: key);
+  const SystemManagementPage({super.key});
 
   @override
   _SystemManagementPageState createState() => _SystemManagementPageState();

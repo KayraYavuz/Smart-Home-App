@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AddDevicePage extends StatelessWidget {
-  const AddDevicePage({Key? key}) : super(key: key);
+  const AddDevicePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,12 @@ class AddDevicePage extends StatelessWidget {
     };
 
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        title: Text('Cihaz ekle'),
+        title: const Text('Cihaz ekle'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -53,7 +53,7 @@ class AddDevicePage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -62,8 +62,8 @@ class AddDevicePage extends StatelessWidget {
         ),
         GridView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
@@ -94,12 +94,12 @@ class AddDevicePage extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Icon(device['icon'] as IconData?, color: Color(0xFF1E90FF), size: 30),
+              child: Icon(device['icon'] as IconData?, color: const Color(0xFF1E90FF), size: 30),
             ),
             Expanded(
               child: Text(
                 device['name'],
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
                 overflow: TextOverflow.ellipsis,
               ),
             ),

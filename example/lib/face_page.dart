@@ -5,7 +5,7 @@ import 'package:yavuz_lock/blocs/face/face_bloc.dart';
 
 class FacePage extends StatefulWidget {
   final int lockId;
-  const FacePage({Key? key, required this.lockId}) : super(key: key);
+  const FacePage({super.key, required this.lockId});
 
   @override
   _FacePageState createState() => _FacePageState();
@@ -22,27 +22,27 @@ class _FacePageState extends State<FacePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Faces'),
+        title: const Text('Faces'),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete_forever),
+            icon: const Icon(Icons.delete_forever),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text('Clear All Faces'),
-                  content: Text('Are you sure you want to clear all faces?'),
+                  title: const Text('Clear All Faces'),
+                  content: const Text('Are you sure you want to clear all faces?'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel'),
+                      child: const Text('Cancel'),
                     ),
                     TextButton(
                       onPressed: () {
                         context.read<FaceBloc>().add(ClearAllFaces(widget.lockId));
                         Navigator.pop(context);
                       },
-                      child: Text('Clear'),
+                      child: const Text('Clear'),
                     ),
                   ],
                 ),
@@ -67,12 +67,12 @@ class _FacePageState extends State<FacePage> {
         },
         builder: (context, state) {
           if (state is FaceLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (state is FacesLoaded) {
             final faces = state.faces;
             if (faces.isEmpty) {
-              return Center(child: Text('No faces found.'));
+              return const Center(child: Text('No faces found.'));
             }
             return ListView.builder(
               itemCount: faces.length,
@@ -82,7 +82,7 @@ class _FacePageState extends State<FacePage> {
                   title: Text(face['name'] ?? 'No Name'),
                   subtitle: Text('ID: ${face['faceId']}'),
                   trailing: IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     onPressed: () {
                       context.read<FaceBloc>().add(DeleteFace(widget.lockId, face['faceId']));
                     },
@@ -90,10 +90,10 @@ class _FacePageState extends State<FacePage> {
                   onLongPress: () {
                     showMenu(
                       context: context,
-                      position: RelativeRect.fromLTRB(100, 400, 100, 100),
+                      position: const RelativeRect.fromLTRB(100, 400, 100, 100),
                       items: [
                         PopupMenuItem(
-                          child: Text('Rename'),
+                          child: const Text('Rename'),
                           onTap: () {
                             _showRenameDialog(
                                 context,
@@ -103,7 +103,7 @@ class _FacePageState extends State<FacePage> {
                           },
                         ),
                         PopupMenuItem(
-                          child: Text('Change Period'),
+                          child: const Text('Change Period'),
                           onTap: () {
                             _showChangePeriodDialog(
                                 context,
@@ -136,36 +136,36 @@ class _FacePageState extends State<FacePage> {
             context.read<FaceBloc>().add(LoadFaces(widget.lockId));
           }
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
 
   void _showRenameDialog(BuildContext context, int lockId, int faceId, String currentName) {
-    final _nameController = TextEditingController(text: currentName);
+    final nameController = TextEditingController(text: currentName);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Rename Face'),
+        title: const Text('Rename Face'),
         content: TextField(
-          controller: _nameController,
-          decoration: InputDecoration(labelText: 'New Name'),
+          controller: nameController,
+          decoration: const InputDecoration(labelText: 'New Name'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               context.read<FaceBloc>().add(RenameFace(
                     lockId: lockId,
                     faceId: faceId,
-                    name: _nameController.text,
+                    name: nameController.text,
                   ));
               Navigator.pop(context);
             },
-            child: Text('Rename'),
+            child: const Text('Rename'),
           ),
         ],
       ),
@@ -173,23 +173,23 @@ class _FacePageState extends State<FacePage> {
   }
 
   void _showChangePeriodDialog(BuildContext context, int lockId, int faceId) {
-    final _startDateController = TextEditingController();
-    final _endDateController = TextEditingController();
+    final startDateController = TextEditingController();
+    final endDateController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Change Period'),
+        title: const Text('Change Period'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: _startDateController,
-              decoration: InputDecoration(labelText: 'Start Date (ms)'),
+              controller: startDateController,
+              decoration: const InputDecoration(labelText: 'Start Date (ms)'),
               keyboardType: TextInputType.number,
             ),
             TextField(
-              controller: _endDateController,
-              decoration: InputDecoration(labelText: 'End Date (ms)'),
+              controller: endDateController,
+              decoration: const InputDecoration(labelText: 'End Date (ms)'),
               keyboardType: TextInputType.number,
             ),
           ],
@@ -197,19 +197,19 @@ class _FacePageState extends State<FacePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               context.read<FaceBloc>().add(ChangeFacePeriod(
                     lockId: lockId,
                     faceId: faceId,
-                    startDate: int.parse(_startDateController.text),
-                    endDate: int.parse(_endDateController.text),
+                    startDate: int.parse(startDateController.text),
+                    endDate: int.parse(endDateController.text),
                   ));
               Navigator.pop(context);
             },
-            child: Text('Change'),
+            child: const Text('Change'),
           ),
         ],
       ),

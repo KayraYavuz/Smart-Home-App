@@ -4,7 +4,7 @@ import 'package:yavuz_lock/ui/pages/gateway_management_page.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 
 class SystemManagementPage extends StatefulWidget {
-  const SystemManagementPage({Key? key}) : super(key: key);
+  const SystemManagementPage({super.key});
 
   @override
   _SystemManagementPageState createState() => _SystemManagementPageState();

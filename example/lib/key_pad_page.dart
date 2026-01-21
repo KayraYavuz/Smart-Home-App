@@ -5,12 +5,12 @@ import 'package:ttlock_flutter/ttremoteKeypad.dart';
 
 class KeyPadPage extends StatefulWidget {
   const KeyPadPage({
-    Key? key,
+    super.key,
     required this.name,
     required this.mac,
     required this.lockMac,
     required this.lockData,
-  }) : super(key: key);
+  });
 
   final String name;
   final String mac;
@@ -24,7 +24,7 @@ class KeyPadPage extends StatefulWidget {
 enum Command { getStoredLocks, deleteStoredLock, addFingerprint, addCard }
 
 class _KeyPadState extends State<KeyPadPage> {
-  List<Map<String, Command>> _commandList = [
+  final List<Map<String, Command>> _commandList = [
     {"getStoredLocks": Command.getStoredLocks},
     {"deleteStoredLock": Command.deleteStoredLock},
     {"addFingerprint": Command.addFingerprint},
@@ -122,12 +122,12 @@ class _KeyPadState extends State<KeyPadPage> {
   Widget getListView() {
     return ListView.separated(
         separatorBuilder: (BuildContext context, int index) {
-          return Divider(height: 2, color: Colors.green);
+          return const Divider(height: 2, color: Colors.green);
         },
         itemCount: _commandList.length,
         itemBuilder: (context, index) {
           Map<String, Command> map = _commandList[index];
-          String title = '${map.keys.first}';
+          String title = map.keys.first;
 
           return ListTile(
             title: Text(title),
@@ -143,7 +143,7 @@ class _KeyPadState extends State<KeyPadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Key Pad'),
+          title: const Text('Key Pad'),
         ),
         body: Material(child: ProgressHud(
           child: Container(

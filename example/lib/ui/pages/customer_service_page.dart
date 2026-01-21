@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerServicePage extends StatefulWidget {
+  const CustomerServicePage({super.key});
+
   @override
   _CustomerServicePageState createState() => _CustomerServicePageState();
 }
@@ -33,9 +35,9 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Müşteri Servisi',
           style: TextStyle(
             color: Colors.white,
@@ -49,15 +51,15 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF1E90FF).withValues(alpha: 0.8),
-                Color(0xFF4169E1).withValues(alpha: 0.8),
+                const Color(0xFF1E90FF).withValues(alpha: 0.8),
+                const Color(0xFF4169E1).withValues(alpha: 0.8),
               ],
             ),
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.info_outline, color: Colors.white),
+            icon: const Icon(Icons.info_outline, color: Colors.white),
             onPressed: () => _showInfoDialog(context),
           ),
         ],
@@ -74,33 +76,33 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           ),
         ),
         child: ListView(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           children: [
             // Header section
             Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 gradient: LinearGradient(
                   colors: [
-                    Color(0xFF1E90FF).withValues(alpha: 0.1),
-                    Color(0xFF4169E1).withValues(alpha: 0.1),
+                    const Color(0xFF1E90FF).withValues(alpha: 0.1),
+                    const Color(0xFF4169E1).withValues(alpha: 0.1),
                   ],
                 ),
                 border: Border.all(
-                  color: Color(0xFF1E90FF).withValues(alpha: 0.3),
+                  color: const Color(0xFF1E90FF).withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
               child: Column(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.support_agent,
                     size: 48,
                     color: Color(0xFF1E90FF),
                   ),
-                  SizedBox(height: 12),
-                  Text(
+                  const SizedBox(height: 12),
+                  const Text(
                     '7/24 Destek',
                     style: TextStyle(
                       color: Colors.white,
@@ -108,7 +110,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Herhangi bir sorun yaşadığınızda bize ulaşın',
                     style: TextStyle(
@@ -120,7 +122,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
                 ],
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Contact items
             _buildAnimatedContactItem(
@@ -193,10 +195,10 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         scale: _fabAnimation,
         child: FloatingActionButton.extended(
           onPressed: () => _showChatDialog(context),
-          backgroundColor: Color(0xFF1E90FF),
+          backgroundColor: const Color(0xFF1E90FF),
           elevation: 8,
-          icon: Icon(Icons.chat_bubble, color: Colors.white),
-          label: Text(
+          icon: const Icon(Icons.chat_bubble, color: Colors.white),
+          label: const Text(
             'Canlı Destek',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
@@ -258,7 +260,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         );
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
@@ -277,38 +279,38 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(16),
-            splashColor: Color(0xFF1E90FF).withValues(alpha: 0.1),
-            highlightColor: Color(0xFF1E90FF).withValues(alpha: 0.05),
+            splashColor: const Color(0xFF1E90FF).withValues(alpha: 0.1),
+            highlightColor: const Color(0xFF1E90FF).withValues(alpha: 0.05),
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Color(0xFF1E90FF).withValues(alpha: 0.1),
+                      color: const Color(0xFF1E90FF).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       leadingIcon,
-                      color: Color(0xFF1E90FF),
+                      color: const Color(0xFF1E90FF),
                       size: 24,
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           title,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           subtitle,
                           style: TextStyle(
@@ -321,7 +323,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
                   ),
                   if (trailingIcon != null)
                     Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -349,7 +351,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.info, color: Color(0xFF1E90FF)),
             SizedBox(width: 12),
@@ -367,7 +369,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Tamam', style: TextStyle(color: Color(0xFF1E90FF))),
+            child: const Text('Tamam', style: TextStyle(color: Color(0xFF1E90FF))),
           ),
         ],
       ),
@@ -382,7 +384,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.chat, color: Color(0xFF1E90FF)),
             SizedBox(width: 12),
@@ -400,16 +402,16 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
               'Şimdilik e-posta yoluyla bize ulaşabilirsiniz.',
               style: TextStyle(color: Colors.grey[400]),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.of(context).pop();
                 _copyToClipboard(context, 'service@ttlock.com');
               },
-              icon: Icon(Icons.email),
-              label: Text('E-posta Gönder'),
+              icon: const Icon(Icons.email),
+              label: const Text('E-posta Gönder'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF1E90FF),
+                backgroundColor: const Color(0xFF1E90FF),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

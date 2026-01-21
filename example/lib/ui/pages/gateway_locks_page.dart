@@ -9,7 +9,7 @@ class GatewayLocksPage extends StatefulWidget {
   final String gatewayId;
   final String gatewayName;
 
-  const GatewayLocksPage({Key? key, required this.gatewayId, required this.gatewayName}) : super(key: key);
+  const GatewayLocksPage({super.key, required this.gatewayId, required this.gatewayName});
 
   @override
   _GatewayLocksPageState createState() => _GatewayLocksPageState();
@@ -58,7 +58,7 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
         title: Text('Locks for ${widget.gatewayName}'),
@@ -69,17 +69,17 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_errorMessage.isNotEmpty) {
       return Center(
-        child: Text(_errorMessage, style: TextStyle(color: Colors.red)),
+        child: Text(_errorMessage, style: const TextStyle(color: Colors.red)),
       );
     }
     
     if (_locks.isEmpty) {
-      return Center(
+      return const Center(
         child: Text('No locks found for this gateway.', style: TextStyle(color: Colors.white)),
       );
     }
@@ -89,8 +89,8 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
       itemBuilder: (context, index) {
         final lock = _locks[index];
         return ListTile(
-          leading: Icon(Icons.lock, color: Color(0xFF1E90FF)),
-          title: Text(lock['lockAlias'] ?? 'Unknown Lock', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          leading: const Icon(Icons.lock, color: Color(0xFF1E90FF)),
+          title: Text(lock['lockAlias'] ?? 'Unknown Lock', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
           subtitle: Text(lock['lockMac'] ?? '', style: TextStyle(color: Colors.grey[400])),
         );
       },

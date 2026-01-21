@@ -7,7 +7,7 @@ class LogsPage extends StatefulWidget {
   final String? lockId;
   final String? lockName;
 
-  const LogsPage({Key? key, this.lockId, this.lockName}) : super(key: key);
+  const LogsPage({super.key, this.lockId, this.lockName});
 
   @override
   _LogsPageState createState() => _LogsPageState();

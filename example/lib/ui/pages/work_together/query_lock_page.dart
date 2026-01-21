@@ -6,7 +6,7 @@ import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:intl/intl.dart';
 
 class QueryLockPage extends StatefulWidget {
-  const QueryLockPage({Key? key}) : super(key: key);
+  const QueryLockPage({super.key});
 
   @override
   _QueryLockPageState createState() => _QueryLockPageState();

@@ -11,7 +11,7 @@ enum Command {
 class WaterMeterPage extends StatefulWidget {
   final String name;
   final String mac;
-  const WaterMeterPage({Key? key, required this.name, required this.mac}):super(key: key);
+  const WaterMeterPage({super.key, required this.name, required this.mac});
 
   @override
   State<WaterMeterPage> createState() => _WaterMeterPageState();
@@ -19,7 +19,7 @@ class WaterMeterPage extends StatefulWidget {
 
 class _WaterMeterPageState extends State<WaterMeterPage> {
 
-  List<Map<String, Command>> _commandList = [
+  final List<Map<String, Command>> _commandList = [
     {"Reset": Command.reset},
     // {"Read data": Command.readData},
     // {"Set on off": Command.setOnOff},
@@ -76,12 +76,12 @@ class _WaterMeterPageState extends State<WaterMeterPage> {
   Widget getListView() {
     return ListView.separated(
         separatorBuilder: (BuildContext context, int index) {
-          return Divider(height: 2, color: Colors.green);
+          return const Divider(height: 2, color: Colors.green);
         },
         itemCount: _commandList.length,
         itemBuilder: (context, index) {
           Map<String, Command> map = _commandList[index];
-          String title = '${map.keys.first}';
+          String title = map.keys.first;
 
           return ListTile(
             title: Text(title),
@@ -97,7 +97,7 @@ class _WaterMeterPageState extends State<WaterMeterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Water Meter'),
+          title: const Text('Water Meter'),
         ),
         body: Material(child: ProgressHud(
           child: Container(

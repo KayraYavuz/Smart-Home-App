@@ -11,12 +11,12 @@ class EKeyDetailPage extends StatefulWidget {
   final bool isOwner; // Current user is the owner of the lock (admin)
 
   const EKeyDetailPage({
-    Key? key,
+    super.key,
     required this.eKey,
     required this.lockId,
     required this.lockName,
     required this.isOwner,
-  }) : super(key: key);
+  });
 
   @override
   _EKeyDetailPageState createState() => _EKeyDetailPageState();
@@ -593,11 +593,10 @@ class _ChangePeriodDialog extends StatefulWidget {
   final Function(DateTime, DateTime) onSave;
 
   const _ChangePeriodDialog({
-    Key? key,
     required this.initialStartDate,
     required this.initialEndDate,
     required this.onSave,
-  }) : super(key: key);
+  });
 
   @override
   __ChangePeriodDialogState createState() => __ChangePeriodDialogState();

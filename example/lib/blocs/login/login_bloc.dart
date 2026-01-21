@@ -28,12 +28,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           _authBloc.add(LoggedIn(accessToken));
           emit(LoginSuccess());
         } else {
-          emit(LoginFailure('Giriş başarılı ancak anahtar alınamadı.'));
+          emit(const LoginFailure('Giriş başarılı ancak anahtar alınamadı.'));
         }
       } else {
         // success false ise ApiService genellikle hata fırlatmış olmalı,
         // ama fırlatmadıysa genel bir mesaj gösterelim.
-        emit(LoginFailure('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.'));
+        emit(const LoginFailure('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.'));
       }
     } catch (e) {
       // API'den gelen asıl hatayı kullanıcıya göster (Örn: "API Error 10007")

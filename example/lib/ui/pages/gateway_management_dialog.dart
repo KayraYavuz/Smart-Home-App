@@ -3,7 +3,7 @@ import 'package:yavuz_lock/api_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GatewayManagementDialog extends StatefulWidget {
-  const GatewayManagementDialog({Key? key}) : super(key: key);
+  const GatewayManagementDialog({super.key});
 
   @override
   _GatewayManagementDialogState createState() => _GatewayManagementDialogState();
@@ -215,7 +215,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
             // Header
             Row(
               children: [
-                Icon(Icons.router, color: Colors.blue, size: 28),
+                const Icon(Icons.router, color: Colors.blue, size: 28),
                 const SizedBox(width: 12),
                 const Expanded(
                   child: Text(
@@ -250,7 +250,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.error_outline, color: Colors.red, size: 48),
+                              const Icon(Icons.error_outline, color: Colors.red, size: 48),
                               const SizedBox(height: 16),
                               Text(
                                 'Hata: $_errorMessage',

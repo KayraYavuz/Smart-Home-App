@@ -101,7 +101,7 @@ class HybridUnlockService {
     // 1. Bluetooth durum kontrolü
     final Completer<bool> btCheckCompleter = Completer();
     TTLock.getBluetoothState((state) {
-      btCheckCompleter.complete(state == 1 || state == 2); // 1: PowerOn, 2: PoweredOn
+      btCheckCompleter.complete(state == TTBluetoothState.turnOn); // 1: PowerOn, 2: PoweredOn
     });
     
     final bool isBtEnabled = await btCheckCompleter.future.timeout(const Duration(seconds: 2), onTimeout: () => false);
@@ -146,7 +146,7 @@ class HybridUnlockService {
       );
 
       return await completer.future.timeout(
-        Duration(seconds: _bluetoothTimeoutSeconds),
+        const Duration(seconds: _bluetoothTimeoutSeconds),
         onTimeout: () {
           print('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(
@@ -171,7 +171,7 @@ class HybridUnlockService {
     // 1. Bluetooth durum kontrolü
     final Completer<bool> btCheckCompleter = Completer();
     TTLock.getBluetoothState((state) {
-      btCheckCompleter.complete(state == 1 || state == 2); // 1: PowerOn, 2: PoweredOn
+      btCheckCompleter.complete(state == TTBluetoothState.turnOn); // 1: PowerOn, 2: PoweredOn
     });
     
     final bool isBtEnabled = await btCheckCompleter.future.timeout(const Duration(seconds: 2), onTimeout: () => false);
@@ -216,7 +216,7 @@ class HybridUnlockService {
       );
 
       return await completer.future.timeout(
-        Duration(seconds: _bluetoothTimeoutSeconds),
+        const Duration(seconds: _bluetoothTimeoutSeconds),
         onTimeout: () {
           print('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(

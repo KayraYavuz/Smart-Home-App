@@ -4,7 +4,7 @@ import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 
 class UserManagementPage extends StatefulWidget {
-  const UserManagementPage({Key? key}) : super(key: key);
+  const UserManagementPage({super.key});
 
   @override
   _UserManagementPageState createState() => _UserManagementPageState();

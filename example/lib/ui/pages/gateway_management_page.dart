@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class GatewayManagementPage extends StatefulWidget {
-  const GatewayManagementPage({Key? key}) : super(key: key);
+  const GatewayManagementPage({super.key});
 
   @override
   _GatewayManagementPageState createState() => _GatewayManagementPageState();

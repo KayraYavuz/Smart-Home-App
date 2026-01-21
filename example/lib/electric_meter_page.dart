@@ -4,10 +4,10 @@ import 'package:bmprogresshud/progresshud.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 
 class ElectricMeterPage extends StatefulWidget {
-  ElectricMeterPage({Key? key, required this.name, required this.mac})
-      : super(key: key);
+  const ElectricMeterPage({super.key, required this.name, required this.mac});
   final String name;
   final String mac;
+  @override
   _ElectricMeterState createState() => _ElectricMeterState(name, mac);
 }
 
@@ -24,7 +24,7 @@ enum Command {
 }
 
 class _ElectricMeterState extends State<ElectricMeterPage> {
-  List<Map<String, Command>> _commandList = [
+  final List<Map<String, Command>> _commandList = [
     {"Reset": Command.reset},
     {"Read data": Command.readData},
     {"Set on off": Command.setOnOff},
@@ -142,12 +142,12 @@ class _ElectricMeterState extends State<ElectricMeterPage> {
   Widget getListView() {
     return ListView.separated(
         separatorBuilder: (BuildContext context, int index) {
-          return Divider(height: 2, color: Colors.green);
+          return const Divider(height: 2, color: Colors.green);
         },
         itemCount: _commandList.length,
         itemBuilder: (context, index) {
           Map<String, Command> map = _commandList[index];
-          String title = '${map.keys.first}';
+          String title = map.keys.first;
 
           return ListTile(
             title: Text(title),
@@ -163,7 +163,7 @@ class _ElectricMeterState extends State<ElectricMeterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Electric Meter'),
+          title: const Text('Electric Meter'),
         ),
         body: Material(child: ProgressHud(
           child: Container(

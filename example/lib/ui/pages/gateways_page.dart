@@ -7,7 +7,7 @@ import 'package:yavuz_lock/blocs/auth/auth_state.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class GatewaysPage extends StatefulWidget {
-  const GatewaysPage({Key? key}) : super(key: key);
+  const GatewaysPage({super.key});
 
   @override
   _GatewaysPageState createState() => _GatewaysPageState();
@@ -56,10 +56,10 @@ class _GatewaysPageState extends State<GatewaysPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF121212),
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        title: Text('Gateways'),
+        title: const Text('Gateways'),
       ),
       body: _buildBody(),
     );
@@ -67,17 +67,17 @@ class _GatewaysPageState extends State<GatewaysPage> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_errorMessage.isNotEmpty) {
       return Center(
-        child: Text(_errorMessage, style: TextStyle(color: Colors.red)),
+        child: Text(_errorMessage, style: const TextStyle(color: Colors.red)),
       );
     }
 
     if (_gateways.isEmpty) {
-      return Center(
+      return const Center(
         child: Text('No gateways found.', style: TextStyle(color: Colors.white)),
       );
     }
@@ -89,9 +89,9 @@ class _GatewaysPageState extends State<GatewaysPage> {
         final isOnline = gateway['isOnline'] == 1;
         return ListTile(
           leading: Icon(Icons.router, color: isOnline ? Colors.green : Colors.grey),
-          title: Text(gateway['gatewayName'] ?? 'Unknown Gateway', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          title: Text(gateway['gatewayName'] ?? 'Unknown Gateway', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
           subtitle: Text(gateway['gatewayMac'] ?? '', style: TextStyle(color: Colors.grey[400])),
-          trailing: Icon(Icons.chevron_right, color: Colors.grey),
+          trailing: const Icon(Icons.chevron_right, color: Colors.grey),
           onTap: () {
             Navigator.push(
               context,

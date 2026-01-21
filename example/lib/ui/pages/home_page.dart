@@ -12,6 +12,8 @@ import 'package:yavuz_lock/ui/pages/add_device_page.dart';
 import 'package:yavuz_lock/ui/pages/lock_detail_page.dart';
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -29,10 +31,10 @@ class HomePage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('My Locks'),
+          title: const Text('My Locks'),
           actions: [
             IconButton(
-              icon: Icon(Icons.logout),
+              icon: const Icon(Icons.logout),
               onPressed: () {
                 context.read<AuthBloc>().add(LoggedOut());
               },
@@ -42,7 +44,7 @@ class HomePage extends StatelessWidget {
         body: BlocBuilder<LockBloc, AppLockState>(
           builder: (context, state) {
             if (state is LockLoading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
             if (state is LockLoaded) {
               return ListView.builder(
@@ -54,14 +56,14 @@ class HomePage extends StatelessWidget {
                     child: ListTile(
                       title: Text(lock['name']),
                       subtitle: Text(lock['status']),
-                      leading: Icon(Icons.lock),
+                      leading: const Icon(Icons.lock),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.bluetooth),
-                          SizedBox(width: 8),
-                          Icon(Icons.wifi),
-                          SizedBox(width: 8),
+                          const Icon(Icons.bluetooth),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.wifi),
+                          const SizedBox(width: 8),
                           Text('${lock['battery']}%'),
                         ],
                       ),
@@ -81,17 +83,17 @@ class HomePage extends StatelessWidget {
             if (state is LockFailure) {
               return Center(child: Text('Failed to load locks: ${state.error}'));
             }
-            return Center(child: Text('No locks found.'));
+            return const Center(child: Text('No locks found.'));
           },
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddDevicePage()),
+              MaterialPageRoute(builder: (context) => const AddDevicePage()),
             );
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ),
       ),
     );

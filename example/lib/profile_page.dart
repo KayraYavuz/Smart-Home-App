@@ -13,7 +13,7 @@ import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_event.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -173,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CustomerServicePage()),
+                        MaterialPageRoute(builder: (context) => const CustomerServicePage()),
                       );
                     },
                   ),
@@ -197,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SystemManagementPage()),
+                        MaterialPageRoute(builder: (context) => const SystemManagementPage()),
                       );
                     },
                   ),
@@ -221,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => WorkTogetherPage()),
+                        MaterialPageRoute(builder: (context) => const WorkTogetherPage()),
                       );
                     },
                   ),
@@ -233,7 +233,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SettingsPage()),
+                        MaterialPageRoute(builder: (context) => const SettingsPage()),
                       );
                     },
                   ),

@@ -5,6 +5,8 @@ import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -176,12 +178,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF1E90FF).withValues(alpha: 0.8),
-                    Color(0xFF4169E1).withValues(alpha: 0.6),
-                    Color(0xFF000428).withValues(alpha: 0.9),
-                    Color(0xFF004e92).withValues(alpha: 0.8),
+                    const Color(0xFF1E90FF).withValues(alpha: 0.8),
+                    const Color(0xFF4169E1).withValues(alpha: 0.6),
+                    const Color(0xFF000428).withValues(alpha: 0.9),
+                    const Color(0xFF004e92).withValues(alpha: 0.8),
                   ],
-                  stops: [0.0, 0.3, 0.7, 1.0],
+                  stops: const [0.0, 0.3, 0.7, 1.0],
                 ),
               ),
             ),
@@ -201,12 +203,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       Row(
                         children: [
                           IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
+                            icon: const Icon(Icons.arrow_back, color: Colors.white),
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                           Text(
                             l10n.createAccountTitle,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -214,13 +216,13 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       
                       TextFormField(
                         controller: _usernameController,
                         enabled: !_codeSent, // Kod gönderildiyse değiştirilemez
                         decoration: _buildInputDecoration(l10n.emailOrPhone),
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) return l10n.usernameRequired;
@@ -228,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
                       // Kod Gönder / Kod Gir Alanı
                       Row(
@@ -238,27 +240,27 @@ class _RegisterPageState extends State<RegisterPage> {
                               child: TextFormField(
                                 controller: _codeController,
                                 decoration: _buildInputDecoration(l10n.verifyCodeLabel),
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                                 keyboardType: TextInputType.number,
                                 validator: (value) => value!.isEmpty ? l10n.codeRequired : null,
                               ),
                             ),
-                          if (_codeSent) SizedBox(width: 12),
+                          if (_codeSent) const SizedBox(width: 12),
                           ElevatedButton(
                             onPressed: _codeSent ? null : (_isLoading ? null : _sendCode), // Kod gönderildiyse pasif
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _codeSent ? Colors.green : Colors.blue,
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             child: _isLoading && !_codeSent
-                                ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                : Text(_codeSent ? l10n.codeSent : l10n.sendCode, style: TextStyle(color: Colors.white)),
+                                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                : Text(_codeSent ? l10n.codeSent : l10n.sendCode, style: const TextStyle(color: Colors.white)),
                           ),
                         ],
                       ),
                       
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       TextFormField(
                         controller: _passwordController,
@@ -278,11 +280,11 @@ class _RegisterPageState extends State<RegisterPage> {
                         // Wait, I can use l10n.newPassword, it says "New Password", close enough.
                         // Or better, I will use "Password" string literal if l10n is missing, but I want to be consistent.
                         // I will use l10n.newPassword for now.
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                         obscureText: _obscurePassword,
                         validator: (value) => (value?.length ?? 0) < 6 ? 'En az 6 karakter' : null,
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
                       TextFormField(
                         controller: _confirmPasswordController,
@@ -293,24 +295,24 @@ class _RegisterPageState extends State<RegisterPage> {
                             onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                           ),
                         ),
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                         obscureText: _obscureConfirmPassword,
                         validator: (value) => value != _passwordController.text ? l10n.passwordMismatch : null,
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
 
                       ElevatedButton(
                         onPressed: (_isLoading || !_codeSent) ? null : _register, // Kod gönderilmeden kayıt olunamaz
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF1E90FF),
-                          padding: EdgeInsets.symmetric(vertical: 16),
+                          backgroundColor: const Color(0xFF1E90FF),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           elevation: 8,
-                          shadowColor: Color(0xFF1E90FF).withValues(alpha: 0.3),
+                          shadowColor: const Color(0xFF1E90FF).withValues(alpha: 0.3),
                         ),
                         child: _isLoading
-                            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                            : Text(l10n.registerBtn, style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
+                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                            : Text(l10n.registerBtn, style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
@@ -332,9 +334,9 @@ class _RegisterPageState extends State<RegisterPage> {
       fillColor: Colors.white.withValues(alpha: 0.1),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Color(0xFF1E90FF))),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF1E90FF))),
       errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.red.withValues(alpha: 0.5))),
-      focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.red)),
+      focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.red)),
     );
   }
 }

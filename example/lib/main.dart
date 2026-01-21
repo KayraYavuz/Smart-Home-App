@@ -72,7 +72,7 @@ Future<void> main() async {
         BlocProvider(create: (context) => FingerprintBloc(context.read<TTLockRepository>(), context.read<ApiService>())),
         BlocProvider(create: (context) => FaceBloc(context.read<TTLockRepository>(), context.read<ApiService>())),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -81,6 +81,8 @@ Future<void> main() async {
 
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -156,7 +158,7 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       locale: languageProvider.locale,
-      localizationsDelegates: [
+      localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
@@ -167,18 +169,18 @@ class _MyAppState extends State<MyApp> {
       home: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthInitial) {
-            return SplashPage();
+            return const SplashPage();
           }
           if (state is Authenticated) {
-            return HomePage();
+            return const HomePage();
           }
           if (state is Unauthenticated) {
-            return LoginPage();
+            return const LoginPage();
           }
           if (state is AuthFailure) {
-            return LoginPage(); // Or a custom error page
+            return const LoginPage(); // Or a custom error page
           }
-          return SplashPage();
+          return const SplashPage();
         },
       ),
     );
