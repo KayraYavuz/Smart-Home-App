@@ -89,6 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
       final result = await apiService.registerUser(
         username: _usernameController.text.trim(),
         password: _passwordController.text,
+        verifyCode: _codeController.text.trim(),
       );
 
       final String prefixedUsername = result['username'] ?? '';

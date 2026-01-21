@@ -67,12 +67,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       // Eğer code parametresi yoksa, normalde v3/user/resetPassword code ile çalışır.
       // ApiService'i güncellemem gerekebilir. Şimdilik varsayılan metodu kullanıyorum.
       
-      // DÜZELTME: ApiService'deki resetPassword metodu şu an sadece username ve newPassword alıyor.
-      // Kod doğrulama genellikle server tarafında olur veya API code parametresi ister.
-      // TTLock dokümantasyonuna göre resetPassword (v3) 'verifyCode' parametresi alır.
-      // ApiService'i bu parametreyi alacak şekilde güncellemeliyim.
-      // Ancak şimdilik mevcut metodu çağırıyorum, eğer hata alırsam düzeltirim.
-      
+      // API servisine username, yeni şifre ve doğrulama kodunu gönderiyoruz
       await apiService.resetPassword(
         username: _usernameController.text.trim(),
         newPassword: _passwordController.text,

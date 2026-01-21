@@ -147,10 +147,91 @@ class ApiService {
     }
   }
 
+  /// Get verification code for password reset
+  Future<bool> getResetPasswordCode({
+    required String username,
+  }) async {
+    print('📧 Şifre sıfırlama kodu isteniyor: $username');
+    
+    final url = Uri.parse('$_baseUrl/v3/user/getResetPasswordCode');
+    final now = DateTime.now().millisecondsSinceEpoch;
+    
+    final body = {
+      'clientId': ApiConfig.clientId,
+      'clientSecret': ApiConfig.clientSecret,
+      'username': username,
+      'date': now.toString(),
+    };
+
+    final formBody = body.map((key, value) => MapEntry(key, value.toString()));
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: formBody,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
+          print('✅ Şifre sıfırlama kodu gönderildi');
+          return true;
+        } else {
+          print('❌ Kod gönderme hatası: ${responseData['errmsg']}');
+          throw Exception('${responseData['errmsg']}');
+        }
+      } else {
+        throw Exception('HTTP error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ İstisna: $e');
+      rethrow;
+    }
+  }
+
+  /// Reset password
+  Future<void> resetPassword({
+    required String username,
+    required String newPassword,
+    required String verifyCode,
+  }) async {
+    print('🔐 Şifre sıfırlanıyor: $username');
+
+    final url = Uri.parse('$_baseUrl/v3/user/resetPassword');
+    final String passwordMd5 = _generateMd5(newPassword);
+
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'clientSecret': ApiConfig.clientSecret,
+      'username': username,
+      'password': passwordMd5,
+      'verifyCode': verifyCode,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
+        throw Exception('Şifre sıfırlama başarısız: ${responseData['errmsg']}');
+      }
+      print('✅ Şifre başarıyla sıfırlandı');
+    } else {
+      throw Exception('Şifre sıfırlama başarısız: HTTP ${response.statusCode}');
+    }
+  }
+
   /// Register a new user
   Future<Map<String, dynamic>> registerUser({
     required String username,
     required String password,
+    String? verifyCode,
   }) async {
     print('📝 Yeni kullanıcı kaydı yapılıyor: $username');
 
@@ -164,6 +245,10 @@ class ApiService {
       'password': passwordMd5,
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     };
+
+    if (verifyCode != null && verifyCode.isNotEmpty) {
+      body['verifyCode'] = verifyCode;
+    }
 
     print('📡 Register API çağrısı: $url');
 
