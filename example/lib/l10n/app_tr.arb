@@ -204,5 +204,8 @@
   "saveSuccess": "Başarıyla kaydedildi",
   "sentLink": "Bağlantı Gönderildi",
   "checkInboxForLink": "Lütfen e-postanızı kontrol edin ve linke tıklayın.",
-  "backToLogin": "Giriş Ekranına Dön"
+  "backToLogin": "Giriş Ekranına Dön",
+  "passwordMinLength": "En az 8 karakter",
+  "passwordDigitRequired": "En az bir rakam içermeli",
+  "passwordSymbolRequired": "En az bir sembol içermeli"
 }

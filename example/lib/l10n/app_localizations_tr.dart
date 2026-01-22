@@ -660,4 +660,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get backToLogin => 'Giriş Ekranına Dön';
+
+  @override
+  String get passwordMinLength => 'En az 8 karakter';
+
+  @override
+  String get passwordDigitRequired => 'En az bir rakam içermeli';
+
+  @override
+  String get passwordSymbolRequired => 'En az bir sembol içermeli';
 }

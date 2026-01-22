@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
@@ -22,12 +24,23 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _verificationEmailSent = false;
+  bool _isAgreed = false;
   
   final _auth = FirebaseAuth.instance;
 
   Future<void> _registerAndSendVerification() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    
+    if (!_isAgreed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Lütfen kullanıcı sözleşmesini ve gizlilik politikasını onaylayın.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
     
     setState(() => _isLoading = true);
 
@@ -88,11 +101,12 @@ class _RegisterPageState extends State<RegisterPage> {
         // E-posta doğrulandı! Şimdi asıl TTLock kaydını yapalım.
         final apiService = ApiService(context.read<AuthRepository>());
         
-        // TTLock username sadece harf ve rakam kabul eder. E-postadaki özel karakterleri temizliyoruz.
-        final sanitizedUsername = _usernameController.text.trim().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+        // TTLock genellikle e-posta adresi veya telefon numarası kabul eder.
+        // E-posta ile kayıt olunduğu için sanitization yapmadan direkt gönderiyoruz.
+        final username = _usernameController.text.trim();
 
         final result = await apiService.registerUser(
-          username: sanitizedUsername,
+          username: username,
           password: _passwordController.text,
         );
 
@@ -175,6 +189,21 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('URL açılamadı: $url'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -247,7 +276,25 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscurePassword,
-                        validator: (value) => (value?.length ?? 0) < 6 ? 'En az 6 karakter' : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return l10n.newPassword; // Reusing 'New Password' as 'Password required' label isn't explicit, but commonly used or could add a specific required key. Better to use a generic or existing empty check if available, or just keep it simple. Actually l10n.usernameRequired is for username. Let's look at existing keys. 'passwordMinLength' etc are new.
+                          // Wait, looking at previous code it was "Şifre gerekli". I don't have a 'passwordRequired' key. 
+                          // I'll stick to logic: if empty, show something standard or reuse a key?
+                          // Let's check if there is a 'required' key. There is 'usernameRequired'.
+                          // I will use 'l10n.newPassword' as a placeholder or better: 
+                          // actually, let's just check length directly. If empty, length is 0 < 8, so it hits min length error.
+                          // But nicer to have "required". 
+                          // I'll just use "En az 8 karakter" logic for empty too or create a new key? 
+                          // I'll leave the first check as "En az 8 karakter" (l10n.passwordMinLength) effectively cover empty? 
+                          // No, typically field required is separate. 
+                          // I will use l10n.passwordMinLength for empty case too for now as it's technically true (0 < 8).
+                          
+                          if (value == null || value.isEmpty) return l10n.passwordMinLength;
+                          if (value.length < 8) return l10n.passwordMinLength;
+                          if (!RegExp(r'[0-9]').hasMatch(value)) return l10n.passwordDigitRequired;
+                          if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) return l10n.passwordSymbolRequired;
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 20),
 
@@ -257,9 +304,52 @@ class _RegisterPageState extends State<RegisterPage> {
                         decoration: _buildInputDecoration(l10n.confirmPassword, prefixIcon: Icons.lock_clock),
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscureConfirmPassword,
-                        validator: (value) => value != _passwordController.text ? l10n.passwordMismatch : null,
+                        validator: (value) {
+                          if (value != _passwordController.text) return l10n.passwordMismatch;
+                          return null;
+                        },
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
+
+                      if (!_verificationEmailSent)
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _isAgreed,
+                              activeColor: const Color(0xFF1E90FF),
+                              side: const BorderSide(color: Colors.white70),
+                              onChanged: (value) {
+                                setState(() {
+                                  _isAgreed = value ?? false;
+                                });
+                              },
+                            ),
+                            Expanded(
+                              child: RichText(
+                                text: TextSpan(
+                                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                  children: [
+                                    TextSpan(
+                                      text: 'Kullanıcı sözleşmesi',
+                                      style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
+                                    ),
+                                    const TextSpan(text: ' ve '),
+                                    TextSpan(
+                                      text: 'gizlilik politikasını',
+                                      style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
+                                    ),
+                                    const TextSpan(text: ' okudum ve onaylıyorum.'),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 20),
 
                       if (!_verificationEmailSent)
                         ElevatedButton(

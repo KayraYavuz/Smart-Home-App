@@ -1329,6 +1329,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to Login'**
   String get backToLogin;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters'**
+  String get passwordMinLength;
+
+  /// No description provided for @passwordDigitRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Must contain at least one digit'**
+  String get passwordDigitRequired;
+
+  /// No description provided for @passwordSymbolRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Must contain at least one symbol'**
+  String get passwordSymbolRequired;
 }
 
 class _AppLocalizationsDelegate

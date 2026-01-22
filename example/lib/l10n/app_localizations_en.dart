@@ -657,4 +657,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backToLogin => 'Back to Login';
+
+  @override
+  String get passwordMinLength => 'At least 8 characters';
+
+  @override
+  String get passwordDigitRequired => 'Must contain at least one digit';
+
+  @override
+  String get passwordSymbolRequired => 'Must contain at least one symbol';
 }

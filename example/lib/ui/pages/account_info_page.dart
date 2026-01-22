@@ -183,7 +183,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton(
-                        onPressed: () => _launchUrl('https://ttlock.com/terms'),
+                        onPressed: () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
                         child: const Text(
                           'Kullanıcı koşulları',
                           style: TextStyle(
@@ -194,7 +194,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                       ),
                       const SizedBox(width: 16),
                       TextButton(
-                        onPressed: () => _launchUrl('https://ttlock.com/privacy'),
+                        onPressed: () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
                         child: const Text(
                           'Gizlilik politikası',
                           style: TextStyle(
@@ -207,7 +207,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Copyright © 2026 TTLock',
+                    'Copyright © 2026 Yavuz Lock',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 12,

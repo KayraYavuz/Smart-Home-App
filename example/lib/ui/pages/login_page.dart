@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart'; // Provider import
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
@@ -114,6 +116,137 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('URL açılamadı: $url'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _performLogin() {
+    _saveCredentials();
+    context.read<LoginBloc>().add(
+          LoginButtonPressed(
+            username: _usernameController.text,
+            password: _passwordController.text,
+          ),
+        );
+  }
+
+  Future<void> _handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+      final email = _usernameController.text;
+      final prefs = await SharedPreferences.getInstance();
+      final accepted = prefs.getBool('terms_accepted_$email') ?? false;
+
+      if (!accepted) {
+        if (!mounted) return;
+        _showTermsDialog(context, email);
+      } else {
+        _performLogin();
+      }
+    }
+  }
+
+  void _showTermsDialog(BuildContext context, String email) {
+    bool isAgreed = false;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF1E1E1E),
+              title: const Text('Kullanıcı Sözleşmesi', style: TextStyle(color: Colors.white)),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Uygulamayı kullanmaya devam etmek için lütfen sözleşmeleri onaylayın.',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        value: isAgreed,
+                        activeColor: const Color(0xFF1E90FF),
+                        side: const BorderSide(color: Colors.white70),
+                        onChanged: (value) {
+                          setState(() {
+                            isAgreed = value ?? false;
+                          });
+                        },
+                      ),
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            children: [
+                              TextSpan(
+                                text: 'Kullanıcı sözleşmesi',
+                                style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
+                              ),
+                              const TextSpan(text: ' ve '),
+                              TextSpan(
+                                text: 'gizlilik politikasını',
+                                style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
+                              ),
+                              const TextSpan(text: ' okudum ve onaylıyorum.'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop(); // Close dialog
+                  },
+                  child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+                ),
+                TextButton(
+                  onPressed: isAgreed
+                      ? () async {
+                          Navigator.of(dialogContext).pop(); // Close dialog
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('terms_accepted_$email', true);
+                          _performLogin();
+                        }
+                      : null,
+                  child: Text(
+                    'Onayla ve Giriş Yap',
+                    style: TextStyle(
+                      color: isAgreed ? const Color(0xFF1E90FF) : Colors.grey,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -280,15 +413,7 @@ class _LoginPageState extends State<LoginPage> {
                                     shadowColor: const Color(0xFF1E90FF).withValues(alpha: 0.3),
                                   ),
                                   onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      _saveCredentials();
-                                      context.read<LoginBloc>().add(
-                                            LoginButtonPressed(
-                                              username: _usernameController.text,
-                                              password: _passwordController.text,
-                                            ),
-                                          );
-                                    }
+                                    _handleLogin();
                                   },
                                   child: Text(
                                     l10n.loginBtn,

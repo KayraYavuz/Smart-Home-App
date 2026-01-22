@@ -180,5 +180,8 @@
   "saveSuccess": "Erfolgreich gespeichert",
   "sentLink": "Link gesendet",
   "checkInboxForLink": "Bitte überprüfen Sie Ihre E-Mails und klicken Sie auf den Link.",
-  "backToLogin": "Zurück zur Anmeldung"
+  "backToLogin": "Zurück zur Anmeldung",
+  "passwordMinLength": "Mindestens 8 Zeichen",
+  "passwordDigitRequired": "Muss mindestens eine Ziffer enthalten",
+  "passwordSymbolRequired": "Muss mindestens ein Symbol enthalten"
 }

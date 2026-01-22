@@ -662,4 +662,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get backToLogin => 'Zurück zur Anmeldung';
+
+  @override
+  String get passwordMinLength => 'Mindestens 8 Zeichen';
+
+  @override
+  String get passwordDigitRequired => 'Muss mindestens eine Ziffer enthalten';
+
+  @override
+  String get passwordSymbolRequired => 'Muss mindestens ein Symbol enthalten';
 }

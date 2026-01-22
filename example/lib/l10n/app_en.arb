@@ -342,5 +342,8 @@
   "saveSuccess": "Saved successfully",
   "sentLink": "Link Sent",
   "checkInboxForLink": "Please check your email and click the link.",
-  "backToLogin": "Back to Login"
+  "backToLogin": "Back to Login",
+  "passwordMinLength": "At least 8 characters",
+  "passwordDigitRequired": "Must contain at least one digit",
+  "passwordSymbolRequired": "Must contain at least one symbol"
 }
