@@ -205,22 +205,22 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           children: [
             const Icon(Icons.lock_reset, size: 80, color: Colors.blue),
             const SizedBox(height: 32),
-            const Text(
-              'Şifre Yenileme',
+            Text(
+              l10n.resetPasswordTitle,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Güvenliğiniz için şifre yenileme işlemleri TTLock web portalı veya resmi mobil uygulaması üzerinden yapılmaktadır.',
+            Text(
+              l10n.resetPasswordInstruction,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 16),
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () => _launchUrl('https://lock2.ttlock.com/'),
               icon: const Icon(Icons.web),
-              label: const Text('TTLock Web Portalı'),
+              label: Text(l10n.ttlockWebPortal),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue.withOpacity(0.2),
                 foregroundColor: Colors.white,
@@ -232,7 +232,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ElevatedButton.icon(
               onPressed: () => _launchUrl('https://apps.apple.com/app/ttlock/id1095261304'),
               icon: const Icon(Icons.apple),
-              label: const Text('App Store\'da Görüntüle'),
+              label: Text(l10n.viewOnAppStore),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white.withOpacity(0.1),
                 foregroundColor: Colors.white,
@@ -244,7 +244,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ElevatedButton.icon(
               onPressed: () => _launchUrl('https://play.google.com/store/apps/details?id=com.tongtonglock.lock'),
               icon: const Icon(Icons.android),
-              label: const Text('Play Store\'da Görüntüle'),
+              label: Text(l10n.viewOnPlayStore),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white.withOpacity(0.1),
                 foregroundColor: Colors.white,
@@ -260,7 +260,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Giriş Ekranına Dön', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text(l10n.backToLogin, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
         ),

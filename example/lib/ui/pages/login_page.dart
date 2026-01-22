@@ -177,13 +177,13 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: const Color(0xFF1E1E1E),
-              title: const Text('Kullanıcı Sözleşmesi', style: TextStyle(color: Colors.white)),
+              title: Text(l10n.termsDialogTitle, style: const TextStyle(color: Colors.white)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Uygulamayı kullanmaya devam etmek için lütfen sözleşmeleri onaylayın.',
-                    style: TextStyle(color: Colors.white70),
+                  Text(
+                    l10n.termsDialogSubtitle,
+                    style: const TextStyle(color: Colors.white70),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -205,19 +205,19 @@ class _LoginPageState extends State<LoginPage> {
                             style: const TextStyle(color: Colors.white70, fontSize: 12),
                             children: [
                               TextSpan(
-                                text: 'Kullanıcı sözleşmesi',
+                                text: l10n.userAgreement,
                                 style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
                               ),
-                              const TextSpan(text: ' ve '),
+                              TextSpan(text: ' ${l10n.and} '),
                               TextSpan(
-                                text: 'gizlilik politikasını',
+                                text: l10n.privacyPolicy,
                                 style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
                               ),
-                              const TextSpan(text: ' okudum ve onaylıyorum.'),
+                              TextSpan(text: ' ${l10n.readAndApprove}.'),
                             ],
                           ),
                         ),
@@ -231,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     Navigator.of(dialogContext).pop(); // Close dialog
                   },
-                  child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+                  child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
                 ),
                 TextButton(
                   onPressed: isAgreed
@@ -243,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       : null,
                   child: Text(
-                    'Onayla ve Giriş Yap',
+                    l10n.acceptAndLogin,
                     style: TextStyle(
                       color: isAgreed ? const Color(0xFF1E90FF) : Colors.grey,
                       fontWeight: FontWeight.bold,
@@ -353,7 +353,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextFormField(
                                 controller: _passwordController,
                                 decoration: _buildInputDecoration(
-                                  'Şifre', // "Password" key'i yoksa l10n'e eklemek lazım. Şimdilik hardcoded.
+                                  l10n.password, // Localized "Password"
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -463,7 +463,7 @@ class _LoginPageState extends State<LoginPage> {
                                       _passwordController.text = result['password'] ?? '';
                                     });
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Bilgiler dolduruldu, giriş yapabilirsiniz.')),
+                                      SnackBar(content: Text(l10n.infoFilledContinueLogin)),
                                     );
                                   }
                                 },

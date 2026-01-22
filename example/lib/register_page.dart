@@ -34,8 +34,8 @@ class _RegisterPageState extends State<RegisterPage> {
     
     if (!_isAgreed) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Lütfen kullanıcı sözleşmesini ve gizlilik politikasını onaylayın.'),
+        SnackBar(
+          content: Text(l10n.pleaseAgreeToTerms),
           backgroundColor: Colors.orange,
         ),
       );
@@ -72,8 +72,8 @@ class _RegisterPageState extends State<RegisterPage> {
     } on FirebaseAuthException catch (e) {
       setState(() => _isLoading = false);
       String message = l10n.errorLabel;
-      if (e.code == 'email-already-in-use') message = 'Bu e-posta zaten kullanımda.'; // Bu mesajları da l10n'e eklemek iyi olur ama şimdilik kalsın
-      if (e.code == 'weak-password') message = 'Şifre çok zayıf.';
+      if (e.code == 'email-already-in-use') message = l10n.emailAlreadyInUse;
+      if (e.code == 'weak-password') message = l10n.weakPassword;
       
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -330,19 +330,19 @@ class _RegisterPageState extends State<RegisterPage> {
                                   style: const TextStyle(color: Colors.white70, fontSize: 12),
                                   children: [
                                     TextSpan(
-                                      text: 'Kullanıcı sözleşmesi',
+                                      text: l10n.userAgreement,
                                       style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
                                     ),
-                                    const TextSpan(text: ' ve '),
+                                    TextSpan(text: ' ${l10n.and} '),
                                     TextSpan(
-                                      text: 'gizlilik politikasını',
+                                      text: l10n.privacyPolicy,
                                       style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
                                     ),
-                                    const TextSpan(text: ' okudum ve onaylıyorum.'),
+                                    TextSpan(text: ' ${l10n.readAndApprove}.'),
                                   ],
                                 ),
                               ),
@@ -369,7 +369,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           onPressed: () => _launchUrl('https://lock2.ttlock.com/'),
                           icon: const Icon(Icons.language, color: Colors.blue, size: 20),
                           label: const Text(
-                            'TTLock Web Portal üzerinden kayıt ol',
+                            '${l10n.ttlockWebPortalRegister}',
                             style: TextStyle(color: Colors.white70, fontSize: 13, decoration: TextDecoration.underline),
                           ),
                         ),
@@ -388,14 +388,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               Icon(Icons.mark_email_read, color: Colors.green, size: 48),
                               SizedBox(height: 16),
                               Text(
-                                'Doğrulama maili gönderildi!',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                                l10n.verificationEmailSentMsg,
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
-                                'Lütfen e-postanızı kontrol edin ve linke tıklayın. Ardından aşağıdaki butona basarak devam edin.',
+                                l10n.verificationEmailInstruction,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white70),
+                                style: const TextStyle(color: Colors.white70),
                               ),
                             ],
                           ),
@@ -410,11 +410,11 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                           child: _isLoading
                               ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                              : const Text('Doğrulamayı Kontrol Et ve Tamamla', style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
+                              : Text(l10n.checkVerificationAndComplete, style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
                         ),
                         TextButton(
                           onPressed: () => setState(() => _verificationEmailSent = false),
-                          child: const Text('E-posta adresini değiştir', style: TextStyle(color: Colors.white70)),
+                          child: Text(l10n.changeEmailAddress, style: const TextStyle(color: Colors.white70)),
                         ),
                       ],
                     ],
