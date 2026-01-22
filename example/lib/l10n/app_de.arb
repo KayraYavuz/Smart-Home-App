@@ -183,5 +183,7 @@
   "backToLogin": "Zurück zur Anmeldung",
   "passwordMinLength": "Mindestens 8 Zeichen",
   "passwordDigitRequired": "Muss mindestens eine Ziffer enthalten",
-  "passwordSymbolRequired": "Muss mindestens ein Symbol enthalten"
+  "passwordSymbolRequired": "Muss mindestens ein Symbol enthalten",
+  "rememberMe": "Erinnere dich an mich",
+  "noAccountRegister": "Haben Sie kein Konto? Registrieren"
 }

@@ -666,4 +666,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordSymbolRequired => 'Must contain at least one symbol';
+
+  @override
+  String get rememberMe => 'Remember Me';
+
+  @override
+  String get noAccountRegister => 'Don\'t have an account? Register';
 }

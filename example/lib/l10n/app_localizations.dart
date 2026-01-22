@@ -1347,6 +1347,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Must contain at least one symbol'**
   String get passwordSymbolRequired;
+
+  /// No description provided for @rememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember Me'**
+  String get rememberMe;
+
+  /// No description provided for @noAccountRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? Register'**
+  String get noAccountRegister;
 }
 
 class _AppLocalizationsDelegate

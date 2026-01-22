@@ -345,5 +345,7 @@
   "backToLogin": "Back to Login",
   "passwordMinLength": "At least 8 characters",
   "passwordDigitRequired": "Must contain at least one digit",
-  "passwordSymbolRequired": "Must contain at least one symbol"
+  "passwordSymbolRequired": "Must contain at least one symbol",
+  "rememberMe": "Remember Me",
+  "noAccountRegister": "Don't have an account? Register"
 }

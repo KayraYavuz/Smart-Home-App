@@ -207,5 +207,7 @@
   "backToLogin": "Giriş Ekranına Dön",
   "passwordMinLength": "En az 8 karakter",
   "passwordDigitRequired": "En az bir rakam içermeli",
-  "passwordSymbolRequired": "En az bir sembol içermeli"
+  "passwordSymbolRequired": "En az bir sembol içermeli",
+  "rememberMe": "Beni Hatırla",
+  "noAccountRegister": "Hesabınız Yok Mu? Kayıt Olun"
 }

@@ -669,4 +669,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get passwordSymbolRequired => 'En az bir sembol içermeli';
+
+  @override
+  String get rememberMe => 'Beni Hatırla';
+
+  @override
+  String get noAccountRegister => 'Hesabınız Yok Mu? Kayıt Olun';
 }

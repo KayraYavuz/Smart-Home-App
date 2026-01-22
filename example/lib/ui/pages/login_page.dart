@@ -381,9 +381,9 @@ class _LoginPageState extends State<LoginPage> {
                                         },
                                         activeColor: const Color(0xFF1E90FF),
                                       ),
-                                      const Text(
-                                        'Beni Hatırla', // l10n eklenmeli
-                                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                                      Text(
+                                        l10n.rememberMe,
+                                        style: const TextStyle(color: Colors.white70, fontSize: 14),
                                       ),
                                     ],
                                   ),
@@ -461,9 +461,9 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   }
                                 },
-                                child: const Text(
-                                  'Hesabınız Yok Mu? Kayıt Olun', // l10n.createAccountTitle kullanılabilir veya yeni key
-                                  style: TextStyle(color: Color(0xFF1E90FF)),
+                                child: Text(
+                                  l10n.noAccountRegister,
+                                  style: const TextStyle(color: Color(0xFF1E90FF)),
                                 ),
                               ),
                             ],
