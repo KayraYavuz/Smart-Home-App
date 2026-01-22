@@ -101,12 +101,12 @@ class _RegisterPageState extends State<RegisterPage> {
         // E-posta doğrulandı! Şimdi asıl TTLock kaydını yapalım.
         final apiService = ApiService(context.read<AuthRepository>());
         
-        // TTLock genellikle e-posta adresi veya telefon numarası kabul eder.
-        // E-posta ile kayıt olunduğu için sanitization yapmadan direkt gönderiyoruz.
-        final username = _usernameController.text.trim();
+        // TTLock API v3/user/register sadece harf ve rakam kabul eder.
+        // E-postadaki @ ve . gibi karakterleri temizleyerek gönderiyoruz.
+        final sanitizedUsername = _usernameController.text.trim().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
 
         final result = await apiService.registerUser(
-          username: username,
+          username: sanitizedUsername,
           password: _passwordController.text,
         );
 
