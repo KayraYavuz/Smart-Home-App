@@ -78,7 +78,7 @@ class ApiService {
 
 
   String _baseUrl = 'https://euapi.ttlock.com';
-  final AuthRepository _authRepository;
+  final AuthRepository? _authRepository;
   String? _accessToken;
   String? _refreshToken;
   DateTime? _tokenExpiry;
@@ -192,10 +192,10 @@ class ApiService {
     }
   }
 
-  /// Reset password for a cloud-registered user
   Future<void> resetPassword({
     required String username,
     required String newPassword,
+    String? verifyCode,
   }) async {
     print('🔐 Şifre sıfırlanıyor (Cloud API): $username');
 
@@ -210,6 +210,10 @@ class ApiService {
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     };
 
+    if (verifyCode != null && verifyCode.isNotEmpty) {
+      body['verifyCode'] = verifyCode;
+    }
+
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -218,11 +222,13 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
+      print('🔍 resetPassword response: $responseData');
       if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-        throw Exception('Şifre sıfırlama başarısız: ${responseData['errmsg']}');
+        throw Exception('Şifre sıfırlama başarısız: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
       }
       print('✅ Şifre başarıyla sıfırlandı');
     } else {
+      print('❌ resetPassword HTTP Error: ${response.statusCode} - ${response.body}');
       throw Exception('Şifre sıfırlama başarısız: HTTP ${response.statusCode}');
     }
   }
@@ -263,14 +269,14 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      print('🔍 Register Response: $responseData');
+      print('🔍 registerUser response: $responseData');
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         // Eğer kullanıcı zaten varsa (errcode: 10003 - User already exists)
         if (responseData['errcode'] == 10003) {
            throw Exception('Bu kullanıcı adı zaten alınmış.');
         }
-        throw Exception('Kayıt başarısız: ${responseData['errmsg']}');
+        throw Exception('Kayıt başarısız: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
       }
 
       if (responseData.containsKey('username')) {
@@ -280,16 +286,19 @@ class ApiService {
         throw Exception('Kayıt başarısız: Beklenmeyen yanıt formatı');
       }
     } else {
+      print('❌ registerUser HTTP Error: ${response.statusCode} - ${response.body}');
       throw Exception('Kayıt başarısız: HTTP ${response.statusCode}');
     }
   }
 
   /// Initialize tokens from persistent storage
   Future<void> initializeTokens() async {
-    _accessToken = await _authRepository.getAccessToken();
-    _refreshToken = await _authRepository.getRefreshToken();
-    _tokenExpiry = await _authRepository.getTokenExpiry();
-    final savedBaseUrl = await _authRepository.getBaseUrl();
+    if (_authRepository == null) return;
+    
+    _accessToken = await _authRepository!.getAccessToken();
+    _refreshToken = await _authRepository!.getRefreshToken();
+    _tokenExpiry = await _authRepository!.getTokenExpiry();
+    final savedBaseUrl = await _authRepository!.getBaseUrl();
     if (savedBaseUrl != null) {
       _baseUrl = savedBaseUrl;
       print('🌐 Depolanmış bölge sunucusu yüklendi: $_baseUrl');
@@ -3787,12 +3796,21 @@ class ApiService {
       usernamesToTry.add('+90${digitsOnly.substring(1)}'); 
     }
 
-    // 5. E-posta adresindeki özel karakterleri temizle (TTLock username formatı için)
-    // Sadece gerçekten e-posta formatındaysa temizlenmiş halini ekle
+    // 5. E-posta adresi için varyasyonlar
     if (cleanInput.contains('@')) {
-      String sanitizedEmail = cleanInput.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-      if (sanitizedEmail.isNotEmpty && sanitizedEmail != cleanInput) {
-        usernamesToTry.add(sanitizedEmail);
+      // a) Ham hali (bazı endpointler destekleyebilir)
+      usernamesToTry.add(cleanInput);
+      
+      // b) Sadece alphanumeric (bizim register'da kullandığımız)
+      String alphanumeric = cleanInput.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      if (alphanumeric.isNotEmpty) {
+        usernamesToTry.add(alphanumeric);
+      }
+      
+      // c) Domain hariç partlar (Opsiyonel ama yararlı olabilir)
+      String namePart = cleanInput.split('@')[0].replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      if (namePart.isNotEmpty) {
+        usernamesToTry.add(namePart);
       }
     }
 
@@ -3842,12 +3860,14 @@ class ApiService {
 
             if (_accessToken != null && _refreshToken != null) {
               _baseUrl = regionBaseUrl;
-              await _authRepository.saveTokens(
-                accessToken: _accessToken!,
-                refreshToken: _refreshToken!,
-                expiry: _tokenExpiry!,
-                baseUrl: _baseUrl,
-              );
+              if (_authRepository != null) {
+                await _authRepository!.saveTokens(
+                  accessToken: _accessToken!,
+                  refreshToken: _refreshToken!,
+                  expiry: _tokenExpiry!,
+                  baseUrl: _baseUrl,
+                );
+              }
               print('✅ Giriş BAŞARILI! (Format: $userFormat)');
               return true;
             }
@@ -3902,8 +3922,8 @@ class ApiService {
           _tokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
           _baseUrl = regionBaseUrl; // Update working baseUrl
 
-          if (_accessToken != null && _refreshToken != null) {
-            await _authRepository.saveTokens(
+          if (_authRepository != null && _accessToken != null && _refreshToken != null) {
+            await _authRepository!.saveTokens(
               accessToken: _accessToken!,
               refreshToken: _refreshToken!,
               expiry: _tokenExpiry!,
@@ -3921,7 +3941,7 @@ class ApiService {
     _accessToken = null;
     _refreshToken = null;
     _tokenExpiry = null;
-    await _authRepository.deleteTokens();
+    await _authRepository?.deleteTokens();
     return false;
   }
 

@@ -26,24 +26,25 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     // 1. Firebase Girişi Dene
     User? firebaseUser;
     try {
+      print('🚀 [LoginBloc] Firebase girişi deneniyor: ${event.username}');
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: event.username.trim(), 
         password: event.password
       );
       firebaseSuccess = true;
       firebaseUser = credential.user;
-      print('✅ Firebase login successful');
+      print('✅ [LoginBloc] Firebase girişi başarılı: ${firebaseUser?.uid}');
     } on FirebaseAuthException catch (e) {
-      print('Firebase Login Failed: ${e.code} - ${e.message}');
-      // Eğer şifre yanlışsa veya kullanıcı adı hatalıysa (ve kullanıcı Firebase'de varsa)
-      // TTLock girişine devam etme, çünkü şifre senkronize olmalı.
+      print('❌ [LoginBloc] Firebase Girişi Başarısız: ${e.code} - ${e.message}');
+      // Eğer şifre yanlışsa bile TTLock ile devam et (Legacy/Sync support)
       if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
-         emit(const LoginFailure('Hatalı şifre. Lütfen bilgilerinizi kontrol edin.'));
-         return;
+         print('⚠️ [LoginBloc] Firebase şifresi hatalı, TTLock ile devam ediliyor...');
+      } else {
+         print('⚠️ [LoginBloc] Firebase hatası: ${e.code}. TTLock ile devam ediliyor...');
       }
       // Diğer hatalarda (örn: kullanıcı Firebase'de yoksa) TTLock ile devam et (Legacy support)
     } catch (e) {
-      print('Firebase Unknown Error: $e');
+      print('❌ [LoginBloc] Firebase Beklenmedik Hata: $e');
     }
 
     // TTLock kullanıcı adını belirle
@@ -56,17 +57,20 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     // 2. TTLock Girişi Dene
     try {
+      print('🚀 [LoginBloc] TTLock girişi deneniyor: $ttlockUsernameToTry');
       ttlockSuccess = await _apiService.getAccessToken(
         username: ttlockUsernameToTry,
         password: event.password,
       );
+      print('📋 [LoginBloc] TTLock giriş sonucu: $ttlockSuccess');
     } catch (e) {
-      print('TTLock Login Failed: $e');
+      print('❌ [LoginBloc] TTLock Girişi Başarısız: $e');
       loginErrorMsg = e.toString().replaceAll('Exception: ', '');
     }
 
     // 3. Durum Analizi ve Aksiyon
     if (ttlockSuccess) {
+        print('✅ [LoginBloc] TTLock girişi başarılı, login tamamlanıyor.');
         // En iyi senaryo: TTLock girişi başarılı.
         final accessToken = _apiService.accessToken;
         if (accessToken != null) {
@@ -76,31 +80,35 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('saved_email', event.username);
           
+          print('🎉 [LoginBloc] LoginSuccess emit ediliyor');
           emit(LoginSuccess());
         } else {
+          print('❌ [LoginBloc] Token boş çıktı');
           emit(const LoginFailure('Giriş başarılı ancak anahtar alınamadı.'));
         }
     } else if (firebaseSuccess && !ttlockSuccess) {
         // KRİTİK SENARYO: Firebase şifresi yeni, TTLock şifresi eski (veya kullanıcı TTLock'ta yok).
         // Hesabı senkronize et (Sadece şifreyi güncelle, kilitleri silme!)
-        print('⚠️ Password Sync Required: Firebase OK, TTLock Failed. Attempting to update TTLock password...');
+        print('⚠️ [LoginBloc] Password Sync Gerekli: Firebase OK, TTLock FAILED.');
         
+        // Kullanıcı adını belirle (Firebase'den gelen öncelikli)
+        String targetUsername = ttlockUsernameToTry;
+        if (targetUsername.contains('@')) {
+           // Alphanumeric only for TTLock APIs
+           targetUsername = targetUsername.trim().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+        }
+
         try {
-          // Kullanıcı adını belirle (Firebase'den gelen öncelikli)
-          String targetUsername = ttlockUsernameToTry;
-          if (firebaseUser?.displayName == null) {
-             // Eğer displayName yoksa manuel sanitize et
-             targetUsername = event.username.trim().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-          }
-          
+          print('🔄 [LoginBloc] TTLock şifresi sıfırlanıyor (resetPassword) -> $targetUsername');
           // Şifreyi güncelle (Cloud API kullanıcıları için çalışır)
           await _apiService.resetPassword(
             username: targetUsername, 
             newPassword: event.password
           );
-          print('✅ TTLock password updated via Cloud API for user: $targetUsername');
+          print('✅ [LoginBloc] TTLock şifresi güncellendi.');
           
           // Tekrar giriş yapmayı dene
+          print('🚀 [LoginBloc] Güncel şifre ile tekrar deniyor...');
           final retrySuccess = await _apiService.getAccessToken(
               username: targetUsername,
               password: event.password,
@@ -114,16 +122,45 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setString('saved_email', event.username);
               
+              print('🎉 [LoginBloc] LoginSuccess emit ediliyor (Sync sonrası)');
               emit(LoginSuccess());
           } else {
+              print('❌ [LoginBloc] Sync sonrası giriş yine başarısız');
               emit(const LoginFailure('Şifre güncellendi ancak giriş yapılamadı.'));
           }
         } catch (e) {
-          print('Auto-fix failed: $e');
-          emit(LoginFailure('Giriş başarısız. Şifreniz senkronize edilemedi: ${e.toString().replaceAll('Exception: ', '')}'));
+          print('❌ [LoginBloc] Sync başarısız, kullanıcı TTLock\'ta yok olabilir. Kayıt denendi...');
+          
+          try {
+            // Eğer şifre sıfırlama bile başarısızsa, belki kullanıcı TTLock'ta hiç yoktur.
+            // Bu durumda kayıt etmeyi deneyelim.
+            await _apiService.registerUser(
+              username: targetUsername, 
+              password: event.password
+            );
+            print('✅ [LoginBloc] Eksik kullanıcı TTLock\'a kaydedildi.');
+            
+            // Kayıt sonrası tekrar giriş yapmayı dene
+            final finalRetrySuccess = await _apiService.getAccessToken(
+                username: targetUsername,
+                password: event.password,
+            );
+            
+            if (finalRetrySuccess) {
+                final accessToken = _apiService.accessToken;
+                _authBloc.add(LoggedIn(accessToken!));
+                emit(LoginSuccess());
+            } else {
+                emit(const LoginFailure('Hesap oluşturuldu ancak giriş yapılamadı.'));
+            }
+          } catch (registerError) {
+             print('❌ [LoginBloc] Kurtarma kaydı da başarısız: $registerError');
+             emit(LoginFailure('Giriş başarısız. Hesabınız senkronize edilemedi: ${e.toString().replaceAll('Exception: ', '')}'));
+          }
         }
     } else {
         // İkisi de başarısız
+        print('❌ [LoginBloc] Tüm giriş yöntemleri başarısız');
         emit(LoginFailure(loginErrorMsg.isNotEmpty ? loginErrorMsg : 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.'));
     }
   }

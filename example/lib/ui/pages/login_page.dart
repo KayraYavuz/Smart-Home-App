@@ -136,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _performLogin() {
+  void _performLogin(BuildContext context) {
     _saveCredentials();
     context.read<LoginBloc>().add(
           LoginButtonPressed(
@@ -146,18 +146,24 @@ class _LoginPageState extends State<LoginPage> {
         );
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleLogin(BuildContext context) async {
+    print('🔵 Giriş butonu basıldı');
     if (_formKey.currentState!.validate()) {
-      final email = _usernameController.text;
+      final email = _usernameController.text.trim();
+      print('🔵 Form doğrulandı, email: $email');
       final prefs = await SharedPreferences.getInstance();
       final accepted = prefs.getBool('terms_accepted_$email') ?? false;
 
       if (!accepted) {
+        print('🔵 Kullanıcı sözleşmesi henüz onaylanmamış, diyaloğu gösteriyor...');
         if (!mounted) return;
         _showTermsDialog(context, email);
       } else {
-        _performLogin();
+        print('🔵 Kullanıcı sözleşmesi zaten onaylanmış, girişi başlatıyor...');
+        _performLogin(context);
       }
+    } else {
+      print('🟠 Form doğrulanamadı, lütfen alanları kontrol edin');
     }
   }
 
@@ -233,7 +239,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.of(dialogContext).pop(); // Close dialog
                           final prefs = await SharedPreferences.getInstance();
                           await prefs.setBool('terms_accepted_$email', true);
-                          _performLogin();
+                          _performLogin(context);
                         }
                       : null,
                   child: Text(
@@ -413,7 +419,7 @@ class _LoginPageState extends State<LoginPage> {
                                     shadowColor: const Color(0xFF1E90FF).withValues(alpha: 0.3),
                                   ),
                                   onPressed: () {
-                                    _handleLogin();
+                                    _handleLogin(context);
                                   },
                                   child: Text(
                                     l10n.loginBtn,
