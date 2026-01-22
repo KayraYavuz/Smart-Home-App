@@ -4,7 +4,7 @@
 set -e
 set -x
 
-echo "=== BAŞLANGIÇ: CI Post Clone Script ==="
+echo "=== BAŞLANGIÇ: CI Post Clone Script ($(date)) ==="
 
 # 1. GoogleService-Info.plist ve .env dosyalarını oluştur
 if [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" ]; then
@@ -51,10 +51,13 @@ fi
 
 # .env oluşturma
 if [ -n "$ENV_FILE_CONTENT_BASE64" ]; then
+    echo "Creating .env from Base64..."
     echo "$ENV_FILE_CONTENT_BASE64" | base64 --decode > ../../.env
 elif [ -n "$ENV_FILE_CONTENT" ]; then
+    echo "Creating .env from plain text..."
     echo "$ENV_FILE_CONTENT" > ../../.env
 else
+    echo "Creating empty .env..."
     touch ../../.env
 fi
 
@@ -73,11 +76,15 @@ FLUTTER_ROOT="$CI_WORKSPACE/flutter"
 
 if [ ! -d "$FLUTTER_ROOT" ]; then
     echo "Flutter indiriliyor (stable)..."
+    START_CLONE=$(date +%s)
     git clone https://github.com/flutter/flutter.git --depth 1 -b stable "$FLUTTER_ROOT"
+    END_CLONE=$(date +%s)
+    echo "Flutter clone süresi: $((END_CLONE - START_CLONE)) saniye"
 fi
 
 export PATH="$FLUTTER_ROOT/bin:$PATH"
-flutter doctor -v
+echo "Flutter version checking..."
+flutter --version
 
 # 3. Proje Bağımlılıkları
 if [ -z "$PROJECT_DIR" ]; then
@@ -98,14 +105,14 @@ flutter build ios --config-only --no-codesign
 
 # 4. iOS Pod Kurulumu
 cd ios
+echo "Pod dosyaları temizleniyor..."
 rm -rf Pods
 rm -rf Podfile.lock
 
 echo "Pod install çalıştırılıyor..."
-# Sadece install yap, repo update yapma (hız için)
-if ! pod install; then
-    echo "Pod install başarısız, repo update deneniyor..."
-    pod install --repo-update
-fi
+START_POD=$(date +%s)
+pod install || pod install --repo-update
+END_POD=$(date +%s)
+echo "Pod install süresi: $((END_POD - START_POD)) saniye"
 
-echo "=== BİTİŞ ==="
+echo "=== BİTİŞ: $(date) ==="

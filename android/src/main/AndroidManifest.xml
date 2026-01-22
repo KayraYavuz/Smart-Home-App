@@ -25,7 +25,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 <application
-    android:label="Uygulama Adın"
-    
+    android:label="Yavuz Lock"
     tools:replace="android:label"> </application>
 </manifest>
