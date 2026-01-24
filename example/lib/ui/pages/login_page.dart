@@ -9,8 +9,6 @@ import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_bloc.dart';
 import 'package:yavuz_lock/blocs/login/login_event.dart';
 import 'package:yavuz_lock/blocs/login/login_state.dart';
-import 'package:yavuz_lock/register_page.dart';
-import 'package:yavuz_lock/ui/pages/forgot_password_page.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart'; // l10n import
 import 'package:yavuz_lock/providers/language_provider.dart'; // LanguageProvider import
 
@@ -168,6 +166,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showTermsDialog(BuildContext context, String email) {
+    final l10n = AppLocalizations.of(context)!;
     bool isAgreed = false;
     showDialog(
       context: context,
@@ -395,10 +394,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                                      );
+                                      _launchUrl('https://lock2.ttlock.com/');
                                     },
                                     child: Text(l10n.forgotPasswordTitle, style: const TextStyle(color: Colors.white70)),
                                   ),
@@ -452,20 +448,7 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 20),
                               TextButton(
                                 onPressed: () async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => const RegisterPage()),
-                                  );
-
-                                  if (result != null && result is Map<String, String>) {
-                                    setState(() {
-                                      _usernameController.text = result['username'] ?? '';
-                                      _passwordController.text = result['password'] ?? '';
-                                    });
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(l10n.infoFilledContinueLogin)),
-                                    );
-                                  }
+                                  _launchUrl('https://lock2.ttlock.com/');
                                 },
                                 child: Text(
                                   l10n.noAccountRegister,

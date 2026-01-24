@@ -671,5 +671,76 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rememberMe => 'Remember Me';
 
   @override
+  String get password => 'Password';
+
+  @override
+  String get userAgreement => 'User Agreement';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get readAndApprove => 'I have read and approved';
+
+  @override
+  String get and => 'and';
+
+  @override
+  String get acceptAndLogin => 'Approve and Login';
+
+  @override
+  String get termsDialogTitle => 'Terms of Service';
+
+  @override
+  String get termsDialogSubtitle =>
+      'Please approve the agreements to continue using the application.';
+
+  @override
+  String get emailAlreadyInUse => 'This email is already in use.';
+
+  @override
+  String get weakPassword => 'Password is too weak.';
+
+  @override
+  String get checkVerificationAndComplete => 'Check Verification and Complete';
+
+  @override
+  String get changeEmailAddress => 'Change email address';
+
+  @override
+  String get verificationEmailSentMsg => 'Verification email sent!';
+
+  @override
+  String get verificationEmailInstruction =>
+      'Please check your email and click the link. Then press the button below to continue.';
+
+  @override
+  String get ttlockWebPortalRegister => 'Register via TTLock Web Portal';
+
+  @override
+  String get pleaseAgreeToTerms =>
+      'Please agree to the user agreement and privacy policy.';
+
+  @override
+  String get infoFilledContinueLogin =>
+      'Information filled, you can now login.';
+
+  @override
+  String get resetPasswordTitle => 'Reset Password';
+
+  @override
+  String get resetPasswordInstruction =>
+      'For your security, password reset operations are performed via the TTLock web portal or the official mobile application.';
+
+  @override
+  String get ttlockWebPortal => 'TTLock Web Portal';
+
+  @override
+  String get viewOnAppStore => 'View on App Store';
+
+  @override
+  String get viewOnPlayStore => 'View on Play Store';
+
+  @override
   String get noAccountRegister => 'Don\'t have an account? Register';
 }

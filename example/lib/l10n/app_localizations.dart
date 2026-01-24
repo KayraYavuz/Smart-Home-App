@@ -1354,6 +1354,138 @@ abstract class AppLocalizations {
   /// **'Remember Me'**
   String get rememberMe;
 
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @userAgreement.
+  ///
+  /// In en, this message translates to:
+  /// **'User Agreement'**
+  String get userAgreement;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @readAndApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'I have read and approved'**
+  String get readAndApprove;
+
+  /// No description provided for @and.
+  ///
+  /// In en, this message translates to:
+  /// **'and'**
+  String get and;
+
+  /// No description provided for @acceptAndLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve and Login'**
+  String get acceptAndLogin;
+
+  /// No description provided for @termsDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsDialogTitle;
+
+  /// No description provided for @termsDialogSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please approve the agreements to continue using the application.'**
+  String get termsDialogSubtitle;
+
+  /// No description provided for @emailAlreadyInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already in use.'**
+  String get emailAlreadyInUse;
+
+  /// No description provided for @weakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is too weak.'**
+  String get weakPassword;
+
+  /// No description provided for @checkVerificationAndComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Verification and Complete'**
+  String get checkVerificationAndComplete;
+
+  /// No description provided for @changeEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Change email address'**
+  String get changeEmailAddress;
+
+  /// No description provided for @verificationEmailSentMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification email sent!'**
+  String get verificationEmailSentMsg;
+
+  /// No description provided for @verificationEmailInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your email and click the link. Then press the button below to continue.'**
+  String get verificationEmailInstruction;
+
+  /// No description provided for @ttlockWebPortalRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Register via TTLock Web Portal'**
+  String get ttlockWebPortalRegister;
+
+  /// No description provided for @pleaseAgreeToTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Please agree to the user agreement and privacy policy.'**
+  String get pleaseAgreeToTerms;
+
+  /// No description provided for @infoFilledContinueLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Information filled, you can now login.'**
+  String get infoFilledContinueLogin;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'For your security, password reset operations are performed via the TTLock web portal or the official mobile application.'**
+  String get resetPasswordInstruction;
+
+  /// No description provided for @ttlockWebPortal.
+  ///
+  /// In en, this message translates to:
+  /// **'TTLock Web Portal'**
+  String get ttlockWebPortal;
+
+  /// No description provided for @viewOnAppStore.
+  ///
+  /// In en, this message translates to:
+  /// **'View on App Store'**
+  String get viewOnAppStore;
+
+  /// No description provided for @viewOnPlayStore.
+  ///
+  /// In en, this message translates to:
+  /// **'View on Play Store'**
+  String get viewOnPlayStore;
+
   /// No description provided for @noAccountRegister.
   ///
   /// In en, this message translates to:

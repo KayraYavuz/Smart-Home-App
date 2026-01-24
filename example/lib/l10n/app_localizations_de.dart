@@ -676,5 +676,78 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rememberMe => 'Erinnere dich an mich';
 
   @override
+  String get password => 'Passwort';
+
+  @override
+  String get userAgreement => 'Nutzungsbedingungen';
+
+  @override
+  String get privacyPolicy => 'Datenschutzrichtlinie';
+
+  @override
+  String get readAndApprove => 'Ich habe gelesen und zugestimmt';
+
+  @override
+  String get and => 'und';
+
+  @override
+  String get acceptAndLogin => 'Zustimmen und Anmelden';
+
+  @override
+  String get termsDialogTitle => 'Nutzungsbedingungen';
+
+  @override
+  String get termsDialogSubtitle =>
+      'Bitte stimmen Sie den Vereinbarungen zu, um die Anwendung weiter zu nutzen.';
+
+  @override
+  String get emailAlreadyInUse => 'Diese E-Mail wird bereits verwendet.';
+
+  @override
+  String get weakPassword => 'Das Passwort ist zu schwach.';
+
+  @override
+  String get checkVerificationAndComplete =>
+      'Bestätigung prüfen und abschließen';
+
+  @override
+  String get changeEmailAddress => 'E-Mail-Adresse ändern';
+
+  @override
+  String get verificationEmailSentMsg => 'Bestätigungs-E-Mail gesendet!';
+
+  @override
+  String get verificationEmailInstruction =>
+      'Bitte überprüfen Sie Ihre E-Mails und klicken Sie auf den Link. Klicken Sie dann auf die Schaltfläche unten, um fortzufahren.';
+
+  @override
+  String get ttlockWebPortalRegister =>
+      'Über das TTLock Webportal registrieren';
+
+  @override
+  String get pleaseAgreeToTerms =>
+      'Bitte stimmen Sie den Nutzungsbedingungen und der Datenschutzrichtlinie zu.';
+
+  @override
+  String get infoFilledContinueLogin =>
+      'Informationen ausgefüllt, Sie können sich jetzt anmelden.';
+
+  @override
+  String get resetPasswordTitle => 'Passwort zurücksetzen';
+
+  @override
+  String get resetPasswordInstruction =>
+      'Aus Sicherheitsgründen werden Passwortrücksetzungen über das TTLock-Webportal oder die offizielle mobile Anwendung durchgeführt.';
+
+  @override
+  String get ttlockWebPortal => 'TTLock Webportal';
+
+  @override
+  String get viewOnAppStore => 'Im App Store anzeigen';
+
+  @override
+  String get viewOnPlayStore => 'Im Play Store anzeigen';
+
+  @override
   String get noAccountRegister => 'Haben Sie kein Konto? Registrieren';
 }

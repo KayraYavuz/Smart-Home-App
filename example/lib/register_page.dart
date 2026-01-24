@@ -368,9 +368,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         TextButton.icon(
                           onPressed: () => _launchUrl('https://lock2.ttlock.com/'),
                           icon: const Icon(Icons.language, color: Colors.blue, size: 20),
-                          label: const Text(
+                          label: Text(
                             '${l10n.ttlockWebPortalRegister}',
-                            style: TextStyle(color: Colors.white70, fontSize: 13, decoration: TextDecoration.underline),
+                            style: const TextStyle(color: Colors.white70, fontSize: 13, decoration: TextDecoration.underline),
                           ),
                         ),
                       ],
@@ -383,10 +383,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: Colors.green.withOpacity(0.5)),
                           ),
-                          child: const Column(
+                          child: Column(
                             children: [
-                              Icon(Icons.mark_email_read, color: Colors.green, size: 48),
-                              SizedBox(height: 16),
+                              const Icon(Icons.mark_email_read, color: Colors.green, size: 48),
+                              const SizedBox(height: 16),
                               Text(
                                 l10n.verificationEmailSentMsg,
                                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),

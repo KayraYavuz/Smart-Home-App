@@ -674,5 +674,77 @@ class AppLocalizationsTr extends AppLocalizations {
   String get rememberMe => 'Beni Hatırla';
 
   @override
-  String get noAccountRegister => 'Hesabınız Yok Mu? Kayıt Olun';
+  String get password => 'Şifre';
+
+  @override
+  String get userAgreement => 'Kullanıcı Sözleşmesi';
+
+  @override
+  String get privacyPolicy => 'Gizlilik Politikası';
+
+  @override
+  String get readAndApprove => 'Okudum ve onaylıyorum';
+
+  @override
+  String get and => 've';
+
+  @override
+  String get acceptAndLogin => 'Onayla ve Giriş Yap';
+
+  @override
+  String get termsDialogTitle => 'Kullanıcı Sözleşmesi';
+
+  @override
+  String get termsDialogSubtitle =>
+      'Uygulamayı kullanmaya devam etmek için lütfen sözleşmeleri onaylayın.';
+
+  @override
+  String get emailAlreadyInUse => 'Bu e-posta zaten kullanımda.';
+
+  @override
+  String get weakPassword => 'Şifre çok zayıf.';
+
+  @override
+  String get checkVerificationAndComplete =>
+      'Doğrulamayı Kontrol Et ve Tamamla';
+
+  @override
+  String get changeEmailAddress => 'E-posta adresini değiştir';
+
+  @override
+  String get verificationEmailSentMsg => 'Doğrulama maili gönderildi!';
+
+  @override
+  String get verificationEmailInstruction =>
+      'Lütfen e-postanızı kontrol edin ve linke tıklayın. Ardından aşağıdaki butona basarak devam edin.';
+
+  @override
+  String get ttlockWebPortalRegister => 'TTLock Web Portal üzerinden kayıt ol';
+
+  @override
+  String get pleaseAgreeToTerms =>
+      'Lütfen kullanıcı sözleşmesini ve gizlilik politikasını onaylayın.';
+
+  @override
+  String get infoFilledContinueLogin =>
+      'Bilgiler dolduruldu, giriş yapabilirsiniz.';
+
+  @override
+  String get resetPasswordTitle => 'Şifre Yenileme';
+
+  @override
+  String get resetPasswordInstruction =>
+      'Güvenliğiniz için şifre yenileme işlemleri TTLock web portalı veya resmi mobil uygulaması üzerinden yapılmaktadır.';
+
+  @override
+  String get ttlockWebPortal => 'TTLock Web Portalı';
+
+  @override
+  String get viewOnAppStore => 'App Store\'da Görüntüle';
+
+  @override
+  String get viewOnPlayStore => 'Play Store\'da Görüntüle';
+
+  @override
+  String get noAccountRegister => 'Hesabınız Yok mu? Kayıt Olun';
 }
