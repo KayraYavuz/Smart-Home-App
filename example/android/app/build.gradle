@@ -39,8 +39,8 @@ android {
         applicationId "com.yavuz.yavuz_lock"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 36
-        versionCode 1
-        versionName "1.0"
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
     }
 
     compileOptions {

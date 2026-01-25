@@ -122,6 +122,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                 ).then((result) {
                   if (result != null && result is Map<String, dynamic>) {
                     // Scan sayfasından geri dönüldü, cihaz eklendi
+                    if (!context.mounted) return;
                     Navigator.of(context).pop(result);
                   }
                 });

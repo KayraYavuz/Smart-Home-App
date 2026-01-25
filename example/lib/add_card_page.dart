@@ -71,18 +71,22 @@ class _AddCardPageState extends State<AddCardPage> {
         endDate: _endDate.millisecondsSinceEpoch,
       );
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Kart başarıyla eklendi!')),
       );
       Navigator.pop(context, true); // Pop with a result to indicate success
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Kart eklenemedi: $e')),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

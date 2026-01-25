@@ -27,17 +27,17 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
     setState(() => _isLoading = true);
     try {
       final groups = await _apiService.getGroupList();
+      if (!mounted) return;
       setState(() {
         _groups = groups;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Grup listesi yüklenemedi: $e')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Grup listesi yüklenemedi: $e')),
+      );
     }
   }
 

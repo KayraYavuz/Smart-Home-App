@@ -210,6 +210,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
 
   Future<void> _copyToClipboard(BuildContext context, String text) async {
     await Clipboard.setData(ClipboardData(text: text));
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Panoya kopyalandı: $text')),
     );
@@ -221,6 +222,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('URL açılamadı: $url'),
@@ -229,6 +231,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Hata: $e'),

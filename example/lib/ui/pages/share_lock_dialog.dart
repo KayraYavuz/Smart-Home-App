@@ -294,6 +294,8 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
           },
         );
 
+        if (!context.mounted) return;
+
         if (pickedDate != null) {
           onDateSelected(pickedDate);
         }

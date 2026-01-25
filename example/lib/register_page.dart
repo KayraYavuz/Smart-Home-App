@@ -99,6 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (user != null && user.emailVerified) {
         // E-posta doğrulandı! Şimdi asıl TTLock kaydını yapalım.
+        if (!mounted) return;
         final apiService = ApiService(context.read<AuthRepository>());
         
         // TTLock API v3/user/register sadece harf ve rakam kabul eder.

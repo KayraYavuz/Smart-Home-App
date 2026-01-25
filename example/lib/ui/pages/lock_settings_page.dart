@@ -37,13 +37,16 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       // Fetch Passage Mode
       final passageConfig = await _apiService.getPassageModeConfiguration(lockId: lockId);
 
+      if (!mounted) return;
       setState(() {
         _passageMode = passageConfig['passageMode'] == 1;
       });
     } catch (e) {
       print('Error fetching settings: $e');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -207,6 +210,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               final newName = controller.text;
               if (newName.isNotEmpty) {
                 await _apiService.renameLock(lockId: widget.lock['lockId'].toString(), newName: newName);
+                if (!context.mounted) return;
                 setState(() => _lockName = newName);
                 Navigator.pop(context);
               }
@@ -245,10 +249,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                             lockId: widget.lock['lockId'].toString(),
                             groupId: group['groupId'].toString(),
                           );
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Kilit ${group['name']} grubuna atandı')),
                           );
                         } catch (e) {
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Hata: $e')),
                           );
@@ -273,10 +279,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                     lockId: widget.lock['lockId'].toString(),
                     groupId: "0",
                   );
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Grup ataması kaldırıldı')),
                   );
                 } catch (e) {
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Hata: $e')),
                   );
@@ -297,11 +305,15 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         lockId: widget.lock['lockId'].toString(),
         electricQuantity: widget.lock['battery'] ?? 100,
       );
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Batarya senkronize edildi')));
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -332,6 +344,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                 seconds: seconds,
                 type: 2, // Gateway/WiFi simulation
               );
+              if (!context.mounted) return;
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Süre ayarlandı')));
             },
@@ -349,8 +362,10 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         passageMode: val ? 1 : 2,
         type: 2,
       );
+      if (!mounted) return;
       setState(() => _passageMode = val);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
     }
   }
@@ -394,9 +409,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         workingMode: mode,
         type: 2,
       );
+      if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Mod güncellendi')));
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
     }
   }
@@ -421,6 +438,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   lockId: widget.lock['lockId'].toString(),
                   password: controller.text,
                 );
+                if (!context.mounted) return;
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Şifre güncellendi')));
               }
@@ -451,6 +469,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   lockIdList: [int.parse(widget.lock['lockId'].toString())],
                   receiverUsername: controller.text,
                 );
+                if (!context.mounted) return;
                 Navigator.pop(context);
                 Navigator.pop(context); // Close settings page
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Transfer işlemi başlatıldı')));
@@ -474,6 +493,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
           TextButton(
             onPressed: () async {
               await _apiService.deleteLock(lockId: widget.lock['lockId'].toString());
+              if (!context.mounted) return;
               Navigator.pop(context);
               Navigator.pop(context, 'deleted'); // Go back to list
             },

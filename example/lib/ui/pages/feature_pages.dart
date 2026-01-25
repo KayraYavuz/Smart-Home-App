@@ -51,6 +51,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
     try {
       final api = ApiService(context.read<AuthRepository>());
       final result = await api.getRemoteList(lockId: widget.lockId);
+      if (!mounted) return;
       setState(() {
         _remotes = result['list'] ?? [];
         _isLoading = false;
@@ -88,6 +89,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
                            await api.deleteRemote(remoteId: remote['remoteId']);
                            _loadRemotes();
                         } catch(e) {
+                          if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
                         }
                       },
@@ -132,6 +134,7 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
     try {
       final api = ApiService(context.read<AuthRepository>());
       final result = await api.getWirelessKeypadList(lockId: widget.lockId);
+      if (!mounted) return;
       setState(() {
         _keypads = result['list'] ?? [];
         _isLoading = false;
@@ -168,6 +171,7 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
                            await api.deleteWirelessKeypad(wirelessKeypadId: keypad['wirelessKeypadId']);
                            _loadKeypads();
                         } catch(e) {
+                          if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
                         }
                       },
@@ -211,6 +215,7 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
     try {
       final api = ApiService(context.read<AuthRepository>());
       final result = await api.queryDoorSensor(lockId: widget.lockId);
+      if (!mounted) return;
       setState(() {
         _sensor = result; // Assuming result is the sensor object or null if not found (needs proper handling based on API)
         _isLoading = false;
@@ -245,10 +250,12 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
                          try {
                            final api = ApiService(context.read<AuthRepository>());
                            await api.deleteDoorSensor(doorSensorId: _sensor!['doorSensorId']);
+                           if (!mounted) return;
                            setState(() {
                              _sensor = null;
                            });
                         } catch(e) {
+                          if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
                         }
                       },
@@ -284,6 +291,7 @@ class _QrCodePageState extends State<QrCodePage> {
     try {
       final api = ApiService(context.read<AuthRepository>());
       final result = await api.getQrCodeList(lockId: widget.lockId);
+      if (!mounted) return;
       setState(() {
         _qrCodes = result['list'] ?? [];
         _isLoading = false;
@@ -307,8 +315,10 @@ class _QrCodePageState extends State<QrCodePage> {
                endDate: DateTime.now().add(const Duration(days: 1)).millisecondsSinceEpoch,
            );
            _loadQrCodes();
+           if (!mounted) return;
            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('QR Kod oluşturuldu')));
         } catch(e) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ekleme hatası: $e')));
         }
   }
@@ -334,6 +344,7 @@ class _QrCodePageState extends State<QrCodePage> {
                        try {
                            final api = ApiService(context.read<AuthRepository>());
                            final data = await api.getQrCodeData(qrCodeId: qr['qrCodeId']);
+                           if (!context.mounted) return;
                            showDialog(
                                context: context, 
                                builder: (c) => AlertDialog(
@@ -343,6 +354,7 @@ class _QrCodePageState extends State<QrCodePage> {
                                )
                            );
                        } catch (e) {
+                           if (!context.mounted) return;
                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Veri alma hatası: $e')));
                        }
                     },
@@ -354,6 +366,7 @@ class _QrCodePageState extends State<QrCodePage> {
                            await api.deleteQrCode(lockId: widget.lockId, qrCodeId: qr['qrCodeId']);
                            _loadQrCodes();
                         } catch(e) {
+                          if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
                         }
                       },
@@ -395,6 +408,7 @@ class _WifiLockPageState extends State<WifiLockPage> {
     try {
       final api = ApiService(context.read<AuthRepository>());
       final result = await api.getWifiLockDetail(lockId: widget.lockId);
+      if (!mounted) return;
       setState(() {
         _detail = result;
         _isLoading = false;

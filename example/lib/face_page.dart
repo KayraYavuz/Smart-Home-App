@@ -95,6 +95,7 @@ class _FacePageState extends State<FacePage> {
                         PopupMenuItem(
                           child: const Text('Rename'),
                           onTap: () {
+                            if (!mounted) return;
                             _showRenameDialog(
                                 context,
                                 widget.lockId,
@@ -105,6 +106,7 @@ class _FacePageState extends State<FacePage> {
                         PopupMenuItem(
                           child: const Text('Change Period'),
                           onTap: () {
+                            if (!mounted) return;
                             _showChangePeriodDialog(
                                 context,
                                 widget.lockId,

@@ -354,7 +354,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 });
               }
 
-    setState(() {
+              if (!mounted) return;
+              setState(() {
                 _locks = allLocks;
                 _isLoading = false;
               });
@@ -451,6 +452,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           _locks.sort((a, b) => a['name'].compareTo(b['name']));
         });
 
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.seamDevicesAdded(seamDevices.length)),
@@ -476,6 +478,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           }
         });
 
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.lockAddedSuccess),
@@ -675,6 +678,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   }
                 });
 
+                if (!mounted) return;
                 // Başarılı işlem için bildirim göster
                 if (newState != null) {
                   final lockName = updatedLock['name'] ?? l10n.unknownLock;

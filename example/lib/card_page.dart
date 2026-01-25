@@ -31,9 +31,11 @@ class _CardPageState extends State<CardPage> {
         _cards = fetchedCards;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Kartlar yüklenemedi: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Kartlar yüklenemedi: $e')),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -63,11 +65,13 @@ class _CardPageState extends State<CardPage> {
       try {
         final apiService = Provider.of<ApiService>(context, listen: false);
         await apiService.deleteIdentityCard(lockId: widget.lockId, cardId: cardId);
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart "$cardNumber" başarıyla silindi.')));
         await _fetchCards();
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart silinemedi: $e')));
-        if (mounted) setState(() => _isLoading = false);
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -137,12 +141,14 @@ class _CardPageState extends State<CardPage> {
         }
 
         if (needsRefresh) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kart başarıyla güncellendi.')));
           await _fetchCards();
         }
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart güncellenemedi: $e')));
-        if (mounted) setState(() => _isLoading = false);
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -167,11 +173,13 @@ class _CardPageState extends State<CardPage> {
       try {
         final apiService = Provider.of<ApiService>(context, listen: false);
         await apiService.clearIdentityCards(lockId: widget.lockId);
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tüm kartlar sunucudan başarıyla temizlendi.')));
         await _fetchCards();
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kartlar temizlenemedi: $e')));
-         if (mounted) setState(() => _isLoading = false);
+         setState(() => _isLoading = false);
       }
     }
   }

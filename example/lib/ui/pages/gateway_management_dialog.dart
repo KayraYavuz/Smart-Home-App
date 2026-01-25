@@ -37,6 +37,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
 
       final gateways = await apiService.getGatewayList();
 
+      if (!mounted) return;
       setState(() {
         _gateways = gateways;
         _isLoading = false;
@@ -46,6 +47,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
 
     } catch (e) {
       print('❌ Gateway listesi yükleme hatası: $e');
+      if (!mounted) return;
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
@@ -71,6 +73,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
       // Listeyi yenile
       await _loadGateways();
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Gateway\'e başarıyla bağlanıldı'),
@@ -79,6 +82,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
       );
 
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Gateway bağlantı hatası: $e'),
@@ -106,6 +110,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
       // Listeyi yenile
       await _loadGateways();
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Gateway bağlantısı kesildi'),
@@ -114,6 +119,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
       );
 
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Gateway bağlantı kesme hatası: $e'),

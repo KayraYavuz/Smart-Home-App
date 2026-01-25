@@ -37,11 +37,13 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
       try {
         final apiService = ApiService(context.read<AuthRepository>());
         final details = await apiService.getGatewayDetail(gatewayId: widget.gateway['gatewayId'].toString());
+        if (!mounted) return;
         setState(() {
           _gatewayDetails = details;
           _isLoading = false;
         });
       } catch (e) {
+        if (!mounted) return;
         setState(() {
           _errorMessage = e.toString();
           _isLoading = false;
@@ -179,12 +181,14 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                       gatewayId: widget.gateway['gatewayId'].toString(),
                       gatewayName: nameController.text,
                     );
+                    if (!mounted) return;
                     Navigator.of(context).pop();
                     _fetchGatewayDetails();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Gateway renamed successfully')),
                     );
                   } catch (e) {
+                    if (!mounted) return;
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Error renaming gateway: $e')),
@@ -221,12 +225,14 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                     await apiService.deleteGateway(
                       gatewayId: widget.gateway['gatewayId'].toString(),
                     );
+                    if (!mounted) return;
                     Navigator.of(context).pop();
                     Navigator.of(context).pop(); // Go back to the gateways list
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Gateway deleted successfully')),
                     );
                   } catch (e) {
+                    if (!mounted) return;
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Error deleting gateway: $e')),
@@ -269,12 +275,14 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                       receiverUsername: usernameController.text,
                       gatewayIdList: [widget.gateway['gatewayId'] as int],
                     );
+                    if (!mounted) return;
                     Navigator.of(context).pop();
                     Navigator.of(context).pop(); // Go back to the gateways list
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Gateway transferred successfully')),
                     );
                   } catch (e) {
+                    if (!mounted) return;
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Error transferring gateway: $e')),
@@ -298,6 +306,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
         final result = await apiService.gatewayUpgradeCheck(
           gatewayId: widget.gateway['gatewayId'].toString(),
         );
+        if (!mounted) return;
         showDialog(
           context: context,
           builder: (context) {
@@ -317,6 +326,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
           },
         );
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error checking for upgrade: $e')),
         );
@@ -332,10 +342,12 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
         await apiService.setGatewayUpgradeMode(
           gatewayId: widget.gateway['gatewayId'].toString(),
         );
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Gateway is set to upgrade mode')),
         );
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error setting upgrade mode: $e')),
         );

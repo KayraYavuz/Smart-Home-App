@@ -78,11 +78,13 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
           lockId: widget.lock['lockId'].toString(),
         );
         print('🔍 Lock detail connectivity sonucu: ${widget.lock['lockId']} -> ${isConnected ? 'ONLINE' : 'OFFLINE'}');
+        if (!mounted) return;
         setState(() {
           _isOnline = isConnected;
         });
       } else {
         print('❌ Access token bulunamadı');
+        if (!mounted) return;
         setState(() {
           _isOnline = false;
         });
@@ -90,13 +92,16 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     } catch (e) {
       print('❌ Connectivity check hatası: $e');
       // Bağlantı hatası durumunda offline kabul edelim
+      if (!mounted) return;
       setState(() {
         _isOnline = false;
       });
     } finally {
-      setState(() {
-        _isLoadingConnectivity = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoadingConnectivity = false;
+        });
+      }
       print('✅ Connectivity kontrolü tamamlandı');
     }
   }

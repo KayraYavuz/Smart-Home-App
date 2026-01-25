@@ -318,11 +318,13 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
         );
         _eKey['keyStatus'] = '110405'; // Frozen
       }
+      if (!mounted) return;
       setState(() {});
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(isCurrentlyFrozen ? 'Dondurma kaldırıldı' : 'Anahtar donduruldu')),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
       );
@@ -352,11 +354,13 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
         );
         _eKey['keyRight'] = 1;
       }
+      if (!mounted) return;
       setState(() {});
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(isCurrentlyAuthorized ? 'Yetki alındı' : 'Yetki verildi')),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
       );
@@ -447,6 +451,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                endDate: end,
              );
              
+             if (!mounted) return;
              setState(() {
                _eKey['startDate'] = start.millisecondsSinceEpoch;
                _eKey['endDate'] = end.millisecondsSinceEpoch;
@@ -456,6 +461,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                const SnackBar(content: Text('Süre güncellendi')),
              );
            } catch(e) {
+             if (!mounted) return;
              ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
              );
@@ -521,6 +527,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                          remoteEnable: remoteEnabled ? 1 : 2,
                        );
 
+                       if (!mounted) return;
                        setState(() {
                          _eKey['keyName'] = nameController.text;
                          _eKey['remoteEnable'] = remoteEnabled ? 1 : 2;
@@ -530,6 +537,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                           const SnackBar(content: Text('Güncellendi')),
                        );
                     } catch(e) {
+                      if (!mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
                       );
@@ -572,8 +580,10 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                    keyId: _eKey['keyId'].toString(),
                  );
                  
+                 if (!mounted) return;
                  Navigator.pop(context, 'deleted'); // Return to list with deleted signal
                } catch(e) {
+                 if (!mounted) return;
                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
                  );

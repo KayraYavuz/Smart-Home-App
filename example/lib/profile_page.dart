@@ -432,6 +432,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (newName != null && newName.isNotEmpty) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('saved_username', newName);
+      if (!mounted) return;
       setState(() {
         _username = newName;
       });

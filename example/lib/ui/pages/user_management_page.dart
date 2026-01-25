@@ -36,12 +36,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
     try {
       final response = await _apiService.getUserList(pageNo: 1, pageSize: 100);
+      if (!mounted) return;
       setState(() {
         _users = List<Map<String, dynamic>>.from(response['list'] ?? []);
         _isLoading = false;
       });
     } catch (e) {
       print('Error loading users: $e');
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -84,12 +86,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     username: usernameController.text,
                     password: passwordController.text,
                   );
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                   _loadUsers();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Kullanıcı başarıyla kaydedildi'), backgroundColor: AppColors.success),
                   );
                 } catch (e) {
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Kayıt hatası: $e'), backgroundColor: AppColors.error),
                   );
@@ -115,12 +119,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
             onPressed: () async {
               try {
                 await _apiService.deleteUser(username: user['username']);
+                if (!context.mounted) return;
                 Navigator.pop(context);
                 _loadUsers();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Kullanıcı silindi'), backgroundColor: AppColors.success),
                 );
               } catch (e) {
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Silme hatası: $e'), backgroundColor: AppColors.error),
                 );

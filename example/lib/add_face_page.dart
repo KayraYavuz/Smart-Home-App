@@ -45,6 +45,7 @@ class _AddFacePageState extends State<AddFacePage> {
         final repository = context.read<TTLockRepository>();
         final result = await repository.getFeatureDataByPhoto(
             lockId: widget.lockId, imagePath: selectedImage.path);
+        if (!mounted) return;
         setState(() {
           _featureData = result['featureData'];
           _isProcessing = false;
@@ -52,6 +53,7 @@ class _AddFacePageState extends State<AddFacePage> {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Face feature data obtained successfully.')));
       } catch (e) {
+        if (!mounted) return;
         setState(() {
           _isProcessing = false;
         });
@@ -76,6 +78,7 @@ class _AddFacePageState extends State<AddFacePage> {
           startDate: int.parse(_startDateController.text),
           endDate: int.parse(_endDateController.text),
         );
+        if (!mounted) return;
         setState(() {
           _isProcessing = false;
         });
@@ -83,6 +86,7 @@ class _AddFacePageState extends State<AddFacePage> {
             .showSnackBar(const SnackBar(content: Text('Face added successfully.')));
         Navigator.pop(context, true);
       } catch (e) {
+        if (!mounted) return;
         setState(() {
           _isProcessing = false;
         });

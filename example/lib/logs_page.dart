@@ -76,12 +76,14 @@ class _LogsPageState extends State<LogsPage> {
         // Tarihe göre sırala
         allRecords.sort((a, b) => (b['lockDate'] ?? 0).compareTo(a['lockDate'] ?? 0));
         
+        if (!mounted) return;
         setState(() {
           _records = allRecords;
           _isLoading = false;
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString();
         _isLoading = false;
@@ -129,12 +131,15 @@ class _LogsPageState extends State<LogsPage> {
         lockId: widget.lockId!,
       );
 
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Tüm kayıtlar başarıyla temizlendi'), backgroundColor: Colors.green),
       );
       
       _fetchRecords();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Temizleme hatası: $e'), backgroundColor: Colors.red),
       );
