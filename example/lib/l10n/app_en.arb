@@ -369,5 +369,16 @@
   "ttlockWebPortal": "TTLock Web Portal",
   "viewOnAppStore": "View on App Store",
   "viewOnPlayStore": "View on Play Store",
-  "noAccountRegister": "Don't have an account? Register"
+  "noAccountRegister": "Don't have an account? Register",
+  "addDeviceTitle": "Add Device",
+  "categoryLocks": "Locks",
+  "categoryGateways": "Gateways",
+  "categoryCameras": "Cameras",
+  "deviceAllLocks": "All Locks",
+  "deviceDoorLock": "Door Lock",
+  "devicePadlock": "Padlock",
+  "deviceSafe": "Safe",
+  "deviceGatewayWifi": "G2 Wi-Fi",
+  "deviceCameraSurveillance": "Surveillance Camera",
+  "scanBluetoothLock": "Scan for Bluetooth Locks"
 }

@@ -380,29 +380,70 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
       }
       print('✅ Access token alındı');
 
-      final receiver = _emailController.text.trim();
-      print('📧 Paylaşım bilgileri:');
-      print('  Lock ID: ${widget.lock['lockId']}');
-      print('  Alıcı: $receiver');
-      print('  Yetki: $_selectedPermission');
-      print('  Başlangıç: $_startDate');
-      print('  Bitiş: $_endDate');
+      final originalReceiver = _emailController.text.trim();
+      final String emailSmall = originalReceiver.toLowerCase();
+      final String sanitized = emailSmall.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      final String beforeAt = emailSmall.contains('@') ? emailSmall.split('@')[0] : emailSmall;
 
-      print('🚀 TTLock /v3/key/send API çağrısı başlatılıyor...');
-      // Updated to use sendEKey with new parameters
-      final result = await apiService.sendEKey(
-        accessToken: accessToken,
-        lockId: widget.lock['lockId'].toString(),
-        receiverUsername: receiver,
-        keyName: 'Key for $receiver', // Default key name
-        startDate: _startDate!,
-        endDate: _endDate!,
-        keyRight: _selectedPermission,
-        remarks: _remarksController.text.trim().isEmpty ? null : _remarksController.text.trim(),
-        createUser: 1, // Auto create user if not exists
-      );
+      // Denenecek alıcı isimleri listesi
+      final List<String> receiversToTry = [
+        'fihbg_$sanitized', // 1. Tercih: App Prefix + Temizlenmiş Email
+        'fihbg_$beforeAt',  // 2. Tercih: App Prefix + Email başı
+        originalReceiver,   // 3. Tercih: Orijinal Email
+      ];
 
-      print('✅ Paylaşım API yanıtı: $result');
+      bool shareSuccess = false;
+      String? lastError;
+
+      for (String receiver in receiversToTry) {
+        if (receiver.isEmpty) continue;
+        try {
+          print('🚀 Paylaşım deneniyor (Alıcı: $receiver)...');
+          await apiService.sendEKey(
+            accessToken: accessToken,
+            lockId: widget.lock['lockId'].toString(),
+            receiverUsername: receiver,
+            keyName: 'Key for $originalReceiver',
+            startDate: _startDate!,
+            endDate: _endDate!,
+            keyRight: _selectedPermission,
+            remarks: _remarksController.text.trim().isEmpty ? null : _remarksController.text.trim(),
+            createUser: 2, // Önce var olanı dene, otomatik oluşturma
+          );
+          shareSuccess = true;
+          print('✅ Paylaşım başarılı (Alıcı: $receiver)');
+          break; // Başarılıysa döngüden çık
+        } catch (e) {
+          print('⚠️ $receiver ile paylaşım başarısız: $e');
+          lastError = e.toString();
+        }
+      }
+
+      // Eğer hiçbir varyasyon çalışmadıysa, son bir kez orijinal email ile kullanıcı oluşturarak dene
+      if (!shareSuccess) {
+        try {
+          print('🚀 Son deneme: Orijinal email ile kullanıcı oluşturarak paylaşım...');
+          await apiService.sendEKey(
+            accessToken: accessToken,
+            lockId: widget.lock['lockId'].toString(),
+            receiverUsername: originalReceiver,
+            keyName: 'Key for $originalReceiver',
+            startDate: _startDate!,
+            endDate: _endDate!,
+            keyRight: _selectedPermission,
+            remarks: _remarksController.text.trim().isEmpty ? null : _remarksController.text.trim(),
+            createUser: 1, // Kullanıcı yoksa oluştur
+          );
+          shareSuccess = true;
+          print('✅ Paylaşım başarılı (Yeni kullanıcı oluşturuldu)');
+        } catch (e) {
+          lastError = e.toString();
+        }
+      }
+
+      if (!shareSuccess) {
+        throw Exception(lastError ?? 'Paylaşım başarısız');
+      }
 
       if (!mounted) return;
 
@@ -418,14 +459,12 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
 
     } catch (e) {
       print('❌ Paylaşım hatası: $e');
-      print('❌ Hata detayı: ${e.toString()}');
-      print('❌ Stack trace: ${StackTrace.current}');
-
+      
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Paylaşım hatası: ${e.toString()}'),
+          content: Text('Paylaşım hatası: ${e.toString().replaceAll('Exception: ', '')}'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 5),
         ),

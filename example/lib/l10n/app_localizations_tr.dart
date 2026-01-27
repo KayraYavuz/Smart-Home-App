@@ -747,4 +747,37 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noAccountRegister => 'Hesabınız Yok mu? Kayıt Olun';
+
+  @override
+  String get addDeviceTitle => 'Cihaz Ekle';
+
+  @override
+  String get categoryLocks => 'Kilitler';
+
+  @override
+  String get categoryGateways => 'Ağ Geçitleri';
+
+  @override
+  String get categoryCameras => 'Kameralar';
+
+  @override
+  String get deviceAllLocks => 'Tüm Kilitler';
+
+  @override
+  String get deviceDoorLock => 'Kapı Kilidi';
+
+  @override
+  String get devicePadlock => 'Asma Kilit';
+
+  @override
+  String get deviceSafe => 'Kasa';
+
+  @override
+  String get deviceGatewayWifi => 'G2 Wi-Fi';
+
+  @override
+  String get deviceCameraSurveillance => 'Gözetleme Kamerası';
+
+  @override
+  String get scanBluetoothLock => 'Bluetooth Kilitlerini Tara';
 }

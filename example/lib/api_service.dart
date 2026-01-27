@@ -183,6 +183,11 @@ class ApiService {
           print('❌ Kod gönderme hatası: ${responseData['errmsg']}');
           throw Exception('${responseData['errmsg']}');
         }
+      } else if (response.statusCode == 404 && username.contains('@')) {
+         // Eğer email ile 404 aldıysak, alphanumeric haliyle tekrar deneyelim
+         final sanitized = username.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+         print('⚠️ Email ile bulunamadı, temizlenmiş isimle deneniyor: $sanitized');
+         return getResetPasswordCode(username: sanitized);
       } else {
         throw Exception('HTTP error: ${response.statusCode}');
       }
@@ -3993,7 +3998,8 @@ class ApiService {
   }) async {
     print('🗑️ Kullanıcı siliniyor: $username');
     
-    final url = Uri.parse('$_baseUrl/v3/user/delete');
+    // Kullanıcı yönetimi işlemleri ana sunucudan yapılmalıdır.
+    final url = Uri.parse('https://api.ttlock.com/v3/user/delete');
     final now = DateTime.now().millisecondsSinceEpoch;
     
     final body = {

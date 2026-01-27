@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class AddDevicePage extends StatelessWidget {
   const AddDevicePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data for devices
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Localized data for devices
     final Map<String, List<Map<String, dynamic>>> devices = {
-      'Kilitler': [
-        {'name': 'Tüm kilitler', 'icon': Icons.lock},
-        {'name': 'Kapı kilidi', 'icon': Icons.sensor_door},
-        {'name': 'Asma kilit', 'icon': Icons.vpn_key},
-                    {'name': 'Kasa', 'icon': Icons.lock_outline},      ],
-      'Ağ geçidi': [
-        {'name': 'G1 Wi-Fi', 'icon': Icons.router},
-        {'name': 'G2 Wi-Fi', 'icon': Icons.wifi},
+      l10n.categoryLocks: [
+        {'name': l10n.deviceAllLocks, 'icon': Icons.lock},
+        {'name': l10n.deviceDoorLock, 'icon': Icons.sensor_door},
+        {'name': l10n.devicePadlock, 'icon': Icons.vpn_key},
+        {'name': l10n.deviceSafe, 'icon': Icons.lock_outline},
       ],
-       'Kamera': [
-        {'name': 'Gözetleme Kamerası', 'icon': Icons.videocam},
+      l10n.categoryGateways: [
+        {'name': l10n.deviceGatewayWifi, 'icon': Icons.router},
+        {'name': 'G3 Wi-Fi', 'icon': Icons.wifi}, // Assuming this is a model name, kept as is or add translation if needed
+      ],
+       l10n.categoryCameras: [
+        {'name': l10n.deviceCameraSurveillance, 'icon': Icons.videocam},
       ],
     };
 
@@ -25,7 +29,7 @@ class AddDevicePage extends StatelessWidget {
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        title: const Text('Cihaz ekle'),
+        title: Text(l10n.addDeviceTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),

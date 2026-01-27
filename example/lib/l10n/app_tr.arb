@@ -231,5 +231,16 @@
   "ttlockWebPortal": "TTLock Web Portalı",
   "viewOnAppStore": "App Store'da Görüntüle",
   "viewOnPlayStore": "Play Store'da Görüntüle",
-  "noAccountRegister": "Hesabınız Yok mu? Kayıt Olun"
+  "noAccountRegister": "Hesabınız Yok mu? Kayıt Olun",
+  "addDeviceTitle": "Cihaz Ekle",
+  "categoryLocks": "Kilitler",
+  "categoryGateways": "Ağ Geçitleri",
+  "categoryCameras": "Kameralar",
+  "deviceAllLocks": "Tüm Kilitler",
+  "deviceDoorLock": "Kapı Kilidi",
+  "devicePadlock": "Asma Kilit",
+  "deviceSafe": "Kasa",
+  "deviceGatewayWifi": "G2 Wi-Fi",
+  "deviceCameraSurveillance": "Gözetleme Kamerası",
+  "scanBluetoothLock": "Bluetooth Kilitlerini Tara"
 }

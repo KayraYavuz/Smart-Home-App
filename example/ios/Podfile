@@ -1,7 +1,7 @@
-# Uncomment this line to define a global platform for your project
+source 'https://cdn.cocoapods.org/'
+
 platform :ios, '15.0'
 
-# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {
@@ -28,7 +28,13 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 flutter_ios_podfile_setup
 
 target 'Runner' do
-  use_frameworks!
+  # Statik linkleme en kararlı yöntemdir genellikle
+  use_frameworks! :linkage => :static
+  
+  # Sadece sorun çıkaran podlar için modüler header açıyoruz
+  pod 'GoogleDataTransport', :modular_headers => true
+  pod 'PromisesObjC', :modular_headers => true
+  pod 'nanopb', :modular_headers => true
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
@@ -42,6 +48,15 @@ post_install do |installer|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
       config.build_settings['ENABLE_BITCODE'] = 'NO'
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      config.build_settings['DEVELOPMENT_TEAM'] = 'U8CD5WMJ8J'
+      
+      # RecaptchaInterop imza sorunu için
+      if target.name == 'RecaptchaInterop'
+        config.build_settings['CODE_SIGNING_REQUIRED'] = 'YES'
+        config.build_settings['CODE_SIGNING_ALLOWED'] = 'YES'
+        config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
+      end
     end
   end
 end

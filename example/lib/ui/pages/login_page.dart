@@ -11,6 +11,8 @@ import 'package:yavuz_lock/blocs/login/login_event.dart';
 import 'package:yavuz_lock/blocs/login/login_state.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart'; // l10n import
 import 'package:yavuz_lock/providers/language_provider.dart'; // LanguageProvider import
+import 'package:yavuz_lock/register_page.dart';
+import 'package:yavuz_lock/ui/pages/forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -155,7 +157,8 @@ class _LoginPageState extends State<LoginPage> {
       if (!accepted) {
         print('🔵 Kullanıcı sözleşmesi henüz onaylanmamış, diyaloğu gösteriyor...');
         if (!mounted) return;
-        _showTermsDialog(context, email);
+        // Bloc'u parametre olarak gönder
+        _showTermsDialog(context, email, context.read<LoginBloc>());
       } else {
         print('🔵 Kullanıcı sözleşmesi zaten onaylanmış, girişi başlatıyor...');
         _performLogin(context);
@@ -165,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _showTermsDialog(BuildContext context, String email) {
+  void _showTermsDialog(BuildContext context, String email, LoginBloc loginBloc) {
     final l10n = AppLocalizations.of(context)!;
     bool isAgreed = false;
     showDialog(
@@ -238,7 +241,15 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.of(dialogContext).pop(); // Close dialog
                           final prefs = await SharedPreferences.getInstance();
                           await prefs.setBool('terms_accepted_$email', true);
-                          _performLogin(context);
+                          
+                          // Use the bloc passed as parameter
+                          _saveCredentials();
+                          loginBloc.add(
+                            LoginButtonPressed(
+                              username: _usernameController.text,
+                              password: _passwordController.text,
+                            ),
+                          );
                         }
                       : null,
                   child: Text(
@@ -252,6 +263,89 @@ class _LoginPageState extends State<LoginPage> {
               ],
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showWebPortalDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: const Text('TTLock Hesabı', style: TextStyle(color: Colors.white)),
+          content: const Text(
+            'Bu hesap TTLock resmi uygulamasıyla oluşturulmuş. Şifre senkronizasyonu için lütfen TTLock Web Portalını kullanarak şifrenizi güncelleyin.',
+            style: TextStyle(color: Colors.white70),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                _launchUrl('https://lock2.ttlock.com/');
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('Portalı Aç', style: TextStyle(color: Color(0xFF1E90FF))),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSyncDialog(BuildContext context, String username, String password) {
+    final codeController = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: const Text('Doğrulama Gerekli', style: TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Şifreniz güncellendi. Kilitlerinize erişmek için e-postanıza gönderilen doğrulama kodunu girin.',
+                style: TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: codeController,
+                style: const TextStyle(color: Colors.white),
+                decoration: _buildInputDecoration(l10n.verifyCodeLabel, prefixIcon: Icons.vpn_key),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                if (codeController.text.isNotEmpty) {
+                  context.read<LoginBloc>().add(
+                    SyncPassword(
+                      username: username,
+                      password: password,
+                      code: codeController.text.trim(),
+                    ),
+                  );
+                  Navigator.of(dialogContext).pop();
+                }
+              },
+              child: const Text('Doğrula ve Giriş Yap', style: TextStyle(color: Color(0xFF1E90FF))),
+            ),
+          ],
         );
       },
     );
@@ -314,6 +408,8 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: Colors.red,
                     ),
                   );
+                } else if (state is LoginTTLockWebRedirect) {
+                  _showWebPortalDialog(context);
                 }
               },
               child: BlocBuilder<LoginBloc, LoginState>(
@@ -394,7 +490,12 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      _launchUrl('https://lock2.ttlock.com/');
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const ForgotPasswordPage(),
+                                        ),
+                                      );
                                     },
                                     child: Text(l10n.forgotPasswordTitle, style: const TextStyle(color: Colors.white70)),
                                   ),
@@ -448,7 +549,12 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 20),
                               TextButton(
                                 onPressed: () async {
-                                  _launchUrl('https://lock2.ttlock.com/');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const RegisterPage(),
+                                    ),
+                                  );
                                 },
                                 child: Text(
                                   l10n.noAccountRegister,
@@ -470,10 +576,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String label, {Widget? suffixIcon}) {
+  InputDecoration _buildInputDecoration(String label, {IconData? prefixIcon, Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(color: Colors.grey[400]),
+      prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: Colors.white70) : null,
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white.withValues(alpha: 0.1),

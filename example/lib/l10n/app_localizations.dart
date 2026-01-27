@@ -1491,6 +1491,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Don\'t have an account? Register'**
   String get noAccountRegister;
+
+  /// No description provided for @addDeviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Device'**
+  String get addDeviceTitle;
+
+  /// No description provided for @categoryLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Locks'**
+  String get categoryLocks;
+
+  /// No description provided for @categoryGateways.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateways'**
+  String get categoryGateways;
+
+  /// No description provided for @categoryCameras.
+  ///
+  /// In en, this message translates to:
+  /// **'Cameras'**
+  String get categoryCameras;
+
+  /// No description provided for @deviceAllLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'All Locks'**
+  String get deviceAllLocks;
+
+  /// No description provided for @deviceDoorLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Door Lock'**
+  String get deviceDoorLock;
+
+  /// No description provided for @devicePadlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Padlock'**
+  String get devicePadlock;
+
+  /// No description provided for @deviceSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe'**
+  String get deviceSafe;
+
+  /// No description provided for @deviceGatewayWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'G2 Wi-Fi'**
+  String get deviceGatewayWifi;
+
+  /// No description provided for @deviceCameraSurveillance.
+  ///
+  /// In en, this message translates to:
+  /// **'Surveillance Camera'**
+  String get deviceCameraSurveillance;
+
+  /// No description provided for @scanBluetoothLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan for Bluetooth Locks'**
+  String get scanBluetoothLock;
 }
 
 class _AppLocalizationsDelegate

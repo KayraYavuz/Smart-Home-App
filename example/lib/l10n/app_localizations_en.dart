@@ -743,4 +743,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noAccountRegister => 'Don\'t have an account? Register';
+
+  @override
+  String get addDeviceTitle => 'Add Device';
+
+  @override
+  String get categoryLocks => 'Locks';
+
+  @override
+  String get categoryGateways => 'Gateways';
+
+  @override
+  String get categoryCameras => 'Cameras';
+
+  @override
+  String get deviceAllLocks => 'All Locks';
+
+  @override
+  String get deviceDoorLock => 'Door Lock';
+
+  @override
+  String get devicePadlock => 'Padlock';
+
+  @override
+  String get deviceSafe => 'Safe';
+
+  @override
+  String get deviceGatewayWifi => 'G2 Wi-Fi';
+
+  @override
+  String get deviceCameraSurveillance => 'Surveillance Camera';
+
+  @override
+  String get scanBluetoothLock => 'Scan for Bluetooth Locks';
 }
