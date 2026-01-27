@@ -11,7 +11,7 @@ import 'package:yavuz_lock/blocs/login/login_event.dart';
 import 'package:yavuz_lock/blocs/login/login_state.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart'; // l10n import
 import 'package:yavuz_lock/providers/language_provider.dart'; // LanguageProvider import
-import 'package:yavuz_lock/ui/pages/register_page.dart';
+import 'package:yavuz_lock/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -364,10 +364,10 @@ class _LoginPageState extends State<LoginPage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    const Color(0xFF1E90FF).withValues(alpha: 0.8),
-                    const Color(0xFF4169E1).withValues(alpha: 0.6),
-                    const Color(0xFF000428).withValues(alpha: 0.9),
-                    const Color(0xFF004e92).withValues(alpha: 0.8),
+                    Color(0xFF1E90FF).withValues(alpha: 0.8),
+                    Color(0xFF4169E1).withValues(alpha: 0.6),
+                    Color(0xFF000428).withValues(alpha: 0.9),
+                    Color(0xFF004e92).withValues(alpha: 0.8),
                   ],
                   stops: const [0.0, 0.3, 0.7, 1.0],
                 ),
@@ -505,7 +505,7 @@ class _LoginPageState extends State<LoginPage> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     elevation: 8,
-                                    shadowColor: const Color(0xFF1E90FF).withValues(alpha: 0.3),
+                                    shadowColor: Color(0xFF1E90FF).withValues(alpha: 0.3),
                                   ),
                                   onPressed: () {
                                     _handleLogin(context);
@@ -544,7 +544,7 @@ class _LoginPageState extends State<LoginPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const RegisterPage(),
+                                      builder: (context) => RegisterPage(),
                                     ),
                                   );
                                 },
