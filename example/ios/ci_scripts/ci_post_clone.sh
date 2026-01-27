@@ -109,9 +109,34 @@ echo "Pod dosyaları temizleniyor..."
 rm -rf Pods
 rm -rf Podfile.lock
 
-echo "Pod install çalıştırılıyor..."
+# Git buffer boyutunu artır (Büyük podlar için)
+git config --global http.postBuffer 524288000
+git config --global http.lowSpeedLimit 0
+git config --global http.lowSpeedTime 999999
+
+echo "Pod install çalıştırılıyor (retry mekanizması ile)..."
 START_POD=$(date +%s)
-pod install || pod install --repo-update
+
+MAX_RETRIES=3
+RETRY_COUNT=0
+SUCCESS=false
+
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    if pod install --repo-update; then
+        SUCCESS=true
+        break
+    else
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+        echo "⚠️ Pod install başarısız oldu (Deneme $RETRY_COUNT/$MAX_RETRIES). 30 saniye sonra tekrar denenecek..."
+        sleep 30
+    fi
+done
+
+if [ "$SUCCESS" = false ]; then
+    echo "❌ HATA: $MAX_RETRIES denemeden sonra pod install hala başarısız."
+    exit 1
+fi
+
 END_POD=$(date +%s)
 echo "Pod install süresi: $((END_POD - START_POD)) saniye"
 
