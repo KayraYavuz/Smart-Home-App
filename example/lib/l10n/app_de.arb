@@ -207,5 +207,16 @@
   "ttlockWebPortal": "TTLock Webportal",
   "viewOnAppStore": "Im App Store anzeigen",
   "viewOnPlayStore": "Im Play Store anzeigen",
-  "noAccountRegister": "Haben Sie kein Konto? Registrieren"
+  "noAccountRegister": "Haben Sie kein Konto? Registrieren",
+  "bluetoothOff": "Bluetooth ist ausgeschaltet. Bitte schalten Sie Bluetooth ein.",
+  "lockOutOfRange": "Schloss außer Reichweite oder im Schlafmodus.",
+  "lockConnectionFailed": "Verbindung zum Schloss fehlgeschlagen. Nähern Sie sich und versuchen Sie es erneut.",
+  "lockBluetoothError": "Bluetooth-Fehler: {errorMessage}",
+  "@lockBluetoothError": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  }
 }

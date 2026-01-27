@@ -1557,6 +1557,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan for Bluetooth Locks'**
   String get scanBluetoothLock;
+
+  /// No description provided for @bluetoothOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth is off. Please turn on Bluetooth.'**
+  String get bluetoothOff;
+
+  /// No description provided for @lockOutOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock is out of range or in sleep mode.'**
+  String get lockOutOfRange;
+
+  /// No description provided for @lockConnectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to lock. Move closer and try again.'**
+  String get lockConnectionFailed;
+
+  /// No description provided for @lockBluetoothError.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth error: {errorMessage}'**
+  String lockBluetoothError(String errorMessage);
 }
 
 class _AppLocalizationsDelegate

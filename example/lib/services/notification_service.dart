@@ -31,7 +31,7 @@ class NotificationService {
       // 0. Otomatik Başlatmayı Aç
       await _firebaseMessaging.setAutoInitEnabled(true);
 
-      // 1. İzin İste
+      // 1. İzin İste - Hızlı işlem
       NotificationSettings settings = await _firebaseMessaging.requestPermission(
         alert: true,
         badge: true,
@@ -46,22 +46,50 @@ class NotificationService {
         print('⚠️ Kullanıcı geçici izin verdi.');
       } else {
         print('❌ Kullanıcı izin vermedi.');
-        return; // İzin yoksa devam etme
+        _isInitialized = true; // İzin olmasa bile devam et, app açılsın
+        return;
       }
 
-      // 2. Arka Plan İşleyicisi
+      // 2. Arka Plan İşleyicisi - Hızlı
       FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-      // 3. Yerel Bildirim Ayarları (Foreground için)
+      // 3. Yerel Bildirim Ayarları (Foreground için) - Hızlı
       await _setupLocalNotifications();
 
-      // 4. Token Alma (Retry Mekanizmalı)
-      String? token;
-      
-      // Önce APNs Token'ı bekle (iOS için zorunlu)
-      print("⏳ APNs Token bekleniyor...");
+      // 4. Token Alma - ARKA PLANA TAŞINDI (Non-blocking)
+      // Bu işlem arka planda çalışır, UI'ı bloklamaz
+      _fetchTokenAsync();
+
+      // 5. Foreground Dinleme - Hemen kur
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        print("☀️ ÖN PLANDA MESAJ GELDİ!");
+        print("☀️ Başlık: ${message.notification?.title}");
+        print("☀️ Body: ${message.notification?.body}");
+        print("☀️ Data: ${message.data}");
+        _showLocalNotification(message);
+      });
+
+      // 6. Tıklama Dinleme - Hemen kur
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        print("👆 Bildirime tıklandı.");
+      });
+
+      _isInitialized = true;
+      print("✅ NotificationService kurulumu tamamlandı (token arka planda alınıyor).");
+
+    } catch (e) {
+      print("❌ NotificationService Hatası: $e");
+      _isInitialized = true; // Hata olsa bile app açılsın
+    }
+  }
+
+  /// APNs ve FCM token'larını arka planda alır (UI'ı bloklamaz)
+  void _fetchTokenAsync() async {
+    try {
+      print("⏳ APNs Token arka planda bekleniyor...");
       String? apnsToken = await _firebaseMessaging.getAPNSToken();
       int retry = 0;
+      
       while (apnsToken == null && retry < 5) {
         await Future.delayed(const Duration(seconds: 2));
         apnsToken = await _firebaseMessaging.getAPNSToken();
@@ -72,36 +100,17 @@ class NotificationService {
       if (apnsToken != null) {
         print("🍏 APNs Token alındı: $apnsToken");
         // APNs geldiyse FCM Token'ı al
-        token = await _firebaseMessaging.getToken();
+        final token = await _firebaseMessaging.getToken();
+        if (token != null) {
+          print("\n🔥 FCM Token: $token\n");
+        } else {
+          print("❌ FCM Token alınamadı.");
+        }
       } else {
-        print("❌ HATA: APNs Token 10 saniye boyunca alınamadı! (Xcode'da Push Capability ekli mi?)");
+        print("⚠️ APNs Token 10 saniye boyunca alınamadı. Push bildirimler çalışmayabilir.");
       }
-      
-      if (token != null) {
-        print("\n🔥 FCM Token: $token\n");
-      } else {
-        print("❌ FCM Token alınamadı.");
-      }
-
-      // 5. Foreground Dinleme
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print("☀️ ÖN PLANDA MESAJ GELDİ!");
-        print("☀️ Başlık: ${message.notification?.title}");
-        print("☀️ Body: ${message.notification?.body}");
-        print("☀️ Data: ${message.data}");
-        _showLocalNotification(message);
-      });
-
-      // 6. Tıklama Dinleme
-      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        print("👆 Bildirime tıklandı.");
-      });
-
-      _isInitialized = true;
-      print("✅ NotificationService kurulumu tamamlandı.");
-
     } catch (e) {
-      print("❌ NotificationService Hatası: $e");
+      print("❌ Token alma hatası: $e");
     }
   }
 

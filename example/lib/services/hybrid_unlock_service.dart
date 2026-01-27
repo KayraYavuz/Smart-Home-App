@@ -109,7 +109,7 @@ class HybridUnlockService {
     if (!isBtEnabled) {
       return UnlockResult(
         success: false,
-        error: 'Bluetooth kapalı. Lütfen Bluetooth\'u açın.',
+        error: 'BLUETOOTH_OFF',
         method: 'bluetooth',
       );
     }
@@ -136,9 +136,11 @@ class HybridUnlockService {
         (errorCode, errorMsg) {
           if (!completer.isCompleted) {
             print('❌ TTLock BT Hata Kodu: $errorCode - Mesaj: $errorMsg');
+            // TTLock hata kodlarına göre mesaj belirle
+            String errorType = _getBluetoothErrorType(errorCode, errorMsg);
             completer.complete(UnlockResult(
               success: false,
-              error: 'Bluetooth Hatası ($errorCode): $errorMsg',
+              error: errorType,
               method: 'bluetooth',
             ));
           }
@@ -151,7 +153,7 @@ class HybridUnlockService {
           print('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(
             success: false,
-            error: 'Bluetooth zaman aşımı. Kilidi uyandırıp tekrar deneyin.',
+            error: 'LOCK_OUT_OF_RANGE',
             method: 'bluetooth',
           );
         },
@@ -160,7 +162,7 @@ class HybridUnlockService {
       print('❌ Bluetooth istisnası: $e');
       return UnlockResult(
         success: false,
-        error: 'Bluetooth istisnası: $e',
+        error: 'CONNECTION_FAILED:$e',
         method: 'bluetooth',
       );
     }
@@ -179,7 +181,7 @@ class HybridUnlockService {
     if (!isBtEnabled) {
       return UnlockResult(
         success: false,
-        error: 'Bluetooth kapalı. Lütfen Bluetooth\'u açın.',
+        error: 'BLUETOOTH_OFF',
         method: 'bluetooth',
       );
     }
@@ -206,9 +208,10 @@ class HybridUnlockService {
         (errorCode, errorMsg) {
           if (!completer.isCompleted) {
             print('❌ TTLock BT Hata Kodu: $errorCode - Mesaj: $errorMsg');
+            String errorType = _getBluetoothErrorType(errorCode, errorMsg);
             completer.complete(UnlockResult(
               success: false,
-              error: 'Bluetooth Hatası ($errorCode): $errorMsg',
+              error: errorType,
               method: 'bluetooth',
             ));
           }
@@ -221,7 +224,7 @@ class HybridUnlockService {
           print('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(
             success: false,
-            error: 'Bluetooth zaman aşımı. Kilidi uyandırıp tekrar deneyin.',
+            error: 'LOCK_OUT_OF_RANGE',
             method: 'bluetooth',
           );
         },
@@ -230,10 +233,34 @@ class HybridUnlockService {
       print('❌ Bluetooth istisnası: $e');
       return UnlockResult(
         success: false,
-        error: 'Bluetooth istisnası: $e',
+        error: 'CONNECTION_FAILED:$e',
         method: 'bluetooth',
       );
     }
+  }
+
+  /// TTLock hata kodlarına göre hata tipi belirle
+  String _getBluetoothErrorType(dynamic errorCode, String errorMsg) {
+    final errorStr = errorCode.toString().toLowerCase();
+    final errorMsgLower = errorMsg.toLowerCase();
+    
+    // Bluetooth durumu hataları
+    if (errorMsgLower.contains('bluetooth') && 
+        (errorMsgLower.contains('off') || errorMsgLower.contains('disabled') || errorMsgLower.contains('kapalı'))) {
+      return 'BLUETOOTH_OFF';
+    }
+    
+    // Bağlantı/aralık hataları
+    if (errorMsgLower.contains('connect') || 
+        errorMsgLower.contains('timeout') || 
+        errorMsgLower.contains('not found') ||
+        errorMsgLower.contains('out of range') ||
+        errorMsgLower.contains('fail')) {
+      return 'LOCK_OUT_OF_RANGE';
+    }
+    
+    // Diğer hatalar için genel bağlantı hatası
+    return 'CONNECTION_FAILED:$errorMsg';
   }
 
   /// Try to unlock via Gateway API

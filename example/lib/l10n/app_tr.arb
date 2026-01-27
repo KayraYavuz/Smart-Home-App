@@ -242,5 +242,16 @@
   "deviceSafe": "Kasa",
   "deviceGatewayWifi": "G2 Wi-Fi",
   "deviceCameraSurveillance": "Gözetleme Kamerası",
-  "scanBluetoothLock": "Bluetooth Kilitlerini Tara"
+  "scanBluetoothLock": "Bluetooth Kilitlerini Tara",
+  "bluetoothOff": "Bluetooth kapalı. Lütfen Bluetooth'u açın.",
+  "lockOutOfRange": "Kilit kapsam alanında değil veya uyku modunda.",
+  "lockConnectionFailed": "Kilide bağlanılamadı. Yakınlaşıp tekrar deneyin.",
+  "lockBluetoothError": "Bluetooth hatası: {errorMessage}",
+  "@lockBluetoothError": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -252,8 +252,19 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
               });
             }
             if (state is DeviceFailure) {
+              // Bluetooth hata kodlarını çevir
+              String errorMessage = state.error;
+              
+              if (state.error == 'BLUETOOTH_OFF') {
+                errorMessage = 'Bluetooth kapalı. Lütfen Bluetooth\'u açın.';
+              } else if (state.error == 'LOCK_OUT_OF_RANGE') {
+                errorMessage = 'Kilit kapsam alanında değil veya uyku modunda.';
+              } else if (state.error.startsWith('CONNECTION_FAILED:')) {
+                errorMessage = 'Kilide bağlanılamadı. Yakınlaşıp tekrar deneyin.';
+              }
+              
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('İşlem başarısız: ${state.error}')),
+                SnackBar(content: Text('İşlem başarısız: $errorMessage')),
               );
             }
           },

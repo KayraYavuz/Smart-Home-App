@@ -776,4 +776,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanBluetoothLock => 'Scan for Bluetooth Locks';
+
+  @override
+  String get bluetoothOff => 'Bluetooth is off. Please turn on Bluetooth.';
+
+  @override
+  String get lockOutOfRange => 'Lock is out of range or in sleep mode.';
+
+  @override
+  String get lockConnectionFailed =>
+      'Could not connect to lock. Move closer and try again.';
+
+  @override
+  String lockBluetoothError(String errorMessage) {
+    return 'Bluetooth error: $errorMessage';
+  }
 }

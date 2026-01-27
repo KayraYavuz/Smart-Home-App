@@ -380,5 +380,16 @@
   "deviceSafe": "Safe",
   "deviceGatewayWifi": "G2 Wi-Fi",
   "deviceCameraSurveillance": "Surveillance Camera",
-  "scanBluetoothLock": "Scan for Bluetooth Locks"
+  "scanBluetoothLock": "Scan for Bluetooth Locks",
+  "bluetoothOff": "Bluetooth is off. Please turn on Bluetooth.",
+  "lockOutOfRange": "Lock is out of range or in sleep mode.",
+  "lockConnectionFailed": "Could not connect to lock. Move closer and try again.",
+  "lockBluetoothError": "Bluetooth error: {errorMessage}",
+  "@lockBluetoothError": {
+    "placeholders": {
+      "errorMessage": {
+        "type": "String"
+      }
+    }
+  }
 }

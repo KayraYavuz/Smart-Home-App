@@ -780,4 +780,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get scanBluetoothLock => 'Bluetooth Kilitlerini Tara';
+
+  @override
+  String get bluetoothOff => 'Bluetooth kapalı. Lütfen Bluetooth\'u açın.';
+
+  @override
+  String get lockOutOfRange => 'Kilit kapsam alanında değil veya uyku modunda.';
+
+  @override
+  String get lockConnectionFailed =>
+      'Kilide bağlanılamadı. Yakınlaşıp tekrar deneyin.';
+
+  @override
+  String lockBluetoothError(String errorMessage) {
+    return 'Bluetooth hatası: $errorMessage';
+  }
 }
