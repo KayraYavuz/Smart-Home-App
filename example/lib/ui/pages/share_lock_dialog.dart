@@ -163,7 +163,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 Row(
                   children: [
                     Expanded(
-                      child: _buildDatePicker(
+                      child: _buildDateTimePicker(
                         label: 'Başlangıç Tarihi',
                         selectedDate: _startDate,
                         onDateSelected: (date) {
@@ -175,7 +175,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: _buildDatePicker(
+                      child: _buildDateTimePicker(
                         label: 'Bitiş Tarihi',
                         selectedDate: _endDate,
                         onDateSelected: (date) {
@@ -265,7 +265,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
     );
   }
 
-  Widget _buildDatePicker({
+  Widget _buildDateTimePicker({
     required String label,
     required DateTime? selectedDate,
     required Function(DateTime) onDateSelected,
@@ -297,7 +297,46 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
         if (!context.mounted) return;
 
         if (pickedDate != null) {
-          onDateSelected(pickedDate);
+          final pickedTime = await showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.fromDateTime(selectedDate ?? DateTime.now()),
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: const ColorScheme.dark(
+                    primary: Colors.blue,
+                    surface: Color(0xFF1E1E1E),
+                    onSurface: Colors.white,
+                  ),
+                  timePickerTheme: TimePickerThemeData(
+                    backgroundColor: const Color(0xFF2A2A2A),
+                    hourMinuteColor: MaterialStateColor.resolveWith((states) =>
+                        states.contains(MaterialState.selected)
+                            ? Colors.blue
+                            : Colors.grey[800]!),
+                    hourMinuteTextColor: MaterialStateColor.resolveWith(
+                        (states) => states.contains(MaterialState.selected)
+                            ? Colors.white
+                            : Colors.grey),
+                    dialHandColor: Colors.blue,
+                    dialBackgroundColor: Colors.grey[800],
+                  ),
+                ),
+                child: child!,
+              );
+            },
+          );
+
+          if (pickedTime != null) {
+            final combinedDateTime = DateTime(
+              pickedDate.year,
+              pickedDate.month,
+              pickedDate.day,
+              pickedTime.hour,
+              pickedTime.minute,
+            );
+            onDateSelected(combinedDateTime);
+          }
         }
       },
       child: Container(
@@ -323,7 +362,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                   const SizedBox(height: 4),
                   Text(
                     selectedDate != null
-                        ? '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'
+                        ? '${selectedDate.day}/${selectedDate.month}/${selectedDate.year} ${selectedDate.hour.toString().padLeft(2, '0')}:${selectedDate.minute.toString().padLeft(2, '0')}'
                         : 'Seçilmemiş',
                     style: TextStyle(
                       color: selectedDate != null ? Colors.white : Colors.grey,
@@ -334,7 +373,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
               ),
             ),
             Icon(
-              Icons.calendar_today,
+              Icons.access_time,
               color: Colors.grey[600],
               size: 20,
             ),
