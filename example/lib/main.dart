@@ -33,21 +33,6 @@ Future<void> main() async {
   
   print("🏁 Main fonksiyonu başladı."); // DEBUG LOG
 
-  // Firebase Başlatma
-  try {
-    print("🔥 Firebase.initializeApp() başlatılıyor..."); // DEBUG LOG
-    await Firebase.initializeApp();
-    print("✅ Firebase başarıyla başlatıldı");
-    
-    // Bildirim Servisini Başlat
-    print("🚀 NotificationService başlatılıyor..."); // DEBUG LOG
-    await NotificationService().initialize();
-  } catch (e, stackTrace) {
-    print("❌ Firebase/Notification başlatma hatası: $e");
-    print("Stack Trace: $stackTrace");
-    // Hata olsa bile uygulama açılmalı, bu yüzden burayı sessizce geçebiliriz veya loglayabiliriz
-  }
-
   try {
     await dotenv.load(fileName: ".env");
     print('📝 .env yüklendi: ${dotenv.env.keys.length} adet anahtar bulundu.');
@@ -93,6 +78,9 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
+    // 1. AŞAMA: Firebase ve Bildirimleri Başlat (Arka planda, UI'ı bloklamadan)
+    _initFirebaseAndNotifications();
+
     // 2. AŞAMA: TTLock SDK Yapılandırması
     _initializeTTLockSDK();
 
@@ -101,6 +89,20 @@ class _MyAppState extends State<MyApp> {
 
     // Dispatch AppStarted event for AuthBloc
     context.read<AuthBloc>().add(AppStarted());
+  }
+
+  Future<void> _initFirebaseAndNotifications() async {
+    try {
+      print("🔥 Firebase.initializeApp() başlatılıyor...");
+      await Firebase.initializeApp();
+      print("✅ Firebase başarıyla başlatıldı");
+      
+      print("🚀 NotificationService başlatılıyor...");
+      await NotificationService().initialize();
+    } catch (e, stackTrace) {
+      print("❌ Firebase/Notification başlatma hatası: $e");
+      print("Stack Trace: $stackTrace");
+    }
   }
 
   void _initializeTTLockSDK() async {
