@@ -18,7 +18,7 @@ class AddDevicePage extends StatelessWidget {
       ],
       l10n.categoryGateways: [
         {'name': l10n.deviceGatewayWifi, 'icon': Icons.router},
-        {'name': 'G3 Wi-Fi', 'icon': Icons.wifi}, // Assuming this is a model name, kept as is or add translation if needed
+        {'name': l10n.deviceGatewayG3, 'icon': Icons.wifi}, 
       ],
        l10n.categoryCameras: [
         {'name': l10n.deviceCameraSurveillance, 'icon': Icons.videocam},

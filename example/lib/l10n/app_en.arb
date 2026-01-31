@@ -379,6 +379,7 @@
   "devicePadlock": "Padlock",
   "deviceSafe": "Safe",
   "deviceGatewayWifi": "G2 Wi-Fi",
+  "deviceGatewayG3": "G3 Wi-Fi",
   "deviceCameraSurveillance": "Surveillance Camera",
   "scanBluetoothLock": "Scan for Bluetooth Locks",
   "bluetoothOff": "Bluetooth is off. Please turn on Bluetooth.",

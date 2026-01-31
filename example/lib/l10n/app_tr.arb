@@ -241,6 +241,7 @@
   "devicePadlock": "Asma Kilit",
   "deviceSafe": "Kasa",
   "deviceGatewayWifi": "G2 Wi-Fi",
+  "deviceGatewayG3": "G3 Wi-Fi",
   "deviceCameraSurveillance": "Gözetleme Kamerası",
   "scanBluetoothLock": "Bluetooth Kilitlerini Tara",
   "bluetoothOff": "Bluetooth kapalı. Lütfen Bluetooth'u açın.",
