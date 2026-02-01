@@ -802,4 +802,199 @@ class AppLocalizationsDe extends AppLocalizations {
   String lockBluetoothError(String errorMessage) {
     return 'Bluetooth-Fehler: $errorMessage';
   }
+
+  @override
+  String get adminManagement => 'Administrator-Verwaltung';
+
+  @override
+  String get userManagement => 'Benutzerverwaltung';
+
+  @override
+  String get lockUsers => 'Benutzer sperren';
+
+  @override
+  String get lockUsersSubtitle =>
+      'Sperrzugriff verwalten und Benutzer blockieren';
+
+  @override
+  String get transferLock => 'Schloss übertragen';
+
+  @override
+  String get transferLockSubtitle =>
+      'Schlossbesitz auf ein anderes Konto übertragen';
+
+  @override
+  String get transferGateway => 'Gateway übertragen';
+
+  @override
+  String get transferGatewaySubtitle =>
+      'Gateway-Besitz auf ein anderes Konto übertragen';
+
+  @override
+  String get dataManagement => 'Datenverwaltung';
+
+  @override
+  String get exportData => 'Daten exportieren';
+
+  @override
+  String get exportDataSubtitle => 'Daten exportieren oder sichern';
+
+  @override
+  String get newGroupComingSoon => 'Neue Gruppe erstellen kommt bald';
+
+  @override
+  String get noData => 'Keine Daten';
+
+  @override
+  String get adminRights => 'Administratorrechte';
+
+  @override
+  String get createAdmin => 'Administrator erstellen';
+
+  @override
+  String get createAdminComingSoon => 'Administrator erstellen kommt bald';
+
+  @override
+  String get transferLockComingSoon => 'Schloss-Transfer-Funktion kommt bald';
+
+  @override
+  String get exportComingSoon => 'Export-Funktion kommt bald';
+
+  @override
+  String get unnamedGroup => 'Unbenannte Gruppe';
+
+  @override
+  String lockCount(int count) {
+    return 'Anzahl der Schlösser: $count';
+  }
+
+  @override
+  String editingGroup(String groupName) {
+    return 'Gruppe $groupName wird bearbeitet';
+  }
+
+  @override
+  String get preparingRecords =>
+      'Datensätze werden vorbereitet, bitte warten...';
+
+  @override
+  String exportError(String error) {
+    return 'Exportfehler: $error';
+  }
+
+  @override
+  String get grantAdminDesc =>
+      'Administratorrechte werden für das ausgewählte Schloss gewährt.';
+
+  @override
+  String get userEmailOrPhone => 'Benutzer (Telefon/E-Mail)';
+
+  @override
+  String get grantAccess => 'Zugriff gewähren';
+
+  @override
+  String get processing => 'Wird verarbeitet...';
+
+  @override
+  String get adminGranted => 'Administratorrechte gewährt!';
+
+  @override
+  String lockRecordsTitle(String start, String end) {
+    return 'Schlossaufzeichnungen ($start - $end)';
+  }
+
+  @override
+  String get userAccessManagement => 'Benutzer- & Zugriffsverwaltung';
+
+  @override
+  String get appUsers => 'App-Benutzer';
+
+  @override
+  String get accessKeysFreeze => 'Zugangsschlüssel (Sperren)';
+
+  @override
+  String get registerNewUser => 'Neuen Benutzer registrieren';
+
+  @override
+  String get refresh => 'Aktualisieren';
+
+  @override
+  String get searchUser => 'Benutzer suchen...';
+
+  @override
+  String get noSharedKeys => 'Keine geteilten Schlüssel.';
+
+  @override
+  String get key => 'Schlüssel';
+
+  @override
+  String get frozen => 'Eingefroren';
+
+  @override
+  String get active => 'Aktiv';
+
+  @override
+  String get keyFrozen => 'Schlüssel eingefroren (Zugriff blockiert)';
+
+  @override
+  String get keyUnfrozen => 'Schlüssel freigegeben (Zugriff wiederhergestellt)';
+
+  @override
+  String errorWithMsg(String error) {
+    return 'Fehler: $error';
+  }
+
+  @override
+  String lockRecordsWithName(String lockName) {
+    return '$lockName Aufzeichnungen';
+  }
+
+  @override
+  String get lockRecords => 'Schlossaufzeichnungen';
+
+  @override
+  String get readFromLock => 'Vom Schloss lesen (Bluetooth)';
+
+  @override
+  String get clearAllRecords => 'Alle Aufzeichnungen löschen';
+
+  @override
+  String get syncRecords => 'Aufzeichnungen synchronisieren';
+
+  @override
+  String get connectingReadingLogs =>
+      'Verbindung zum Schloss und Aufzeichnungen lesen...';
+
+  @override
+  String get missingLockData =>
+      'Schlossdaten fehlen, keine Bluetooth-Verbindung möglich.';
+
+  @override
+  String get connectFromHomeFirst =>
+      'Bitte zuerst vom Startbildschirm mit dem Schloss verbinden.';
+
+  @override
+  String get recordsSynced => 'Aufzeichnungen erfolgreich synchronisiert';
+
+  @override
+  String uploadError(String error) {
+    return 'Upload-Fehler: $error';
+  }
+
+  @override
+  String readError(String error) {
+    return 'Lesefehler: $error';
+  }
+
+  @override
+  String unexpectedError(String error) {
+    return 'Unerwarteter Fehler: $error';
+  }
+
+  @override
+  String get sendMultipleKeys => 'Mehrere Schlüssel senden';
+
+  @override
+  String get sendMultipleKeysComingSoon =>
+      'Mehrere Schlüssel senden Funktion kommt bald';
 }

@@ -798,4 +798,197 @@ class AppLocalizationsTr extends AppLocalizations {
   String lockBluetoothError(String errorMessage) {
     return 'Bluetooth hatası: $errorMessage';
   }
+
+  @override
+  String get adminManagement => 'Yetkili Yönetici';
+
+  @override
+  String get userManagement => 'Kullanıcı Yönetimi';
+
+  @override
+  String get lockUsers => 'Kullanıcıları Kilitle';
+
+  @override
+  String get lockUsersSubtitle =>
+      'Kilit erişimini yönet ve kullanıcıları engelle';
+
+  @override
+  String get transferLock => 'Transfer Kilidi';
+
+  @override
+  String get transferLockSubtitle => 'Kilit sahipliğini başka bir hesaba aktar';
+
+  @override
+  String get transferGateway => 'Aktarım Ağ Geçidi';
+
+  @override
+  String get transferGatewaySubtitle =>
+      'Ağ geçidi sahipliğini başka bir hesaba aktar';
+
+  @override
+  String get dataManagement => 'Veri Yönetimi';
+
+  @override
+  String get exportData => 'Dışa Aktar';
+
+  @override
+  String get exportDataSubtitle => 'Verileri dışa aktar veya yedekle';
+
+  @override
+  String get newGroupComingSoon => 'Yeni grup oluşturma yakında eklenecek';
+
+  @override
+  String get noData => 'Veri yok';
+
+  @override
+  String get adminRights => 'Yönetici Hakları';
+
+  @override
+  String get createAdmin => 'Yönetici Oluştur';
+
+  @override
+  String get createAdminComingSoon => 'Yönetici oluşturma yakında eklenecek';
+
+  @override
+  String get transferLockComingSoon =>
+      'Kilit transfer özelliği yakında eklenecek';
+
+  @override
+  String get exportComingSoon => 'Dışa aktarma özelliği yakında eklenecek';
+
+  @override
+  String get unnamedGroup => 'İsimsiz Grup';
+
+  @override
+  String lockCount(int count) {
+    return 'Kilit Sayısı: $count';
+  }
+
+  @override
+  String editingGroup(String groupName) {
+    return '$groupName grubu düzenleniyor';
+  }
+
+  @override
+  String get preparingRecords => 'Kayıtlar hazırlanıyor, lütfen bekleyin...';
+
+  @override
+  String exportError(String error) {
+    return 'Dışa aktarma hatası: $error';
+  }
+
+  @override
+  String get grantAdminDesc => 'Seçilen kilide yönetici yetkisi verilecek.';
+
+  @override
+  String get userEmailOrPhone => 'Kullanıcı (Tel/Email)';
+
+  @override
+  String get grantAccess => 'Yetki Ver';
+
+  @override
+  String get processing => 'İşlem yapılıyor...';
+
+  @override
+  String get adminGranted => 'Yönetici yetkisi verildi!';
+
+  @override
+  String lockRecordsTitle(String start, String end) {
+    return 'Kilit Kayıtları ($start - $end)';
+  }
+
+  @override
+  String get userAccessManagement => 'Kullanıcı & Erişim Yönetimi';
+
+  @override
+  String get appUsers => 'Uygulama Kullanıcıları';
+
+  @override
+  String get accessKeysFreeze => 'Erişim Anahtarları (Dondur)';
+
+  @override
+  String get registerNewUser => 'Yeni Kullanıcı Kaydet';
+
+  @override
+  String get refresh => 'Yenile';
+
+  @override
+  String get searchUser => 'Kullanıcı ara...';
+
+  @override
+  String get noSharedKeys => 'Paylaşılan anahtar yok.';
+
+  @override
+  String get key => 'Anahtar';
+
+  @override
+  String get frozen => 'Dondurulmuş';
+
+  @override
+  String get active => 'Aktif';
+
+  @override
+  String get keyFrozen => 'Anahtar donduruldu (Erişim engellendi)';
+
+  @override
+  String get keyUnfrozen => 'Anahtar erişime açıldı';
+
+  @override
+  String errorWithMsg(String error) {
+    return 'Hata: $error';
+  }
+
+  @override
+  String lockRecordsWithName(String lockName) {
+    return '$lockName Kayıtları';
+  }
+
+  @override
+  String get lockRecords => 'Kilit Kayıtları';
+
+  @override
+  String get readFromLock => 'Kilitten Oku (Bluetooth)';
+
+  @override
+  String get clearAllRecords => 'Tüm Kayıtları Temizle';
+
+  @override
+  String get syncRecords => 'Kayıtları Eşitle';
+
+  @override
+  String get connectingReadingLogs =>
+      'Kilide bağlanılıyor ve kayıtlar okunuyor...';
+
+  @override
+  String get missingLockData =>
+      'Kilit verisi eksik, Bluetooth bağlantısı kurulamıyor.';
+
+  @override
+  String get connectFromHomeFirst =>
+      'Lütfen önce kilide ana ekrandan bağlanın.';
+
+  @override
+  String get recordsSynced => 'Kayıtlar başarıyla eşitledi';
+
+  @override
+  String uploadError(String error) {
+    return 'Yükleme hatası: $error';
+  }
+
+  @override
+  String readError(String error) {
+    return 'Kilit okuma hatası: $error';
+  }
+
+  @override
+  String unexpectedError(String error) {
+    return 'Beklenmeyen hata: $error';
+  }
+
+  @override
+  String get sendMultipleKeys => 'Birden fazla elektronik anahtar gönder';
+
+  @override
+  String get sendMultipleKeysComingSoon =>
+      'Birden fazla elektronik anahtar gönderme yakında eklenecek';
 }

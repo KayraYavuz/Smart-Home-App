@@ -794,4 +794,197 @@ class AppLocalizationsEn extends AppLocalizations {
   String lockBluetoothError(String errorMessage) {
     return 'Bluetooth error: $errorMessage';
   }
+
+  @override
+  String get adminManagement => 'Admin Management';
+
+  @override
+  String get userManagement => 'User Management';
+
+  @override
+  String get lockUsers => 'Lock Users';
+
+  @override
+  String get lockUsersSubtitle => 'Manage lock access and block users';
+
+  @override
+  String get transferLock => 'Transfer Lock';
+
+  @override
+  String get transferLockSubtitle =>
+      'Transfer lock ownership to another account';
+
+  @override
+  String get transferGateway => 'Transfer Gateway';
+
+  @override
+  String get transferGatewaySubtitle =>
+      'Transfer gateway ownership to another account';
+
+  @override
+  String get dataManagement => 'Data Management';
+
+  @override
+  String get exportData => 'Export Data';
+
+  @override
+  String get exportDataSubtitle => 'Export or backup data';
+
+  @override
+  String get newGroupComingSoon => 'Creating new group coming soon';
+
+  @override
+  String get noData => 'No data';
+
+  @override
+  String get adminRights => 'Admin Rights';
+
+  @override
+  String get createAdmin => 'Create Admin';
+
+  @override
+  String get createAdminComingSoon => 'Create admin feature coming soon';
+
+  @override
+  String get transferLockComingSoon => 'Lock transfer feature coming soon';
+
+  @override
+  String get exportComingSoon => 'Export feature coming soon';
+
+  @override
+  String get unnamedGroup => 'Unnamed Group';
+
+  @override
+  String lockCount(int count) {
+    return 'Lock Count: $count';
+  }
+
+  @override
+  String editingGroup(String groupName) {
+    return 'Editing group $groupName';
+  }
+
+  @override
+  String get preparingRecords => 'Preparing records, please wait...';
+
+  @override
+  String exportError(String error) {
+    return 'Export error: $error';
+  }
+
+  @override
+  String get grantAdminDesc =>
+      'Admin privileges will be granted to the selected lock.';
+
+  @override
+  String get userEmailOrPhone => 'User (Phone/Email)';
+
+  @override
+  String get grantAccess => 'Grant Access';
+
+  @override
+  String get processing => 'Processing...';
+
+  @override
+  String get adminGranted => 'Admin privileges granted!';
+
+  @override
+  String lockRecordsTitle(String start, String end) {
+    return 'Lock Records ($start - $end)';
+  }
+
+  @override
+  String get userAccessManagement => 'User & Access Management';
+
+  @override
+  String get appUsers => 'App Users';
+
+  @override
+  String get accessKeysFreeze => 'Access Keys (Freeze)';
+
+  @override
+  String get registerNewUser => 'Register New User';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get searchUser => 'Search user...';
+
+  @override
+  String get noSharedKeys => 'No shared keys.';
+
+  @override
+  String get key => 'Key';
+
+  @override
+  String get frozen => 'Frozen';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get keyFrozen => 'Key frozen (Access blocked)';
+
+  @override
+  String get keyUnfrozen => 'Key unfrozen (Access restored)';
+
+  @override
+  String errorWithMsg(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String lockRecordsWithName(String lockName) {
+    return '$lockName Records';
+  }
+
+  @override
+  String get lockRecords => 'Lock Records';
+
+  @override
+  String get readFromLock => 'Read from Lock (Bluetooth)';
+
+  @override
+  String get clearAllRecords => 'Clear All Records';
+
+  @override
+  String get syncRecords => 'Sync Records';
+
+  @override
+  String get connectingReadingLogs =>
+      'Connecting to lock and reading records...';
+
+  @override
+  String get missingLockData =>
+      'Lock data missing, cannot connect via Bluetooth.';
+
+  @override
+  String get connectFromHomeFirst =>
+      'Please connect to lock from home screen first.';
+
+  @override
+  String get recordsSynced => 'Records synchronized successfully';
+
+  @override
+  String uploadError(String error) {
+    return 'Upload error: $error';
+  }
+
+  @override
+  String readError(String error) {
+    return 'Read error: $error';
+  }
+
+  @override
+  String unexpectedError(String error) {
+    return 'Unexpected error: $error';
+  }
+
+  @override
+  String get sendMultipleKeys => 'Send multiple keys';
+
+  @override
+  String get sendMultipleKeysComingSoon =>
+      'Send multiple keys feature coming soon';
 }

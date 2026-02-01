@@ -1587,6 +1587,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bluetooth error: {errorMessage}'**
   String lockBluetoothError(String errorMessage);
+
+  /// No description provided for @adminManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Management'**
+  String get adminManagement;
+
+  /// No description provided for @userManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get userManagement;
+
+  /// No description provided for @lockUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Users'**
+  String get lockUsers;
+
+  /// No description provided for @lockUsersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage lock access and block users'**
+  String get lockUsersSubtitle;
+
+  /// No description provided for @transferLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Lock'**
+  String get transferLock;
+
+  /// No description provided for @transferLockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer lock ownership to another account'**
+  String get transferLockSubtitle;
+
+  /// No description provided for @transferGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Gateway'**
+  String get transferGateway;
+
+  /// No description provided for @transferGatewaySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer gateway ownership to another account'**
+  String get transferGatewaySubtitle;
+
+  /// No description provided for @dataManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Management'**
+  String get dataManagement;
+
+  /// No description provided for @exportData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Data'**
+  String get exportData;
+
+  /// No description provided for @exportDataSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export or backup data'**
+  String get exportDataSubtitle;
+
+  /// No description provided for @newGroupComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating new group coming soon'**
+  String get newGroupComingSoon;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get noData;
+
+  /// No description provided for @adminRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Rights'**
+  String get adminRights;
+
+  /// No description provided for @createAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Admin'**
+  String get createAdmin;
+
+  /// No description provided for @createAdminComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Create admin feature coming soon'**
+  String get createAdminComingSoon;
+
+  /// No description provided for @transferLockComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock transfer feature coming soon'**
+  String get transferLockComingSoon;
+
+  /// No description provided for @exportComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Export feature coming soon'**
+  String get exportComingSoon;
+
+  /// No description provided for @unnamedGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed Group'**
+  String get unnamedGroup;
+
+  /// No description provided for @lockCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Count: {count}'**
+  String lockCount(int count);
+
+  /// No description provided for @editingGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing group {groupName}'**
+  String editingGroup(String groupName);
+
+  /// No description provided for @preparingRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing records, please wait...'**
+  String get preparingRecords;
+
+  /// No description provided for @exportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Export error: {error}'**
+  String exportError(String error);
+
+  /// No description provided for @grantAdminDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin privileges will be granted to the selected lock.'**
+  String get grantAdminDesc;
+
+  /// No description provided for @userEmailOrPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'User (Phone/Email)'**
+  String get userEmailOrPhone;
+
+  /// No description provided for @grantAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant Access'**
+  String get grantAccess;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get processing;
+
+  /// No description provided for @adminGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin privileges granted!'**
+  String get adminGranted;
+
+  /// No description provided for @lockRecordsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Records ({start} - {end})'**
+  String lockRecordsTitle(String start, String end);
+
+  /// No description provided for @userAccessManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'User & Access Management'**
+  String get userAccessManagement;
+
+  /// No description provided for @appUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'App Users'**
+  String get appUsers;
+
+  /// No description provided for @accessKeysFreeze.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Keys (Freeze)'**
+  String get accessKeysFreeze;
+
+  /// No description provided for @registerNewUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Register New User'**
+  String get registerNewUser;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @searchUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Search user...'**
+  String get searchUser;
+
+  /// No description provided for @noSharedKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'No shared keys.'**
+  String get noSharedKeys;
+
+  /// No description provided for @key.
+  ///
+  /// In en, this message translates to:
+  /// **'Key'**
+  String get key;
+
+  /// No description provided for @frozen.
+  ///
+  /// In en, this message translates to:
+  /// **'Frozen'**
+  String get frozen;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @keyFrozen.
+  ///
+  /// In en, this message translates to:
+  /// **'Key frozen (Access blocked)'**
+  String get keyFrozen;
+
+  /// No description provided for @keyUnfrozen.
+  ///
+  /// In en, this message translates to:
+  /// **'Key unfrozen (Access restored)'**
+  String get keyUnfrozen;
+
+  /// No description provided for @errorWithMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String errorWithMsg(String error);
+
+  /// No description provided for @lockRecordsWithName.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} Records'**
+  String lockRecordsWithName(String lockName);
+
+  /// No description provided for @lockRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Records'**
+  String get lockRecords;
+
+  /// No description provided for @readFromLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Read from Lock (Bluetooth)'**
+  String get readFromLock;
+
+  /// No description provided for @clearAllRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All Records'**
+  String get clearAllRecords;
+
+  /// No description provided for @syncRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync Records'**
+  String get syncRecords;
+
+  /// No description provided for @connectingReadingLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to lock and reading records...'**
+  String get connectingReadingLogs;
+
+  /// No description provided for @missingLockData.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock data missing, cannot connect via Bluetooth.'**
+  String get missingLockData;
+
+  /// No description provided for @connectFromHomeFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please connect to lock from home screen first.'**
+  String get connectFromHomeFirst;
+
+  /// No description provided for @recordsSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Records synchronized successfully'**
+  String get recordsSynced;
+
+  /// No description provided for @uploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload error: {error}'**
+  String uploadError(String error);
+
+  /// No description provided for @readError.
+  ///
+  /// In en, this message translates to:
+  /// **'Read error: {error}'**
+  String readError(String error);
+
+  /// No description provided for @unexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error: {error}'**
+  String unexpectedError(String error);
+
+  /// No description provided for @sendMultipleKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Send multiple keys'**
+  String get sendMultipleKeys;
+
+  /// No description provided for @sendMultipleKeysComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Send multiple keys feature coming soon'**
+  String get sendMultipleKeysComingSoon;
 }
 
 class _AppLocalizationsDelegate
