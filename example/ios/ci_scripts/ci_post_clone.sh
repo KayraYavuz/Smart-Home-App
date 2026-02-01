@@ -49,6 +49,10 @@ else
 EOF
 fi
 
+# COPY to ios/GoogleService-Info.plist (Duplicate for build requirement)
+cp ../Runner/GoogleService-Info.plist ../GoogleService-Info.plist
+echo "GoogleService-Info.plist kopyalandı: ../GoogleService-Info.plist"
+
 # .env oluşturma
 if [ -n "$ENV_FILE_CONTENT_BASE64" ]; then
     echo "Creating .env from Base64..."
