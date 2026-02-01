@@ -6788,29 +6788,15 @@ class ApiService {
       throw Exception('HTTP hatası: ${response.statusCode}');
     }
   }
-}
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {
-        'clientId': ApiConfig.clientId,
-        'accessToken': _accessToken!,
-        'keyId': keyId,
-        'date': DateTime.now().millisecondsSinceEpoch.toString(),
-      }
-    );
-     
-    final data = json.decode(response.body);
-    if (data['errcode'] != 0) {
-      throw Exception('İşlem başarısız: ${data['errmsg']}');
-    }
-  }
 
   /// Create Admin (Grant Admin) - Sends a special EKey
   Future<void> grantAdmin({
     required String lockId,
     required String receiverUsername,
   }) async {
+    await getAccessToken();
+    if (_accessToken == null) throw Exception('Token yok');
+    
     await sendEKey(
        accessToken: _accessToken!, 
        lockId: lockId, 
@@ -6821,7 +6807,6 @@ class ApiService {
        keyRight: 1, // Admin
     );
   }
-
 }
 
 
