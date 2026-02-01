@@ -3340,6 +3340,48 @@ abstract class AppLocalizations {
   /// **'Send Email'**
   String get sendEmail;
 
+  /// No description provided for @createPasscodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Passcode'**
+  String get createPasscodeTitle;
+
+  /// No description provided for @passcodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode (4-9 digits)'**
+  String get passcodeHint;
+
+  /// No description provided for @enterPasscode.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a passcode'**
+  String get enterPasscode;
+
+  /// No description provided for @passcodeLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode must be between 4 and 9 digits'**
+  String get passcodeLengthError;
+
+  /// No description provided for @validityStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Validity Start'**
+  String get validityStart;
+
+  /// No description provided for @validityEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Validity End'**
+  String get validityEnd;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
   /// No description provided for @passive.
   ///
   /// In en, this message translates to:

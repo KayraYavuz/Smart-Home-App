@@ -415,7 +415,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get unlocked => 'Açık';
 
   @override
-  String get sharedLock => 'Paylaşılan Kilit';
+  String get sharedLock => 'Paylaşılan';
 
   @override
   String get sharedWithYou => 'sizinle paylaşılmış.';
@@ -1776,6 +1776,27 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sendEmail => 'E-posta Gönder';
+
+  @override
+  String get createPasscodeTitle => 'Yeni Şifre Oluştur';
+
+  @override
+  String get passcodeHint => 'Şifre (4-9 haneli)';
+
+  @override
+  String get enterPasscode => 'Lütfen bir şifre girin';
+
+  @override
+  String get passcodeLengthError => 'Şifre 4 ile 9 haneli olmalıdır';
+
+  @override
+  String get validityStart => 'Geçerlilik Başlangıcı';
+
+  @override
+  String get validityEnd => 'Geçerlilik Bitişi';
+
+  @override
+  String get create => 'Oluştur';
 
   @override
   String get passive => 'Pasif';

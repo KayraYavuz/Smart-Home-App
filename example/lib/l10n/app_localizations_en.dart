@@ -1770,6 +1770,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendEmail => 'Send Email';
 
   @override
+  String get createPasscodeTitle => 'Create Passcode';
+
+  @override
+  String get passcodeHint => 'Passcode (4-9 digits)';
+
+  @override
+  String get enterPasscode => 'Please enter a passcode';
+
+  @override
+  String get passcodeLengthError => 'Passcode must be between 4 and 9 digits';
+
+  @override
+  String get validityStart => 'Validity Start';
+
+  @override
+  String get validityEnd => 'Validity End';
+
+  @override
+  String get create => 'Create';
+
+  @override
   String get passive => 'Passive';
 
   @override
