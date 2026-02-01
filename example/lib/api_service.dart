@@ -989,6 +989,7 @@ class ApiService {
             // Orijinal alanları da sakla (lazım olursa)
             'lockAlias': key['lockAlias'],
             'lockName': key['lockName'],
+            'groupId': key['groupId'], // Add groupId here
           };
         }).toList();
 
@@ -1498,6 +1499,35 @@ class ApiService {
       return [];
     } else {
       throw Exception('Grup listesi alınamadı: HTTP ${response.statusCode}');
+    }
+  }
+
+  /// Get the lock list of a group
+  Future<List<Map<String, dynamic>>> getGroupLockList(String groupId) async {
+    print('📋 Gruptaki kilitler çekiliyor: $groupId');
+    
+    await getAccessToken();
+    if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
+
+    final url = Uri.parse('$_baseUrl/v3/group/lock/list').replace(queryParameters: {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'groupId': groupId,
+      'pageNo': '1',
+      'pageSize': '100', // Assuming max 100 locks per group for simplicity
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['list'] != null) {
+        return (responseData['list'] as List).cast<Map<String, dynamic>>();
+      }
+      return [];
+    } else {
+      throw Exception('Grup kilit listesi alınamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -2553,6 +2583,7 @@ class ApiService {
     String? remarks,
     int? remoteEnable, // 1-yes, 2-no
     int createUser = 2, // 1-yes, 2-no (default)
+    List<Map<String, dynamic>>? cyclicConfig,
   }) async {
     print('🔗 E-key gönderiliyor: $lockId -> $receiverUsername');
 
@@ -2582,6 +2613,10 @@ class ApiService {
 
     if (remoteEnable != null) {
       body['remoteEnable'] = remoteEnable.toString();
+    }
+
+    if (cyclicConfig != null) {
+      body['cyclicConfig'] = jsonEncode(cyclicConfig);
     }
 
     print('📡 Send eKey API çağrısı: $url');
@@ -6718,6 +6753,83 @@ class ApiService {
     }
   }
 
+  /// Upload operation logs (records) from lock to server
+  Future<void> uploadOperationLog({
+    required String lockId,
+    required String records, // JSON string from lock
+  }) async {
+    print('☁️ Kilit kayıtları yükleniyor: $lockId');
+    await getAccessToken();
+    if (_accessToken == null) throw Exception('Token yok');
+
+    final url = Uri.parse('$_baseUrl/v3/lockRecord/upload');
+    final Map<String, String> body = {
+      'clientId': ApiConfig.clientId,
+      'accessToken': _accessToken!,
+      'lockId': lockId,
+      'records': records,
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    final response = await http.post(
+      url, 
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['errcode'] == 0 || jsonResponse['errcode'] == null) {
+        print('✅ Kayıtlar yüklendi.');
+      } else {
+        throw Exception('Kayıt yükleme hatası: ${jsonResponse['errmsg']}');
+      }
+    } else {
+      throw Exception('HTTP hatası: ${response.statusCode}');
+    }
+  }
+
+  /// Freeze/Unfreeze EKey
+  Future<void> freezeEKey({
+    required String keyId,
+    required bool freeze, // true=freeze, false=unfreeze
+  }) async {
+    print('❄️ Anahtar donduruluyor: $keyId -> $freeze');
+    await getAccessToken();
+    final url = Uri.parse('$_baseUrl/v3/key/${freeze ? "freeze" : "unfreeze"}');
+    
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: {
+        'clientId': ApiConfig.clientId,
+        'accessToken': _accessToken!,
+        'keyId': keyId,
+        'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      }
+    );
+     
+    final data = json.decode(response.body);
+    if (data['errcode'] != 0) {
+      throw Exception('İşlem başarısız: ${data['errmsg']}');
+    }
+  }
+
+  /// Create Admin (Grant Admin) - Sends a special EKey
+  Future<void> grantAdmin({
+    required String lockId,
+    required String receiverUsername,
+  }) async {
+    await sendEKey(
+       accessToken: _accessToken!, 
+       lockId: lockId, 
+       receiverUsername: receiverUsername, 
+       keyName: 'Admin', 
+       startDate: DateTime.now(), 
+       endDate: DateTime(2099), // Permanent
+       keyRight: 1, // Admin
+    );
+  }
 
 }
 

@@ -391,6 +391,112 @@
       "errorMessage": {
         "type": "String"
       }
+  "adminManagement": "Admin Management",
+  "userManagement": "User Management",
+  "lockUsers": "Lock Users",
+  "lockUsersSubtitle": "Manage lock access and block users",
+  "transferLock": "Transfer Lock",
+  "transferLockSubtitle": "Transfer lock ownership to another account",
+  "transferGateway": "Transfer Gateway",
+  "transferGatewaySubtitle": "Transfer gateway ownership to another account",
+  "dataManagement": "Data Management",
+  "exportData": "Export Data",
+  "exportDataSubtitle": "Export or backup data",
+  "newGroupComingSoon": "Creating new group coming soon",
+  "noData": "No data",
+  "adminRights": "Admin Rights",
+  "createAdmin": "Create Admin",
+  "createAdminComingSoon": "Create admin feature coming soon",
+  "transferLockComingSoon": "Lock transfer feature coming soon",
+  "exportComingSoon": "Export feature coming soon",
+  "unnamedGroup": "Unnamed Group",
+  "lockCount": "Lock Count: {count}",
+  "@lockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
     }
-  }
+  },
+  "editingGroup": "Editing group {groupName}",
+  "@editingGroup": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "preparingRecords": "Preparing records, please wait...",
+  "exportError": "Export error: {error}",
+  "@exportError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "grantAdminDesc": "Admin privileges will be granted to the selected lock.",
+  "userEmailOrPhone": "User (Phone/Email)",
+  "grantAccess": "Grant Access",
+  "processing": "Processing...",
+  "adminGranted": "Admin privileges granted!",
+  "lockRecordsTitle": "Lock Records ({start} - {end})",
+  "@lockRecordsTitle": {
+    "placeholders": {
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "userAccessManagement": "User & Access Management",
+  "appUsers": "App Users",
+  "accessKeysFreeze": "Access Keys (Freeze)",
+  "registerNewUser": "Register New User",
+  "refresh": "Refresh",
+  "searchUser": "Search user...",
+  "noSharedKeys": "No shared keys.",
+  "key": "Key",
+  "frozen": "Frozen",
+  "active": "Active",
+  "keyFrozen": "Key frozen (Access blocked)",
+  "keyUnfrozen": "Key unfrozen (Access restored)",
+  "errorWithMsg": "Error: {error}",
+  "@errorWithMsg": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "lockRecordsWithName": "{lockName} Records",
+  "@lockRecordsWithName": {
+    "placeholders": {
+      "lockName": { "type": "String" }
+    }
+  },
+  "lockRecords": "Lock Records",
+  "readFromLock": "Read from Lock (Bluetooth)",
+  "clearAllRecords": "Clear All Records",
+  "syncRecords": "Sync Records",
+  "connectingReadingLogs": "Connecting to lock and reading records...",
+  "missingLockData": "Lock data missing, cannot connect via Bluetooth.",
+  "connectFromHomeFirst": "Please connect to lock from home screen first.",
+  "recordsSynced": "Records synchronized successfully",
+  "uploadError": "Upload error: {error}",
+  "@uploadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "readError": "Read error: {error}",
+  "@readError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "unexpectedError": "Unexpected error: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "sendMultipleKeys": "Send multiple keys",
+  "sendMultipleKeysComingSoon": "Send multiple keys feature coming soon"
 }

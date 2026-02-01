@@ -772,6 +772,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deviceGatewayWifi => 'G2 Wi-Fi';
 
   @override
+  String get deviceGatewayG3 => 'G3 Wi-Fi';
+
+  @override
   String get deviceCameraSurveillance => 'Surveillance Camera';
 
   @override

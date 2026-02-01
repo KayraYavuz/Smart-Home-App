@@ -232,6 +232,112 @@
       "errorMessage": {
         "type": "String"
       }
+  "adminManagement": "Administrator-Verwaltung",
+  "userManagement": "Benutzerverwaltung",
+  "lockUsers": "Benutzer sperren",
+  "lockUsersSubtitle": "Sperrzugriff verwalten und Benutzer blockieren",
+  "transferLock": "Schloss übertragen",
+  "transferLockSubtitle": "Schlossbesitz auf ein anderes Konto übertragen",
+  "transferGateway": "Gateway übertragen",
+  "transferGatewaySubtitle": "Gateway-Besitz auf ein anderes Konto übertragen",
+  "dataManagement": "Datenverwaltung",
+  "exportData": "Daten exportieren",
+  "exportDataSubtitle": "Daten exportieren oder sichern",
+  "newGroupComingSoon": "Neue Gruppe erstellen kommt bald",
+  "noData": "Keine Daten",
+  "adminRights": "Administratorrechte",
+  "createAdmin": "Administrator erstellen",
+  "createAdminComingSoon": "Administrator erstellen kommt bald",
+  "transferLockComingSoon": "Schloss-Transfer-Funktion kommt bald",
+  "exportComingSoon": "Export-Funktion kommt bald",
+  "unnamedGroup": "Unbenannte Gruppe",
+  "lockCount": "Anzahl der Schlösser: {count}",
+  "@lockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
     }
-  }
+  },
+  "editingGroup": "Gruppe {groupName} wird bearbeitet",
+  "@editingGroup": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "preparingRecords": "Datensätze werden vorbereitet, bitte warten...",
+  "exportError": "Exportfehler: {error}",
+  "@exportError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "grantAdminDesc": "Administratorrechte werden für das ausgewählte Schloss gewährt.",
+  "userEmailOrPhone": "Benutzer (Telefon/E-Mail)",
+  "grantAccess": "Zugriff gewähren",
+  "processing": "Wird verarbeitet...",
+  "adminGranted": "Administratorrechte gewährt!",
+  "lockRecordsTitle": "Schlossaufzeichnungen ({start} - {end})",
+  "@lockRecordsTitle": {
+    "placeholders": {
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "userAccessManagement": "Benutzer- & Zugriffsverwaltung",
+  "appUsers": "App-Benutzer",
+  "accessKeysFreeze": "Zugangsschlüssel (Sperren)",
+  "registerNewUser": "Neuen Benutzer registrieren",
+  "refresh": "Aktualisieren",
+  "searchUser": "Benutzer suchen...",
+  "noSharedKeys": "Keine geteilten Schlüssel.",
+  "key": "Schlüssel",
+  "frozen": "Eingefroren",
+  "active": "Aktiv",
+  "keyFrozen": "Schlüssel eingefroren (Zugriff blockiert)",
+  "keyUnfrozen": "Schlüssel freigegeben (Zugriff wiederhergestellt)",
+  "errorWithMsg": "Fehler: {error}",
+  "@errorWithMsg": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "lockRecordsWithName": "{lockName} Aufzeichnungen",
+  "@lockRecordsWithName": {
+    "placeholders": {
+      "lockName": { "type": "String" }
+    }
+  },
+  "lockRecords": "Schlossaufzeichnungen",
+  "readFromLock": "Vom Schloss lesen (Bluetooth)",
+  "clearAllRecords": "Alle Aufzeichnungen löschen",
+  "syncRecords": "Aufzeichnungen synchronisieren",
+  "connectingReadingLogs": "Verbindung zum Schloss und Aufzeichnungen lesen...",
+  "missingLockData": "Schlossdaten fehlen, keine Bluetooth-Verbindung möglich.",
+  "connectFromHomeFirst": "Bitte zuerst vom Startbildschirm mit dem Schloss verbinden.",
+  "recordsSynced": "Aufzeichnungen erfolgreich synchronisiert",
+  "uploadError": "Upload-Fehler: {error}",
+  "@uploadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "readError": "Lesefehler: {error}",
+  "@readError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "unexpectedError": "Unerwarteter Fehler: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "sendMultipleKeys": "Mehrere Schlüssel senden",
+  "sendMultipleKeysComingSoon": "Mehrere Schlüssel senden Funktion kommt bald"
 }

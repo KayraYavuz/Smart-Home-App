@@ -1546,6 +1546,12 @@ abstract class AppLocalizations {
   /// **'G2 Wi-Fi'**
   String get deviceGatewayWifi;
 
+  /// No description provided for @deviceGatewayG3.
+  ///
+  /// In en, this message translates to:
+  /// **'G3 Wi-Fi'**
+  String get deviceGatewayG3;
+
   /// No description provided for @deviceCameraSurveillance.
   ///
   /// In en, this message translates to:

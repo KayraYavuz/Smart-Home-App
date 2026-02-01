@@ -513,13 +513,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get errorLabel => 'Fehler';
 
   @override
-  String get statusLocked => 'Locked';
+  String get statusLocked => 'Verriegelt';
 
   @override
-  String get statusUnlocked => 'Unlocked';
+  String get statusUnlocked => 'Entriegelt';
 
   @override
-  String get statusSecurityWarning => 'Security Warning';
+  String get statusSecurityWarning => 'Sicherheitswarnung';
 
   @override
   String lockOpened(String lockName) {
@@ -752,37 +752,40 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noAccountRegister => 'Haben Sie kein Konto? Registrieren';
 
   @override
-  String get addDeviceTitle => 'Add Device';
+  String get addDeviceTitle => 'Gerät hinzufügen';
 
   @override
-  String get categoryLocks => 'Locks';
+  String get categoryLocks => 'Schlösser';
 
   @override
   String get categoryGateways => 'Gateways';
 
   @override
-  String get categoryCameras => 'Cameras';
+  String get categoryCameras => 'Kameras';
 
   @override
-  String get deviceAllLocks => 'All Locks';
+  String get deviceAllLocks => 'Alle Schlösser';
 
   @override
-  String get deviceDoorLock => 'Door Lock';
+  String get deviceDoorLock => 'Türschloss';
 
   @override
-  String get devicePadlock => 'Padlock';
+  String get devicePadlock => 'Vorhängeschloss';
 
   @override
-  String get deviceSafe => 'Safe';
+  String get deviceSafe => 'Tresor';
 
   @override
   String get deviceGatewayWifi => 'G2 Wi-Fi';
 
   @override
-  String get deviceCameraSurveillance => 'Surveillance Camera';
+  String get deviceGatewayG3 => 'G3 Wi-Fi';
 
   @override
-  String get scanBluetoothLock => 'Scan for Bluetooth Locks';
+  String get deviceCameraSurveillance => 'Überwachungskamera';
+
+  @override
+  String get scanBluetoothLock => 'Bluetooth-Schlösser scannen';
 
   @override
   String get bluetoothOff =>

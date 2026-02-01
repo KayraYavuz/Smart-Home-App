@@ -157,26 +157,54 @@ class NotificationService {
 
   Future<void> _showLocalNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
+    
+    String title = notification?.title ?? 'Kilit İşlemi';
+    String body = notification?.body ?? '';
 
-    if (notification != null) {
-      await _localNotificationsPlugin.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'high_importance_channel',
-            'Acil Bildirimler',
-            icon: '@mipmap/ic_launcher',
-          ),
-          iOS: DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          ),
-        ),
-        payload: jsonEncode(message.data),
-      );
+    // If notification payload is missing, try to construct from data
+    if (notification == null) {
+      if (message.data.isNotEmpty) {
+        // TTLock custom data parsing
+        // Example data: {lockName: "Home", username: "John", type: "unlock"}
+        final lockName = message.data['lockName'] ?? message.data['lockAlias'] ?? 'Kilit';
+        final username = message.data['username'] ?? message.data['sender'] ?? 'Biri';
+        final action = message.data['message'] ?? 'işlem yaptı';
+        
+        title = lockName;
+        body = '$username $action'; // "Ahmet kilidi açtı"
+        
+        // If data is completely empty/useless, ignore
+        if (body.trim().isEmpty) return;
+      } else {
+        return; // Empty message
+      }
     }
+
+    // Append lock name to body if not present and available in data
+    if (message.data.containsKey('lockName') && !body.contains(message.data['lockName'])) {
+      body = '${message.data['lockName']}: $body';
+    }
+
+    await _localNotificationsPlugin.show(
+      notification?.hashCode ?? DateTime.now().millisecondsSinceEpoch,
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'high_importance_channel',
+          'Acil Bildirimler',
+          icon: '@mipmap/ic_launcher',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+      payload: jsonEncode(message.data),
+    );
   }
 }

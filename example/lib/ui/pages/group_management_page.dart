@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
+import 'package:yavuz_lock/ui/pages/group_detail_page.dart';
 
 class GroupManagementPage extends StatefulWidget {
   const GroupManagementPage({super.key});
@@ -224,38 +225,90 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                   itemCount: _groups.length,
                   itemBuilder: (context, index) {
                     final group = _groups[index];
-                    return Card(
-                      color: const Color(0xFF1E1E1E),
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: ListTile(
-                        leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => GroupDetailPage(
+                              group: group,
+                              onGroupUpdated: _fetchGroups,
+                            ),
                           ),
-                          child: const Icon(Icons.folder, color: AppColors.primary),
+                        ).then((_) => _fetchGroups());
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E1E1E),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        title: Text(
-                          group['name'] ?? 'İsimsiz Grup',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          'ID: ${group['groupId']}',
-                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () => _editGroup(group),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.folder, color: AppColors.primary, size: 28),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        group['name'] ?? 'İsimsiz Grup',
+                                        style: const TextStyle(
+                                          color: Colors.white, 
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Grup ID: ${group['groupId']}',
+                                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.redAccent),
-                              onPressed: () => _deleteGroup(group),
-                            ),
+                            const SizedBox(height: 16),
+                            const Divider(color: Colors.white10),
+                            const SizedBox(height: 8),
+                            // Action Buttons Row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () => _editGroup(group),
+                                  icon: const Icon(Icons.edit, size: 18, color: Colors.blue),
+                                  label: const Text('Adını Değiştir', style: TextStyle(color: Colors.blue)),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton.icon(
+                                  onPressed: () => _deleteGroup(group),
+                                  icon: const Icon(Icons.delete, size: 18, color: Colors.redAccent),
+                                  label: const Text('Sil', style: TextStyle(color: Colors.redAccent)),
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),

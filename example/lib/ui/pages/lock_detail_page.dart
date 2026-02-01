@@ -5,6 +5,7 @@ import 'package:yavuz_lock/blocs/device/device_bloc.dart';
 import 'package:yavuz_lock/blocs/device/device_event.dart';
 import 'package:yavuz_lock/blocs/device/device_state.dart';
 import 'package:yavuz_lock/logs_page.dart';
+import 'package:yavuz_lock/ui/pages/ekey/ekey_list_page.dart';
 import 'package:yavuz_lock/ui/pages/lock_settings_page.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/ui/pages/share_lock_dialog.dart';
@@ -602,96 +603,11 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     }
   }
 
-  void _showEKeys(BuildContext context) async {
-    try {
-      final apiService = ApiService(context.read<AuthRepository>());
-      await apiService.getAccessToken();
-
-      final accessToken = apiService.accessToken;
-      if (accessToken == null) {
-        throw Exception('No access token available');
-      }
-
-      final eKeys = await apiService.getLockEKeys(
-        accessToken: accessToken,
-        lockId: widget.lock['lockId'].toString(),
-      );      if (!mounted) return;
-
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
-          title: const Text('Elektronik Anahtarlar', style: TextStyle(color: Colors.white)),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 300,
-            child: eKeys.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Bu kilit için elektronik anahtar bulunamadı.',
-                      style: TextStyle(color: Colors.grey),
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: eKeys.length,
-                    itemBuilder: (context, index) {
-                      final eKey = eKeys[index];
-                      final isOwner = eKey['userType'] == 1;
-
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: isOwner ? Colors.blue : Colors.orange,
-                          child: Icon(
-                            isOwner ? Icons.person : Icons.share,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        title: Text(
-                          eKey['keyName'] ?? 'Anahtar ${index + 1}',
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        subtitle: Text(
-                          isOwner ? 'Sahip' : 'Paylaşılan',
-                          style: TextStyle(
-                            color: isOwner ? Colors.blue : Colors.orange,
-                            fontSize: 12,
-                          ),
-                        ),
-                        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-                        onTap: () {
-                           Navigator.pop(context); // Close dialog first
-                           Navigator.push(
-                             context,
-                             MaterialPageRoute(
-                               builder: (context) => EKeyDetailPage(
-                                 eKey: eKey,
-                                 lockId: widget.lock['lockId'].toString(),
-                                 lockName: widget.lock['name'] ?? '',
-                                 isOwner: true, // Assuming current user is admin for now
-                               ),
-                             ),
-                           );
-                        },
-                      );
-                    },
-                  ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Tamam', style: TextStyle(color: Colors.blue)),
-            ),
-          ],
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Elektronik anahtar yükleme hatası: $e'), backgroundColor: Colors.red),
-      );
-    }
+  void _showEKeys(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EKeyListPage(lock: widget.lock)),
+    );
   }
 
   void _showPasswords(BuildContext context) {
@@ -804,6 +720,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
         builder: (context) => LogsPage(
           lockId: widget.lock['lockId'].toString(),
           lockName: widget.lock['name'],
+          lockData: widget.lock['lockData'],
         ),
       ),
     );

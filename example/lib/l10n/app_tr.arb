@@ -253,6 +253,112 @@
       "errorMessage": {
         "type": "String"
       }
+  "adminManagement": "Yetkili Yönetici",
+  "userManagement": "Kullanıcı Yönetimi",
+  "lockUsers": "Kullanıcıları Kilitle",
+  "lockUsersSubtitle": "Kilit erişimini yönet ve kullanıcıları engelle",
+  "transferLock": "Transfer Kilidi",
+  "transferLockSubtitle": "Kilit sahipliğini başka bir hesaba aktar",
+  "transferGateway": "Aktarım Ağ Geçidi",
+  "transferGatewaySubtitle": "Ağ geçidi sahipliğini başka bir hesaba aktar",
+  "dataManagement": "Veri Yönetimi",
+  "exportData": "Dışa Aktar",
+  "exportDataSubtitle": "Verileri dışa aktar veya yedekle",
+  "newGroupComingSoon": "Yeni grup oluşturma yakında eklenecek",
+  "noData": "Veri yok",
+  "adminRights": "Yönetici Hakları",
+  "createAdmin": "Yönetici Oluştur",
+  "createAdminComingSoon": "Yönetici oluşturma yakında eklenecek",
+  "transferLockComingSoon": "Kilit transfer özelliği yakında eklenecek",
+  "exportComingSoon": "Dışa aktarma özelliği yakında eklenecek",
+  "unnamedGroup": "İsimsiz Grup",
+  "lockCount": "Kilit Sayısı: {count}",
+  "@lockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
     }
-  }
+  },
+  "editingGroup": "{groupName} grubu düzenleniyor",
+  "@editingGroup": {
+    "placeholders": {
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "preparingRecords": "Kayıtlar hazırlanıyor, lütfen bekleyin...",
+  "exportError": "Dışa aktarma hatası: {error}",
+  "@exportError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "grantAdminDesc": "Seçilen kilide yönetici yetkisi verilecek.",
+  "userEmailOrPhone": "Kullanıcı (Tel/Email)",
+  "grantAccess": "Yetki Ver",
+  "processing": "İşlem yapılıyor...",
+  "adminGranted": "Yönetici yetkisi verildi!",
+  "lockRecordsTitle": "Kilit Kayıtları ({start} - {end})",
+  "@lockRecordsTitle": {
+    "placeholders": {
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "userAccessManagement": "Kullanıcı & Erişim Yönetimi",
+  "appUsers": "Uygulama Kullanıcıları",
+  "accessKeysFreeze": "Erişim Anahtarları (Dondur)",
+  "registerNewUser": "Yeni Kullanıcı Kaydet",
+  "refresh": "Yenile",
+  "searchUser": "Kullanıcı ara...",
+  "noSharedKeys": "Paylaşılan anahtar yok.",
+  "key": "Anahtar",
+  "frozen": "Dondurulmuş",
+  "active": "Aktif",
+  "keyFrozen": "Anahtar donduruldu (Erişim engellendi)",
+  "keyUnfrozen": "Anahtar erişime açıldı",
+  "errorWithMsg": "Hata: {error}",
+  "@errorWithMsg": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "lockRecordsWithName": "{lockName} Kayıtları",
+  "@lockRecordsWithName": {
+    "placeholders": {
+      "lockName": { "type": "String" }
+    }
+  },
+  "lockRecords": "Kilit Kayıtları",
+  "readFromLock": "Kilitten Oku (Bluetooth)",
+  "clearAllRecords": "Tüm Kayıtları Temizle",
+  "syncRecords": "Kayıtları Eşitle",
+  "connectingReadingLogs": "Kilide bağlanılıyor ve kayıtlar okunuyor...",
+  "missingLockData": "Kilit verisi eksik, Bluetooth bağlantısı kurulamıyor.",
+  "connectFromHomeFirst": "Lütfen önce kilide ana ekrandan bağlanın.",
+  "recordsSynced": "Kayıtlar başarıyla eşitledi",
+  "uploadError": "Yükleme hatası: {error}",
+  "@uploadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "readError": "Kilit okuma hatası: {error}",
+  "@readError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "unexpectedError": "Beklenmeyen hata: {error}",
+  "@unexpectedError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "sendMultipleKeys": "Birden fazla elektronik anahtar gönder",
+  "sendMultipleKeysComingSoon": "Birden fazla elektronik anahtar gönderme yakında eklenecek"
 }

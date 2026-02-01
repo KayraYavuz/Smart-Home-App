@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EKeyDetailPage extends StatefulWidget {
   final Map<String, dynamic> eKey;
@@ -25,19 +26,27 @@ class EKeyDetailPage extends StatefulWidget {
 class _EKeyDetailPageState extends State<EKeyDetailPage> {
   late Map<String, dynamic> _eKey;
   bool _isLoading = false;
-  final _apiService = ApiService(AuthRepository());
+  late ApiService _apiService;
   String? _accessToken;
 
   @override
   void initState() {
     super.initState();
     _eKey = Map.from(widget.eKey);
-    _initAccessToken();
+    // Initialize access token after build to access context, or use Future.microtask
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _apiService = ApiService(context.read<AuthRepository>());
+      _initAccessToken();
+    });
   }
 
   Future<void> _initAccessToken() async {
     await _apiService.getAccessToken();
-    _accessToken = _apiService.accessToken;
+    if (mounted) {
+      setState(() {
+        _accessToken = _apiService.accessToken;
+      });
+    }
   }
 
   @override
@@ -260,27 +269,28 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
         onTap: _isLoading ? null : onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          width: 100,
-          height: 100,
-          padding: const EdgeInsets.all(12),
+          width: MediaQuery.of(context).size.width / 3 - 24, // Dynamic width for 3 cols roughly
+          constraints: const BoxConstraints(minHeight: 100), // Reduced from 110
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4), // Reduced vertical from 16
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(8), // Reduced from 10
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: color, size: 24),
+                child: Icon(icon, color: color, size: 22), // Reduced from 24
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6), // Reduced from 8
               Text(
                 label,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 11,
+                  fontSize: 10, // Reduced from 11
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -423,8 +433,12 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
         );
       }
     } catch (e) {
+      String msg = 'Link alma hatası: $e';
+      if (e.toString().contains('20002') || e.toString().contains('Not lock admin')) {
+        msg = 'Yetki Hatası: Link oluşturma sadece Kilit Sahibi tarafından yapılabilir.';
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text(msg), backgroundColor: Colors.red),
       );
     } finally {
       setState(() => _isLoading = false);

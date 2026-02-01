@@ -3,6 +3,7 @@ import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/ui/pages/feature_pages.dart';
+import 'package:yavuz_lock/ui/pages/passage_mode/passage_mode_page.dart';
 
 class LockSettingsPage extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -96,12 +97,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                 subtitle: 'Süre ayarla',
                 onTap: _showAutoLockDialog,
               ),
-              _buildSwitchTile(
+              _buildSettingTile(
                 icon: Icons.door_front_door,
-                title: 'Passage Modu',
-                subtitle: 'Belirli saatlerde kilit açık kalsın',
-                value: _passageMode,
-                onChanged: (val) => _togglePassageMode(val),
+                title: 'Geçiş Modu',
+                subtitle: _passageMode ? 'Aktif' : 'Pasif',
+                onTap: _openPassageModePage,
               ),
               _buildSettingTile(
                 icon: Icons.work_history,
@@ -355,19 +355,15 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     );
   }
 
-  void _togglePassageMode(bool val) async {
-    try {
-      await _apiService.configurePassageMode(
-        lockId: widget.lock['lockId'].toString(),
-        passageMode: val ? 1 : 2,
-        type: 2,
-      );
-      if (!mounted) return;
-      setState(() => _passageMode = val);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
-    }
+  void _openPassageModePage() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PassageModePage(lock: widget.lock),
+      ),
+    );
+    // Refresh settings after returning
+    _fetchSettings();
   }
 
   void _showWorkingModeSettings() {
