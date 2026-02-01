@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class GroupDetailPage extends StatefulWidget {
   final Map<String, dynamic> group;
@@ -43,7 +44,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Grup kilitleri yüklenemedi: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.groupLocksLoadError(e.toString()))),
       );
     }
   }
@@ -77,12 +78,12 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             builder: (context, setState) {
               return AlertDialog(
                 backgroundColor: const Color(0xFF1E1E1E),
-                title: Text('${widget.group['name']} Kilitleri', style: const TextStyle(color: Colors.white)),
+                title: Text(AppLocalizations.of(context)!.groupLocksTitle(widget.group['name'] ?? ''), style: const TextStyle(color: Colors.white)),
                 content: SizedBox(
                   width: double.maxFinite,
                   height: 400,
                   child: allLocks.isEmpty 
-                    ? const Center(child: Text('Hiç kilit bulunamadı', style: TextStyle(color: Colors.grey)))
+                    ? Center(child: Text(AppLocalizations.of(context)!.noLocksFound, style: const TextStyle(color: Colors.grey)))
                     : ListView.builder(
                         itemCount: allLocks.length,
                         itemBuilder: (context, index) {
@@ -91,7 +92,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                           final isSelected = selectedLockIds.contains(lockId);
                           
                           return CheckboxListTile(
-                            title: Text(lock['name'] ?? 'Kilit', style: const TextStyle(color: Colors.white)),
+                            title: Text(lock['name'] ?? AppLocalizations.of(context)!.lock, style: const TextStyle(color: Colors.white)),
                             subtitle: Text(lockId, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                             value: isSelected,
                             activeColor: AppColors.primary,
@@ -112,7 +113,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+                    child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.grey)),
                   ),
                   TextButton(
                     onPressed: () async {
@@ -120,7 +121,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                       await _saveGroupLocks(widget.group['groupId'].toString(), groupLockIds, selectedLockIds);
                       _fetchGroupLocks(); // Refresh list
                     },
-                    child: const Text('Kaydet', style: TextStyle(color: AppColors.primary)),
+                    child: Text(AppLocalizations.of(context)!.save, style: const TextStyle(color: AppColors.primary)),
                   ),
                 ],
               );
@@ -132,7 +133,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     } catch (e) {
       Navigator.pop(context); // Close loading
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Kilit listesi alınamadı: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text(AppLocalizations.of(context)!.lockListRetrievalError(e.toString())), backgroundColor: Colors.red),
       );
     }
   }
@@ -176,7 +177,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('İşlem tamamlandı. $successCount eklendi, $failCount hata.'),
+        content: Text(AppLocalizations.of(context)!.operationCompletedWithCounts(successCount.toString(), failCount.toString())),
         backgroundColor: failCount > 0 ? Colors.orange : Colors.green,
       ),
     );
@@ -192,31 +193,31 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text('${widget.group['name']} Grubunu Paylaş', style: const TextStyle(color: Colors.white)),
+        title: Text(AppLocalizations.of(context)!.shareGroupTitle(widget.group['name'] ?? ''), style: const TextStyle(color: Colors.white)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: usernameController,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                hintText: 'Alıcı Kullanıcı Adı / Email',
-                hintStyle: TextStyle(color: Colors.grey),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
-                prefixIcon: Icon(Icons.person, color: Colors.grey),
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.receiverHintUserEmail,
+                hintStyle: const TextStyle(color: Colors.grey),
+                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+                prefixIcon: const Icon(Icons.person, color: Colors.grey),
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Bu işlem gruptaki tüm kilitler için e-anahtar gönderir.',
-              style: TextStyle(color: Colors.grey, fontSize: 12),
+            Text(
+              AppLocalizations.of(context)!.groupShareNote,
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
@@ -230,7 +231,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                 );
               }
             },
-            child: const Text('Gönder', style: TextStyle(color: AppColors.primary)),
+            child: Text(AppLocalizations.of(context)!.send, style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -248,14 +249,14 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     try {
       await _apiService.getAccessToken();
       final token = _apiService.accessToken;
-      if (token == null) throw Exception('Erişim anahtarı alınamadı');
+      if (token == null) throw Exception(AppLocalizations.of(context)!.tokenNotFound);
 
       final locks = await _apiService.getGroupLockList(groupId);
       
       if (locks.isEmpty) {
         if (mounted) Navigator.pop(context);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bu grupta kilit yok.')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.noLocksInGroup)));
         }
         return;
       }
@@ -269,7 +270,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             accessToken: token,
             lockId: lock['lockId'].toString(),
             receiverUsername: receiverUsername,
-            keyName: "${lock['lockAlias'] ?? 'Kilit'} (Grup)",
+            keyName: "${lock['lockAlias'] ?? 'Lock'} (Group)",
             startDate: DateTime.fromMillisecondsSinceEpoch(startDateMs),
             endDate: DateTime.fromMillisecondsSinceEpoch(endDateMs),
             remoteEnable: 2,
@@ -284,7 +285,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$successCount kilit paylaşıldı, $failCount başarısız.'),
+            content: Text(AppLocalizations.of(context)!.locksSharedCounts(successCount.toString(), failCount.toString())),
             backgroundColor: failCount > 0 ? Colors.orange : Colors.green,
           ),
         );
@@ -303,14 +304,14 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(widget.group['name'] ?? 'Grup Detayı'),
+        title: Text(widget.group['name'] ?? AppLocalizations.of(context)!.groupDetail),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.share, color: Colors.green),
             onPressed: _shareGroup,
-            tooltip: 'Grubu Paylaş',
+            tooltip: AppLocalizations.of(context)!.shareGroup,
           ),
         ],
       ),
@@ -336,11 +337,11 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.group['name'] ?? 'İsimsiz',
+                        widget.group['name'] ?? AppLocalizations.of(context)!.unnamed,
                         style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'Toplam ${_groupLocks.length} Kilit',
+                        AppLocalizations.of(context)!.totalLocksCount(_groupLocks.length.toString()),
                         style: const TextStyle(color: Colors.grey, fontSize: 14),
                       ),
                     ],
@@ -360,7 +361,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               child: ElevatedButton.icon(
                 onPressed: _manageGroupLocks,
                 icon: const Icon(Icons.edit_note, color: Colors.black),
-                label: const Text('Kilitleri Düzenle (Ekle/Çıkar)', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                label: Text(AppLocalizations.of(context)!.editGroupLocks, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -377,7 +378,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
                 : _groupLocks.isEmpty
-                    ? const Center(child: Text('Bu grupta kilit yok.', style: TextStyle(color: Colors.grey)))
+                    ? Center(child: Text(AppLocalizations.of(context)!.noLocksInGroup, style: const TextStyle(color: Colors.grey)))
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemCount: _groupLocks.length,
@@ -390,7 +391,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                             child: ListTile(
                               leading: const Icon(Icons.lock, color: Colors.white70),
                               title: Text(
-                                lock['lockAlias'] ?? lock['lockName'] ?? 'Kilit',
+                                lock['lockAlias'] ?? lock['lockName'] ?? AppLocalizations.of(context)!.lock,
                                 style: const TextStyle(color: Colors.white),
                               ),
                               subtitle: Text(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class CustomerServicePage extends StatefulWidget {
   const CustomerServicePage({super.key});
@@ -37,8 +38,8 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text(
-          'Müşteri Servisi',
+        title: Text(
+          AppLocalizations.of(context)!.customerService,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -102,9 +103,9 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
                     color: Color(0xFF1E90FF),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    '7/24 Destek',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.support247,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -112,7 +113,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Herhangi bir sorun yaşadığınızda bize ulaşın',
+                    AppLocalizations.of(context)!.contactUsOnIssues,
                     style: TextStyle(
                       color: Colors.grey[400],
                       fontSize: 14,
@@ -127,7 +128,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
             // Contact items
             _buildAnimatedContactItem(
               context,
-              'E-posta Desteği',
+              AppLocalizations.of(context)!.emailSupport,
               'service@ttlock.com',
               Icons.email,
               Icons.copy,
@@ -136,7 +137,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
             ),
             _buildAnimatedContactItem(
               context,
-              'Satış ve İş Birliği',
+              AppLocalizations.of(context)!.salesCooperation,
               'sales@ttlock.com',
               Icons.business,
               Icons.copy,
@@ -145,7 +146,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
             ),
             _buildAnimatedContactItem(
               context,
-              'Resmi Web Sitesi',
+              AppLocalizations.of(context)!.officialWebsite,
               'www.ttlock.com',
               Icons.web,
               Icons.open_in_new,
@@ -154,7 +155,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
             ),
             _buildAnimatedContactItem(
               context,
-              'Web Yönetim Sistemi',
+              AppLocalizations.of(context)!.webAdminSystem,
               'lock.ttlock.com',
               Icons.admin_panel_settings,
               Icons.open_in_new,
@@ -163,7 +164,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
             ),
             _buildAnimatedContactItem(
               context,
-              'Otel Yönetim Sistemi',
+              AppLocalizations.of(context)!.hotelAdminSystem,
               'hotel.ttlock.com',
               Icons.hotel,
               Icons.open_in_new,
@@ -172,7 +173,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
             ),
             _buildAnimatedContactItem(
               context,
-              'Apartman Sistemi',
+              AppLocalizations.of(context)!.apartmentSystem,
               'ttrenting.ttlock.com',
               Icons.apartment,
               Icons.open_in_new,
@@ -181,7 +182,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
             ),
             _buildAnimatedContactItem(
               context,
-              'Kullanım Kılavuzu',
+              AppLocalizations.of(context)!.userManual,
               'ttlockdoc.ttlock.com',
               Icons.menu_book,
               Icons.open_in_new,
@@ -198,9 +199,9 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           backgroundColor: const Color(0xFF1E90FF),
           elevation: 8,
           icon: const Icon(Icons.chat_bubble, color: Colors.white),
-          label: const Text(
-            'Canlı Destek',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          label: Text(
+            AppLocalizations.of(context)!.liveSupport,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -212,7 +213,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Panoya kopyalandı: $text')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.copiedToClipboardMsg(text))),
     );
   }
 
@@ -222,22 +223,24 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-        if (!mounted) return;
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.urlOpenError(url)),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('URL açılamadı: $url'),
+            content: Text(AppLocalizations.of(context)!.errorWithMsg(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
       }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Hata: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 
@@ -354,25 +357,24 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.info, color: Color(0xFF1E90FF)),
-            SizedBox(width: 12),
+            const Icon(Icons.info, color: Color(0xFF1E90FF)),
+            const SizedBox(width: 12),
             Text(
-              'Müşteri Servisi',
-              style: TextStyle(color: Colors.white),
+              AppLocalizations.of(context)!.customerService,
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
         content: Text(
-          'Herhangi bir teknik sorun, özellik talebi veya genel soru için bizimle iletişime geçebilirsiniz. '
-          'En hızlı şekilde size yardımcı olmaya çalışacağız.',
+          AppLocalizations.of(context)!.customerServiceDescription,
           style: TextStyle(color: Colors.grey[400]),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Tamam', style: TextStyle(color: Color(0xFF1E90FF))),
+            child: Text(AppLocalizations.of(context)!.ok, style: const TextStyle(color: Color(0xFF1E90FF))),
           ),
         ],
       ),
@@ -387,13 +389,13 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.chat, color: Color(0xFF1E90FF)),
-            SizedBox(width: 12),
+            const Icon(Icons.chat, color: Color(0xFF1E90FF)),
+            const SizedBox(width: 12),
             Text(
-              'Canlı Destek',
-              style: TextStyle(color: Colors.white),
+              AppLocalizations.of(context)!.liveSupport,
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
@@ -401,8 +403,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Canlı destek sohbeti yakında aktif olacak. '
-              'Şimdilik e-posta yoluyla bize ulaşabilirsiniz.',
+              AppLocalizations.of(context)!.liveChatSoon,
               style: TextStyle(color: Colors.grey[400]),
             ),
             const SizedBox(height: 16),
@@ -412,7 +413,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
                 _copyToClipboard(context, 'service@ttlock.com');
               },
               icon: const Icon(Icons.email),
-              label: const Text('E-posta Gönder'),
+              label: Text(AppLocalizations.of(context)!.sendEmail),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1E90FF),
                 shape: RoundedRectangleBorder(
@@ -425,7 +426,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Kapat', style: TextStyle(color: Colors.grey[400])),
+            child: Text(AppLocalizations.of(context)!.ok, style: TextStyle(color: Colors.grey[400])),
           ),
         ],
       ),

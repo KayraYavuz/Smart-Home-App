@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:yavuz_lock/api_service.dart';
-import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
+import '../../api_service.dart';
+import '../../repositories/auth_repository.dart';
 
 
 // --- Base Page Structure ---
@@ -59,7 +60,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
       }
     }
   }
@@ -67,7 +68,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
   @override
   Widget build(BuildContext context) {
     return FeatureBasePage(
-      title: 'Uzaktan Kumandalar',
+      title: AppLocalizations.of(context)!.remoteControls,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -78,7 +79,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
                   color: const Color(0xFF1E1E1E),
                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
-                    title: Text(remote['remoteName'] ?? 'Kumanda', style: const TextStyle(color: Colors.white)),
+                    title: Text(remote['remoteName'] ?? AppLocalizations.of(context)!.remoteControl, style: const TextStyle(color: Colors.white)),
                     subtitle: Text('ID: ${remote['remoteId']}', style: const TextStyle(color: Colors.grey)),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
@@ -89,9 +90,8 @@ class _RemoteListPageState extends State<RemoteListPage> {
                            await api.deleteRemote(remoteId: remote['remoteId']);
                            _loadRemotes();
                         } catch(e) {
-                        } catch(e) {
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.deleteErrorWithMsg(e.toString()))));
                           }
                         }
                       },
@@ -105,7 +105,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
            icon: const Icon(Icons.add),
            onPressed: () {
              // Add logic would go here (usually needs bluetooth interaction first)
-             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ekleme işlemi Bluetooth üzerinden başlatılmalı.')));
+             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.bluetoothAddInstructions)));
            },
          )
        ],
@@ -144,7 +144,7 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
     } catch (e) {
        if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
       }
     }
   }
@@ -152,7 +152,7 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
   @override
   Widget build(BuildContext context) {
     return FeatureBasePage(
-      title: 'Kablosuz Tuş Takımları',
+      title: AppLocalizations.of(context)!.wirelessKeypads,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -163,7 +163,7 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
                   color: const Color(0xFF1E1E1E),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
-                    title: Text(keypad['wirelessKeypadName'] ?? 'Tuş Takımı', style: const TextStyle(color: Colors.white)),
+                    title: Text(keypad['wirelessKeypadName'] ?? AppLocalizations.of(context)!.wirelessKeypad, style: const TextStyle(color: Colors.white)),
                     subtitle: Text('MAC: ${keypad['wirelessKeypadMac']}', style: const TextStyle(color: Colors.grey)),
                      trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
@@ -174,7 +174,7 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
                            _loadKeypads();
                         } catch(e) {
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.deleteErrorWithMsg(e.toString()))));
                         }
                       },
                     ),
@@ -186,7 +186,7 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
          IconButton(
            icon: const Icon(Icons.add),
            onPressed: () {
-             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ekleme işlemi Bluetooth üzerinden başlatılmalı.')));
+             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.bluetoothAddInstructions)));
            },
          )
        ],
@@ -233,18 +233,18 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
   @override
   Widget build(BuildContext context) {
     return FeatureBasePage(
-      title: 'Kapı Sensörü',
+      title: AppLocalizations.of(context)!.doorSensor,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _sensor == null
-              ? const Center(child: Text('Sensör bulunamadı', style: TextStyle(color: Colors.grey)))
+              ? Center(child: Text(AppLocalizations.of(context)!.sensorNotFound, style: const TextStyle(color: Colors.grey)))
               : ListView(
                 children: [
                    Card(
                   color: const Color(0xFF1E1E1E),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
-                    title: const Text('Kapı Sensörü', style: TextStyle(color: Colors.white)),
+                    title: Text(AppLocalizations.of(context)!.doorSensor, style: const TextStyle(color: Colors.white)),
                     subtitle: Text('MAC: ${_sensor!['doorSensorMac'] ?? 'N/A'}', style: const TextStyle(color: Colors.grey)),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
@@ -258,7 +258,7 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
                            });
                         } catch(e) {
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.deleteErrorWithMsg(e.toString()))));
                         }
                       },
                     ),
@@ -301,7 +301,7 @@ class _QrCodePageState extends State<QrCodePage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
       }
     }
   }
@@ -312,23 +312,23 @@ class _QrCodePageState extends State<QrCodePage> {
            await api.addQrCode(
                lockId: widget.lockId, 
                type: 1, 
-               name: "Yeni QR (${DateTime.now().minute})",
+               name: AppLocalizations.of(context)!.newQrWithName("${DateTime.now().minute}"),
                startDate: DateTime.now().millisecondsSinceEpoch,
                endDate: DateTime.now().add(const Duration(days: 1)).millisecondsSinceEpoch,
            );
            _loadQrCodes();
            if (!mounted) return;
-           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('QR Kod oluşturuldu')));
+           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.qrCodeCreated)));
         } catch(e) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ekleme hatası: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
         }
   }
 
   @override
   Widget build(BuildContext context) {
     return FeatureBasePage(
-      title: 'QR Kodları',
+      title: AppLocalizations.of(context)!.qrCodes,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -339,7 +339,7 @@ class _QrCodePageState extends State<QrCodePage> {
                   color: const Color(0xFF1E1E1E),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
-                    title: Text(qr['name'] ?? 'QR Kod', style: const TextStyle(color: Colors.white)),
+                    title: Text(qr['name'] ?? AppLocalizations.of(context)!.qrCode, style: const TextStyle(color: Colors.white)),
                     subtitle: Text('ID: ${qr['qrCodeId']}', style: const TextStyle(color: Colors.grey)),
                     onTap: () async {
                        // Show QR content
@@ -350,14 +350,14 @@ class _QrCodePageState extends State<QrCodePage> {
                            showDialog(
                                context: context, 
                                builder: (c) => AlertDialog(
-                                   title: const Text('QR İçeriği'),
-                                   content: Text(data['qrCodeContent'] ?? 'Boş'),
-                                   actions: [TextButton(onPressed: () => Navigator.pop(c), child: const Text('Tamam'))],
+                                   title: Text(AppLocalizations.of(context)!.qrContent),
+                                   content: Text(data['qrCodeContent'] ?? AppLocalizations.of(context)!.empty),
+                                   actions: [TextButton(onPressed: () => Navigator.pop(c), child: Text(AppLocalizations.of(context)!.ok))],
                                )
                            );
                        } catch (e) {
                            if (!context.mounted) return;
-                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Veri alma hatası: $e')));
+                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
                        }
                     },
                     trailing: IconButton(
@@ -369,7 +369,7 @@ class _QrCodePageState extends State<QrCodePage> {
                            _loadQrCodes();
                         } catch(e) {
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.deleteErrorWithMsg(e.toString()))));
                         }
                       },
                     ),
@@ -418,7 +418,7 @@ class _WifiLockPageState extends State<WifiLockPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
       }
     }
   }
@@ -426,7 +426,7 @@ class _WifiLockPageState extends State<WifiLockPage> {
   @override
   Widget build(BuildContext context) {
     return FeatureBasePage(
-      title: 'Wi-Fi Kilit Detayları',
+      title: AppLocalizations.of(context)!.wifiLockDetails,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -434,13 +434,13 @@ class _WifiLockPageState extends State<WifiLockPage> {
               child: Column(
                 children: [
                    if (_detail != null) ...[
-                       _buildInfoRow('Online Durumu', _detail!['isOnline'] == true ? 'Online' : 'Offline'),
-                       _buildInfoRow('Ağ Adı', _detail!['networkName'] ?? '-'),
+                       _buildInfoRow(AppLocalizations.of(context)!.isOnline, _detail!['isOnline'] == true ? AppLocalizations.of(context)!.online : AppLocalizations.of(context)!.offline),
+                       _buildInfoRow(AppLocalizations.of(context)!.networkName, _detail!['networkName'] ?? '-'),
                        _buildInfoRow('MAC', _detail!['wifiMac'] ?? '-'),
                        _buildInfoRow('IP', _detail!['ip'] ?? '-'),
-                       _buildInfoRow('Sinyal Gücü', '${_detail!['rssiGrade'] ?? '0'}'),
+                       _buildInfoRow(AppLocalizations.of(context)!.rssiGrade, '${_detail!['rssiGrade'] ?? '0'}'),
                    ] else 
-                       const Text('Detay bulunamadı', style: TextStyle(color: Colors.white)),
+                       Text(AppLocalizations.of(context)!.detailNotFound, style: const TextStyle(color: Colors.white)),
                 ],
               ),
             ),

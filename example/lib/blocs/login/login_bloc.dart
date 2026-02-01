@@ -94,8 +94,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     print('👤 Giriş denenecek formatlar: $usernamesToTry');
 
-    String ttlockUsernameToTry = email;
-
     // 2. TTLock Girişi Dene
     for (String username in usernamesToTry) {
       if (username.isEmpty) continue;
@@ -107,7 +105,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
         if (ttlockSuccess) {
            print('✅ Giriş BAŞARILI! (Format: $username)');
-           ttlockUsernameToTry = username;
            break;
         }
       } catch (e) {

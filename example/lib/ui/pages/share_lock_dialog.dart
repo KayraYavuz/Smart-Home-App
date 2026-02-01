@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:yavuz_lock/api_service.dart';
-import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../api_service.dart';
+import '../../repositories/auth_repository.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class ShareLockDialog extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -25,14 +27,17 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
 
   bool _isLoading = false;
 
-  final Map<int, String> _permissionOptions = {
-    1: 'Admin - Tam erişim (açma, kapama, ayarlar)',
-    2: 'Normal Kullanıcı - Açma ve kapama',
-    3: 'Sınırlı Kullanıcı - Sadece görüntüleme',
+  Map<int, String> _getPermissionOptions(AppLocalizations l10n) => {
+    1: l10n.adminPermission,
+    2: l10n.normalUserPermission,
+    3: l10n.limitedUserPermission,
   };
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final permissionOptions = _getPermissionOptions(l10n);
+
     return Dialog(
       backgroundColor: const Color(0xFF1E1E1E),
       shape: RoundedRectangleBorder(
@@ -55,7 +60,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        '${widget.lock['name']} Kilidini Paylaş',
+                        l10n.shareLockTitle(widget.lock['name']),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -71,9 +76,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    labelText: 'E-posta veya Telefon Numarası',
+                    labelText: l10n.emailOrPhone,
                     labelStyle: const TextStyle(color: Colors.grey),
-                    hintText: 'ornek@email.com veya +905551234567',
+                    hintText: l10n.emailOrPhoneHint,
                     hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
                     filled: true,
                     fillColor: Colors.grey[850],
@@ -87,11 +92,11 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'E-posta veya telefon numarası gerekli';
+                      return l10n.emailOrPhoneRequired;
                     }
                     // Basic email validation
                     if (!value.contains('@') && !value.startsWith('+')) {
-                      return 'Geçerli bir e-posta veya telefon numarası girin';
+                      return l10n.validEmailOrPhoneRequired;
                     }
                     return null;
                   },
@@ -99,9 +104,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 const SizedBox(height: 20),
 
                 // Permission Selection
-                const Text(
-                  'Yetki Seviyesi',
-                  style: TextStyle(
+                Text(
+                  l10n.permissionLevel,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -109,52 +114,54 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 ),
                 const SizedBox(height: 12),
 
-                RadioGroup<int>(
-                  groupValue: _selectedPermission,
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedPermission = value;
-                      });
-                    }
-                  },
-                  child: Column(
-                    children: [
-                      RadioListTile<int>(
-                        title: Text(
-                          _permissionOptions[1]!,
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                        value: 1,
-                        activeColor: Colors.blue,
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                        controlAffinity: ListTileControlAffinity.leading,
+                Column(
+                  children: [
+                    RadioListTile<int>(
+                      title: Text(
+                        permissionOptions[1]!,
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
                       ),
-                      RadioListTile<int>(
-                        title: Text(
-                          _permissionOptions[2]!,
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                        value: 2,
-                        activeColor: Colors.blue,
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                        controlAffinity: ListTileControlAffinity.leading,
+                      value: 1,
+                      groupValue: _selectedPermission,
+                      onChanged: (value) {
+                        if (value != null) setState(() => _selectedPermission = value);
+                      },
+                      activeColor: Colors.blue,
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                    RadioListTile<int>(
+                      title: Text(
+                        permissionOptions[2]!,
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
                       ),
-                      RadioListTile<int>(
-                        title: Text(
-                          _permissionOptions[3]!,
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                        value: 3,
-                        activeColor: Colors.blue,
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                        controlAffinity: ListTileControlAffinity.leading,
+                      value: 2,
+                      groupValue: _selectedPermission,
+                      onChanged: (value) {
+                        if (value != null) setState(() => _selectedPermission = value);
+                      },
+                      activeColor: Colors.blue,
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                    RadioListTile<int>(
+                      title: Text(
+                        permissionOptions[3]!,
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
                       ),
-                    ],
-                  ),
+                      value: 3,
+                      groupValue: _selectedPermission,
+                      onChanged: (value) {
+                        if (value != null) setState(() => _selectedPermission = value);
+                      },
+                      activeColor: Colors.blue,
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 20),
@@ -164,7 +171,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                   children: [
                     Expanded(
                       child: _buildDateTimePicker(
-                        label: 'Başlangıç Tarihi',
+                        label: l10n.startDate,
                         selectedDate: _startDate,
                         onDateSelected: (date) {
                           setState(() {
@@ -176,7 +183,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildDateTimePicker(
-                        label: 'Bitiş Tarihi',
+                        label: l10n.endDate,
                         selectedDate: _endDate,
                         onDateSelected: (date) {
                           setState(() {
@@ -193,9 +200,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 TextFormField(
                   controller: _remarksController,
                   decoration: InputDecoration(
-                    labelText: 'Not (İsteğe bağlı)',
+                    labelText: l10n.remarksLabel,
                     labelStyle: const TextStyle(color: Colors.grey),
-                    hintText: 'Paylaşım hakkında not...',
+                    hintText: l10n.remarksHint,
                     hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
                     filled: true,
                     fillColor: Colors.grey[850],
@@ -219,9 +226,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text(
-                          'İptal',
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
+                        child: Text(
+                          l10n.cancel,
+                          style: const TextStyle(color: Colors.grey, fontSize: 16),
                         ),
                       ),
                     ),
@@ -245,9 +252,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                 ),
                               )
-                            : const Text(
-                                'Paylaş',
-                                style: TextStyle(
+                            : Text(
+                                l10n.share,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -285,9 +292,6 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                   surface: Color(0xFF1E1E1E),
                   onSurface: Colors.white,
                 ),
-                dialogTheme: const DialogThemeData(
-                  backgroundColor: Color(0xFF2A2A2A),
-                ),
               ),
               child: child!,
             );
@@ -307,19 +311,6 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                     primary: Colors.blue,
                     surface: Color(0xFF1E1E1E),
                     onSurface: Colors.white,
-                  ),
-                  timePickerTheme: TimePickerThemeData(
-                    backgroundColor: const Color(0xFF2A2A2A),
-                    hourMinuteColor: WidgetStateColor.resolveWith((states) =>
-                        states.contains(WidgetState.selected)
-                            ? Colors.blue
-                            : Colors.grey[800]!),
-                    hourMinuteTextColor: WidgetStateColor.resolveWith(
-                        (states) => states.contains(WidgetState.selected)
-                            ? Colors.white
-                            : Colors.grey),
-                    dialHandColor: Colors.blue,
-                    dialBackgroundColor: Colors.grey[800],
                   ),
                 ),
                 child: child!,
@@ -363,7 +354,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                   Text(
                     selectedDate != null
                         ? '${selectedDate.day}/${selectedDate.month}/${selectedDate.year} ${selectedDate.hour.toString().padLeft(2, '0')}:${selectedDate.minute.toString().padLeft(2, '0')}'
-                        : 'Seçilmemiş',
+                        : AppLocalizations.of(context)!.notSelected,
                     style: TextStyle(
                       color: selectedDate != null ? Colors.white : Colors.grey,
                       fontSize: 14,
@@ -384,51 +375,43 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
   }
 
   Future<void> _shareLock() async {
-    print('🔄 Paylaşım butonuna tıklandı');
-
     if (!_formKey.currentState!.validate()) {
-      print('❌ Form validasyonu başarısız');
       return;
     }
 
     if (_startDate == null || _endDate == null) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Lütfen başlangıç ve bitiş tarihlerini seçin'),
+        SnackBar(
+          content: Text(l10n.selectStartEndDate),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    print('✅ Form validasyonu başarılı');
     setState(() {
       _isLoading = true;
     });
 
     try {
-      print('🔑 API servisi başlatılıyor...');
-      final apiService = ApiService(AuthRepository());
-      print('🔑 Access token alınıyor...');
+      final apiService = ApiService(context.read<AuthRepository>());
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
       if (accessToken == null) {
-        print('❌ Access token alınamadı');
         throw Exception('Access token alınamadı');
       }
-      print('✅ Access token alındı');
 
       final originalReceiver = _emailController.text.trim();
       final String emailSmall = originalReceiver.toLowerCase();
       final String sanitized = emailSmall.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
       final String beforeAt = emailSmall.contains('@') ? emailSmall.split('@')[0] : emailSmall;
 
-      // Denenecek alıcı isimleri listesi
       final List<String> receiversToTry = [
-        'fihbg_$sanitized', // 1. Tercih: App Prefix + Temizlenmiş Email
-        'fihbg_$beforeAt',  // 2. Tercih: App Prefix + Email başı
-        originalReceiver,   // 3. Tercih: Orijinal Email
+        'fihbg_$sanitized', 
+        'fihbg_$beforeAt',
+        originalReceiver,
       ];
 
       bool shareSuccess = false;
@@ -437,7 +420,6 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
       for (String receiver in receiversToTry) {
         if (receiver.isEmpty) continue;
         try {
-          print('🚀 Paylaşım deneniyor (Alıcı: $receiver)...');
           await apiService.sendEKey(
             accessToken: accessToken,
             lockId: widget.lock['lockId'].toString(),
@@ -445,23 +427,18 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
             keyName: 'Key for $originalReceiver',
             startDate: _startDate!,
             endDate: _endDate!,
-            keyRight: _selectedPermission,
-            remarks: _remarksController.text.trim().isEmpty ? null : _remarksController.text.trim(),
-            createUser: 2, // Önce var olanı dene, otomatik oluşturma
+            remoteEnable: _selectedPermission == 1 ? 1 : 2, // Map permission logic as needed
+            createUser: 2, 
           );
           shareSuccess = true;
-          print('✅ Paylaşım başarılı (Alıcı: $receiver)');
-          break; // Başarılıysa döngüden çık
+          break; 
         } catch (e) {
-          print('⚠️ $receiver ile paylaşım başarısız: $e');
           lastError = e.toString();
         }
       }
 
-      // Eğer hiçbir varyasyon çalışmadıysa, son bir kez orijinal email ile kullanıcı oluşturarak dene
       if (!shareSuccess) {
         try {
-          print('🚀 Son deneme: Orijinal email ile kullanıcı oluşturarak paylaşım...');
           await apiService.sendEKey(
             accessToken: accessToken,
             lockId: widget.lock['lockId'].toString(),
@@ -469,12 +446,10 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
             keyName: 'Key for $originalReceiver',
             startDate: _startDate!,
             endDate: _endDate!,
-            keyRight: _selectedPermission,
-            remarks: _remarksController.text.trim().isEmpty ? null : _remarksController.text.trim(),
-            createUser: 1, // Kullanıcı yoksa oluştur
+            remoteEnable: _selectedPermission == 1 ? 1 : 2,
+            createUser: 1, 
           );
           shareSuccess = true;
-          print('✅ Paylaşım başarılı (Yeni kullanıcı oluşturuldu)');
         } catch (e) {
           lastError = e.toString();
         }
@@ -488,22 +463,21 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
 
       Navigator.of(context).pop();
 
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${widget.lock['name']} kilidi başarıyla paylaşıldı'),
+          content: Text(l10n.lockSharedSuccess(widget.lock['name'])),
           backgroundColor: Colors.green,
           duration: const Duration(seconds: 3),
         ),
       );
 
     } catch (e) {
-      print('❌ Paylaşım hatası: $e');
-      
       if (!mounted) return;
-
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Paylaşım hatası: ${e.toString().replaceAll('Exception: ', '')}'),
+          content: Text('${l10n.sharingError}: ${e.toString().replaceAll('Exception: ', '')}'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 5),
         ),

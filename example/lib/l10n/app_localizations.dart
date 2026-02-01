@@ -853,7 +853,7 @@ abstract class AppLocalizations {
   /// No description provided for @noLocksFound.
   ///
   /// In en, this message translates to:
-  /// **'No locks found from API.'**
+  /// **'No locks found'**
   String get noLocksFound;
 
   /// No description provided for @allLocks.
@@ -1621,7 +1621,7 @@ abstract class AppLocalizations {
   /// No description provided for @transferLockSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Transfer lock ownership to another account'**
+  /// **'Transfer to another user'**
   String get transferLockSubtitle;
 
   /// No description provided for @transferGateway.
@@ -1912,10 +1912,958 @@ abstract class AppLocalizations {
   /// **'Unexpected error: {error}'**
   String unexpectedError(String error);
 
+  /// No description provided for @shareLockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share {lockName} Lock'**
+  String shareLockTitle(Object lockName);
+
+  /// No description provided for @emailOrPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'example@email.com or +905551234567'**
+  String get emailOrPhoneHint;
+
+  /// No description provided for @emailOrPhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or phone number required'**
+  String get emailOrPhoneRequired;
+
+  /// No description provided for @validEmailOrPhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email or phone number'**
+  String get validEmailOrPhoneRequired;
+
+  /// No description provided for @permissionLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission Level'**
+  String get permissionLevel;
+
+  /// No description provided for @adminPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin - Full access (open, close, settings)'**
+  String get adminPermission;
+
+  /// No description provided for @normalUserPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal User - Unlock and lock'**
+  String get normalUserPermission;
+
+  /// No description provided for @limitedUserPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited User - View only'**
+  String get limitedUserPermission;
+
+  /// No description provided for @startDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get startDate;
+
+  /// No description provided for @endDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get endDate;
+
+  /// No description provided for @notSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Selected'**
+  String get notSelected;
+
+  /// No description provided for @remarksLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Remarks (Optional)'**
+  String get remarksLabel;
+
+  /// No description provided for @remarksHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes about the share...'**
+  String get remarksHint;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @selectStartEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select start and end dates'**
+  String get selectStartEndDate;
+
+  /// No description provided for @lockSharedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{lockName} lock shared successfully'**
+  String lockSharedSuccess(Object lockName);
+
+  /// No description provided for @sharingError.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing error'**
+  String get sharingError;
+
+  /// No description provided for @tabTimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Timed'**
+  String get tabTimed;
+
+  /// No description provided for @tabOneTime.
+  ///
+  /// In en, this message translates to:
+  /// **'One-time'**
+  String get tabOneTime;
+
+  /// No description provided for @tabPermanent.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanent'**
+  String get tabPermanent;
+
+  /// No description provided for @tabRecurring.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring'**
+  String get tabRecurring;
+
+  /// No description provided for @enterReceiver.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter receiver'**
+  String get enterReceiver;
+
+  /// No description provided for @keySentToReceiver.
+  ///
+  /// In en, this message translates to:
+  /// **'The key has been sent to the receiver.'**
+  String get keySentToReceiver;
+
+  /// No description provided for @sentSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent Successfully'**
+  String get sentSuccessfully;
+
+  /// No description provided for @shareableLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Shareable Link'**
+  String get shareableLink;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @linkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied to clipboard'**
+  String get linkCopied;
+
+  /// No description provided for @sendViaEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Send via Email'**
+  String get sendViaEmail;
+
+  /// No description provided for @sendViaSMS.
+  ///
+  /// In en, this message translates to:
+  /// **'Send via SMS'**
+  String get sendViaSMS;
+
+  /// No description provided for @sendAppDownloadLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send App Download Link'**
+  String get sendAppDownloadLink;
+
+  /// No description provided for @receiver.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver'**
+  String get receiver;
+
+  /// No description provided for @receiverHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or Phone'**
+  String get receiverHint;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get nameLabel;
+
+  /// No description provided for @enterHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter here'**
+  String get enterHere;
+
+  /// No description provided for @validityPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Validity Period'**
+  String get validityPeriod;
+
+  /// No description provided for @configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured'**
+  String get configured;
+
+  /// No description provided for @set.
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get set;
+
+  /// No description provided for @allowRemoteUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Remote Unlock'**
+  String get allowRemoteUnlock;
+
+  /// No description provided for @permanentKeyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanent keys remain valid unless deleted.'**
+  String get permanentKeyNote;
+
+  /// No description provided for @timedKeyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Timed keys are valid only during the specified period.'**
+  String get timedKeyNote;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @cycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get cycle;
+
+  /// No description provided for @remoteControls.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote Controls'**
+  String get remoteControls;
+
+  /// No description provided for @remoteControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote Control'**
+  String get remoteControl;
+
+  /// No description provided for @wirelessKeypads.
+  ///
+  /// In en, this message translates to:
+  /// **'Wireless Keypads'**
+  String get wirelessKeypads;
+
+  /// No description provided for @wirelessKeypad.
+  ///
+  /// In en, this message translates to:
+  /// **'Wireless Keypad'**
+  String get wirelessKeypad;
+
+  /// No description provided for @doorSensor.
+  ///
+  /// In en, this message translates to:
+  /// **'Door Sensor'**
+  String get doorSensor;
+
+  /// No description provided for @sensorNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sensor not found'**
+  String get sensorNotFound;
+
+  /// No description provided for @qrCodes.
+  ///
+  /// In en, this message translates to:
+  /// **'QR Codes'**
+  String get qrCodes;
+
+  /// No description provided for @qrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code'**
+  String get qrCode;
+
+  /// No description provided for @qrContent.
+  ///
+  /// In en, this message translates to:
+  /// **'QR Content'**
+  String get qrContent;
+
+  /// No description provided for @empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get empty;
+
+  /// No description provided for @qrCodeCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'QR Code created'**
+  String get qrCodeCreated;
+
+  /// No description provided for @wifiLockDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi-Fi Lock Details'**
+  String get wifiLockDetails;
+
+  /// No description provided for @isOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Is Online'**
+  String get isOnline;
+
+  /// No description provided for @networkName.
+  ///
+  /// In en, this message translates to:
+  /// **'Network Name'**
+  String get networkName;
+
+  /// No description provided for @rssiGrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Signal Strength'**
+  String get rssiGrade;
+
+  /// No description provided for @detailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Detail not found'**
+  String get detailNotFound;
+
+  /// No description provided for @bluetoothAddInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Adding process should be started via Bluetooth.'**
+  String get bluetoothAddInstructions;
+
+  /// No description provided for @lockSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Settings'**
+  String get lockSettings;
+
+  /// No description provided for @general.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get general;
+
+  /// No description provided for @lockNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Name'**
+  String get lockNameTitle;
+
+  /// No description provided for @updateBatteryStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Battery Status'**
+  String get updateBatteryStatus;
+
+  /// No description provided for @syncWithServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync with server'**
+  String get syncWithServer;
+
+  /// No description provided for @groupSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Setting'**
+  String get groupSetting;
+
+  /// No description provided for @manageGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Group'**
+  String get manageGroup;
+
+  /// No description provided for @wifiSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi-Fi Settings'**
+  String get wifiSettingsTitle;
+
+  /// No description provided for @manageWifiConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Wi-Fi connection'**
+  String get manageWifiConnection;
+
+  /// No description provided for @lockingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Locking Settings'**
+  String get lockingSettings;
+
+  /// No description provided for @autoLockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Lock'**
+  String get autoLockTitle;
+
+  /// No description provided for @setTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Time'**
+  String get setTime;
+
+  /// No description provided for @passageModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Passage Mode'**
+  String get passageModeTitle;
+
+  /// No description provided for @activeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeLabel;
+
+  /// No description provided for @passiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Passive'**
+  String get passiveLabel;
+
+  /// No description provided for @workingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Working Hours'**
+  String get workingHours;
+
+  /// No description provided for @configureWorkingFreezingModes.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure working/freezing modes'**
+  String get configureWorkingFreezingModes;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @changeAdminPasscodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Admin Passcode'**
+  String get changeAdminPasscodeTitle;
+
+  /// No description provided for @updateSuperPasscode.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Super Passcode'**
+  String get updateSuperPasscode;
+
+  /// No description provided for @transferLockToUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer to another user'**
+  String get transferLockToUser;
+
+  /// No description provided for @deleteLockAction.
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE LOCK'**
+  String get deleteLockAction;
+
+  /// No description provided for @renameLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Lock'**
+  String get renameLock;
+
+  /// No description provided for @newName.
+  ///
+  /// In en, this message translates to:
+  /// **'New Name'**
+  String get newName;
+
+  /// No description provided for @selectGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Group'**
+  String get selectGroup;
+
+  /// No description provided for @noGroupsFoundCreateOne.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups found. Create a group first.'**
+  String get noGroupsFoundCreateOne;
+
+  /// No description provided for @lockAssignedToGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock assigned to {groupName} group'**
+  String lockAssignedToGroup(Object groupName);
+
+  /// No description provided for @removeGroupAssignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Group'**
+  String get removeGroupAssignment;
+
+  /// No description provided for @groupAssignmentRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Group assignment removed'**
+  String get groupAssignmentRemoved;
+
+  /// No description provided for @batterySynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery synchronized'**
+  String get batterySynced;
+
+  /// No description provided for @autoLockTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Lock Time'**
+  String get autoLockTime;
+
+  /// No description provided for @enterTimeInSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter time in seconds (0 to turn off)'**
+  String get enterTimeInSeconds;
+
+  /// No description provided for @secondsShortcut.
+  ///
+  /// In en, this message translates to:
+  /// **'sec'**
+  String get secondsShortcut;
+
+  /// No description provided for @workingMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Working Mode'**
+  String get workingMode;
+
+  /// No description provided for @continuouslyWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Continuously Working (Default)'**
+  String get continuouslyWorking;
+
+  /// No description provided for @freezingMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Freezing Mode (Stays Locked)'**
+  String get freezingMode;
+
+  /// No description provided for @customHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Hours'**
+  String get customHours;
+
+  /// No description provided for @modeUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode updated'**
+  String get modeUpdated;
+
+  /// No description provided for @newPasscodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Passcode'**
+  String get newPasscodeTitle;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @receiverUsernameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver Username'**
+  String get receiverUsernameTitle;
+
+  /// No description provided for @transferInitiated.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer initiated'**
+  String get transferInitiated;
+
+  /// No description provided for @deleteLockConfirmationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Lock?'**
+  String get deleteLockConfirmationTitle;
+
+  /// No description provided for @deleteLockConfirmationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'CAUTION: This action permanently deletes the lock from the server. It is recommended to perform a hardware reset via the SDK first.'**
+  String get deleteLockConfirmationMessage;
+
+  /// No description provided for @checkConnectivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Check Connectivity'**
+  String get checkConnectivity;
+
+  /// No description provided for @operationSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation successful'**
+  String get operationSuccessful;
+
+  /// No description provided for @operationFailedWithMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation failed: {error}'**
+  String operationFailedWithMsg(Object error);
+
+  /// No description provided for @bluetoothOffInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth is off. Please turn on Bluetooth.'**
+  String get bluetoothOffInstructions;
+
+  /// No description provided for @lockOutOfRangeInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock is out of range or in sleep mode.'**
+  String get lockOutOfRangeInstructions;
+
+  /// No description provided for @lockConnectionFailedInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to lock. Move closer and try again.'**
+  String get lockConnectionFailedInstructions;
+
+  /// No description provided for @remoteUnlockCommandSent.
+  ///
+  /// In en, this message translates to:
+  /// **'🔓 Remote unlock command sent'**
+  String get remoteUnlockCommandSent;
+
+  /// No description provided for @remoteControlError.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote control error'**
+  String get remoteControlError;
+
+  /// No description provided for @gatewayConnectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway or Wi-Fi connection could not be established. Please check your Gateway device.'**
+  String get gatewayConnectionError;
+
+  /// No description provided for @remoteUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote Unlock'**
+  String get remoteUnlock;
+
+  /// No description provided for @remoteAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote Access'**
+  String get remoteAccess;
+
+  /// No description provided for @electronicKeysMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronic\nKeys'**
+  String get electronicKeysMenu;
+
+  /// No description provided for @passcodesMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcodes'**
+  String get passcodesMenu;
+
+  /// No description provided for @cardsMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get cardsMenu;
+
+  /// No description provided for @fingerprintMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprint'**
+  String get fingerprintMenu;
+
+  /// No description provided for @facesMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Faces'**
+  String get facesMenu;
+
+  /// No description provided for @remoteControlMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote\nControl'**
+  String get remoteControlMenu;
+
+  /// No description provided for @wirelessKeypadMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Wireless\nKeypad'**
+  String get wirelessKeypadMenu;
+
+  /// No description provided for @doorSensorMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Door\nSensor'**
+  String get doorSensorMenu;
+
+  /// No description provided for @qrCodeMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'QR\nCode'**
+  String get qrCodeMenu;
+
+  /// No description provided for @recordsMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Records'**
+  String get recordsMenu;
+
+  /// No description provided for @shareMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareMenu;
+
+  /// No description provided for @settingsMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsMenu;
+
+  /// No description provided for @loadingConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading configuration...'**
+  String get loadingConfig;
+
+  /// No description provided for @configLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load configuration: {error}'**
+  String configLoadError(Object error);
+
+  /// No description provided for @timeConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Conflict'**
+  String get timeConflict;
+
+  /// No description provided for @timeOverlapWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This time period overlaps with existing ones:'**
+  String get timeOverlapWarning;
+
+  /// No description provided for @addStill.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to add it anyway?'**
+  String get addStill;
+
+  /// No description provided for @unsavedChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved Changes'**
+  String get unsavedChanges;
+
+  /// No description provided for @unsavedChangesMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes are not saved. Are you sure you want to exit?'**
+  String get unsavedChangesMsg;
+
+  /// No description provided for @exit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get exit;
+
+  /// No description provided for @configSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration saved'**
+  String get configSaved;
+
+  /// No description provided for @allDay.
+  ///
+  /// In en, this message translates to:
+  /// **'All day'**
+  String get allDay;
+
+  /// No description provided for @noPlanAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'No plan added yet'**
+  String get noPlanAdded;
+
+  /// No description provided for @addTimelineInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the + icon above to add a time period'**
+  String get addTimelineInstruction;
+
+  /// No description provided for @passageModeInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'You can set multiple time periods for passage mode. The lock will remain unlocked during these periods.'**
+  String get passageModeInstruction;
+
+  /// No description provided for @ttlockAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'TTLock Account'**
+  String get ttlockAccount;
+
+  /// No description provided for @ttlockWebSyncMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'This account was created with the TTLock official app. To sync passwords, please update your password using the TTLock Web Portal.'**
+  String get ttlockWebSyncMsg;
+
+  /// No description provided for @openPortal.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Portal'**
+  String get openPortal;
+
+  /// No description provided for @urlOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open URL: {url}'**
+  String urlOpenError(Object url);
+
+  /// No description provided for @timePeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Period'**
+  String get timePeriod;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @transferAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get transferAction;
+
+  /// No description provided for @timeSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Time set'**
+  String get timeSet;
+
+  /// No description provided for @tokenNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Token not found'**
+  String get tokenNotFound;
+
+  /// No description provided for @adminOnlyLinkWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: Only the Lock Admin can generate unlock links.'**
+  String get adminOnlyLinkWarning;
+
+  /// No description provided for @sendKeySuccessNoLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Key sent successfully, but a web link could not be generated due to permission restrictions.\nThe receiver can use the key by downloading the app.'**
+  String get sendKeySuccessNoLink;
+
+  /// No description provided for @shareMessageWithLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, I sent you a smart lock access key. You can access it via the link below:\n\n{link}'**
+  String shareMessageWithLink(Object link);
+
+  /// No description provided for @shareMessageNoLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, I sent you a smart lock access key. Please download the Yavuz Lock app and log in to use it.'**
+  String get shareMessageNoLink;
+
+  /// No description provided for @keyAccessSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Access Key'**
+  String get keyAccessSubject;
+
+  /// No description provided for @emailAppNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Email app not found'**
+  String get emailAppNotFound;
+
+  /// No description provided for @smsAppNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS app not found'**
+  String get smsAppNotFound;
+
+  /// No description provided for @deleteErrorWithMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Deletion error: {error}'**
+  String deleteErrorWithMsg(Object error);
+
+  /// No description provided for @newQrWithName.
+  ///
+  /// In en, this message translates to:
+  /// **'New QR ({name})'**
+  String newQrWithName(Object name);
+
+  /// No description provided for @oneTimeKeyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'One-time keys expire after first use or 1 hour.'**
+  String get oneTimeKeyNote;
+
   /// No description provided for @sendMultipleKeys.
   ///
   /// In en, this message translates to:
-  /// **'Send multiple keys'**
+  /// **'Send Multiple Keys'**
   String get sendMultipleKeys;
 
   /// No description provided for @sendMultipleKeysComingSoon.
@@ -1923,6 +2871,534 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send multiple keys feature coming soon'**
   String get sendMultipleKeysComingSoon;
+
+  /// No description provided for @groupListLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load group list: {error}'**
+  String groupListLoadError(Object error);
+
+  /// No description provided for @addNewGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Group'**
+  String get addNewGroup;
+
+  /// No description provided for @groupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Name'**
+  String get groupName;
+
+  /// No description provided for @groupAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Group added successfully'**
+  String get groupAddedSuccessfully;
+
+  /// No description provided for @groupAddError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add group: {error}'**
+  String groupAddError(Object error);
+
+  /// No description provided for @editGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Group'**
+  String get editGroup;
+
+  /// No description provided for @newGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'New Group Name'**
+  String get newGroupName;
+
+  /// No description provided for @groupUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Group updated'**
+  String get groupUpdated;
+
+  /// No description provided for @noGroupsCreatedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups created yet'**
+  String get noGroupsCreatedYet;
+
+  /// No description provided for @createGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Group'**
+  String get createGroup;
+
+  /// No description provided for @rename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get rename;
+
+  /// No description provided for @deleteGroupConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the group {name}?'**
+  String deleteGroupConfirmation(Object name);
+
+  /// No description provided for @groupDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Group deleted'**
+  String get groupDeleted;
+
+  /// No description provided for @authorizationStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorization Status'**
+  String get authorizationStatus;
+
+  /// No description provided for @authorizedAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized Administrator (Admin)'**
+  String get authorizedAdmin;
+
+  /// No description provided for @normalUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal User'**
+  String get normalUser;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @unfreeze.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfreeze'**
+  String get unfreeze;
+
+  /// No description provided for @freeze.
+  ///
+  /// In en, this message translates to:
+  /// **'Freeze'**
+  String get freeze;
+
+  /// No description provided for @revokeAuthority.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke Authority'**
+  String get revokeAuthority;
+
+  /// No description provided for @authorize.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorize'**
+  String get authorize;
+
+  /// No description provided for @changePeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Period'**
+  String get changePeriod;
+
+  /// No description provided for @unlockLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Link'**
+  String get unlockLink;
+
+  /// No description provided for @unfreezeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Freeze removed'**
+  String get unfreezeSuccess;
+
+  /// No description provided for @freezeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Key frozen'**
+  String get freezeSuccess;
+
+  /// No description provided for @revokeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Authority revoked'**
+  String get revokeSuccess;
+
+  /// No description provided for @authorizeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Authority granted'**
+  String get authorizeSuccess;
+
+  /// No description provided for @unlockLinkDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You can share this link with the user to allow them to open the lock via a browser.'**
+  String get unlockLinkDescription;
+
+  /// No description provided for @authorityError.
+  ///
+  /// In en, this message translates to:
+  /// **'Authority Error: Link creation can only be done by the Lock Owner.'**
+  String get authorityError;
+
+  /// No description provided for @linkRetrievalError.
+  ///
+  /// In en, this message translates to:
+  /// **'Link retrieval error: {error}'**
+  String linkRetrievalError(Object error);
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @end.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get end;
+
+  /// No description provided for @dateError.
+  ///
+  /// In en, this message translates to:
+  /// **'End date cannot be before start date'**
+  String get dateError;
+
+  /// No description provided for @updateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated'**
+  String get updateSuccess;
+
+  /// No description provided for @deleteKeyConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this key? This action cannot be undone.'**
+  String get deleteKeyConfirmation;
+
+  /// No description provided for @deleteKeyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Key'**
+  String get deleteKeyTitle;
+
+  /// No description provided for @groupManagementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Management'**
+  String get groupManagementTitle;
+
+  /// No description provided for @groupLocksLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load group locks: {error}'**
+  String groupLocksLoadError(Object error);
+
+  /// No description provided for @groupLocksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{groupName} Locks'**
+  String groupLocksTitle(Object groupName);
+
+  /// No description provided for @lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock'**
+  String get lock;
+
+  /// No description provided for @lockListRetrievalError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to retrieve lock list: {error}'**
+  String lockListRetrievalError(Object error);
+
+  /// No description provided for @operationCompletedWithCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation completed. {success} added, {fail} errors.'**
+  String operationCompletedWithCounts(Object fail, Object success);
+
+  /// No description provided for @shareGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Group'**
+  String get shareGroup;
+
+  /// No description provided for @shareGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Group {groupName}'**
+  String shareGroupTitle(Object groupName);
+
+  /// No description provided for @receiverHintUserEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver Username / Email'**
+  String get receiverHintUserEmail;
+
+  /// No description provided for @groupShareNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This operation sends an e-key for all locks in the group.'**
+  String get groupShareNote;
+
+  /// No description provided for @locksSharedCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'{success} locks shared, {fail} failed.'**
+  String locksSharedCounts(Object fail, Object success);
+
+  /// No description provided for @noLocksInGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'No locks in this group.'**
+  String get noLocksInGroup;
+
+  /// No description provided for @groupDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Detail'**
+  String get groupDetail;
+
+  /// No description provided for @totalLocksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total {count} Locks'**
+  String totalLocksCount(Object count);
+
+  /// No description provided for @editGroupLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Group Locks (Add/Remove)'**
+  String get editGroupLocks;
+
+  /// No description provided for @unnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed'**
+  String get unnamed;
+
+  /// No description provided for @defaultCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Turkey'**
+  String get defaultCountry;
+
+  /// No description provided for @securityQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Question'**
+  String get securityQuestion;
+
+  /// No description provided for @notSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get notSet;
+
+  /// No description provided for @securityQuestionSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Security question setting will be added soon'**
+  String get securityQuestionSoon;
+
+  /// No description provided for @countryRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Country/Region'**
+  String get countryRegion;
+
+  /// No description provided for @userTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'User Terms'**
+  String get userTerms;
+
+  /// No description provided for @editField.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {field}'**
+  String editField(Object field);
+
+  /// No description provided for @enterNewField.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new {field}'**
+  String enterNewField(Object field);
+
+  /// No description provided for @fieldUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} updated successfully'**
+  String fieldUpdatedSuccess(Object field);
+
+  /// No description provided for @passwordResetInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the \'Forgot Password\' feature on the login page to change your password.'**
+  String get passwordResetInstruction;
+
+  /// No description provided for @avatarSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar change feature will be added soon'**
+  String get avatarSoon;
+
+  /// No description provided for @customerService.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Service'**
+  String get customerService;
+
+  /// No description provided for @support247.
+  ///
+  /// In en, this message translates to:
+  /// **'24/7 Support'**
+  String get support247;
+
+  /// No description provided for @contactUsOnIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us whenever you experience any issues'**
+  String get contactUsOnIssues;
+
+  /// No description provided for @emailSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Support'**
+  String get emailSupport;
+
+  /// No description provided for @salesCooperation.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales and Cooperation'**
+  String get salesCooperation;
+
+  /// No description provided for @officialWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Official Website'**
+  String get officialWebsite;
+
+  /// No description provided for @webAdminSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Web Management System'**
+  String get webAdminSystem;
+
+  /// No description provided for @hotelAdminSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel Management System'**
+  String get hotelAdminSystem;
+
+  /// No description provided for @apartmentSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment System'**
+  String get apartmentSystem;
+
+  /// No description provided for @userManual.
+  ///
+  /// In en, this message translates to:
+  /// **'User Manual'**
+  String get userManual;
+
+  /// No description provided for @liveSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Support'**
+  String get liveSupport;
+
+  /// No description provided for @copiedToClipboardMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard: {text}'**
+  String copiedToClipboardMsg(Object text);
+
+  /// No description provided for @customerServiceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You can contact us for any technical issues, feature requests, or general questions. We will try to help you as quickly as possible.'**
+  String get customerServiceDescription;
+
+  /// No description provided for @liveChatSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Live support chat will be active soon. For now, you can reach us via email.'**
+  String get liveChatSoon;
+
+  /// No description provided for @sendEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Email'**
+  String get sendEmail;
+
+  /// No description provided for @passive.
+  ///
+  /// In en, this message translates to:
+  /// **'Passive'**
+  String get passive;
+
+  /// No description provided for @gatewayRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway required'**
+  String get gatewayRequired;
+
+  /// No description provided for @group.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get group;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @noEKeysFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No electronic keys found'**
+  String get noEKeysFound;
+
+  /// No description provided for @keyFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Key for {username}'**
+  String keyFor(String username);
+
+  /// No description provided for @expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get expired;
+
+  /// No description provided for @deleteGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Group'**
+  String get deleteGroup;
+
+  /// No description provided for @updateErrorWithMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Update error: {error}'**
+  String updateErrorWithMsg(Object error);
 }
 
 class _AppLocalizationsDelegate

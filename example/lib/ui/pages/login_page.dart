@@ -121,17 +121,23 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _launchUrl(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('URL açılamadı: $url'),
-          backgroundColor: Colors.red,
-        ),
-      );
+    final l10n = AppLocalizations.of(context)!;
+    if (!await launchUrl(Uri.parse(url))) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Hata'),
+            content: Text(l10n.urlOpenError(url)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Tamam'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -270,28 +276,29 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showWebPortalDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: const Color(0xFF1E1E1E),
-          title: const Text('TTLock Hesabı', style: TextStyle(color: Colors.white)),
-          content: const Text(
-            'Bu hesap TTLock resmi uygulamasıyla oluşturulmuş. Şifre senkronizasyonu için lütfen TTLock Web Portalını kullanarak şifrenizi güncelleyin.',
-            style: TextStyle(color: Colors.white70),
+          title: Text(l10n.ttlockAccount, style: const TextStyle(color: Colors.white)),
+          content: Text(
+            l10n.ttlockWebSyncMsg,
+            style: const TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () {
                 _launchUrl('https://lock2.ttlock.com/');
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text('Portalı Aç', style: TextStyle(color: Color(0xFF1E90FF))),
+              child: Text(l10n.openPortal, style: const TextStyle(color: Color(0xFF1E90FF))),
             ),
           ],
         );

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart'; 
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class CreatePasscodePage extends StatefulWidget {
   // In a real app, you would pass lockData here
@@ -48,10 +48,11 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text('Yeni Şifre Oluştur'),
+        title: Text(l10n.createPasscodeTitle),
         backgroundColor: Colors.grey[900],
       ),
       body: SingleChildScrollView(
@@ -62,35 +63,35 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
-                decoration: _buildInputDecoration('Şifre (4-9 haneli)'),
+                decoration: _buildInputDecoration(l10n.passcodeHint),
                 keyboardType: TextInputType.number,
                 style: const TextStyle(color: Colors.white, fontSize: 18),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Lütfen bir şifre girin';
+                    return l10n.enterPasscode;
                   }
                   if (value.length < 4 || value.length > 9) {
-                    return 'Şifre 4 ile 9 haneli olmalıdır';
+                    return l10n.passcodeLengthError;
                   }
                   return null;
                 },
                 onSaved: (value) => _passcode = value!,
               ),
               const SizedBox(height: 30),
-              Text('Geçerlilik Başlangıcı', style: TextStyle(color: Colors.grey[400])),
+              Text(l10n.validityStart, style: TextStyle(color: Colors.grey[400])),
               const SizedBox(height: 10),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[800]),
                 onPressed: () => _selectDate(context, true),
-                child: Text(DateFormat('dd.MM.yyyy').format(_startDate), style: const TextStyle(color: Colors.white)),
+                child: Text(DateFormat('dd/MM/yyyy').format(_startDate), style: const TextStyle(color: Colors.white)),
               ),
               const SizedBox(height: 30),
-              Text('Geçerlilik Bitişi', style: TextStyle(color: Colors.grey[400])),
+              Text(l10n.validityEnd, style: TextStyle(color: Colors.grey[400])),
               const SizedBox(height: 10),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[800]),
                 onPressed: () => _selectDate(context, false),
-                child: Text(DateFormat('dd.MM.yyyy').format(_endDate), style: const TextStyle(color: Colors.white)),
+                child: Text(DateFormat('dd/MM/yyyy').format(_endDate), style: const TextStyle(color: Colors.white)),
               ),
               const SizedBox(height: 40),
               ElevatedButton(
@@ -99,7 +100,7 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: _createPasscode,
-                child: const Text('Oluştur', style: TextStyle(fontSize: 16, color: Colors.white)),
+                child: Text(l10n.create, style: const TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ],
           ),

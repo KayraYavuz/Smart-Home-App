@@ -9,7 +9,6 @@ import 'package:yavuz_lock/ui/pages/ekey/ekey_list_page.dart';
 import 'package:yavuz_lock/ui/pages/lock_settings_page.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/ui/pages/share_lock_dialog.dart';
-import 'package:yavuz_lock/ui/pages/ekey_detail_page.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
@@ -19,6 +18,7 @@ import 'package:yavuz_lock/passcode_page.dart';
 import 'package:yavuz_lock/card_page.dart';
 import 'package:yavuz_lock/face_page.dart';
 import 'package:yavuz_lock/ui/pages/feature_pages.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class LockDetailPage extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -109,6 +109,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocProvider(
       create: (context) => DeviceBloc(),
       child: Scaffold(
@@ -118,12 +119,12 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
           title: Row(
             children: [
               // Kilit adı
-              Expanded(
+              Flexible(
                 child: Text(
                   widget.lock['name'] ?? 'Yavuz Lock',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16, // Slightly smaller font
                     fontWeight: FontWeight.w600,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -134,12 +135,12 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
               // Connectivity durumu
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                 decoration: BoxDecoration(
                   color: _isLoadingConnectivity
                       ? Colors.grey.withValues(alpha: 0.2)
                       : (_isOnline ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2)),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -157,7 +158,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                           ),
                     const SizedBox(width: 2),
                     Text(
-                      _isLoadingConnectivity ? '...' : (_isOnline ? 'Online' : 'Offline'),
+                      _isLoadingConnectivity ? '...' : (_isOnline ? l10n.online : l10n.offline),
                       style: TextStyle(
                         color: _isLoadingConnectivity
                             ? Colors.grey
@@ -172,11 +173,11 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
               // Pil seviyesi
               Container(
-                margin: const EdgeInsets.only(left: 6),
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                margin: const EdgeInsets.only(left: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                 decoration: BoxDecoration(
                   color: _getBatteryColor(widget.lock['battery'] ?? 85).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -202,15 +203,15 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
               // Yetki durumu
               if (widget.lock['shared'] == true)
                 Container(
-                  margin: const EdgeInsets.only(left: 6),
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  margin: const EdgeInsets.only(left: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.orange.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Text(
-                    'Paylaşılan',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.sharedLock,
+                    style: const TextStyle(
                       color: Colors.orange,
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
@@ -224,7 +225,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
             IconButton(
               icon: const Icon(Icons.refresh, color: Colors.white),
               onPressed: _checkConnectivity,
-              tooltip: 'Bağlantıyı Kontrol Et',
+              tooltip: l10n.checkConnectivity,
             ),
           ],
         ),
@@ -232,14 +233,14 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
           listener: (context, state) {
             if (state is DeviceSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('İşlem başarılı')),
+                SnackBar(content: Text(l10n.operationSuccessful)),
               );
 
               // Ana sayfaya güncellenmiş kilit bilgilerini gönder
               final updatedLock = Map<String, dynamic>.from(widget.lock);
               if (state.newLockState != null) {
                 updatedLock['isLocked'] = state.newLockState;
-                updatedLock['status'] = state.newLockState! ? 'Kilitli' : 'Açık';
+                updatedLock['status'] = state.newLockState! ? l10n.statusLocked : l10n.statusUnlocked;
               }
 
               // Kısa bir gecikmeden sonra sayfayı kapat
@@ -257,15 +258,15 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
               String errorMessage = state.error;
               
               if (state.error == 'BLUETOOTH_OFF') {
-                errorMessage = 'Bluetooth kapalı. Lütfen Bluetooth\'u açın.';
+                errorMessage = l10n.bluetoothOffInstructions;
               } else if (state.error == 'LOCK_OUT_OF_RANGE') {
-                errorMessage = 'Kilit kapsam alanında değil veya uyku modunda.';
+                errorMessage = l10n.lockOutOfRangeInstructions;
               } else if (state.error.startsWith('CONNECTION_FAILED:')) {
-                errorMessage = 'Kilide bağlanılamadı. Yakınlaşıp tekrar deneyin.';
+                errorMessage = l10n.lockConnectionFailedInstructions;
               }
               
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('İşlem başarısız: $errorMessage')),
+                SnackBar(content: Text(l10n.operationFailedWithMsg(errorMessage))),
               );
             }
           },
@@ -377,13 +378,13 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                               child: IconButton(
                                 onPressed: () => _remoteUnlock(context),
                                 icon: const Icon(Icons.wifi_tethering, color: Colors.blue, size: 28),
-                                tooltip: 'Uzaktan Aç',
+                                tooltip: l10n.remoteUnlock,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
-                              'Uzaktan Erişim',
-                              style: TextStyle(
+                            Text(
+                              l10n.remoteAccess,
+                              style: const TextStyle(
                                 color: Colors.blue,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -408,73 +409,73 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                             _buildGridMenuItem(
                               context,
                               icon: Icons.vpn_key,
-                              label: 'Elektronik\nAnahtarlar',
+                              label: l10n.electronicKeysMenu,
                               onTap: () => _showEKeys(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.password,
-                              label: 'Şifreler',
+                              label: l10n.passcodesMenu,
                               onTap: () => _showPasswords(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.credit_card,
-                              label: 'Kartlar',
+                              label: l10n.cardsMenu,
                               onTap: () => _showCards(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.fingerprint,
-                              label: 'Parmak\nİzi',
+                              label: l10n.fingerprintMenu,
                               onTap: () => _showFingerprint(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.face,
-                              label: 'Yüzler',
+                              label: l10n.facesMenu,
                               onTap: () => _showFaces(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.wifi_tethering,
-                              label: 'Uzaktan\nKumanda',
+                              label: l10n.remoteControlMenu,
                               onTap: () => _showRemoteControl(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.keyboard_alt,
-                              label: 'Kablosuz\nTuş Takımı',
+                              label: l10n.wirelessKeypadMenu,
                               onTap: () => _showWirelessKeypad(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.sensor_door,
-                              label: 'Kapı\nSensörü',
+                              label: l10n.doorSensorMenu,
                               onTap: () => _showDoorSensor(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.qr_code,
-                              label: 'QR\nKod',
+                              label: l10n.qrCodeMenu,
                               onTap: () => _showQrCode(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.history,
-                              label: 'Kayıtlar',
+                              label: l10n.recordsMenu,
                               onTap: () => _showRecords(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.share,
-                              label: 'Paylaş',
+                              label: l10n.shareMenu,
                               onTap: () => _showShareLockDialog(context),
                             ),
                             _buildGridMenuItem(
                               context,
                               icon: Icons.settings,
-                              label: 'Ayarlar',
+                              label: l10n.settingsMenu,
                               onTap: () => _showSettings(context),
                             ),
                           ],
@@ -536,26 +537,14 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
 
   void _remoteUnlock(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
-      // Önce gateway kontrolü yap
-      final apiService = ApiService(context.read<AuthRepository>());
+      final authRepository = context.read<AuthRepository>();
+      final apiService = ApiService(authRepository);
       await apiService.getAccessToken();
-
+      
       final accessToken = apiService.accessToken;
-      if (accessToken == null) {
-        throw Exception('No access token available');
-      }
-
-      // Gateway listesini kontrol et (Opsiyonel: Kullanıcıyı bilgilendirmek için, ama engellemek için değil)
-      // final gateways = await apiService.getGatewayList();
-
-      // Connectivity kontrolü
-      // final isConnected = await apiService.checkDeviceConnectivity(
-      //   accessToken: accessToken,
-      //   lockId: widget.lock['lockId'].toString(),
-      // );
-
-      // if (!isConnected) { ... } // Bu kontrolü de esnetebiliriz, belki kilit Wi-Fi kilididir.
+      if (accessToken == null) throw Exception('Erişim anahtarı alınamadı');
 
       // TTLock API ile uzaktan açma komutunu gönder
       print('🚀 TTLock /v3/lock/unlock API çağrısı başlatılıyor...');
@@ -566,14 +555,6 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       if (!mounted) return;
 
       print('✅ Uzaktan açma komutu başarıyla gönderildi');
-
-      // Başarılı mesajı
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('🔓 Uzaktan açma komutu gönderildi'),
-          backgroundColor: Colors.green,
-        ),
-      );
 
       // Ana sayfaya güncelleme gönder
       Navigator.of(context).pop({
@@ -586,12 +567,11 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     } catch (e) {
       if (!mounted) return;
       
-      // Hata mesajını ayrıştır
-      String errorMessage = 'Uzaktan kontrol hatası';
+      String errorMessage = l10n.remoteControlError;
       if (e.toString().contains('Gateway') || e.toString().contains('gateway')) {
-         errorMessage = 'Gateway veya Wi-Fi bağlantısı kurulamadı. Lütfen Gateway cihazınızı kontrol edin.';
+         errorMessage = l10n.gatewayConnectionError;
       } else {
-         errorMessage = 'Hata: $e';
+         errorMessage = l10n.errorWithMsg(e.toString());
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -602,7 +582,6 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       );
     }
   }
-
   void _showEKeys(BuildContext context) {
     Navigator.push(
       context,

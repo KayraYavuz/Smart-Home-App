@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'time_period_model.dart';
 import 'time_period_page.dart';
 
@@ -58,9 +59,10 @@ class _PassageModePageState extends State<PassageModePage> {
       });
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Yapılandırma yüklenemedi: $e')),
+        SnackBar(content: Text(l10n.configLoadError(e.toString()))),
       );
     }
   }
@@ -123,6 +125,7 @@ class _PassageModePageState extends State<PassageModePage> {
   }
 
   Future<bool> _showConflictWarning(List<TimePeriod> conflicts) async {
+    final l10n = AppLocalizations.of(context)!;
     return await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -131,9 +134,9 @@ class _PassageModePageState extends State<PassageModePage> {
           children: [
             Icon(Icons.warning_amber_rounded, color: AppColors.warning),
             const SizedBox(width: 12),
-            const Text(
-              'Zaman Çakışması',
-              style: TextStyle(color: Colors.white),
+            Text(
+              l10n.timeConflict,
+              style: const TextStyle(color: Colors.white),
             ),
           ],
         ),
@@ -141,9 +144,9 @@ class _PassageModePageState extends State<PassageModePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Bu zaman dilimi mevcut dilimlerle çakışıyor:',
-              style: TextStyle(color: AppColors.textSecondary),
+            Text(
+              l10n.timeOverlapWarning,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 12),
             ...conflicts.map((c) => Padding(
@@ -154,20 +157,20 @@ class _PassageModePageState extends State<PassageModePage> {
               ),
             )),
             const SizedBox(height: 12),
-            const Text(
-              'Yine de eklemek istiyor musunuz?',
-              style: TextStyle(color: AppColors.textSecondary),
+            Text(
+              l10n.addStill,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('İptal', style: TextStyle(color: AppColors.textSecondary)),
+            child: Text(l10n.cancel, style: const TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Ekle', style: TextStyle(color: AppColors.primary)),
+            child: Text(l10n.add, style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -201,6 +204,7 @@ class _PassageModePageState extends State<PassageModePage> {
       );
 
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
 
       setState(() {
         _isSaving = false;
@@ -208,12 +212,12 @@ class _PassageModePageState extends State<PassageModePage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Row(
             children: [
-              Icon(Icons.check_circle, color: AppColors.success),
-              SizedBox(width: 12),
-              Text('Yapılandırma kaydedildi'),
+              const Icon(Icons.check_circle, color: AppColors.success),
+              const SizedBox(width: 12),
+              Text(l10n.configSaved),
             ],
           ),
           backgroundColor: AppColors.surface,
@@ -221,10 +225,11 @@ class _PassageModePageState extends State<PassageModePage> {
       );
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() => _isSaving = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Hata: $e'),
+          content: Text(l10n.errorWithMsg(e.toString())),
           backgroundColor: AppColors.error,
         ),
       );
@@ -233,6 +238,7 @@ class _PassageModePageState extends State<PassageModePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -248,9 +254,9 @@ class _PassageModePageState extends State<PassageModePage> {
             }
           },
         ),
-        title: const Text(
-          'Geçiş Modu',
-          style: TextStyle(
+        title: Text(
+          l10n.passageModeTitle,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -298,6 +304,7 @@ class _PassageModePageState extends State<PassageModePage> {
   }
 
   Widget _buildDescription() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -313,10 +320,10 @@ class _PassageModePageState extends State<PassageModePage> {
             size: 20,
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Geçiş modu için birden fazla zaman dilimi ayarlayabilirsiniz. Bu sürelerde kilit açık kalacaktır.',
-              style: TextStyle(
+              l10n.passageModeInstruction,
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13,
                 height: 1.4,
@@ -329,6 +336,7 @@ class _PassageModePageState extends State<PassageModePage> {
   }
 
   Widget _buildPassageModeToggle() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -357,9 +365,9 @@ class _PassageModePageState extends State<PassageModePage> {
                   ),
                 ),
                 const SizedBox(width: 14),
-                const Text(
-                  'Geçiş Modu',
-                  style: TextStyle(
+                Text(
+                  l10n.passageModeTitle,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -380,6 +388,7 @@ class _PassageModePageState extends State<PassageModePage> {
   }
 
   Widget _buildTimePeriodRow() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -411,9 +420,9 @@ class _PassageModePageState extends State<PassageModePage> {
                       ),
                     ),
                     const SizedBox(width: 14),
-                    const Text(
-                      'Zaman dilimi',
-                      style: TextStyle(
+                    Text(
+                      l10n.timePeriod,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -442,6 +451,7 @@ class _PassageModePageState extends State<PassageModePage> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 40),
       child: Column(
@@ -452,17 +462,17 @@ class _PassageModePageState extends State<PassageModePage> {
             color: AppColors.textSecondary.withOpacity(0.5),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Henüz bir plan eklenmedi',
-            style: TextStyle(
+          Text(
+            l10n.noPlanAdded,
+            style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 15,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Zaman dilimi eklemek için yukarıdaki + ikonuna dokunun',
-            style: TextStyle(
+          Text(
+            l10n.addTimelineInstruction,
+            style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 13,
             ),
@@ -537,7 +547,7 @@ class _PassageModePageState extends State<PassageModePage> {
                             const SizedBox(height: 4),
                             Text(
                               period.isAllHours
-                                  ? 'Tüm gün'
+                                  ? AppLocalizations.of(context)!.allDay
                                   : '${period.startTimeFormatted} - ${period.endTimeFormatted}',
                               style: const TextStyle(
                                 color: AppColors.textSecondary,
@@ -564,6 +574,7 @@ class _PassageModePageState extends State<PassageModePage> {
   }
 
   Widget _buildSaveButton() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -597,9 +608,9 @@ class _PassageModePageState extends State<PassageModePage> {
                       valueColor: AlwaysStoppedAnimation(Colors.black),
                     ),
                   )
-                : const Text(
-                    'Kaydet',
-                    style: TextStyle(
+                : Text(
+                    l10n.save,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -611,26 +622,27 @@ class _PassageModePageState extends State<PassageModePage> {
   }
 
   Future<void> _showUnsavedChangesDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: const Text(
-          'Kaydedilmemiş Değişiklikler',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          l10n.unsavedChanges,
+          style: const TextStyle(color: Colors.white),
         ),
-        content: const Text(
-          'Değişiklikleriniz kaydedilmedi. Çıkmak istediğinizden emin misiniz?',
-          style: TextStyle(color: AppColors.textSecondary),
+        content: Text(
+          l10n.unsavedChangesMsg,
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('İptal', style: TextStyle(color: AppColors.textSecondary)),
+            child: Text(l10n.cancel, style: const TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Çık', style: TextStyle(color: AppColors.error)),
+            child: Text(l10n.exit, style: const TextStyle(color: AppColors.error)),
           ),
         ],
       ),

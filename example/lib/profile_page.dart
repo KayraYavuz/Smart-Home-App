@@ -7,7 +7,6 @@ import 'package:yavuz_lock/ui/pages/account_info_page.dart';
 import 'package:yavuz_lock/ui/pages/customer_service_page.dart';
 import 'package:yavuz_lock/ui/pages/system_management_page.dart';
 import 'package:yavuz_lock/ui/pages/work_together_page.dart';
-import 'package:yavuz_lock/ui/pages/group_management_page.dart';
 import 'package:yavuz_lock/logs_page.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_event.dart';
@@ -198,18 +197,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const SystemManagementPage()),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  _buildMenuItem(
-                    icon: Icons.folder_shared,
-                    iconColor: Colors.blue,
-                    title: l10n.groupManagement,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const GroupManagementPage()),
                       );
                     },
                   ),

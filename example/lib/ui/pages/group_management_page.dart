@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/ui/pages/group_detail_page.dart';
 
 class GroupManagementPage extends StatefulWidget {
@@ -37,54 +38,57 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
       if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Grup listesi yüklenemedi: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.groupListLoadError(e.toString()))),
       );
     }
   }
 
   Future<void> _addGroup() async {
-    final TextEditingController controller = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController();
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('Yeni Grup Ekle', style: TextStyle(color: Colors.white)),
+        title: Text(l10n.addNewGroup, style: const TextStyle(color: Colors.white)),
         content: TextField(
           controller: controller,
+          autofocus: true,
           style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'Grup Adı',
-            hintStyle: TextStyle(color: Colors.grey),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+          decoration: InputDecoration(
+            hintText: l10n.groupName,
+            hintStyle: const TextStyle(color: Colors.grey),
+            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
               if (controller.text.isNotEmpty) {
+                final groupName = controller.text;
                 Navigator.pop(context);
                 try {
-                  await _apiService.addGroup(name: controller.text);
+                  await _apiService.addGroup(name: groupName);
                   _fetchGroups();
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Grup başarıyla eklendi')),
+                      SnackBar(content: Text(l10n.groupAddedSuccessfully)),
                     );
                   }
                 } catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Grup eklenemedi: $e')),
+                      SnackBar(content: Text(l10n.groupAddError(e.toString()))),
                     );
                   }
                 }
               }
             },
-            child: const Text('Ekle', style: TextStyle(color: AppColors.primary)),
+            child: Text(l10n.add, style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -92,51 +96,54 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
   }
 
   Future<void> _editGroup(Map<String, dynamic> group) async {
-    final TextEditingController controller = TextEditingController(text: group['name'] ?? '');
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: group['name']);
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('Grubu Düzenle', style: TextStyle(color: Colors.white)),
+        title: Text(l10n.editGroup, style: const TextStyle(color: Colors.white)),
         content: TextField(
           controller: controller,
+          autofocus: true,
           style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'Yeni Grup Adı',
-            hintStyle: TextStyle(color: Colors.grey),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+          decoration: InputDecoration(
+            hintText: l10n.newGroupName,
+            hintStyle: const TextStyle(color: Colors.grey),
+            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
               if (controller.text.isNotEmpty) {
+                final newName = controller.text;
                 Navigator.pop(context);
                 try {
                   await _apiService.updateGroup(
                     groupId: group['groupId'].toString(),
-                    newName: controller.text,
+                    newName: newName,
                   );
                   _fetchGroups();
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Grup güncellendi')),
+                      SnackBar(content: Text(l10n.groupUpdated)),
                     );
                   }
                 } catch (e) {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Güncelleme hatası: $e')),
+                      SnackBar(content: Text(l10n.updateErrorWithMsg(e.toString()))),
                     );
                   }
                 }
               }
             },
-            child: const Text('Kaydet', style: TextStyle(color: AppColors.primary)),
+            child: Text(l10n.save, style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -144,23 +151,24 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
   }
 
   Future<void> _deleteGroup(Map<String, dynamic> group) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('Grubu Sil', style: TextStyle(color: Colors.white)),
+        title: Text(l10n.deleteGroup, style: const TextStyle(color: Colors.white)),
         content: Text(
-          '${group['name']} grubunu silmek istediğinizden emin misiniz?',
+          l10n.deleteGroupConfirmation(group['name'] ?? ''),
           style: const TextStyle(color: Colors.grey),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sil', style: TextStyle(color: Colors.redAccent)),
+            child: Text(l10n.delete, style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -172,13 +180,13 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         _fetchGroups();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Grup silindi')),
+            SnackBar(content: Text(l10n.groupDeleted)),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Silme hatası: $e')),
+            SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))),
           );
         }
       }
@@ -187,10 +195,11 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Grup Yönetimi'),
+        title: Text(l10n.groupManagement),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -203,15 +212,15 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                     children: [
                       const Icon(Icons.group_off, size: 64, color: Colors.grey),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Henüz grup oluşturulmamış',
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      Text(
+                        l10n.noGroupsCreatedYet,
+                        style: const TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton.icon(
                         onPressed: _addGroup,
                         icon: const Icon(Icons.add),
-                        label: const Text('Grup Oluştur'),
+                        label: Text(l10n.createGroup),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -245,71 +254,70 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.3),
+                              color: Colors.black.withOpacity(0.3),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
                           ],
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary.withValues(alpha: 0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(Icons.folder, color: AppColors.primary, size: 28),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        group['name'] ?? 'İsimsiz Grup',
-                                        style: const TextStyle(
-                                          color: Colors.white, 
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Grup ID: ${group['groupId']}',
-                                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            const Divider(color: Colors.white10),
-                            const SizedBox(height: 8),
-                            // Action Buttons Row
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton.icon(
-                                  onPressed: () => _editGroup(group),
-                                  icon: const Icon(Icons.edit, size: 18, color: Colors.blue),
-                                  label: const Text('Adını Değiştir', style: TextStyle(color: Colors.blue)),
-                                ),
-                                const SizedBox(width: 8),
-                                TextButton.icon(
-                                  onPressed: () => _deleteGroup(group),
-                                  icon: const Icon(Icons.delete, size: 18, color: Colors.redAccent),
-                                  label: const Text('Sil', style: TextStyle(color: Colors.redAccent)),
-                                ),
-                              ],
-                            )
-                          ],
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                             Row(
+                               children: [
+                                 Container(
+                                   padding: const EdgeInsets.all(12),
+                                   decoration: BoxDecoration(
+                                     color: AppColors.primary.withOpacity(0.1),
+                                     shape: BoxShape.circle,
+                                   ),
+                                   child: const Icon(Icons.folder, color: AppColors.primary, size: 28),
+                                 ),
+                                 const SizedBox(width: 16),
+                                 Expanded(
+                                   child: Column(
+                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                     children: [
+                                       Text(
+                                         group['name'] ?? l10n.unnamedGroup,
+                                         style: const TextStyle(
+                                           color: Colors.white, 
+                                           fontWeight: FontWeight.bold,
+                                           fontSize: 18,
+                                         ),
+                                         overflow: TextOverflow.ellipsis,
+                                       ),
+                                       const SizedBox(height: 4),
+                                       Text(
+                                         'Grup ID: ${group['groupId']}',
+                                         style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                       ),
+                                     ],
+                                   ),
+                                 ),
+                                 const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+                               ],
+                             ),
+                             const SizedBox(height: 16),
+                             const Divider(color: Colors.white10),
+                             const SizedBox(height: 8),
+                             Row(
+                                   mainAxisAlignment: MainAxisAlignment.end,
+                                   children: [
+                                     TextButton.icon(
+                                       onPressed: () => _editGroup(group),
+                                       icon: const Icon(Icons.edit, size: 18, color: Colors.blue),
+                                       label: Text(l10n.rename, style: const TextStyle(color: Colors.blue)),
+                                     ),
+                                     const SizedBox(width: 8),
+                                     TextButton.icon(
+                                       onPressed: () => _deleteGroup(group),
+                                       icon: const Icon(Icons.delete, size: 18, color: Colors.redAccent),
+                                       label: Text(l10n.delete, style: const TextStyle(color: Colors.redAccent)),
+                                     ),
+                                   ],
+                                 )
+                           ],
                         ),
                       ),
                     );
@@ -324,4 +332,5 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
           : null,
     );
   }
+
 }

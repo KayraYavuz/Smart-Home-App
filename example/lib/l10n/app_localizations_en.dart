@@ -392,7 +392,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewDocumentation => 'View Documentation';
 
   @override
-  String get noLocksFound => 'No locks found from API.';
+  String get noLocksFound => 'No locks found';
 
   @override
   String get allLocks => 'Yavuz Lock';
@@ -811,8 +811,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transferLock => 'Transfer Lock';
 
   @override
-  String get transferLockSubtitle =>
-      'Transfer lock ownership to another account';
+  String get transferLockSubtitle => 'Transfer to another user';
 
   @override
   String get transferGateway => 'Transfer Gateway';
@@ -982,9 +981,825 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get sendMultipleKeys => 'Send multiple keys';
+  String shareLockTitle(Object lockName) {
+    return 'Share $lockName Lock';
+  }
+
+  @override
+  String get emailOrPhoneHint => 'example@email.com or +905551234567';
+
+  @override
+  String get emailOrPhoneRequired => 'Email or phone number required';
+
+  @override
+  String get validEmailOrPhoneRequired => 'Enter a valid email or phone number';
+
+  @override
+  String get permissionLevel => 'Permission Level';
+
+  @override
+  String get adminPermission => 'Admin - Full access (open, close, settings)';
+
+  @override
+  String get normalUserPermission => 'Normal User - Unlock and lock';
+
+  @override
+  String get limitedUserPermission => 'Limited User - View only';
+
+  @override
+  String get startDate => 'Start Date';
+
+  @override
+  String get endDate => 'End Date';
+
+  @override
+  String get notSelected => 'Not Selected';
+
+  @override
+  String get remarksLabel => 'Remarks (Optional)';
+
+  @override
+  String get remarksHint => 'Notes about the share...';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get selectStartEndDate => 'Please select start and end dates';
+
+  @override
+  String lockSharedSuccess(Object lockName) {
+    return '$lockName lock shared successfully';
+  }
+
+  @override
+  String get sharingError => 'Sharing error';
+
+  @override
+  String get tabTimed => 'Timed';
+
+  @override
+  String get tabOneTime => 'One-time';
+
+  @override
+  String get tabPermanent => 'Permanent';
+
+  @override
+  String get tabRecurring => 'Recurring';
+
+  @override
+  String get enterReceiver => 'Please enter receiver';
+
+  @override
+  String get keySentToReceiver => 'The key has been sent to the receiver.';
+
+  @override
+  String get sentSuccessfully => 'Sent Successfully';
+
+  @override
+  String get shareableLink => 'Shareable Link';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get linkCopied => 'Link copied to clipboard';
+
+  @override
+  String get sendViaEmail => 'Send via Email';
+
+  @override
+  String get sendViaSMS => 'Send via SMS';
+
+  @override
+  String get sendAppDownloadLink => 'Send App Download Link';
+
+  @override
+  String get receiver => 'Receiver';
+
+  @override
+  String get receiverHint => 'Email or Phone';
+
+  @override
+  String get nameLabel => 'Name';
+
+  @override
+  String get enterHere => 'Enter here';
+
+  @override
+  String get validityPeriod => 'Validity Period';
+
+  @override
+  String get configured => 'Configured';
+
+  @override
+  String get set => 'Set';
+
+  @override
+  String get allowRemoteUnlock => 'Allow Remote Unlock';
+
+  @override
+  String get permanentKeyNote => 'Permanent keys remain valid unless deleted.';
+
+  @override
+  String get timedKeyNote =>
+      'Timed keys are valid only during the specified period.';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get cycle => 'Cycle';
+
+  @override
+  String get remoteControls => 'Remote Controls';
+
+  @override
+  String get remoteControl => 'Remote Control';
+
+  @override
+  String get wirelessKeypads => 'Wireless Keypads';
+
+  @override
+  String get wirelessKeypad => 'Wireless Keypad';
+
+  @override
+  String get doorSensor => 'Door Sensor';
+
+  @override
+  String get sensorNotFound => 'Sensor not found';
+
+  @override
+  String get qrCodes => 'QR Codes';
+
+  @override
+  String get qrCode => 'QR Code';
+
+  @override
+  String get qrContent => 'QR Content';
+
+  @override
+  String get empty => 'Empty';
+
+  @override
+  String get qrCodeCreated => 'QR Code created';
+
+  @override
+  String get wifiLockDetails => 'Wi-Fi Lock Details';
+
+  @override
+  String get isOnline => 'Is Online';
+
+  @override
+  String get networkName => 'Network Name';
+
+  @override
+  String get rssiGrade => 'Signal Strength';
+
+  @override
+  String get detailNotFound => 'Detail not found';
+
+  @override
+  String get bluetoothAddInstructions =>
+      'Adding process should be started via Bluetooth.';
+
+  @override
+  String get lockSettings => 'Lock Settings';
+
+  @override
+  String get general => 'General';
+
+  @override
+  String get lockNameTitle => 'Lock Name';
+
+  @override
+  String get updateBatteryStatus => 'Update Battery Status';
+
+  @override
+  String get syncWithServer => 'Sync with server';
+
+  @override
+  String get groupSetting => 'Group Setting';
+
+  @override
+  String get manageGroup => 'Manage Group';
+
+  @override
+  String get wifiSettingsTitle => 'Wi-Fi Settings';
+
+  @override
+  String get manageWifiConnection => 'Manage Wi-Fi connection';
+
+  @override
+  String get lockingSettings => 'Locking Settings';
+
+  @override
+  String get autoLockTitle => 'Auto Lock';
+
+  @override
+  String get setTime => 'Set Time';
+
+  @override
+  String get passageModeTitle => 'Passage Mode';
+
+  @override
+  String get activeLabel => 'Active';
+
+  @override
+  String get passiveLabel => 'Passive';
+
+  @override
+  String get workingHours => 'Working Hours';
+
+  @override
+  String get configureWorkingFreezingModes =>
+      'Configure working/freezing modes';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get changeAdminPasscodeTitle => 'Change Admin Passcode';
+
+  @override
+  String get updateSuperPasscode => 'Update Super Passcode';
+
+  @override
+  String get transferLockToUser => 'Transfer to another user';
+
+  @override
+  String get deleteLockAction => 'DELETE LOCK';
+
+  @override
+  String get renameLock => 'Rename Lock';
+
+  @override
+  String get newName => 'New Name';
+
+  @override
+  String get selectGroup => 'Select Group';
+
+  @override
+  String get noGroupsFoundCreateOne => 'No groups found. Create a group first.';
+
+  @override
+  String lockAssignedToGroup(Object groupName) {
+    return 'Lock assigned to $groupName group';
+  }
+
+  @override
+  String get removeGroupAssignment => 'Remove Group';
+
+  @override
+  String get groupAssignmentRemoved => 'Group assignment removed';
+
+  @override
+  String get batterySynced => 'Battery synchronized';
+
+  @override
+  String get autoLockTime => 'Auto Lock Time';
+
+  @override
+  String get enterTimeInSeconds => 'Enter time in seconds (0 to turn off)';
+
+  @override
+  String get secondsShortcut => 'sec';
+
+  @override
+  String get workingMode => 'Working Mode';
+
+  @override
+  String get continuouslyWorking => 'Continuously Working (Default)';
+
+  @override
+  String get freezingMode => 'Freezing Mode (Stays Locked)';
+
+  @override
+  String get customHours => 'Custom Hours';
+
+  @override
+  String get modeUpdated => 'Mode updated';
+
+  @override
+  String get newPasscodeTitle => 'New Passcode';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get receiverUsernameTitle => 'Receiver Username';
+
+  @override
+  String get transferInitiated => 'Transfer initiated';
+
+  @override
+  String get deleteLockConfirmationTitle => 'Delete Lock?';
+
+  @override
+  String get deleteLockConfirmationMessage =>
+      'CAUTION: This action permanently deletes the lock from the server. It is recommended to perform a hardware reset via the SDK first.';
+
+  @override
+  String get checkConnectivity => 'Check Connectivity';
+
+  @override
+  String get operationSuccessful => 'Operation successful';
+
+  @override
+  String operationFailedWithMsg(Object error) {
+    return 'Operation failed: $error';
+  }
+
+  @override
+  String get bluetoothOffInstructions =>
+      'Bluetooth is off. Please turn on Bluetooth.';
+
+  @override
+  String get lockOutOfRangeInstructions =>
+      'Lock is out of range or in sleep mode.';
+
+  @override
+  String get lockConnectionFailedInstructions =>
+      'Could not connect to lock. Move closer and try again.';
+
+  @override
+  String get remoteUnlockCommandSent => '🔓 Remote unlock command sent';
+
+  @override
+  String get remoteControlError => 'Remote control error';
+
+  @override
+  String get gatewayConnectionError =>
+      'Gateway or Wi-Fi connection could not be established. Please check your Gateway device.';
+
+  @override
+  String get remoteUnlock => 'Remote Unlock';
+
+  @override
+  String get remoteAccess => 'Remote Access';
+
+  @override
+  String get electronicKeysMenu => 'Electronic\nKeys';
+
+  @override
+  String get passcodesMenu => 'Passcodes';
+
+  @override
+  String get cardsMenu => 'Cards';
+
+  @override
+  String get fingerprintMenu => 'Fingerprint';
+
+  @override
+  String get facesMenu => 'Faces';
+
+  @override
+  String get remoteControlMenu => 'Remote\nControl';
+
+  @override
+  String get wirelessKeypadMenu => 'Wireless\nKeypad';
+
+  @override
+  String get doorSensorMenu => 'Door\nSensor';
+
+  @override
+  String get qrCodeMenu => 'QR\nCode';
+
+  @override
+  String get recordsMenu => 'Records';
+
+  @override
+  String get shareMenu => 'Share';
+
+  @override
+  String get settingsMenu => 'Settings';
+
+  @override
+  String get loadingConfig => 'Loading configuration...';
+
+  @override
+  String configLoadError(Object error) {
+    return 'Failed to load configuration: $error';
+  }
+
+  @override
+  String get timeConflict => 'Time Conflict';
+
+  @override
+  String get timeOverlapWarning =>
+      'This time period overlaps with existing ones:';
+
+  @override
+  String get addStill => 'Do you want to add it anyway?';
+
+  @override
+  String get unsavedChanges => 'Unsaved Changes';
+
+  @override
+  String get unsavedChangesMsg =>
+      'Your changes are not saved. Are you sure you want to exit?';
+
+  @override
+  String get exit => 'Exit';
+
+  @override
+  String get configSaved => 'Configuration saved';
+
+  @override
+  String get allDay => 'All day';
+
+  @override
+  String get noPlanAdded => 'No plan added yet';
+
+  @override
+  String get addTimelineInstruction =>
+      'Tap the + icon above to add a time period';
+
+  @override
+  String get passageModeInstruction =>
+      'You can set multiple time periods for passage mode. The lock will remain unlocked during these periods.';
+
+  @override
+  String get ttlockAccount => 'TTLock Account';
+
+  @override
+  String get ttlockWebSyncMsg =>
+      'This account was created with the TTLock official app. To sync passwords, please update your password using the TTLock Web Portal.';
+
+  @override
+  String get openPortal => 'Open Portal';
+
+  @override
+  String urlOpenError(Object url) {
+    return 'Could not open URL: $url';
+  }
+
+  @override
+  String get timePeriod => 'Time Period';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get transferAction => 'Transfer';
+
+  @override
+  String get timeSet => 'Time set';
+
+  @override
+  String get tokenNotFound => 'Token not found';
+
+  @override
+  String get adminOnlyLinkWarning =>
+      'Note: Only the Lock Admin can generate unlock links.';
+
+  @override
+  String get sendKeySuccessNoLink =>
+      'Key sent successfully, but a web link could not be generated due to permission restrictions.\nThe receiver can use the key by downloading the app.';
+
+  @override
+  String shareMessageWithLink(Object link) {
+    return 'Hello, I sent you a smart lock access key. You can access it via the link below:\n\n$link';
+  }
+
+  @override
+  String get shareMessageNoLink =>
+      'Hello, I sent you a smart lock access key. Please download the Yavuz Lock app and log in to use it.';
+
+  @override
+  String get keyAccessSubject => 'Lock Access Key';
+
+  @override
+  String get emailAppNotFound => 'Email app not found';
+
+  @override
+  String get smsAppNotFound => 'SMS app not found';
+
+  @override
+  String deleteErrorWithMsg(Object error) {
+    return 'Deletion error: $error';
+  }
+
+  @override
+  String newQrWithName(Object name) {
+    return 'New QR ($name)';
+  }
+
+  @override
+  String get oneTimeKeyNote =>
+      'One-time keys expire after first use or 1 hour.';
+
+  @override
+  String get sendMultipleKeys => 'Send Multiple Keys';
 
   @override
   String get sendMultipleKeysComingSoon =>
       'Send multiple keys feature coming soon';
+
+  @override
+  String groupListLoadError(Object error) {
+    return 'Failed to load group list: $error';
+  }
+
+  @override
+  String get addNewGroup => 'Add New Group';
+
+  @override
+  String get groupName => 'Group Name';
+
+  @override
+  String get groupAddedSuccessfully => 'Group added successfully';
+
+  @override
+  String groupAddError(Object error) {
+    return 'Failed to add group: $error';
+  }
+
+  @override
+  String get editGroup => 'Edit Group';
+
+  @override
+  String get newGroupName => 'New Group Name';
+
+  @override
+  String get groupUpdated => 'Group updated';
+
+  @override
+  String get noGroupsCreatedYet => 'No groups created yet';
+
+  @override
+  String get createGroup => 'Create Group';
+
+  @override
+  String get rename => 'Rename';
+
+  @override
+  String deleteGroupConfirmation(Object name) {
+    return 'Are you sure you want to delete the group $name?';
+  }
+
+  @override
+  String get groupDeleted => 'Group deleted';
+
+  @override
+  String get authorizationStatus => 'Authorization Status';
+
+  @override
+  String get authorizedAdmin => 'Authorized Administrator (Admin)';
+
+  @override
+  String get normalUser => 'Normal User';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get unfreeze => 'Unfreeze';
+
+  @override
+  String get freeze => 'Freeze';
+
+  @override
+  String get revokeAuthority => 'Revoke Authority';
+
+  @override
+  String get authorize => 'Authorize';
+
+  @override
+  String get changePeriod => 'Change Period';
+
+  @override
+  String get unlockLink => 'Unlock Link';
+
+  @override
+  String get unfreezeSuccess => 'Freeze removed';
+
+  @override
+  String get freezeSuccess => 'Key frozen';
+
+  @override
+  String get revokeSuccess => 'Authority revoked';
+
+  @override
+  String get authorizeSuccess => 'Authority granted';
+
+  @override
+  String get unlockLinkDescription =>
+      'You can share this link with the user to allow them to open the lock via a browser.';
+
+  @override
+  String get authorityError =>
+      'Authority Error: Link creation can only be done by the Lock Owner.';
+
+  @override
+  String linkRetrievalError(Object error) {
+    return 'Link retrieval error: $error';
+  }
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get end => 'End';
+
+  @override
+  String get dateError => 'End date cannot be before start date';
+
+  @override
+  String get updateSuccess => 'Updated';
+
+  @override
+  String get deleteKeyConfirmation =>
+      'Are you sure you want to delete this key? This action cannot be undone.';
+
+  @override
+  String get deleteKeyTitle => 'Delete Key';
+
+  @override
+  String get groupManagementTitle => 'Group Management';
+
+  @override
+  String groupLocksLoadError(Object error) {
+    return 'Failed to load group locks: $error';
+  }
+
+  @override
+  String groupLocksTitle(Object groupName) {
+    return '$groupName Locks';
+  }
+
+  @override
+  String get lock => 'Lock';
+
+  @override
+  String lockListRetrievalError(Object error) {
+    return 'Failed to retrieve lock list: $error';
+  }
+
+  @override
+  String operationCompletedWithCounts(Object fail, Object success) {
+    return 'Operation completed. $success added, $fail errors.';
+  }
+
+  @override
+  String get shareGroup => 'Share Group';
+
+  @override
+  String shareGroupTitle(Object groupName) {
+    return 'Share Group $groupName';
+  }
+
+  @override
+  String get receiverHintUserEmail => 'Receiver Username / Email';
+
+  @override
+  String get groupShareNote =>
+      'This operation sends an e-key for all locks in the group.';
+
+  @override
+  String locksSharedCounts(Object fail, Object success) {
+    return '$success locks shared, $fail failed.';
+  }
+
+  @override
+  String get noLocksInGroup => 'No locks in this group.';
+
+  @override
+  String get groupDetail => 'Group Detail';
+
+  @override
+  String totalLocksCount(Object count) {
+    return 'Total $count Locks';
+  }
+
+  @override
+  String get editGroupLocks => 'Edit Group Locks (Add/Remove)';
+
+  @override
+  String get unnamed => 'Unnamed';
+
+  @override
+  String get defaultCountry => 'Turkey';
+
+  @override
+  String get securityQuestion => 'Security Question';
+
+  @override
+  String get notSet => 'Not set';
+
+  @override
+  String get securityQuestionSoon =>
+      'Security question setting will be added soon';
+
+  @override
+  String get countryRegion => 'Country/Region';
+
+  @override
+  String get userTerms => 'User Terms';
+
+  @override
+  String editField(Object field) {
+    return 'Edit $field';
+  }
+
+  @override
+  String enterNewField(Object field) {
+    return 'Enter new $field';
+  }
+
+  @override
+  String fieldUpdatedSuccess(Object field) {
+    return '$field updated successfully';
+  }
+
+  @override
+  String get passwordResetInstruction =>
+      'Use the \'Forgot Password\' feature on the login page to change your password.';
+
+  @override
+  String get avatarSoon => 'Avatar change feature will be added soon';
+
+  @override
+  String get customerService => 'Customer Service';
+
+  @override
+  String get support247 => '24/7 Support';
+
+  @override
+  String get contactUsOnIssues =>
+      'Contact us whenever you experience any issues';
+
+  @override
+  String get emailSupport => 'Email Support';
+
+  @override
+  String get salesCooperation => 'Sales and Cooperation';
+
+  @override
+  String get officialWebsite => 'Official Website';
+
+  @override
+  String get webAdminSystem => 'Web Management System';
+
+  @override
+  String get hotelAdminSystem => 'Hotel Management System';
+
+  @override
+  String get apartmentSystem => 'Apartment System';
+
+  @override
+  String get userManual => 'User Manual';
+
+  @override
+  String get liveSupport => 'Live Support';
+
+  @override
+  String copiedToClipboardMsg(Object text) {
+    return 'Copied to clipboard: $text';
+  }
+
+  @override
+  String get customerServiceDescription =>
+      'You can contact us for any technical issues, feature requests, or general questions. We will try to help you as quickly as possible.';
+
+  @override
+  String get liveChatSoon =>
+      'Live support chat will be active soon. For now, you can reach us via email.';
+
+  @override
+  String get sendEmail => 'Send Email';
+
+  @override
+  String get passive => 'Passive';
+
+  @override
+  String get gatewayRequired => 'Gateway required';
+
+  @override
+  String get group => 'Group';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get noEKeysFound => 'No electronic keys found';
+
+  @override
+  String keyFor(String username) {
+    return 'Key for $username';
+  }
+
+  @override
+  String get expired => 'Expired';
+
+  @override
+  String get deleteGroup => 'Delete Group';
+
+  @override
+  String updateErrorWithMsg(Object error) {
+    return 'Update error: $error';
+  }
 }

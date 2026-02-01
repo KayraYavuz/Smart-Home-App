@@ -241,7 +241,6 @@ class HybridUnlockService {
 
   /// TTLock hata kodlarına göre hata tipi belirle
   String _getBluetoothErrorType(dynamic errorCode, String errorMsg) {
-    final errorStr = errorCode.toString().toLowerCase();
     final errorMsgLower = errorMsg.toLowerCase();
     
     // Bluetooth durumu hataları

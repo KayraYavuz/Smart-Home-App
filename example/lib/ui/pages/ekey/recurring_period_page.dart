@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import '../../theme.dart';
-import '../passage_mode/time_period_model.dart'; // Reusing TimePeriod model logic or creating simpler one?
 // Actually, simple cyclic config is enough.
 
 class RecurringPeriodPage extends StatefulWidget {
@@ -89,7 +89,7 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Geçerlilik süresi', style: TextStyle(color: Colors.white, fontSize: 18)),
+        title: Text(AppLocalizations.of(context)!.validityPeriod, style: const TextStyle(color: Colors.white, fontSize: 18)),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -98,13 +98,13 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildRow('Başlangıç tarihi', _formatDate(_startDate), () => _selectDate(true)),
+            _buildRow(AppLocalizations.of(context)!.startDate, _formatDate(_startDate), () => _selectDate(true)),
             _buildDivider(),
-            _buildRow('Bitiş tarihi', _formatDate(_endDate), () => _selectDate(false)),
+            _buildRow(AppLocalizations.of(context)!.endDate, _formatDate(_endDate), () => _selectDate(false)),
             
             const SizedBox(height: 30),
             
-            const Text('Döngü', style: TextStyle(color: Colors.grey, fontSize: 14)),
+            Text(AppLocalizations.of(context)!.cycle, style: const TextStyle(color: Colors.grey, fontSize: 14)),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -141,9 +141,9 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
 
             const SizedBox(height: 30),
 
-            _buildRow('Başlangıç saati', _formatTime(_startTime), () => _selectTime(true)),
+            _buildRow(AppLocalizations.of(context)!.tabTimed + ' ' + AppLocalizations.of(context)!.startDate.split(' ')[1] , _formatTime(_startTime), () => _selectTime(true)),
             _buildDivider(),
-            _buildRow('Bitiş zamanı', _formatTime(_endTime), () => _selectTime(false)),
+            _buildRow(AppLocalizations.of(context)!.tabTimed + ' ' + AppLocalizations.of(context)!.endDate.split(' ')[1], _formatTime(_endTime), () => _selectTime(false)),
 
             const SizedBox(height: 50),
 
@@ -159,7 +159,7 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
                   backgroundColor: const Color(0xFF2C2C2C), // Gray button per request
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 ),
-                child: const Text('Tamam', style: TextStyle(color: Colors.white, fontSize: 16)),
+                child: Text(AppLocalizations.of(context)!.ok, style: const TextStyle(color: Colors.white, fontSize: 16)),
               ),
             ),
           ],

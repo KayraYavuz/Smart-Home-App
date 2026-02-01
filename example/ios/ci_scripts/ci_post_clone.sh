@@ -9,13 +9,13 @@ echo "=== BAŞLANGIÇ: CI Post Clone Script ($(date)) ==="
 # 1. GoogleService-Info.plist ve .env dosyalarını oluştur
 if [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" ]; then
     echo "GoogleService-Info.plist (Base64) decode ediliyor..."
-    echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" | base64 --decode > ../GoogleService-Info.plist
+    echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT_BASE64" | base64 --decode > ../Runner/GoogleService-Info.plist
 elif [ -n "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" ]; then
     echo "GoogleService-Info.plist (Düz Metin) dosyası oluşturuluyor..."
-    echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" > ../GoogleService-Info.plist
+    echo "$GOOGLE_SERVICE_INFO_PLIST_CONTENT" > ../Runner/GoogleService-Info.plist
 else
     echo "⚠️ UYARI: GOOGLE_SERVICE_INFO_PLIST_CONTENT değişkeni bulunamadı. Dummy oluşturuluyor."
-    cat <<EOF > ../GoogleService-Info.plist
+    cat <<EOF > ../Runner/GoogleService-Info.plist
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

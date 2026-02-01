@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart'; // Clipboard
 import 'package:url_launcher/url_launcher.dart'; // Email/SMS launch
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import '../../theme.dart';
 import '../../../api_service.dart';
 import '../../../repositories/auth_repository.dart';
+import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
+import 'package:yavuz_lock/blocs/auth/auth_state.dart';
 import 'recurring_period_page.dart';  // Import the new page
-import 'dart:convert'; // For jsonEncode if needed locally, but APIService handles it
 
 class SendEKeyPage extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -38,12 +40,12 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
   bool _isLoading = false;
   String _receiverInput = "";
 
-  final List<String> _tabs = ["Zamanlanmış", "Bir kere", "Kalıcı", "Yinelenen"];
+  List<String> _getTabs(AppLocalizations l10n) => [l10n.tabTimed, l10n.tabOneTime, l10n.tabPermanent, l10n.tabRecurring];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -110,76 +112,56 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
   }
 
   Future<void> _sendKey() async {
-    String receiver = _receiverController.text.trim();
+    final l10n = AppLocalizations.of(context)!;
+    final receiver = _receiverController.text.trim();
     if (receiver.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen alıcı giriniz')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.enterReceiver)));
       return;
-    }
-    
-    // Email normalization
-    if (receiver.contains('@')) {
-      receiver = receiver.toLowerCase();
-    }
-    _receiverInput = receiver; // Store for sharing
-
-    if (_tabController.index == 3 && !_isRecurringConfigured) {
-       // Force configure if recurring tab selected but not configured? 
-       // Or use defaults? Let's assume defaults if not set, or prompt.
-       // The UI shows "Geçerlilik süresi" row. 
-    }
-
-    DateTime finalStart = _startDate;
-    DateTime finalEnd = _endDate;
-    List<Map<String, dynamic>>? cyclicConfig;
-
-    // 0: Timed -> Use _startDate, _endDate
-    if (_tabController.index == 0) {
-      finalStart = _startDate;
-      finalEnd = _endDate;
-    }
-    // 1: One-time (Bir kere)
-    else if (_tabController.index == 1) {
-      finalStart = DateTime.now();
-      finalEnd = finalStart.add(const Duration(hours: 1));
-    }
-    // 2: Permanent (Kalıcı)
-    else if (_tabController.index == 2) {
-      finalStart = DateTime.now();
-      finalEnd = DateTime(2099, 12, 31, 23, 59, 59);
-    }
-    // 3: Recurring (Yinelenen)
-    else if (_tabController.index == 3) {
-      finalStart = _recStartDate; // Validity period start
-      finalEnd = _recEndDate;     // Validity period end
-
-      // Create cyclic config
-      // WeekDay: 1-Sun...
-      // startTime/endTime: minutes from midnight
-      cyclicConfig = _recDays.map((day) {
-        return {
-          'weekDay': day,
-          'startTime': _recStartTime.hour * 60 + _recStartTime.minute,
-          'endTime': _recEndTime.hour * 60 + _recEndTime.minute,
-        };
-      }).toList();
     }
 
     setState(() => _isLoading = true);
 
     try {
-      final apiService = ApiService(context.read<AuthRepository>());
-      await apiService.getAccessToken();
-      final token = apiService.accessToken;
+      final authState = context.read<AuthBloc>().state;
+      String? token;
+      if (authState is Authenticated) {
+        token = authState.accessToken;
+      }
 
-      if (token == null) throw Exception('Token bulunamadı');
+      if (token == null) throw Exception(l10n.tokenNotFound);
+
+      final apiService = ApiService(AuthRepository());
+      
+      // Prepare parameters based on tab
+      int? finalStart;
+      int? finalEnd;
+      List<Map<String, dynamic>>? cyclicConfig;
+
+      if (_tabController.index == 0) {
+        // Timed
+        finalStart = _startDate.millisecondsSinceEpoch;
+        finalEnd = _endDate.millisecondsSinceEpoch;
+      } else if (_tabController.index == 3) {
+        // Recurring
+        finalStart = _recStartDate.millisecondsSinceEpoch;
+        finalEnd = _recEndDate.millisecondsSinceEpoch;
+        
+        cyclicConfig = [
+          {
+            "startTime": _recStartTime.hour * 60 + _recStartTime.minute,
+            "endTime": _recEndTime.hour * 60 + _recEndTime.minute,
+            "dayData": _recDays,
+          }
+        ];
+      }
 
       final result = await apiService.sendEKey(
         accessToken: token,
         lockId: widget.lock['lockId'].toString(),
         receiverUsername: receiver,
         keyName: _nameController.text.isEmpty ? receiver : _nameController.text,
-        startDate: finalStart,
-        endDate: finalEnd,
+        startDate: DateTime.fromMillisecondsSinceEpoch(finalStart ?? 0),
+        endDate: DateTime.fromMillisecondsSinceEpoch(finalEnd ?? 0),
         remoteEnable: _allowRemoteUnlock ? 1 : 2,
         cyclicConfig: cyclicConfig,
         createUser: 1, // Auto-create user if not exists
@@ -207,13 +189,13 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                break; // Success, exit loop
              }
           } catch (e) {
-            print("Link alma denemesi ${retryCount + 1} başarısız: $e");
+            print("Link retry ${retryCount + 1} failed: $e");
             retryCount++;
             
             // If it's the last try, log the error but don't stop the flow
             if (retryCount >= maxRetries) {
                if (e.toString().contains('20002') || e.toString().contains('Not lock admin')) {
-                  if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not: Link oluşturma yetkisi sadece Kilit Sahibindedir.'), backgroundColor: Colors.orange));
+                  if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.adminOnlyLinkWarning), backgroundColor: Colors.orange));
                }
             }
           }
@@ -222,18 +204,19 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
       
       // Always show success dialog if sendEKey worked, even if link failed
       if (mounted) {
-        _showSuccessDialog(unlockLink);
+        _showSuccessDialog(unlockLink, l10n);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  void _showSuccessDialog(String? link) {
+  void _showSuccessDialog(String? link, AppLocalizations l10n) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -245,9 +228,9 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 60),
             const SizedBox(height: 16),
-            const Text('Başarıyla Gönderildi', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(l10n.sentSuccessfully, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            const Text('Elektronik anahtar alıcıya iletildi.', style: TextStyle(color: Colors.grey), textAlign: TextAlign.center),
+            Text(l10n.keySentToReceiver, style: const TextStyle(color: Colors.grey), textAlign: TextAlign.center),
             if (link != null) ...[
                const SizedBox(height: 20),
                Container(
@@ -255,11 +238,11 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                  decoration: BoxDecoration(
                    color: Colors.black,
                    borderRadius: BorderRadius.circular(8),
-                   border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+                   border: Border.all(color: Colors.grey.withOpacity(0.3)),
                  ),
                  child: Column(
                    children: [
-                     const Text('Paylaşılabilir Link:', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                     Text(l10n.shareableLink, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                      const SizedBox(height: 4),
                      SelectableText(
                        link,
@@ -280,30 +263,30 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                       icon: const Icon(Icons.copy, color: Colors.white),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: link));
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Link kopyalandı')));
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.linkCopied)));
                       },
-                      tooltip: 'Kopyala',
+                      tooltip: l10n.copy,
                     ),
                     // Email
                     if (_receiverInput.contains('@'))
                       IconButton(
                         icon: const Icon(Icons.email, color: AppColors.primary),
                         onPressed: () => _launchEmail(_receiverInput, link),
-                        tooltip: 'E-posta ile gönder',
+                        tooltip: l10n.sendViaEmail,
                       )
                     else 
                       IconButton(
                         icon: const Icon(Icons.message, color: Colors.green),
                         onPressed: () => _launchSMS(_receiverInput, link),
-                        tooltip: 'SMS ile gönder',
+                        tooltip: l10n.sendViaSMS,
                       ),
                  ],
                )
             ] else ...[
                const SizedBox(height: 20),
-               const Text(
-                 'Anahtar başarıyla gönderildi, ancak yetki kısıtlaması nedeniyle web linki oluşturulamadı.\nAlıcı uygulamayı indirerek anahtarı kullanabilir.',
-                 style: TextStyle(color: Colors.orange, fontSize: 13),
+               Text(
+                 l10n.sendKeySuccessNoLink,
+                 style: const TextStyle(color: Colors.orange, fontSize: 13),
                  textAlign: TextAlign.center,
                ),
                const SizedBox(height: 12),
@@ -311,7 +294,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                   TextButton.icon(
                     icon: const Icon(Icons.email, color: AppColors.primary),
                     onPressed: () => _launchEmail(_receiverInput, null),
-                    label: const Text('Uygulama İndirme Linki Gönder'),
+                    label: Text(l10n.sendAppDownloadLink),
                   ),
             ],
             const SizedBox(height: 20),
@@ -326,7 +309,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                   backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 ),
-                child: const Text('Tamam', style: TextStyle(color: Colors.white)),
+                child: Text(l10n.ok, style: const TextStyle(color: Colors.white)),
               ),
             )
           ],
@@ -336,28 +319,30 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
   }
 
   Future<void> _launchEmail(String email, String? link) async {
+    final l10n = AppLocalizations.of(context)!;
     final String body = link != null 
-        ? 'Merhaba, size bir akıllı kilit erişim anahtarı gönderdim. Erişmek için aşağıdaki linke tıklayabilirsiniz:\n\n$link'
-        : 'Merhaba, size bir akıllı kilit erişim anahtarı gönderdim. Kullanmak için lütfen Yavuz Lock uygulamasını indirin ve giriş yapın.';
+        ? l10n.shareMessageWithLink(link)
+        : l10n.shareMessageNoLink;
         
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: email,
-      query: 'subject=Kilit Erişim Anahtarı&body=$body',
+      query: 'subject=${l10n.keyAccessSubject}&body=$body',
     );
     try {
       if (!await launchUrl(emailLaunchUri)) {
         throw 'Could not launch email';
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('E-posta uygulaması bulunamadı')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.emailAppNotFound)));
     }
   }
 
   Future<void> _launchSMS(String phoneNumber, String? link) async {
+    final l10n = AppLocalizations.of(context)!;
     final String body = link != null 
-        ? 'Merhaba, size bir akıllı kilit erişim anahtarı gönderdim. Erişmek için aşağıdaki linke tıklayabilirsiniz:\n\n$link'
-        : 'Merhaba, size bir akıllı kilit erişim anahtarı gönderdim. Kullanmak için lütfen Yavuz Lock uygulamasını indirin ve giriş yapın.';
+        ? l10n.shareMessageWithLink(link)
+        : l10n.shareMessageNoLink;
     
     final Uri smsLaunchUri = Uri(
       scheme: 'sms',
@@ -371,20 +356,17 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
         throw 'Could not launch SMS';
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('SMS uygulaması bulunamadı')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.smsAppNotFound)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text('Elektronik anahtar gönder', style: TextStyle(color: Colors.white, fontSize: 18)),
+        title: Text(l10n.sendKey),
         backgroundColor: Colors.transparent,
         elevation: 0,
         bottom: TabBar(
@@ -394,7 +376,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
           indicatorColor: AppColors.primary,
           indicatorWeight: 3,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          tabs: _tabs.map((t) => Tab(text: t)).toList(),
+          tabs: _getTabs(l10n).map((t) => Tab(text: t)).toList(),
         ),
       ),
       body: SingleChildScrollView(
@@ -406,8 +388,8 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
             
             // Receiver
             _buildInputRow(
-              label: 'Alıcı', 
-              hint: 'Telefon numarası / E-posta', 
+              label: l10n.receiver, 
+              hint: l10n.receiverHint, 
               controller: _receiverController,
               icon: Icons.contacts,
               keyboardType: TextInputType.emailAddress,
@@ -415,8 +397,8 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
             
              // Name
             _buildInputRow(
-              label: 'İsim', 
-              hint: 'Lütfen buraya giriniz', 
+              label: l10n.nameLabel, 
+              hint: l10n.enterHere, 
               controller: _nameController,
               keyboardType: TextInputType.name,
             ),
@@ -425,9 +407,9 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
 
             // Timed (0): Start/End Time
             if (_tabController.index == 0) ...[
-               _buildTimeRow('Başlangıç saati', _startDate, () => _selectDate(true)),
+               _buildTimeRow(l10n.startDate, _startDate, () => _selectDate(true)),
                _buildDivider(),
-               _buildTimeRow('Bitiş zamanı', _endDate, () => _selectDate(false)),
+               _buildTimeRow(l10n.endDate, _endDate, () => _selectDate(false)),
             ],
 
             // Recurring (3): Validity Period Link
@@ -439,11 +421,11 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                    child: Row(
                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                      children: [
-                       const Text('Geçerlilik süresi', style: TextStyle(color: Colors.white, fontSize: 16)),
+                       Text(l10n.validityPeriod, style: const TextStyle(color: Colors.white, fontSize: 16)),
                        Row(
                          children: [
                            Text(
-                             _isRecurringConfigured ? 'Ayarlı' : 'Ayarla', 
+                             _isRecurringConfigured ? l10n.configured : l10n.set, 
                              style: TextStyle(color: _isRecurringConfigured ? AppColors.primary : Colors.grey, fontSize: 16)
                            ),
                            const SizedBox(width: 8),
@@ -456,27 +438,27 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                ),
             ],
 
-            // --- Common Toggle ---
+             // --- Common Toggle ---
             const SizedBox(height: 10),
-            SwitchListTile(
-               contentPadding: EdgeInsets.zero,
-               activeColor: AppColors.primary,
-               title: const Text('Uzaktan kilit açmaya izin ver', style: TextStyle(color: Colors.white, fontSize: 16)),
-               value: _allowRemoteUnlock,
-               onChanged: (val) => setState(() => _allowRemoteUnlock = val),
-            ),
+             SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                activeColor: AppColors.primary,
+                title: Text(l10n.allowRemoteUnlock, style: const TextStyle(color: Colors.white, fontSize: 16)),
+                value: _allowRemoteUnlock,
+                onChanged: (val) => setState(() => _allowRemoteUnlock = val),
+             ),
             
             const SizedBox(height: 20),
 
             // --- Dynamic Footers ---
             if (_tabController.index == 1) 
-              _buildNote('Tek seferlik elektronik anahtar, bir saat için geçerlidir.'),
+              _buildNote(l10n.oneTimeKeyNote),
             
             if (_tabController.index == 2)
-              _buildNote('Alıcılar bu uygulama ile kilidi süresiz olarak açabilir.'),
+              _buildNote(l10n.permanentKeyNote),
               
             if (_tabController.index == 0 || _tabController.index == 3)
-              _buildNote('Davet edilenler, geçerlilik süresi içinde Bluetooth üzerinden veya uzaktan (Gateway varsa) kilidi açabilirler.'),
+              _buildNote(l10n.timedKeyNote),
 
             const SizedBox(height: 40),
 
@@ -492,17 +474,10 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                 ),
                 child: _isLoading 
                    ? const CircularProgressIndicator(color: Colors.white)
-                   : const Text('Gönder', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                   : Text(l10n.send, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),
 
-            const SizedBox(height: 20),
-            Center(
-              child: TextButton(
-                onPressed: () {},
-               child: const Text('Birden fazla elektronik anahtar gönder', style: TextStyle(color: AppColors.primary)),
-              ),
-            )
           ],
         ),
       ),

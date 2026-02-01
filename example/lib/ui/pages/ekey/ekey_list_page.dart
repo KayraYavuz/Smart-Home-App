@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../theme.dart';
 import '../../../api_service.dart';
 import '../../../repositories/auth_repository.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'send_ekey_page.dart';  // Will be created next
 import '../ekey_detail_page.dart';
 
@@ -96,11 +97,11 @@ class _EKeyListPageState extends State<EKeyListPage> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Elektronik anahtarlar', style: TextStyle(color: Colors.white, fontSize: 18)),
+        title: Text(AppLocalizations.of(context)!.electronicKeysMenu.replaceAll('\n', ' '), style: const TextStyle(color: Colors.white, fontSize: 18)),
         actions: [
           TextButton(
             onPressed: _resetKeys,
-            child: const Text('Sıfırla', style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context)!.reset, style: const TextStyle(color: Colors.white)),
           ),
         ],
         backgroundColor: Colors.transparent,
@@ -120,12 +121,12 @@ class _EKeyListPageState extends State<EKeyListPage> {
                 controller: _searchController,
                 style: const TextStyle(color: Colors.white),
                 onChanged: _filterKeys,
-                decoration: const InputDecoration(
-                  hintText: 'Arama',
-                  hintStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.search,
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 ),
               ),
             ),
@@ -138,7 +139,7 @@ class _EKeyListPageState extends State<EKeyListPage> {
                 : _errorMessage != null
                     ? Center(child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)))
                     : _filteredKeys.isEmpty
-                        ? const Center(child: Text('Elektronik anahtar bulunamadı', style: TextStyle(color: Colors.grey)))
+                        ? Center(child: Text(AppLocalizations.of(context)!.noEKeysFound, style: const TextStyle(color: Colors.grey)))
                         : ListView.builder(
                             itemCount: _filteredKeys.length,
                             padding: const EdgeInsets.only(bottom: 100), // Space for bottom button
@@ -165,7 +166,7 @@ class _EKeyListPageState extends State<EKeyListPage> {
                 ).then((_) => _fetchKeys()); // Refresh on return
               },
               icon: const Icon(Icons.add, color: AppColors.primary),
-              label: const Text('Elektronik anahtar gönder', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+              label: Text(AppLocalizations.of(context)!.sendKey, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2C2C2C),
                 foregroundColor: AppColors.primary,
@@ -184,7 +185,6 @@ class _EKeyListPageState extends State<EKeyListPage> {
        Keys map fields based on typical TTLock responses:
        keyName, username, startDate, endDate, keyStatus
     */
-    final name = keyItem['keyName'] ?? keyItem['username'] ?? 'Bilinmeyen';
     final username = keyItem['username'] ?? ''; // Often email or phone
     final startDate = DateTime.fromMillisecondsSinceEpoch(keyItem['startDate'] ?? 0);
     final endDate = DateTime.fromMillisecondsSinceEpoch(keyItem['endDate'] ?? 0);
@@ -237,7 +237,7 @@ class _EKeyListPageState extends State<EKeyListPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Key for $username', // Per design request mostly shows "Key for [receiver]"
+                    AppLocalizations.of(context)!.keyFor(username), // Per design request mostly shows "Key for [receiver]"
                     style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 4),
@@ -254,10 +254,10 @@ class _EKeyListPageState extends State<EKeyListPage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Süresi doldu', style: TextStyle(color: Colors.red, fontSize: 12)),
+                   Text(AppLocalizations.of(context)!.expired, style: const TextStyle(color: Colors.red, fontSize: 12)),
                   const SizedBox(height: 4),
-                  Row(
-                    children: const [
+                  const Row(
+                    children: [
                        Icon(Icons.watch_later_outlined, color: Colors.red, size: 16),
                     ]
                   )

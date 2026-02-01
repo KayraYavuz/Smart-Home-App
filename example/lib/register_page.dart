@@ -290,7 +290,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           // No, typically field required is separate. 
                           // I will use l10n.passwordMinLength for empty case too for now as it's technically true (0 < 8).
                           
-                          if (value == null || value.isEmpty) return l10n.passwordMinLength;
                           if (value.length < 8) return l10n.passwordMinLength;
                           if (!RegExp(r'[0-9]').hasMatch(value)) return l10n.passwordDigitRequired;
                           if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) return l10n.passwordSymbolRequired;

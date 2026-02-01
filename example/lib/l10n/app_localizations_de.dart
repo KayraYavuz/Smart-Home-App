@@ -396,7 +396,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get viewDocumentation => 'Dokumentation ansehen';
 
   @override
-  String get noLocksFound => 'Keine Schlösser von der API gefunden.';
+  String get noLocksFound => 'Keine Schlösser gefunden';
 
   @override
   String get allLocks => 'Yavuz Lock';
@@ -682,7 +682,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get userAgreement => 'Nutzungsbedingungen';
 
   @override
-  String get privacyPolicy => 'Datenschutzrichtlinie';
+  String get privacyPolicy => 'Datenschutzbestimmungen';
 
   @override
   String get readAndApprove => 'Ich habe gelesen und zugestimmt';
@@ -820,8 +820,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get transferLock => 'Schloss übertragen';
 
   @override
-  String get transferLockSubtitle =>
-      'Schlossbesitz auf ein anderes Konto übertragen';
+  String get transferLockSubtitle => 'An einen anderen Benutzer übertragen';
 
   @override
   String get transferGateway => 'Gateway übertragen';
@@ -992,9 +991,834 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String shareLockTitle(Object lockName) {
+    return '$lockName Schloss teilen';
+  }
+
+  @override
+  String get emailOrPhoneHint => 'beispiel@email.com oder +905551234567';
+
+  @override
+  String get emailOrPhoneRequired => 'E-Mail veya Telefon numarası gereklidir';
+
+  @override
+  String get validEmailOrPhoneRequired =>
+      'Geben Sie eine gültige E-Mail-Adresse veya Telefonnummer ein';
+
+  @override
+  String get permissionLevel => 'Berechtigungsstufe';
+
+  @override
+  String get adminPermission =>
+      'Admin - Voller Zugriff (Öffnen, Schließen, Einstellungen)';
+
+  @override
+  String get normalUserPermission =>
+      'Normaler Benutzer - Entriegeln und Verriegeln';
+
+  @override
+  String get limitedUserPermission => 'Eingeschränkter Benutzer - Nur Anzeige';
+
+  @override
+  String get startDate => 'Startdatum';
+
+  @override
+  String get endDate => 'Enddatum';
+
+  @override
+  String get notSelected => 'Nicht ausgewählt';
+
+  @override
+  String get remarksLabel => 'Anmerkungen (Optional)';
+
+  @override
+  String get remarksHint => 'Notizen zur Freigabe...';
+
+  @override
+  String get share => 'Teilen';
+
+  @override
+  String get selectStartEndDate => 'Bitte wählen Sie Start- und Enddatum aus';
+
+  @override
+  String lockSharedSuccess(Object lockName) {
+    return '$lockName Schloss erfolgreich geteilt';
+  }
+
+  @override
+  String get sharingError => 'Fehler beim Teilen';
+
+  @override
+  String get tabTimed => 'Zeitlich begrenzt';
+
+  @override
+  String get tabOneTime => 'Einmalig';
+
+  @override
+  String get tabPermanent => 'Dauerhaft';
+
+  @override
+  String get tabRecurring => 'Wiederkehrend';
+
+  @override
+  String get enterReceiver => 'Bitte Empfänger eingeben';
+
+  @override
+  String get keySentToReceiver =>
+      'Der Schlüssel wurde an den Empfänger gesendet.';
+
+  @override
+  String get sentSuccessfully => 'Erfolgreich gesendet';
+
+  @override
+  String get shareableLink => 'Teilbarer Link';
+
+  @override
+  String get copy => 'Kopieren';
+
+  @override
+  String get linkCopied => 'Link in die Zwischenablage kopiert';
+
+  @override
+  String get sendViaEmail => 'Per E-Mail senden';
+
+  @override
+  String get sendViaSMS => 'Per SMS senden';
+
+  @override
+  String get sendAppDownloadLink => 'App-Download-Link senden';
+
+  @override
+  String get receiver => 'Empfänger';
+
+  @override
+  String get receiverHint => 'E-Mail oder Telefon';
+
+  @override
+  String get nameLabel => 'Name';
+
+  @override
+  String get enterHere => 'Hier eingeben';
+
+  @override
+  String get validityPeriod => 'Gültigkeitszeitraum';
+
+  @override
+  String get configured => 'Konfiguriert';
+
+  @override
+  String get set => 'Einstellen';
+
+  @override
+  String get allowRemoteUnlock => 'Fernentsperrung zulassen';
+
+  @override
+  String get permanentKeyNote =>
+      'Dauerhafte Schlüssel bleiben gültig, bis sie gelöscht werden.';
+
+  @override
+  String get timedKeyNote =>
+      'Zeitlich begrenzte Schlüssel sind nur während des angegebenen Zeitraums gültig.';
+
+  @override
+  String get send => 'Senden';
+
+  @override
+  String get cycle => 'Zyklus';
+
+  @override
+  String get remoteControls => 'Fernbedienungen';
+
+  @override
+  String get remoteControl => 'Fernbedienung';
+
+  @override
+  String get wirelessKeypads => 'Kabellose Tastaturen';
+
+  @override
+  String get wirelessKeypad => 'Kabellose Tastatur';
+
+  @override
+  String get doorSensor => 'Türsensor';
+
+  @override
+  String get sensorNotFound => 'Sensor nicht gefunden';
+
+  @override
+  String get qrCodes => 'QR-Codes';
+
+  @override
+  String get qrCode => 'QR-Code';
+
+  @override
+  String get qrContent => 'QR-Inhalt';
+
+  @override
+  String get empty => 'Leer';
+
+  @override
+  String get qrCodeCreated => 'QR-Code erstellt';
+
+  @override
+  String get wifiLockDetails => 'WLAN-Schlossdetails';
+
+  @override
+  String get isOnline => 'Ist online';
+
+  @override
+  String get networkName => 'Netzwerkname';
+
+  @override
+  String get rssiGrade => 'Signalstärke';
+
+  @override
+  String get detailNotFound => 'Detail nicht gefunden';
+
+  @override
+  String get bluetoothAddInstructions =>
+      'Der Hinzufügevorgang sollte über Bluetooth gestartet werden.';
+
+  @override
+  String get lockSettings => 'Schlosseinstellungen';
+
+  @override
+  String get general => 'Allgemein';
+
+  @override
+  String get lockNameTitle => 'Schlossname';
+
+  @override
+  String get updateBatteryStatus => 'Batteriestatus aktualisieren';
+
+  @override
+  String get syncWithServer => 'Mit Server synchronisieren';
+
+  @override
+  String get groupSetting => 'Gruppeneinstellung';
+
+  @override
+  String get manageGroup => 'Gruppe verwalten';
+
+  @override
+  String get wifiSettingsTitle => 'WLAN-Einstellungen';
+
+  @override
+  String get manageWifiConnection => 'WLAN-Verbindung verwalten';
+
+  @override
+  String get lockingSettings => 'Sperreinstellungen';
+
+  @override
+  String get autoLockTitle => 'Automatisches Sperren';
+
+  @override
+  String get setTime => 'Zeit einstellen';
+
+  @override
+  String get passageModeTitle => 'Passagemodus';
+
+  @override
+  String get activeLabel => 'Aktiv';
+
+  @override
+  String get passiveLabel => 'Passiv';
+
+  @override
+  String get workingHours => 'Arbeitszeiten';
+
+  @override
+  String get configureWorkingFreezingModes =>
+      'Arbeits-/Gefriermodi konfigurieren';
+
+  @override
+  String get security => 'Sicherheit';
+
+  @override
+  String get changeAdminPasscodeTitle => 'Admin-Passcode ändern';
+
+  @override
+  String get updateSuperPasscode => 'Super-Passcode aktualisieren';
+
+  @override
+  String get transferLockToUser => 'An einen anderen Benutzer übertragen';
+
+  @override
+  String get deleteLockAction => 'SCHLOSS LÖSCHEN';
+
+  @override
+  String get renameLock => 'Schloss umbenennen';
+
+  @override
+  String get newName => 'Neuer Name';
+
+  @override
+  String get selectGroup => 'Gruppe auswählen';
+
+  @override
+  String get noGroupsFoundCreateOne =>
+      'Keine Gruppen gefunden. Erstellen Sie zuerst eine Gruppe.';
+
+  @override
+  String lockAssignedToGroup(Object groupName) {
+    return 'Schloss der Gruppe $groupName zugewiesen';
+  }
+
+  @override
+  String get removeGroupAssignment => 'Gruppe entfernen';
+
+  @override
+  String get groupAssignmentRemoved => 'Gruppenzuweisung entfernt';
+
+  @override
+  String get batterySynced => 'Batterie synchronisiert';
+
+  @override
+  String get autoLockTime => 'Automatische Sperrzeit';
+
+  @override
+  String get enterTimeInSeconds =>
+      'Zeit in Sekunden eingeben (0 zum Ausschalten)';
+
+  @override
+  String get secondsShortcut => 'Sek.';
+
+  @override
+  String get workingMode => 'Arbeitsmodus';
+
+  @override
+  String get continuouslyWorking => 'Kontinuierliches Arbeiten (Standard)';
+
+  @override
+  String get freezingMode => 'Gefriermodus (Bleibt gesperrt)';
+
+  @override
+  String get customHours => 'Benutzerdefinierte Stunden';
+
+  @override
+  String get modeUpdated => 'Modus aktualisiert';
+
+  @override
+  String get newPasscodeTitle => 'Neuer Passcode';
+
+  @override
+  String get update => 'Aktualisieren';
+
+  @override
+  String get receiverUsernameTitle => 'Benutzername des Empfängers';
+
+  @override
+  String get transferInitiated => 'Übertragung eingeleitet';
+
+  @override
+  String get deleteLockConfirmationTitle => 'Schloss löschen?';
+
+  @override
+  String get deleteLockConfirmationMessage =>
+      'VORSICHT: Diese Aktion löscht das Schloss dauerhaft vom Server. Es wird empfohlen, zuerst einen Hardware-Reset über das SDK durchzuführen.';
+
+  @override
+  String get checkConnectivity => 'Konnektivität prüfen';
+
+  @override
+  String get operationSuccessful => 'Vorgang erfolgreich';
+
+  @override
+  String operationFailedWithMsg(Object error) {
+    return 'Vorgang fehlgeschlagen: $error';
+  }
+
+  @override
+  String get bluetoothOffInstructions =>
+      'Bluetooth ist ausgeschaltet. Bitte schalten Sie Bluetooth ein.';
+
+  @override
+  String get lockOutOfRangeInstructions =>
+      'Schloss außer Reichweite oder im Schlafmodus.';
+
+  @override
+  String get lockConnectionFailedInstructions =>
+      'Verbindung zum Schloss fehlgeschlagen. Nähern Sie sich und versuchen Sie es erneut.';
+
+  @override
+  String get remoteUnlockCommandSent => '🔓 Fernentriegelungsbefehl gesendet';
+
+  @override
+  String get remoteControlError => 'Fernbedienungsfehler';
+
+  @override
+  String get gatewayConnectionError =>
+      'Gateway- oder WLAN-Verbindung konnte nicht hergestellt werden. Bitte überprüfen Sie Ihr Gateway-Gerät.';
+
+  @override
+  String get remoteUnlock => 'Fernentriegelung';
+
+  @override
+  String get remoteAccess => 'Fernzugriff';
+
+  @override
+  String get electronicKeysMenu => 'Elektronische\nSchlüssel';
+
+  @override
+  String get passcodesMenu => 'Passcodes';
+
+  @override
+  String get cardsMenu => 'Karten';
+
+  @override
+  String get fingerprintMenu => 'Fingerabdruck';
+
+  @override
+  String get facesMenu => 'Gesichter';
+
+  @override
+  String get remoteControlMenu => 'Fernbedienung';
+
+  @override
+  String get wirelessKeypadMenu => 'Kabellose\nTastatur';
+
+  @override
+  String get doorSensorMenu => 'Türsensor';
+
+  @override
+  String get qrCodeMenu => 'QR-Code';
+
+  @override
+  String get recordsMenu => 'Aufzeichnungen';
+
+  @override
+  String get shareMenu => 'Teilen';
+
+  @override
+  String get settingsMenu => 'Einstellungen';
+
+  @override
+  String get loadingConfig => 'Konfiguration wird geladen...';
+
+  @override
+  String configLoadError(Object error) {
+    return 'Konfiguration konnte nicht geladen werden: $error';
+  }
+
+  @override
+  String get timeConflict => 'Zeitkonflikt';
+
+  @override
+  String get timeOverlapWarning =>
+      'Dieser Zeitraum überschneidet sich mit bestehenden Zeiträumen:';
+
+  @override
+  String get addStill => 'Möchten Sie ihn trotzdem hinzufügen?';
+
+  @override
+  String get unsavedChanges => 'Nicht gespeicherte Änderungen';
+
+  @override
+  String get unsavedChangesMsg =>
+      'Ihre Änderungen wurden nicht gespeichert. Sind Sie sicher, dass Sie beenden möchten?';
+
+  @override
+  String get exit => 'Beenden';
+
+  @override
+  String get configSaved => 'Konfiguration gespeichert';
+
+  @override
+  String get allDay => 'Den ganzen Tag';
+
+  @override
+  String get noPlanAdded => 'Noch kein Plan hinzugefügt';
+
+  @override
+  String get addTimelineInstruction =>
+      'Tippen Sie oben auf das +-Symbol, um einen Zeitraum hinzuzufügen';
+
+  @override
+  String get passageModeInstruction =>
+      'Sie können mehrere Zeiträume für den Passagemodus festlegen. Das Schloss bleibt in diesen Zeiträumen entriegelt.';
+
+  @override
+  String get ttlockAccount => 'TTLock-Konto';
+
+  @override
+  String get ttlockWebSyncMsg =>
+      'Dieses Konto wurde mit der offiziellen TTLock-App erstellt. Um Passwörter zu synchronisieren, aktualisieren Sie bitte Ihr Passwort über das TTLock Webportal.';
+
+  @override
+  String get openPortal => 'Portal öffnen';
+
+  @override
+  String urlOpenError(Object url) {
+    return 'URL konnte nicht geöffnet werden: $url';
+  }
+
+  @override
+  String get timePeriod => 'Zeitraum';
+
+  @override
+  String get add => 'Hinzufügen';
+
+  @override
+  String get transferAction => 'Übertragen';
+
+  @override
+  String get timeSet => 'Zeit eingestellt';
+
+  @override
+  String get tokenNotFound => 'Token nicht gefunden';
+
+  @override
+  String get adminOnlyLinkWarning =>
+      'Hinweis: Nur der Schloss-Admin kann Entsperrlinks generieren.';
+
+  @override
+  String get sendKeySuccessNoLink =>
+      'Schlüssel erfolgreich gesendet, aber ein Weblink konnte aufgrund von Berechtigungsbeschränkungen nicht generiert werden.\nDer Empfänger kann den Schlüssel verwenden, indem er die App herunterlädt.';
+
+  @override
+  String shareMessageWithLink(Object link) {
+    return 'Hallo, ich habe dir einen Zugangsschlüssel für das intelligente Schloss gesendet. Du kannst über den untenstehenden Link darauf zugreifen:\n\n$link';
+  }
+
+  @override
+  String get shareMessageNoLink =>
+      'Hallo, ich habe dir einen Zugangsschlüssel für das intelligente Schloss gesendet. Bitte lade die Yavuz Lock App herunter und melde dich an, um ihn zu verwenden.';
+
+  @override
+  String get keyAccessSubject => 'Schloss-Zugangsschlüssel';
+
+  @override
+  String get emailAppNotFound => 'E-Mail-App nicht gefunden';
+
+  @override
+  String get smsAppNotFound => 'SMS-App nicht gefunden';
+
+  @override
+  String deleteErrorWithMsg(Object error) {
+    return 'Löschfehler: $error';
+  }
+
+  @override
+  String newQrWithName(Object name) {
+    return 'Neues QR ($name)';
+  }
+
+  @override
+  String get oneTimeKeyNote =>
+      'Einmalige Schlüssel laufen nach der ersten Verwendung oder 1 Stunde ab.';
+
+  @override
   String get sendMultipleKeys => 'Mehrere Schlüssel senden';
 
   @override
   String get sendMultipleKeysComingSoon =>
-      'Mehrere Schlüssel senden Funktion kommt bald';
+      'Funktion zum Senden mehrerer Schlüssel folgt in Kürze';
+
+  @override
+  String groupListLoadError(Object error) {
+    return 'Gruppenliste konnte nicht geladen werden: $error';
+  }
+
+  @override
+  String get addNewGroup => 'Neue Gruppe hinzufügen';
+
+  @override
+  String get groupName => 'Gruppenname';
+
+  @override
+  String get groupAddedSuccessfully => 'Gruppe erfolgreich hinzugefügt';
+
+  @override
+  String groupAddError(Object error) {
+    return 'Gruppe konnte nicht hinzugefügt werden: $error';
+  }
+
+  @override
+  String get editGroup => 'Gruppe bearbeiten';
+
+  @override
+  String get newGroupName => 'Neuer Gruppenname';
+
+  @override
+  String get groupUpdated => 'Gruppe aktualisiert';
+
+  @override
+  String get noGroupsCreatedYet => 'Noch keine Gruppen erstellt';
+
+  @override
+  String get createGroup => 'Gruppe erstellen';
+
+  @override
+  String get rename => 'Umbenennen';
+
+  @override
+  String deleteGroupConfirmation(Object name) {
+    return 'Sind Sie sicher, dass Sie die Gruppe $name löschen möchten?';
+  }
+
+  @override
+  String get groupDeleted => 'Gruppe gelöscht';
+
+  @override
+  String get authorizationStatus => 'Berechtigungsstatus';
+
+  @override
+  String get authorizedAdmin => 'Bevollmächtigter Administrator (Admin)';
+
+  @override
+  String get normalUser => 'Normaler Benutzer';
+
+  @override
+  String get actions => 'Aktionen';
+
+  @override
+  String get unfreeze => 'Einfrierung aufheben';
+
+  @override
+  String get freeze => 'Einfrieren';
+
+  @override
+  String get revokeAuthority => 'Berechtigung entziehen';
+
+  @override
+  String get authorize => 'Bevollmächtigen';
+
+  @override
+  String get changePeriod => 'Zeitraum ändern';
+
+  @override
+  String get unlockLink => 'Entsperr-Link';
+
+  @override
+  String get unfreezeSuccess => 'Einfrierung aufgehoben';
+
+  @override
+  String get freezeSuccess => 'Schlüssel eingefroren';
+
+  @override
+  String get revokeSuccess => 'Berechtigung entzogen';
+
+  @override
+  String get authorizeSuccess => 'Berechtigung erteilt';
+
+  @override
+  String get unlockLinkDescription =>
+      'Sie können diesen Link mit dem Benutzer teilen, damit er das Schloss über einen Browser öffnen kann.';
+
+  @override
+  String get authorityError =>
+      'Berechtigungsfehler: Link-Erstellung kann nur durch den Schloss-Eigentümer erfolgen.';
+
+  @override
+  String linkRetrievalError(Object error) {
+    return 'Link-Abruffehler: $error';
+  }
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get end => 'Ende';
+
+  @override
+  String get dateError => 'Enddatum darf nicht vor dem Startdatum liegen';
+
+  @override
+  String get updateSuccess => 'Aktualisiert';
+
+  @override
+  String get deleteKeyConfirmation =>
+      'Sind Sie sicher, dass Sie diesen Schlüssel löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.';
+
+  @override
+  String get deleteKeyTitle => 'Schlüssel löschen';
+
+  @override
+  String get groupManagementTitle => 'Gruppenverwaltung';
+
+  @override
+  String groupLocksLoadError(Object error) {
+    return 'Gruppenschlösser konnten nicht geladen werden: $error';
+  }
+
+  @override
+  String groupLocksTitle(Object groupName) {
+    return '$groupName Schlösser';
+  }
+
+  @override
+  String get lock => 'Schloss';
+
+  @override
+  String lockListRetrievalError(Object error) {
+    return 'Schlossliste konnte nicht abgerufen werden: $error';
+  }
+
+  @override
+  String operationCompletedWithCounts(Object fail, Object success) {
+    return 'Vorgang abgeschlossen. $success hinzugefügt, $fail Fehler.';
+  }
+
+  @override
+  String get shareGroup => 'Gruppe teilen';
+
+  @override
+  String shareGroupTitle(Object groupName) {
+    return 'Gruppe $groupName teilen';
+  }
+
+  @override
+  String get receiverHintUserEmail => 'Empfänger Benutzername / E-Mail';
+
+  @override
+  String get groupShareNote =>
+      'Dieser Vorgang sendet einen E-Key für alle Schlösser in der Gruppe.';
+
+  @override
+  String locksSharedCounts(Object fail, Object success) {
+    return '$success Schlösser geteilt, $fail fehlgeschlagen.';
+  }
+
+  @override
+  String get noLocksInGroup => 'Keine Schlösser in dieser Gruppe.';
+
+  @override
+  String get groupDetail => 'Gruppendetails';
+
+  @override
+  String totalLocksCount(Object count) {
+    return 'Gesamt $count Schlösser';
+  }
+
+  @override
+  String get editGroupLocks =>
+      'Gruppenschlösser bearbeiten (Hinzufügen/Entfernen)';
+
+  @override
+  String get unnamed => 'Unbenannt';
+
+  @override
+  String get defaultCountry => 'Türkei';
+
+  @override
+  String get securityQuestion => 'Sicherheitsfrage';
+
+  @override
+  String get notSet => 'Nicht festgelegt';
+
+  @override
+  String get securityQuestionSoon =>
+      'Die Einstellung der Sicherheitsfrage wird in Kürze hinzugefügt';
+
+  @override
+  String get countryRegion => 'Land/Region';
+
+  @override
+  String get userTerms => 'Nutzungsbedingungen';
+
+  @override
+  String editField(Object field) {
+    return '$field bearbeiten';
+  }
+
+  @override
+  String enterNewField(Object field) {
+    return 'Neues $field eingeben';
+  }
+
+  @override
+  String fieldUpdatedSuccess(Object field) {
+    return '$field erfolgreich aktualisiert';
+  }
+
+  @override
+  String get passwordResetInstruction =>
+      'Verwenden Sie die Funktion \'Passwort vergessen\' auf der Anmeldeseite, um Ihr Passwort zu ändern.';
+
+  @override
+  String get avatarSoon =>
+      'Die Funktion zum Ändern des Avatars wird in Kürze hinzugefügt';
+
+  @override
+  String get customerService => 'Kundendienst';
+
+  @override
+  String get support247 => '24/7 Support';
+
+  @override
+  String get contactUsOnIssues =>
+      'Kontaktieren Sie uns bei Problemen jeglicher Art';
+
+  @override
+  String get emailSupport => 'E-Mail-Support';
+
+  @override
+  String get salesCooperation => 'Verkauf und Kooperation';
+
+  @override
+  String get officialWebsite => 'Offizielle Website';
+
+  @override
+  String get webAdminSystem => 'Web-Managementsystem';
+
+  @override
+  String get hotelAdminSystem => 'Hotel-Managementsystem';
+
+  @override
+  String get apartmentSystem => 'Apartment-System';
+
+  @override
+  String get userManual => 'Benutzerhandbuch';
+
+  @override
+  String get liveSupport => 'Live-Support';
+
+  @override
+  String copiedToClipboardMsg(Object text) {
+    return 'In die Zwischenablage kopiert: $text';
+  }
+
+  @override
+  String get customerServiceDescription =>
+      'Sie können uns bei technischen Problemen, Funktionsanfragen oder allgemeinen Fragen kontaktieren. Wir werden versuchen, Ihnen so schnell wie möglich zu helfen.';
+
+  @override
+  String get liveChatSoon =>
+      'Der Live-Support-Chat wird in Kürze aktiv sein. In der Zwischenzeit können Sie uns per E-Mail erreichen.';
+
+  @override
+  String get sendEmail => 'E-Mail senden';
+
+  @override
+  String get passive => 'Passiv';
+
+  @override
+  String get gatewayRequired => 'Gateway erforderlich';
+
+  @override
+  String get group => 'Gruppe';
+
+  @override
+  String get reset => 'Zurücksetzen';
+
+  @override
+  String get search => 'Suche';
+
+  @override
+  String get noEKeysFound => 'Keine elektronischen Schlüssel gefunden';
+
+  @override
+  String keyFor(String username) {
+    return 'Schlüssel für $username';
+  }
+
+  @override
+  String get expired => 'Abgelaufen';
+
+  @override
+  String get deleteGroup => 'Gruppe löschen';
+
+  @override
+  String updateErrorWithMsg(Object error) {
+    return 'Fehler beim Aktualisieren: $error';
+  }
 }

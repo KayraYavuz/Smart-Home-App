@@ -394,7 +394,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get viewDocumentation => 'Dökümantasyonu Görüntüle';
 
   @override
-  String get noLocksFound => 'API\'den kilit bulunamadı.';
+  String get noLocksFound => 'Hiç kilit bulunamadı';
 
   @override
   String get allLocks => 'Yavuz Lock';
@@ -680,7 +680,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get userAgreement => 'Kullanıcı Sözleşmesi';
 
   @override
-  String get privacyPolicy => 'Gizlilik Politikası';
+  String get privacyPolicy => 'Gizlilik politikası';
 
   @override
   String get readAndApprove => 'Okudum ve onaylıyorum';
@@ -816,7 +816,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get transferLock => 'Transfer Kilidi';
 
   @override
-  String get transferLockSubtitle => 'Kilit sahipliğini başka bir hesaba aktar';
+  String get transferLockSubtitle => 'Başka bir kullanıcıya devret';
 
   @override
   String get transferGateway => 'Aktarım Ağ Geçidi';
@@ -986,9 +986,828 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get sendMultipleKeys => 'Birden fazla elektronik anahtar gönder';
+  String shareLockTitle(Object lockName) {
+    return '$lockName Kilidini Paylaş';
+  }
+
+  @override
+  String get emailOrPhoneHint => 'ornek@email.com veya +905551234567';
+
+  @override
+  String get emailOrPhoneRequired => 'E-posta veya telefon numarası gerekli';
+
+  @override
+  String get validEmailOrPhoneRequired =>
+      'Geçerli bir e-posta veya telefon numarası girin';
+
+  @override
+  String get permissionLevel => 'Yetki Seviyesi';
+
+  @override
+  String get adminPermission => 'Admin - Tam erişim (açma, kapama, ayarlar)';
+
+  @override
+  String get normalUserPermission => 'Normal Kullanıcı - Açma ve kapama';
+
+  @override
+  String get limitedUserPermission => 'Sınırlı Kullanıcı - Sadece görüntüleme';
+
+  @override
+  String get startDate => 'Başlangıç Tarihi';
+
+  @override
+  String get endDate => 'Bitiş Tarihi';
+
+  @override
+  String get notSelected => 'Seçilmemiş';
+
+  @override
+  String get remarksLabel => 'Not (İsteğe bağlı)';
+
+  @override
+  String get remarksHint => 'Paylaşım hakkında not...';
+
+  @override
+  String get share => 'Paylaş';
+
+  @override
+  String get selectStartEndDate =>
+      'Lütfen başlangıç ve bitiş tarihlerini seçin';
+
+  @override
+  String lockSharedSuccess(Object lockName) {
+    return '$lockName kilidi başarıyla paylaşıldı';
+  }
+
+  @override
+  String get sharingError => 'Paylaşım hatası';
+
+  @override
+  String get tabTimed => 'Süreli';
+
+  @override
+  String get tabOneTime => 'Tek Seferlik';
+
+  @override
+  String get tabPermanent => 'Kalıcı';
+
+  @override
+  String get tabRecurring => 'Yinelenen';
+
+  @override
+  String get enterReceiver => 'Lütfen alıcı giriniz';
+
+  @override
+  String get keySentToReceiver => 'Anahtar alıcıya gönderildi.';
+
+  @override
+  String get sentSuccessfully => 'Başarıyla Gönderildi';
+
+  @override
+  String get shareableLink => 'Paylaşılabilir Link';
+
+  @override
+  String get copy => 'Kopyala';
+
+  @override
+  String get linkCopied => 'Link panoya kopyalandı';
+
+  @override
+  String get sendViaEmail => 'E-posta ile Gönder';
+
+  @override
+  String get sendViaSMS => 'SMS ile Gönder';
+
+  @override
+  String get sendAppDownloadLink => 'Uygulama İndirme Linki Gönder';
+
+  @override
+  String get receiver => 'Alıcı';
+
+  @override
+  String get receiverHint => 'E-posta veya Telefon';
+
+  @override
+  String get nameLabel => 'İsim';
+
+  @override
+  String get enterHere => 'Buraya girin';
+
+  @override
+  String get validityPeriod => 'Geçerlilik süresi';
+
+  @override
+  String get configured => 'Ayarlı';
+
+  @override
+  String get set => 'Ayarla';
+
+  @override
+  String get allowRemoteUnlock => 'Uzaktan Açmaya İzin Ver';
+
+  @override
+  String get permanentKeyNote =>
+      'Kalıcı anahtarlar silinmediği sürece geçerli kalır.';
+
+  @override
+  String get timedKeyNote =>
+      'Süreli anahtarlar sadece belirtilen tarih aralığında geçerlidir.';
+
+  @override
+  String get send => 'Gönder';
+
+  @override
+  String get cycle => 'Döngü';
+
+  @override
+  String get remoteControls => 'Uzaktan Kumandalar';
+
+  @override
+  String get remoteControl => 'Uzaktan Kumanda';
+
+  @override
+  String get wirelessKeypads => 'Kablosuz Tuş Takımları';
+
+  @override
+  String get wirelessKeypad => 'Kablosuz Tuş Takımı';
+
+  @override
+  String get doorSensor => 'Kapı Sensörü';
+
+  @override
+  String get sensorNotFound => 'Sensör bulunamadı';
+
+  @override
+  String get qrCodes => 'QR Kodlar';
+
+  @override
+  String get qrCode => 'QR Kod';
+
+  @override
+  String get qrContent => 'QR İçeriği';
+
+  @override
+  String get empty => 'Boş';
+
+  @override
+  String get qrCodeCreated => 'QR Kod oluşturuldu';
+
+  @override
+  String get wifiLockDetails => 'Wi-Fi Kilit Detayları';
+
+  @override
+  String get isOnline => 'Çevrimiçi mi';
+
+  @override
+  String get networkName => 'Ağ Adı';
+
+  @override
+  String get rssiGrade => 'Sinyal Gücü';
+
+  @override
+  String get detailNotFound => 'Detay bulunamadı';
+
+  @override
+  String get bluetoothAddInstructions =>
+      'Ekleme işlemi Bluetooth üzerinden başlatılmalı.';
+
+  @override
+  String get lockSettings => 'Kilit Ayarları';
+
+  @override
+  String get general => 'Genel';
+
+  @override
+  String get lockNameTitle => 'Kilit Adı';
+
+  @override
+  String get updateBatteryStatus => 'Batarya Durumunu Güncelle';
+
+  @override
+  String get syncWithServer => 'Sunucu ile senkronize et';
+
+  @override
+  String get groupSetting => 'Grup Ayarı';
+
+  @override
+  String get manageGroup => 'Grubu Yönet';
+
+  @override
+  String get wifiSettingsTitle => 'Wi-Fi Ayarları';
+
+  @override
+  String get manageWifiConnection => 'Wi-Fi bağlantısını yönet';
+
+  @override
+  String get lockingSettings => 'Kilitlenme Ayarları';
+
+  @override
+  String get autoLockTitle => 'Otomatik Kilitlenme';
+
+  @override
+  String get setTime => 'Süre ayarla';
+
+  @override
+  String get passageModeTitle => 'Geçiş Modu';
+
+  @override
+  String get activeLabel => 'Aktif';
+
+  @override
+  String get passiveLabel => 'Pasif';
+
+  @override
+  String get workingHours => 'Çalışma Saatleri';
+
+  @override
+  String get configureWorkingFreezingModes =>
+      'Çalışma/Donma modlarını yapılandır';
+
+  @override
+  String get security => 'Güvenlik';
+
+  @override
+  String get changeAdminPasscodeTitle => 'Admin Şifresini Değiştir';
+
+  @override
+  String get updateSuperPasscode => 'Super Passcode güncelle';
+
+  @override
+  String get transferLockToUser => 'Başka bir kullanıcıya devret';
+
+  @override
+  String get deleteLockAction => 'KİLİDİ SİL';
+
+  @override
+  String get renameLock => 'Kilidi Yeniden Adlandır';
+
+  @override
+  String get newName => 'Yeni İsim';
+
+  @override
+  String get selectGroup => 'Grup Seç';
+
+  @override
+  String get noGroupsFoundCreateOne =>
+      'Hiç grup bulunamadı. Önce grup oluşturun.';
+
+  @override
+  String lockAssignedToGroup(Object groupName) {
+    return 'Kilit $groupName grubuna atandı';
+  }
+
+  @override
+  String get removeGroupAssignment => 'Grubu Kaldır';
+
+  @override
+  String get groupAssignmentRemoved => 'Grup ataması kaldırıldı';
+
+  @override
+  String get batterySynced => 'Batarya senkronize edildi';
+
+  @override
+  String get autoLockTime => 'Otomatik Kilitlenme Süresi';
+
+  @override
+  String get enterTimeInSeconds => 'Saniye cinsinden süre girin (0 kapatır)';
+
+  @override
+  String get secondsShortcut => 'sn';
+
+  @override
+  String get workingMode => 'Çalışma Modu';
+
+  @override
+  String get continuouslyWorking => 'Sürekli Çalışır (Default)';
+
+  @override
+  String get freezingMode => 'Donma Modu (Kilitli Kalır)';
+
+  @override
+  String get customHours => 'Özel Saatler';
+
+  @override
+  String get modeUpdated => 'Mod güncellendi';
+
+  @override
+  String get newPasscodeTitle => 'Yeni Şifre';
+
+  @override
+  String get update => 'Güncelle';
+
+  @override
+  String get receiverUsernameTitle => 'Alıcı Kullanıcı Adı';
+
+  @override
+  String get transferInitiated => 'Transfer işlemi başlatıldı';
+
+  @override
+  String get deleteLockConfirmationTitle => 'Kilidi Sil?';
+
+  @override
+  String get deleteLockConfirmationMessage =>
+      'DİKKAT: Bu işlem kilidi sunucudan tamamen siler. Önce SDK üzerinden donanımsal resetleme yapmanız önerilir.';
+
+  @override
+  String get checkConnectivity => 'Bağlantıyı Kontrol Et';
+
+  @override
+  String get operationSuccessful => 'İşlem başarılı';
+
+  @override
+  String operationFailedWithMsg(Object error) {
+    return 'İşlem başarısız: $error';
+  }
+
+  @override
+  String get bluetoothOffInstructions =>
+      'Bluetooth kapalı. Lütfen Bluetooth\'u açın.';
+
+  @override
+  String get lockOutOfRangeInstructions =>
+      'Kilit kapsam alanında değil veya uyku modunda.';
+
+  @override
+  String get lockConnectionFailedInstructions =>
+      'Kilide bağlanılamadı. Yakınlaşıp tekrar deneyin.';
+
+  @override
+  String get remoteUnlockCommandSent => '🔓 Uzaktan açma komutu gönderildi';
+
+  @override
+  String get remoteControlError => 'Uzaktan kontrol hatası';
+
+  @override
+  String get gatewayConnectionError =>
+      'Gateway veya Wi-Fi bağlantısı kurulamadı. Lütfen Gateway cihazınızı kontrol edin.';
+
+  @override
+  String get remoteUnlock => 'Uzaktan Aç';
+
+  @override
+  String get remoteAccess => 'Uzaktan Erişim';
+
+  @override
+  String get electronicKeysMenu => 'Elektronik\nAnahtarlar';
+
+  @override
+  String get passcodesMenu => 'Şifreler';
+
+  @override
+  String get cardsMenu => 'Kartlar';
+
+  @override
+  String get fingerprintMenu => 'Parmak\nİzi';
+
+  @override
+  String get facesMenu => 'Yüzler';
+
+  @override
+  String get remoteControlMenu => 'Uzaktan\nKumanda';
+
+  @override
+  String get wirelessKeypadMenu => 'Kablosuz\nTuş Takımı';
+
+  @override
+  String get doorSensorMenu => 'Kapı\nSensörü';
+
+  @override
+  String get qrCodeMenu => 'QR\nKod';
+
+  @override
+  String get recordsMenu => 'Kayıtlar';
+
+  @override
+  String get shareMenu => 'Paylaş';
+
+  @override
+  String get settingsMenu => 'Ayarlar';
+
+  @override
+  String get loadingConfig => 'Yapılandırma yükleniyor...';
+
+  @override
+  String configLoadError(Object error) {
+    return 'Yapılandırma yüklenemedi: $error';
+  }
+
+  @override
+  String get timeConflict => 'Zaman Çakışması';
+
+  @override
+  String get timeOverlapWarning =>
+      'Bu zaman dilimi mevcut dilimlerle çakışıyor:';
+
+  @override
+  String get addStill => 'Yine de eklemek istiyor musunuz?';
+
+  @override
+  String get unsavedChanges => 'Kaydedilmemiş Değişiklikler';
+
+  @override
+  String get unsavedChangesMsg =>
+      'Değişiklikleriniz kaydedilmedi. Çıkmak istediğinizden emin misiniz?';
+
+  @override
+  String get exit => 'Çık';
+
+  @override
+  String get configSaved => 'Yapılandırma kaydedildi';
+
+  @override
+  String get allDay => 'Tüm gün';
+
+  @override
+  String get noPlanAdded => 'Henüz bir plan eklenmedi';
+
+  @override
+  String get addTimelineInstruction =>
+      'Zaman dilimi eklemek için yukarıdaki + ikonuna dokunun';
+
+  @override
+  String get passageModeInstruction =>
+      'Geçiş modu için birden fazla zaman dilimi ayarlayabilirsiniz. Bu sürelerde kilit açık kalacaktır.';
+
+  @override
+  String get ttlockAccount => 'TTLock Hesabı';
+
+  @override
+  String get ttlockWebSyncMsg =>
+      'Bu hesap TTLock resmi uygulamasıyla oluşturulmuş. Şifre senkronizasyonu için lütfen TTLock Web Portalını kullanarak şifrenizi güncelleyin.';
+
+  @override
+  String get openPortal => 'Portalı Aç';
+
+  @override
+  String urlOpenError(Object url) {
+    return 'URL açılamadı: $url';
+  }
+
+  @override
+  String get timePeriod => 'Zaman dilimi';
+
+  @override
+  String get add => 'Ekle';
+
+  @override
+  String get transferAction => 'Transfer Et';
+
+  @override
+  String get timeSet => 'Süre ayarlandı';
+
+  @override
+  String get tokenNotFound => 'Token bulunamadı';
+
+  @override
+  String get adminOnlyLinkWarning =>
+      'Not: Link oluşturma yetkisi sadece Kilit Sahibindedir.';
+
+  @override
+  String get sendKeySuccessNoLink =>
+      'Anahtar başarıyla gönderildi, ancak yetki kısıtlaması nedeniyle web linki oluşturulamadı.\nAlıcı uygulamayı indirerek anahtarı kullanabilir.';
+
+  @override
+  String shareMessageWithLink(Object link) {
+    return 'Merhaba, size bir akıllı kilit erişim anahtarı gönderdim. Erişmek için aşağıdaki linke tıklayabilirsiniz:\n\n$link';
+  }
+
+  @override
+  String get shareMessageNoLink =>
+      'Merhaba, size bir akıllı kilit erişim anahtarı gönderdim. Kullanmak için lütfen Yavuz Lock uygulamasını indirin ve giriş yapın.';
+
+  @override
+  String get keyAccessSubject => 'Kilit Erişim Anahtarı';
+
+  @override
+  String get emailAppNotFound => 'E-posta uygulaması bulunamadı';
+
+  @override
+  String get smsAppNotFound => 'SMS uygulaması bulunamadı';
+
+  @override
+  String deleteErrorWithMsg(Object error) {
+    return 'Silme hatası: $error';
+  }
+
+  @override
+  String newQrWithName(Object name) {
+    return 'Yeni QR ($name)';
+  }
+
+  @override
+  String get oneTimeKeyNote =>
+      'Tek seferlik anahtarlar ilk kullanımdan veya 1 saatten sonra geçerliliğini yitirir.';
+
+  @override
+  String get sendMultipleKeys => 'Çoklu Anahtar Gönder';
 
   @override
   String get sendMultipleKeysComingSoon =>
-      'Birden fazla elektronik anahtar gönderme yakında eklenecek';
+      'Çoklu anahtar gönderme özelliği yakında eklenecek';
+
+  @override
+  String groupListLoadError(Object error) {
+    return 'Grup listesi yüklenemedi: $error';
+  }
+
+  @override
+  String get addNewGroup => 'Yeni Grup Ekle';
+
+  @override
+  String get groupName => 'Grup Adı';
+
+  @override
+  String get groupAddedSuccessfully => 'Grup başarıyla eklendi';
+
+  @override
+  String groupAddError(Object error) {
+    return 'Grup eklenemedi: $error';
+  }
+
+  @override
+  String get editGroup => 'Grubu Düzenle';
+
+  @override
+  String get newGroupName => 'Yeni Grup Adı';
+
+  @override
+  String get groupUpdated => 'Grup güncellendi';
+
+  @override
+  String get noGroupsCreatedYet => 'Henüz grup oluşturulmamış';
+
+  @override
+  String get createGroup => 'Grup Oluştur';
+
+  @override
+  String get rename => 'Adını Değiştir';
+
+  @override
+  String deleteGroupConfirmation(Object name) {
+    return '$name grubunu silmek istediğinizden emin misiniz?';
+  }
+
+  @override
+  String get groupDeleted => 'Grup silindi';
+
+  @override
+  String get authorizationStatus => 'Yetki Durumu';
+
+  @override
+  String get authorizedAdmin => 'Yetkili Yönetici (Admin)';
+
+  @override
+  String get normalUser => 'Normal Kullanıcı';
+
+  @override
+  String get actions => 'İşlemler';
+
+  @override
+  String get unfreeze => 'Dondurmayı Kaldır';
+
+  @override
+  String get freeze => 'Dondur';
+
+  @override
+  String get revokeAuthority => 'Yetkiyi Al';
+
+  @override
+  String get authorize => 'Yetkilendir';
+
+  @override
+  String get changePeriod => 'Süreyi Değiştir';
+
+  @override
+  String get unlockLink => 'Kilit Açma Linki';
+
+  @override
+  String get unfreezeSuccess => 'Dondurma kaldırıldı';
+
+  @override
+  String get freezeSuccess => 'Anahtar donduruldu';
+
+  @override
+  String get revokeSuccess => 'Yetki alındı';
+
+  @override
+  String get authorizeSuccess => 'Yetki verildi';
+
+  @override
+  String get unlockLinkDescription =>
+      'Bu linki kullanıcı ile paylaşarak kilidi tarayıcı üzerinden açmasını sağlayabilirsiniz.';
+
+  @override
+  String get authorityError =>
+      'Yetki Hatası: Link oluşturma sadece Kilit Sahibi tarafından yapılabilir.';
+
+  @override
+  String linkRetrievalError(Object error) {
+    return 'Link alma hatası: $error';
+  }
+
+  @override
+  String get start => 'Başlangıç';
+
+  @override
+  String get end => 'Bitiş';
+
+  @override
+  String get dateError => 'Bitiş tarihi başlangıçtan önce olamaz';
+
+  @override
+  String get updateSuccess => 'Güncellendi';
+
+  @override
+  String get deleteKeyConfirmation =>
+      'Bu anahtarı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.';
+
+  @override
+  String get deleteKeyTitle => 'Sil';
+
+  @override
+  String get groupManagementTitle => 'Grup Yönetimi';
+
+  @override
+  String groupLocksLoadError(Object error) {
+    return 'Grup kilitleri yüklenemedi: $error';
+  }
+
+  @override
+  String groupLocksTitle(Object groupName) {
+    return '$groupName Kilitleri';
+  }
+
+  @override
+  String get lock => 'Kilit';
+
+  @override
+  String lockListRetrievalError(Object error) {
+    return 'Kilit listesi alınamadı: $error';
+  }
+
+  @override
+  String operationCompletedWithCounts(Object fail, Object success) {
+    return 'İşlem tamamlandı. $success eklendi, $fail hata.';
+  }
+
+  @override
+  String get shareGroup => 'Grubu Paylaş';
+
+  @override
+  String shareGroupTitle(Object groupName) {
+    return '$groupName Grubunu Paylaş';
+  }
+
+  @override
+  String get receiverHintUserEmail => 'Alıcı Kullanıcı Adı / Email';
+
+  @override
+  String get groupShareNote =>
+      'Bu işlem gruptaki tüm kilitler için e-anahtar gönderir.';
+
+  @override
+  String locksSharedCounts(Object fail, Object success) {
+    return '$success kilit paylaşıldı, $fail başarısız.';
+  }
+
+  @override
+  String get noLocksInGroup => 'Bu grupta kilit yok.';
+
+  @override
+  String get groupDetail => 'Grup Detayı';
+
+  @override
+  String totalLocksCount(Object count) {
+    return 'Toplam $count Kilit';
+  }
+
+  @override
+  String get editGroupLocks => 'Kilitleri Düzenle (Ekle/Çıkar)';
+
+  @override
+  String get unnamed => 'İsimsiz';
+
+  @override
+  String get defaultCountry => 'Türkiye';
+
+  @override
+  String get securityQuestion => 'Güvenlik Sorusu';
+
+  @override
+  String get notSet => 'Ayarlanmadı';
+
+  @override
+  String get securityQuestionSoon => 'Güvenlik sorusu ayarı yakında eklenecek';
+
+  @override
+  String get countryRegion => 'Ülke/Bölge';
+
+  @override
+  String get userTerms => 'Kullanıcı koşulları';
+
+  @override
+  String editField(Object field) {
+    return '$field Düzenle';
+  }
+
+  @override
+  String enterNewField(Object field) {
+    return 'Yeni $field girin';
+  }
+
+  @override
+  String fieldUpdatedSuccess(Object field) {
+    return '$field başarıyla güncellendi';
+  }
+
+  @override
+  String get passwordResetInstruction =>
+      'Şifre değiştirme işlemi için giriş sayfasındaki \'Şifremi Unuttum\' özelliğini kullanın.';
+
+  @override
+  String get avatarSoon => 'Avatar değiştirme özelliği yakında eklenecek';
+
+  @override
+  String get customerService => 'Müşteri Servisi';
+
+  @override
+  String get support247 => '7/24 Destek';
+
+  @override
+  String get contactUsOnIssues =>
+      'Herhangi bir sorun yaşadığınızda bize ulaşın';
+
+  @override
+  String get emailSupport => 'E-posta Desteği';
+
+  @override
+  String get salesCooperation => 'Satış ve İş Birliği';
+
+  @override
+  String get officialWebsite => 'Resmi Web Sitesi';
+
+  @override
+  String get webAdminSystem => 'Web Yönetim Sistemi';
+
+  @override
+  String get hotelAdminSystem => 'Otel Yönetim Sistemi';
+
+  @override
+  String get apartmentSystem => 'Apartman Sistemi';
+
+  @override
+  String get userManual => 'Kullanım Kılavuzu';
+
+  @override
+  String get liveSupport => 'Canlı Destek';
+
+  @override
+  String copiedToClipboardMsg(Object text) {
+    return 'Panoya kopyalandı: $text';
+  }
+
+  @override
+  String get customerServiceDescription =>
+      'Herhangi bir teknik sorun, özellik talebi veya genel soru için bizimle iletişime geçebilirsiniz. En hızlı şekilde size yardımcı olmaya çalışacağız.';
+
+  @override
+  String get liveChatSoon =>
+      'Canlı destek sohbeti yakında aktif olacak. Şimdilik e-posta yoluyla bize ulaşabilirsiniz.';
+
+  @override
+  String get sendEmail => 'E-posta Gönder';
+
+  @override
+  String get passive => 'Pasif';
+
+  @override
+  String get gatewayRequired => 'Ağ geçidi gerekli';
+
+  @override
+  String get group => 'Grup';
+
+  @override
+  String get reset => 'Sıfırla';
+
+  @override
+  String get search => 'Arama';
+
+  @override
+  String get noEKeysFound => 'Elektronik anahtar bulunamadı';
+
+  @override
+  String keyFor(String username) {
+    return '$username için anahtar';
+  }
+
+  @override
+  String get expired => 'Süresi doldu';
+
+  @override
+  String get deleteGroup => 'Grubu Sil';
+
+  @override
+  String updateErrorWithMsg(Object error) {
+    return 'Güncelleme hatası: $error';
+  }
 }

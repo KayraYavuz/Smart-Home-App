@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class EKeyDetailPage extends StatefulWidget {
   final Map<String, dynamic> eKey;
@@ -57,6 +58,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     bool isFrozen = keyStatus == '110405';
     // keyRight: 0-No, 1-Yes (Authorized admin)
     bool isAuthorized = _eKey['keyRight'] == 1;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -84,7 +86,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _eKey['keyName'] ?? 'Anahtar',
+                    _eKey['keyName'] ?? l10n.key,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -111,7 +113,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                       ),
                     ),
                     child: Text(
-                      isFrozen ? 'Dondurulmuş' : 'Aktif',
+                      isFrozen ? l10n.frozen : l10n.active,
                       style: TextStyle(
                         color: isFrozen ? Colors.red : Colors.green,
                         fontWeight: FontWeight.bold,
@@ -126,20 +128,20 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
             // Info Cards
             _buildInfoCard(
-              'Geçerlilik Süresi',
+              l10n.validityPeriod,
               '${_formatDate(_eKey['startDate'])} - ${_formatDate(_eKey['endDate'])}',
               Icons.calendar_today,
             ),
             const SizedBox(height: 12),
             _buildInfoCard(
-              'Yetki Durumu',
-              isAuthorized ? 'Yetkili Yönetici (Admin)' : 'Normal Kullanıcı',
+              l10n.authorizationStatus,
+              isAuthorized ? l10n.authorizedAdmin : l10n.normalUser,
               Icons.security,
             ),
             const SizedBox(height: 12),
              _buildInfoCard(
-              'Uzaktan Açma',
-              _eKey['remoteEnable'] == 1 ? 'Aktif' : 'Pasif',
+              l10n.remoteUnlock,
+              _eKey['remoteEnable'] == 1 ? l10n.active : l10n.passive,
               Icons.wifi_tethering,
             ),
 
@@ -147,9 +149,9 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
             // Actions (Only for admin/owner)
             if (widget.isOwner) ...[
-              const Text(
-                'İşlemler',
-                style: TextStyle(
+              Text(
+                l10n.actions,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -163,7 +165,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                 children: [
                   // Freeze / Unfreeze
                   _buildActionButton(
-                    label: isFrozen ? 'Dondurmayı Kaldır' : 'Dondur',
+                    label: isFrozen ? l10n.unfreeze : l10n.freeze,
                     icon: isFrozen ? Icons.ac_unit : Icons.ac_unit_outlined,
                     color: isFrozen ? Colors.green : Colors.orange,
                     onTap: () => _toggleFreezeStatus(isFrozen),
@@ -171,7 +173,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
                   // Authorize / Unauthorize
                   _buildActionButton(
-                    label: isAuthorized ? 'Yetkiyi Al' : 'Yetkilendir',
+                    label: isAuthorized ? l10n.revokeAuthority : l10n.authorize,
                     icon: isAuthorized ? Icons.remove_moderator : Icons.add_moderator,
                     color: isAuthorized ? Colors.redAccent : Colors.blue,
                     onTap: () => _toggleAuthorization(isAuthorized),
@@ -179,7 +181,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
                   // Change Period
                   _buildActionButton(
-                    label: 'Süreyi Değiştir',
+                    label: l10n.changePeriod,
                     icon: Icons.edit_calendar,
                     color: Colors.purple,
                     onTap: _showChangePeriodDialog,
@@ -187,7 +189,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
                    // Rename / Update Remote
                   _buildActionButton(
-                    label: 'Düzenle',
+                    label: l10n.edit,
                     icon: Icons.edit,
                     color: Colors.blueGrey,
                     onTap: _showUpdateDialog,
@@ -195,7 +197,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
                   // Get Unlock Link
                   _buildActionButton(
-                    label: 'Kilit Açma Linki',
+                    label: l10n.unlockLink,
                     icon: Icons.link,
                     color: Colors.teal,
                     onTap: _getUnlockLink,
@@ -203,7 +205,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
                   // Delete
                   _buildActionButton(
-                    label: 'Sil',
+                    label: l10n.delete,
                     icon: Icons.delete,
                     color: Colors.red,
                     onTap: _confirmDelete,
@@ -311,6 +313,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
   Future<void> _toggleFreezeStatus(bool isCurrentlyFrozen) async {
     if (_accessToken == null) return;
+    final l10n = AppLocalizations.of(context)!;
 
     setState(() => _isLoading = true);
 
@@ -331,7 +334,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
       if (!mounted) return;
       setState(() {});
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isCurrentlyFrozen ? 'Dondurma kaldırıldı' : 'Anahtar donduruldu')),
+        SnackBar(content: Text(isCurrentlyFrozen ? l10n.unfreezeSuccess : l10n.freezeSuccess)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -345,6 +348,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
   Future<void> _toggleAuthorization(bool isCurrentlyAuthorized) async {
     if (_accessToken == null) return;
+    final l10n = AppLocalizations.of(context)!;
 
     setState(() => _isLoading = true);
 
@@ -367,7 +371,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
       if (!mounted) return;
       setState(() {});
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isCurrentlyAuthorized ? 'Yetki alındı' : 'Yetki verildi')),
+        SnackBar(content: Text(isCurrentlyAuthorized ? l10n.revokeSuccess : l10n.authorizeSuccess)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -381,6 +385,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
    Future<void> _getUnlockLink() async {
     if (_accessToken == null) return;
+    final l10n = AppLocalizations.of(context)!;
 
     setState(() => _isLoading = true);
 
@@ -398,13 +403,13 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
           context: context,
           builder: (context) => AlertDialog(
             backgroundColor: const Color(0xFF1E1E1E),
-            title: const Text('Kilit Açma Linki', style: TextStyle(color: Colors.white)),
+            title: Text(l10n.unlockLink, style: const TextStyle(color: Colors.white)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Bu linki kullanıcı ile paylaşarak kilidi tarayıcı üzerinden açmasını sağlayabilirsiniz.',
-                  style: TextStyle(color: Colors.grey),
+                Text(
+                  l10n.unlockLinkDescription,
+                  style: const TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 16),
                 SelectableText(
@@ -418,24 +423,24 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                 onPressed: () {
                    Clipboard.setData(ClipboardData(text: link));
                    ScaffoldMessenger.of(context).showSnackBar(
-                     const SnackBar(content: Text('Link kopyalandı')),
+                     SnackBar(content: Text(l10n.linkCopied)),
                    );
                    Navigator.pop(context);
                 },
-                child: const Text('Kopyala'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Kapat', style: TextStyle(color: Colors.grey)),
-              ),
+                 child: Text(l10n.copy),
+               ),
+               TextButton(
+                 onPressed: () => Navigator.pop(context),
+                 child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+               ),
             ],
           ),
         );
       }
     } catch (e) {
-      String msg = 'Link alma hatası: $e';
+      String msg = l10n.linkRetrievalError(e.toString());
       if (e.toString().contains('20002') || e.toString().contains('Not lock admin')) {
-        msg = 'Yetki Hatası: Link oluşturma sadece Kilit Sahibi tarafından yapılabilir.';
+        msg = l10n.authorityError;
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg), backgroundColor: Colors.red),
@@ -449,6 +454,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     // Current dates
     DateTime currentStart = DateTime.fromMillisecondsSinceEpoch(_eKey['startDate']);
     DateTime currentEnd = DateTime.fromMillisecondsSinceEpoch(_eKey['endDate']);
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
@@ -472,7 +478,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
              });
              
              ScaffoldMessenger.of(context).showSnackBar(
-               const SnackBar(content: Text('Süre güncellendi')),
+               SnackBar(content: Text(l10n.updateSuccess)),
              );
            } catch(e) {
              if (!mounted) return;
@@ -489,6 +495,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     final nameController = TextEditingController(text: _eKey['keyName']);
     // remoteEnable: 1-yes, 2-no
     bool remoteInfo = _eKey['remoteEnable'] == 1;
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
@@ -498,23 +505,23 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
           builder: (context, setStateSB) {
             return AlertDialog(
               backgroundColor: const Color(0xFF1E1E1E),
-              title: const Text('Düzenle', style: TextStyle(color: Colors.white)),
+              title: Text(l10n.edit, style: const TextStyle(color: Colors.white)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextField(
+                   TextField(
                     controller: nameController,
                     style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      labelText: 'Anahtar Adı',
-                      labelStyle: TextStyle(color: Colors.grey),
-                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                    decoration: InputDecoration(
+                      labelText: l10n.nameLabel,
+                      labelStyle: const TextStyle(color: Colors.grey),
+                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  SwitchListTile(
-                    title: const Text('Uzaktan Açma İzni', style: TextStyle(color: Colors.white)),
-                    subtitle: const Text('Gateway gerektirir', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                   SwitchListTile(
+                    title: Text(l10n.allowRemoteUnlock, style: const TextStyle(color: Colors.white)),
+                    subtitle: Text(l10n.gatewayRequired, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                     value: remoteEnabled,
                     onChanged: (val) {
                       setStateSB(() => remoteEnabled = val);
@@ -526,7 +533,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+                  child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
                 ),
                 TextButton(
                   onPressed: () async {
@@ -548,7 +555,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                        });
                        
                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Güncellendi')),
+                          SnackBar(content: Text(l10n.updateSuccess)),
                        );
                     } catch(e) {
                       if (!mounted) return;
@@ -557,7 +564,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                       );
                     }
                   },
-                  child: const Text('Kaydet', style: TextStyle(color: Colors.blue)),
+                  child: Text(l10n.save, style: const TextStyle(color: Colors.blue)),
                 ),
               ],
             );
@@ -569,19 +576,20 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
 
   void _confirmDelete() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('Sil', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'Bu anahtarı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.',
-          style: TextStyle(color: Colors.grey),
+        title: Text(l10n.delete, style: const TextStyle(color: Colors.white)),
+        content: Text(
+          l10n.deleteKeyConfirmation,
+          style: const TextStyle(color: Colors.grey),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
@@ -603,7 +611,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                  );
                }
             },
-            child: const Text('Sil', style: TextStyle(color: Colors.red)),
+            child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -685,14 +693,15 @@ class __ChangePeriodDialogState extends State<_ChangePeriodDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       backgroundColor: const Color(0xFF1E1E1E),
-      title: const Text('Süreyi Değiştir', style: TextStyle(color: Colors.white)),
+      title: Text(l10n.changePeriod, style: const TextStyle(color: Colors.white)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: const Text('Başlangıç', style: TextStyle(color: Colors.grey, fontSize: 12)),
+            title: Text(l10n.start, style: const TextStyle(color: Colors.grey, fontSize: 12)),
             subtitle: Text(
               '${_startDate.day}.${_startDate.month}.${_startDate.year} ${_startDate.hour}:${_startDate.minute.toString().padLeft(2, '0')}',
               style: const TextStyle(color: Colors.white),
@@ -701,7 +710,7 @@ class __ChangePeriodDialogState extends State<_ChangePeriodDialog> {
             onTap: () => _selectDate(true),
           ),
           ListTile(
-             title: const Text('Bitiş', style: TextStyle(color: Colors.grey, fontSize: 12)),
+             title: Text(l10n.end, style: const TextStyle(color: Colors.grey, fontSize: 12)),
             subtitle: Text(
               '${_endDate.day}.${_endDate.month}.${_endDate.year} ${_endDate.hour}:${_endDate.minute.toString().padLeft(2, '0')}',
                style: const TextStyle(color: Colors.white),
@@ -714,20 +723,20 @@ class __ChangePeriodDialogState extends State<_ChangePeriodDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+          child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
         ),
         TextButton(
           onPressed: () {
             if (_endDate.isBefore(_startDate)) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Bitiş tarihi başlangıçtan önce olamaz')),
+                SnackBar(content: Text(l10n.dateError)),
               );
               return;
             }
             Navigator.pop(context);
             widget.onSave(_startDate, _endDate);
           },
-          child: const Text('Kaydet', style: TextStyle(color: Colors.blue)),
+          child: Text(l10n.save, style: const TextStyle(color: Colors.blue)),
         ),
       ],
     );

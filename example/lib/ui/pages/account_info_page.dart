@@ -28,7 +28,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       _email = prefs.getString('saved_email') ?? '';
       _username = prefs.getString('saved_username') ?? '';
       _phone = prefs.getString('saved_phone') ?? '';
-      _country = prefs.getString('saved_country') ?? 'Türkiye';
+      _country = prefs.getString('saved_country') ?? AppLocalizations.of(context)!.defaultCountry;
       
       // Eski hardcoded veya istenmeyen verileri temizle
       if (_phone.contains('5XX XXX') || _phone.contains('05316305072') || _phone.contains('05326305072')) {
@@ -154,21 +154,21 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                     onTap: _changePassword,
                   ),
                   _buildInfoTile(
-                    title: 'Güvenlik Sorusu', // Henüz l10n'de yok
-                    value: 'Ayarlanmadı',
+                    title: l10n.securityQuestion,
+                    value: l10n.notSet,
                     showNotificationDot: true,
                     showArrowIcon: true,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Güvenlik sorusu ayarı yakında eklenecek')),
+                        SnackBar(content: Text(l10n.securityQuestionSoon)),
                       );
                     },
                   ),
                   _buildInfoTile(
-                    title: 'Ülke/Bölge', // Henüz l10n'de yok
+                    title: l10n.countryRegion,
                     value: _country,
                     showEditIcon: true,
-                    onTap: () => _editField('Ülke/Bölge', 'saved_country', _country),
+                    onTap: () => _editField(l10n.countryRegion, 'saved_country', _country),
                   ),
                 ],
               ),
@@ -184,9 +184,9 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                     children: [
                       TextButton(
                         onPressed: () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
-                        child: const Text(
-                          'Kullanıcı koşulları',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.userTerms,
+                          style: const TextStyle(
                             color: Colors.blue,
                             fontSize: 14,
                           ),
@@ -195,9 +195,9 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                       const SizedBox(width: 16),
                       TextButton(
                         onPressed: () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
-                        child: const Text(
-                          'Gizlilik politikası',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.privacyPolicy,
+                          style: const TextStyle(
                             color: Colors.blue,
                             fontSize: 14,
                           ),
@@ -253,9 +253,9 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                   fontSize: 14,
                 ),
               )
-            : const Text(
-                'Ekle',
-                style: TextStyle(
+            : Text(
+                AppLocalizations.of(context)!.add,
+                style: const TextStyle(
                   color: Colors.blue,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -302,7 +302,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('URL açılamadı: $url'),
+          content: Text(AppLocalizations.of(context)!.urlOpenError(url)),
           backgroundColor: Colors.red,
         ),
       );
@@ -315,12 +315,12 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text('$title Düzenle', style: const TextStyle(color: Colors.white)),
+        title: Text(AppLocalizations.of(context)!.editField(title), style: const TextStyle(color: Colors.white)),
         content: TextField(
           controller: controller,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
-            hintText: 'Yeni $title girin',
+            hintText: AppLocalizations.of(context)!.enterNewField(title),
             hintStyle: const TextStyle(color: Colors.grey),
             enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
             focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
@@ -329,11 +329,11 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Kaydet', style: TextStyle(color: Colors.blue)),
+            child: Text(AppLocalizations.of(context)!.save, style: const TextStyle(color: Colors.blue)),
           ),
         ],
       ),
@@ -353,7 +353,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$title başarıyla güncellendi'),
+          content: Text(AppLocalizations.of(context)!.fieldUpdatedSuccess(title)),
           backgroundColor: Colors.green,
         ),
       );
@@ -363,13 +363,13 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
   Future<void> _changePassword() async {
     // Burada şifre değiştirme dialogu olabilir veya Firebase'e yönlendirilebilir
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Şifre değiştirme işlemi için giriş sayfasındaki "Şifremi Unuttum" özelliğini kullanın.')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.passwordResetInstruction)),
     );
   }
 
   Future<void> _editAvatar(BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Avatar değiştirme özelliği yakında eklenecek')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.avatarSoon)),
     );
   }
 }
