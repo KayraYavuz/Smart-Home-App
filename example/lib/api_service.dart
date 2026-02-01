@@ -6788,16 +6788,7 @@ class ApiService {
       throw Exception('HTTP hatası: ${response.statusCode}');
     }
   }
-
-  /// Freeze/Unfreeze EKey
-  Future<void> freezeEKey({
-    required String keyId,
-    required bool freeze, // true=freeze, false=unfreeze
-  }) async {
-    print('❄️ Anahtar donduruluyor: $keyId -> $freeze');
-    await getAccessToken();
-    final url = Uri.parse('$_baseUrl/v3/key/${freeze ? "freeze" : "unfreeze"}');
-    
+}
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},

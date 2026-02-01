@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
-import 'package:ttlock_flutter/ttlock_flutter.dart';
+import 'package:ttlock_flutter/ttlock.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class LogsPage extends StatefulWidget {

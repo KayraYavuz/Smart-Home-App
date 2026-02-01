@@ -3,6 +3,7 @@ import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
+import 'dart:convert';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
@@ -14,7 +15,9 @@ class UserManagementPage extends StatefulWidget {
 class _UserManagementPageState extends State<UserManagementPage> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _users = [];
+  List<Map<String, dynamic>> _allKeys = [];
   bool _isLoading = false;
+  bool _isLoadingKeys = false;
   late ApiService _apiService;
 
   @override
@@ -55,6 +58,42 @@ class _UserManagementPageState extends State<UserManagementPage> {
     }
   }
 
+  Future<void> _loadKeys() async {
+     if (_isLoadingKeys) return;
+     setState(() => _isLoadingKeys = true);
+     try {
+       final locks = await _apiService.getKeyList();
+       List<Map<String, dynamic>> keys = [];
+       
+       await Future.wait(locks.map((lock) async {
+          try {
+             final lockKeys = await _apiService.getLockEKeys(
+               accessToken: _apiService.accessToken!, 
+               lockId: lock['lockId'].toString(),
+               pageNo: 1, 
+               pageSize: 100
+             );
+             for (var k in lockKeys) {
+               k['lockAlias'] = lock['lockAlias'] ?? lock['lockName'];
+             }
+             keys.addAll(lockKeys);
+          } catch (e) {
+             print('Error fetching keys for ${lock['lockId']}: $e');
+          }
+       }));
+       
+       if (!mounted) return;
+       setState(() {
+         _allKeys = keys;
+         _isLoadingKeys = false;
+       });
+     } catch (e) {
+       if (!mounted) return;
+       setState(() => _isLoadingKeys = false);
+       print('Key load error: $e');
+     }
+  }
+
   void _showAddUserDialog() {
     final l10n = AppLocalizations.of(context)!;
     final usernameController = TextEditingController();
@@ -63,24 +102,33 @@ class _UserManagementPageState extends State<UserManagementPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.registerNewUser),
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.registerNewUser, style: const TextStyle(color: Colors.white)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: usernameController,
-              decoration: InputDecoration(labelText: l10n.userEmailOrPhone),
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: l10n.userEmailOrPhone,
+                labelStyle: const TextStyle(color: Colors.grey),
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(labelText: l10n.password),
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: l10n.password,
+                labelStyle: const TextStyle(color: Colors.grey),
+              ),
               obscureText: true,
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey))),
           TextButton(
             onPressed: () async {
               if (usernameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
@@ -103,7 +151,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 }
               }
             },
-            child: Text(l10n.save),
+            child: Text(l10n.save, style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -115,10 +163,11 @@ class _UserManagementPageState extends State<UserManagementPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.deleteAccount),
-        content: Text('${user['username']} - ${l10n.deleteAccountConfirmation}'),
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.deleteAccount, style: const TextStyle(color: Colors.white)),
+        content: Text('${user['username']} - ${l10n.deleteAccountConfirmation}', style: const TextStyle(color: Colors.grey)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey))),
           TextButton(
             onPressed: () async {
               try {
@@ -143,12 +192,28 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
+  Future<void> _toggleFreeze(Map<String, dynamic> key, bool freeze, AppLocalizations l10n) async {
+    try {
+      await _apiService.freezeEKey(keyId: key['keyId'].toString(), freeze: freeze);
+      setState(() {
+        key['keyStatus'] = freeze ? '110402' : '110401';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(freeze ? l10n.keyFrozen : l10n.keyUnfrozen),
+        backgroundColor: freeze ? Colors.orange : Colors.green
+      ));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -169,16 +234,17 @@ class _UserManagementPageState extends State<UserManagementPage> {
             ),
             IconButton(
               icon: const Icon(Icons.refresh),
-              onPressed: _loadUsers, // Refresh both?
+              onPressed: () {
+                _loadUsers();
+                _loadKeys();
+              },
               tooltip: l10n.refresh,
             ),
           ],
         ),
         body: TabBarView(
           children: [
-            // Tab 1: App Users (Existing)
             _buildUserListTab(l10n),
-            // Tab 2: Keys (New)
             _buildKeyFreezeTab(l10n),
           ],
         ),
@@ -186,11 +252,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  // --- Existing User List Logic ---
   Widget _buildUserListTab(AppLocalizations l10n) {
     return Column(
       children: [
-        // Search Bar (Existing)
         Container(
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -221,60 +285,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  // --- New Key Freeze Tab ---
-  // Store keys state in a separate variable or fetch on tab switch?
-  // For simplicity, fetch on init or use the same _loadUsers but expanded.
-  // I'll add a separate valid for _allKeys.
-
-  List<Map<String, dynamic>> _allKeys = [];
-  bool _isLoadingKeys = false;
-
-  @override // Update initState to load keys too? Or load on tab change?
-  // Let's add a _loadKeys() method calling from initState or button.
-  // I'll call it in initState.
-
-  Future<void> _loadKeys() async {
-     if (_isLoadingKeys) return;
-     setState(() => _isLoadingKeys = true);
-     try {
-       // 1. Get My Locks
-       final locks = await _apiService.getKeyList();
-       List<Map<String, dynamic>> keys = [];
-       
-       // 2. Get Keys for each lock (Parallel)
-       await Future.wait(locks.map((lock) async {
-          try {
-             final lockKeys = await _apiService.getLockEKeys(
-               accessToken: _apiService.accessToken!, 
-               lockId: lock['lockId'].toString(),
-               pageNo: 1, 
-               pageSize: 100
-             );
-             // Add Lock Alias to key for display
-             for (var k in lockKeys) {
-               k['lockAlias'] = lock['lockAlias'] ?? lock['lockName'];
-             }
-             keys.addAll(lockKeys);
-          } catch (e) {
-             print('Error fetching keys for ${lock['lockId']}: $e');
-          }
-       }));
-       
-       if (!mounted) return;
-       setState(() {
-         _allKeys = keys;
-         _isLoadingKeys = false;
-       });
-     } catch (e) {
-       if (!mounted) return;
-       setState(() => _isLoadingKeys = false);
-       print('Key load error: $e');
-     }
-  }
-
   Widget _buildKeyFreezeTab(AppLocalizations l10n) {
      if (_isLoadingKeys) return const Center(child: CircularProgressIndicator(color: AppColors.primary));
-     
      if (_allKeys.isEmpty) return Center(child: Text(l10n.noSharedKeys, style: const TextStyle(color: Colors.grey)));
 
      return RefreshIndicator(
@@ -284,8 +296,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
          itemCount: _allKeys.length,
          itemBuilder: (context, index) {
            final key = _allKeys[index];
-           final isFrozen = key['keyStatus'] == '110402'; 
-           
            final status = key['keyStatus'].toString();
            final bool frozen = status == '110402';
            
@@ -311,46 +321,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
      );
   }
 
-  Future<void> _toggleFreeze(Map<String, dynamic> key, bool freeze, AppLocalizations l10n) async {
-    try {
-      await _apiService.freezeEKey(keyId: key['keyId'].toString(), freeze: freeze);
-      
-      // Update local state
-      setState(() {
-        key['keyStatus'] = freeze ? '110402' : '110401';
-      });
-      
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(freeze ? l10n.keyFrozen : l10n.keyUnfrozen),
-        backgroundColor: freeze ? Colors.orange : Colors.green
-      ));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red));
-    }
-  }
-
-
-
   Widget _buildEmptyState(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.people_outline,
-            color: Colors.grey,
-            size: 64,
-          ),
+          const Icon(Icons.people_outline, color: Colors.grey, size: 64),
           const SizedBox(height: 16),
-           Text(
-            l10n.noData,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 8),
+          Text(l10n.noData, style: const TextStyle(color: Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -360,7 +338,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     final filteredUsers = _users.where((user) {
       final searchTerm = _searchController.text.toLowerCase();
       final username = user['username'].toString().toLowerCase();
-      final email = user['email'].toString().toLowerCase();
+      final email = (user['email'] ?? '').toString().toLowerCase();
       return username.contains(searchTerm) || email.contains(searchTerm);
     }).toList();
 
@@ -379,84 +357,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
             leading: CircleAvatar(
               backgroundColor: Colors.blue.withValues(alpha: 0.2),
               child: Text(
-                user['username'][0].toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                (user['username'] ?? 'U')[0].toUpperCase(),
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
-            title: Text(
-              user['username'],
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              user['email'],
-              style: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 14,
-              ),
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline, color: AppColors.error),
-              onPressed: () => _deleteUser(user),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          ),
-        );
-      },
-    );
-  }
-}
-  Widget _buildUserList() {
-    final filteredUsers = _users.where((user) {
-      final searchTerm = _searchController.text.toLowerCase();
-      final username = user['username'].toString().toLowerCase();
-      final email = user['email'].toString().toLowerCase();
-      return username.contains(searchTerm) || email.contains(searchTerm);
-    }).toList();
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: filteredUsers.length,
-      itemBuilder: (context, index) {
-        final user = filteredUsers[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.blue.withValues(alpha: 0.2),
-              child: Text(
-                user['username'][0].toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            title: Text(
-              user['username'],
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              user['email'],
-              style: TextStyle(
-                color: Colors.grey[400],
-                fontSize: 14,
-              ),
-            ),
+            title: Text(user['username'] ?? 'Unknown', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            subtitle: Text(user['email'] ?? '', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
             trailing: IconButton(
               icon: const Icon(Icons.delete_outline, color: AppColors.error),
               onPressed: () => _deleteUser(user),
