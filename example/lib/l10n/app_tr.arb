@@ -253,6 +253,8 @@
       "errorMessage": {
         "type": "String"
       }
+    }
+  },
   "adminManagement": "Yetkili Yönetici",
   "userManagement": "Kullanıcı Yönetimi",
   "lockUsers": "Kullanıcıları Kilitle",

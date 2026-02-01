@@ -232,6 +232,8 @@
       "errorMessage": {
         "type": "String"
       }
+    }
+  },
   "adminManagement": "Administrator-Verwaltung",
   "userManagement": "Benutzerverwaltung",
   "lockUsers": "Benutzer sperren",
