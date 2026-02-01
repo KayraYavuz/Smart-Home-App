@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -22,92 +24,60 @@ class NotificationService {
 
   Future<void> initialize() async {
     print("🚀 NotificationService: initialize() başladı...");
-    if (_isInitialized) {
-      print("⚠️ NotificationService: Zaten başlatılmış.");
-      return;
-    }
+    if (_isInitialized) return;
 
     try {
-      // 0. Otomatik Başlatmayı Aç
       await _firebaseMessaging.setAutoInitEnabled(true);
 
-      // 1. İzin İste - Hızlı işlem
       NotificationSettings settings = await _firebaseMessaging.requestPermission(
         alert: true,
         badge: true,
         sound: true,
         provisional: false,
       );
-      print('🔔 İzin Durumu: ${settings.authorizationStatus}');
 
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        print('✅ Kullanıcı bildirim izni verdi.');
-      } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-        print('⚠️ Kullanıcı geçici izin verdi.');
+      if (settings.authorizationStatus == AuthorizationStatus.authorized || 
+          settings.authorizationStatus == AuthorizationStatus.provisional) {
+        print('✅ Bildirim izni var.');
       } else {
-        print('❌ Kullanıcı izin vermedi.');
-        _isInitialized = true; // İzin olmasa bile devam et, app açılsın
+        print('❌ Bildirim izni yok.');
+        _isInitialized = true;
         return;
       }
 
-      // 2. Arka Plan İşleyicisi - Hızlı
       FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-      // 3. Yerel Bildirim Ayarları (Foreground için) - Hızlı
       await _setupLocalNotifications();
-
-      // 4. Token Alma - ARKA PLANA TAŞINDI (Non-blocking)
-      // Bu işlem arka planda çalışır, UI'ı bloklamaz
       _fetchTokenAsync();
 
-      // 5. Foreground Dinleme - Hemen kur
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print("☀️ ÖN PLANDA MESAJ GELDİ!");
-        print("☀️ Başlık: ${message.notification?.title}");
-        print("☀️ Body: ${message.notification?.body}");
-        print("☀️ Data: ${message.data}");
+        print("☀️ Ön planda mesaj geldi: ${message.data}");
         _showLocalNotification(message);
       });
 
-      // 6. Tıklama Dinleme - Hemen kur
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         print("👆 Bildirime tıklandı.");
       });
 
       _isInitialized = true;
-      print("✅ NotificationService kurulumu tamamlandı (token arka planda alınıyor).");
-
     } catch (e) {
       print("❌ NotificationService Hatası: $e");
-      _isInitialized = true; // Hata olsa bile app açılsın
+      _isInitialized = true;
     }
   }
 
-  /// APNs ve FCM token'larını arka planda alır (UI'ı bloklamaz)
   void _fetchTokenAsync() async {
     try {
-      print("⏳ APNs Token arka planda bekleniyor...");
       String? apnsToken = await _firebaseMessaging.getAPNSToken();
       int retry = 0;
-      
       while (apnsToken == null && retry < 5) {
         await Future.delayed(const Duration(seconds: 2));
         apnsToken = await _firebaseMessaging.getAPNSToken();
         retry++;
-        print("⏳ APNs Token tekrar deneniyor ($retry/5)...");
       }
 
       if (apnsToken != null) {
-        print("🍏 APNs Token alındı: $apnsToken");
-        // APNs geldiyse FCM Token'ı al
         final token = await _firebaseMessaging.getToken();
-        if (token != null) {
-          print("\n🔥 FCM Token: $token\n");
-        } else {
-          print("❌ FCM Token alınamadı.");
-        }
-      } else {
-        print("⚠️ APNs Token 10 saniye boyunca alınamadı. Push bildirimler çalışmayabilir.");
+        if (token != null) print("\n🔥 FCM Token: $token\n");
       }
     } catch (e) {
       print("❌ Token alma hatası: $e");
@@ -115,10 +85,10 @@ class NotificationService {
   }
 
   Future<void> _setupLocalNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
+    const AndroidInitializationSettings initializationSettingsAndroid = 
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings initializationSettingsDarwin =
+    const DarwinInitializationSettings initializationSettingsDarwin = 
         DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,
@@ -130,16 +100,12 @@ class NotificationService {
       iOS: initializationSettingsDarwin,
     );
 
-    await _localNotificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: (details) {},
-    );
+    await _localNotificationsPlugin.initialize(initializationSettings);
     
-    // Android Kanalı Oluştur (Önemli)
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel',
-      'Acil Bildirimler',
-      description: 'Kapı kilit olayları',
+      'Kilit Bildirimleri',
+      description: 'Kapı kilit olayları ve uyarıları',
       importance: Importance.max,
     );
     
@@ -147,7 +113,6 @@ class NotificationService {
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
         
-    // iOS için Foreground sunum seçenekleri
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
       alert: true, 
       badge: true,
@@ -157,33 +122,53 @@ class NotificationService {
 
   Future<void> _showLocalNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
     
     String title = notification?.title ?? 'Kilit İşlemi';
     String body = notification?.body ?? '';
 
-    // If notification payload is missing, try to construct from data
-    if (notification == null) {
-      if (message.data.isNotEmpty) {
-        // TTLock custom data parsing
-        // Example data: {lockName: "Home", username: "John", type: "unlock"}
-        final lockName = message.data['lockName'] ?? message.data['lockAlias'] ?? 'Kilit';
-        final username = message.data['username'] ?? message.data['sender'] ?? 'Biri';
-        final action = message.data['message'] ?? 'işlem yaptı';
-        
-        title = lockName;
-        body = '$username $action'; // "Ahmet kilidi açtı"
-        
-        // If data is completely empty/useless, ignore
-        if (body.trim().isEmpty) return;
-      } else {
-        return; // Empty message
+    // --- TTLock Lock Name Mapping ---
+    String? lockName;
+    String? lockId = message.data['lockId']?.toString();
+
+    // Try to find lock name in local cache
+    if (lockId != null) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final cachedLocksStr = prefs.getString('cached_locks');
+        if (cachedLocksStr != null) {
+          final List<dynamic> cachedLocks = jsonDecode(cachedLocksStr);
+          final lock = cachedLocks.firstWhere(
+            (l) => l['lockId']?.toString() == lockId,
+            orElse: () => null,
+          );
+          if (lock != null) {
+            lockName = lock['name'] ?? lock['lockAlias'] ?? lock['lockName'];
+          }
+        }
+      } catch (e) {
+        print("Cache lookup error: $e");
       }
     }
 
-    // Append lock name to body if not present and available in data
-    if (message.data.containsKey('lockName') && !body.contains(message.data['lockName'])) {
-      body = '${message.data['lockName']}: $body';
+    // If no explicit notification, build one from data
+    if (notification == null) {
+      if (message.data.isNotEmpty) {
+        final name = lockName ?? message.data['lockName'] ?? message.data['lockAlias'] ?? 'Kilit';
+        final username = message.data['username'] ?? message.data['sender'] ?? 'Biri';
+        final action = message.data['message'] ?? 'işlem yaptı';
+        
+        title = name;
+        body = '$username $action';
+        
+        if (body.trim().isEmpty) return;
+      } else {
+        return;
+      }
+    } else {
+      // If we have a notification but it's generic, try to use lockName
+      if (lockName != null && !title.contains(lockName) && !body.contains(lockName)) {
+        title = lockName;
+      }
     }
 
     await _localNotificationsPlugin.show(
@@ -193,7 +178,7 @@ class NotificationService {
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'high_importance_channel',
-          'Acil Bildirimler',
+          'Kilit Bildirimleri',
           icon: '@mipmap/ic_launcher',
           importance: Importance.max,
           priority: Priority.high,

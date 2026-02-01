@@ -391,6 +391,8 @@
       "errorMessage": {
         "type": "String"
       }
+    }
+  },
   "adminManagement": "Admin Management",
   "userManagement": "User Management",
   "lockUsers": "Lock Users",
