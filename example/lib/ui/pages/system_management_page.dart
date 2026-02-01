@@ -16,36 +16,16 @@ class SystemManagementPage extends StatefulWidget {
   const SystemManagementPage({super.key});
 
   @override
-  _SystemManagementPageState createState() => _SystemManagementPageState();
+  State<SystemManagementPage> createState() => _SystemManagementPageState();
 }
 
 class _SystemManagementPageState extends State<SystemManagementPage> {
-  List<Map<String, dynamic>> _groups = [];
-  bool _isLoading = false;
   late ApiService _apiService;
 
   @override
   void initState() {
     super.initState();
     _apiService = ApiService(context.read<AuthRepository>());
-    _loadGroups();
-  }
-
-  Future<void> _loadGroups() async {
-    setState(() => _isLoading = true);
-    try {
-      final response = await _apiService.getGroupList();
-      if (!mounted) return;
-      
-      setState(() {
-        _groups = List<Map<String, dynamic>>.from(response);
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-      print('Group load error: $e');
-    }
   }
 
   Future<void> _exportRecords() async {
@@ -131,12 +111,6 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
         title: Text(l10n.adminManagement),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadGroups,
-          )
-        ],
       ),
       body: SafeArea(
         child: ListView(

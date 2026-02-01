@@ -34,7 +34,7 @@ class RemoteListPage extends StatefulWidget {
   const RemoteListPage({super.key, required this.lockId});
 
   @override
-  _RemoteListPageState createState() => _RemoteListPageState();
+  State<RemoteListPage> createState() => _RemoteListPageState();
 }
 
 class _RemoteListPageState extends State<RemoteListPage> {
@@ -89,8 +89,10 @@ class _RemoteListPageState extends State<RemoteListPage> {
                            await api.deleteRemote(remoteId: remote['remoteId']);
                            _loadRemotes();
                         } catch(e) {
-                          if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
+                        } catch(e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silme hatası: $e')));
+                          }
                         }
                       },
                     ),
@@ -117,7 +119,7 @@ class WirelessKeypadPage extends StatefulWidget {
   const WirelessKeypadPage({super.key, required this.lockId});
 
   @override
-  _WirelessKeypadPageState createState() => _WirelessKeypadPageState();
+  State<WirelessKeypadPage> createState() => _WirelessKeypadPageState();
 }
 
 class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
@@ -198,7 +200,7 @@ class DoorSensorPage extends StatefulWidget {
   const DoorSensorPage({super.key, required this.lockId});
 
   @override
-  _DoorSensorPageState createState() => _DoorSensorPageState();
+  State<DoorSensorPage> createState() => _DoorSensorPageState();
 }
 
 class _DoorSensorPageState extends State<DoorSensorPage> {
@@ -274,7 +276,7 @@ class QrCodePage extends StatefulWidget {
   const QrCodePage({super.key, required this.lockId});
 
   @override
-  _QrCodePageState createState() => _QrCodePageState();
+  State<QrCodePage> createState() => _QrCodePageState();
 }
 
 class _QrCodePageState extends State<QrCodePage> {
@@ -391,7 +393,7 @@ class WifiLockPage extends StatefulWidget {
   const WifiLockPage({super.key, required this.lockId});
 
   @override
-  _WifiLockPageState createState() => _WifiLockPageState();
+  State<WifiLockPage> createState() => _WifiLockPageState();
 }
 
 class _WifiLockPageState extends State<WifiLockPage> {

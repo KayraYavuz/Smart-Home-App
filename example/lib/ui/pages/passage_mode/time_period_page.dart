@@ -235,7 +235,7 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.4),
+                        color: AppColors.primary.withValues(alpha: 0.4),
                         blurRadius: 8,
                         spreadRadius: 0,
                       ),
@@ -373,7 +373,7 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
       decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(
-          top: BorderSide(color: AppColors.border.withOpacity(0.5)),
+          top: BorderSide(color: AppColors.border.withValues(alpha: 0.5)),
         ),
       ),
       child: SafeArea(

@@ -3,7 +3,7 @@ import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
-import 'dart:convert';
+
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
@@ -319,7 +319,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                subtitle: Text('${key['lockAlias']} - ${frozen ? l10n.frozen : l10n.active}', style: TextStyle(color: Colors.grey[400])),
                trailing: Switch(
                  value: frozen,
-                 activeColor: Colors.orange,
+                                 activeTrackColor: Colors.orange,
                  onChanged: (val) => _toggleFreeze(key, val, l10n),
                ),
              ),

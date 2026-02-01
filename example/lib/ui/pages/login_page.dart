@@ -17,7 +17,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -151,11 +151,13 @@ class _LoginPageState extends State<LoginPage> {
       final email = _usernameController.text.trim();
       print('🔵 Form doğrulandı, email: $email');
       final prefs = await SharedPreferences.getInstance();
+      
+      if (!mounted) return;
+
       final accepted = prefs.getBool('terms_accepted_$email') ?? false;
 
       if (!accepted) {
         print('🔵 Kullanıcı sözleşmesi henüz onaylanmamış, diyaloğu gösteriyor...');
-        if (!mounted) return;
         // Bloc'u parametre olarak gönder
         _showTermsDialog(context, email, context.read<LoginBloc>());
       } else {
@@ -297,58 +299,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _showSyncDialog(BuildContext context, String username, String password) {
-    final codeController = TextEditingController();
-    final l10n = AppLocalizations.of(context)!;
-    
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
-          title: const Text('Doğrulama Gerekli', style: TextStyle(color: Colors.white)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Şifreniz güncellendi. Kilitlerinize erişmek için e-postanıza gönderilen doğrulama kodunu girin.',
-                style: TextStyle(color: Colors.white70),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: codeController,
-                style: const TextStyle(color: Colors.white),
-                decoration: _buildInputDecoration(l10n.verifyCodeLabel, prefixIcon: Icons.vpn_key),
-                keyboardType: TextInputType.number,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
-            ),
-            TextButton(
-              onPressed: () {
-                if (codeController.text.isNotEmpty) {
-                  context.read<LoginBloc>().add(
-                    SyncPassword(
-                      username: username,
-                      password: password,
-                      code: codeController.text.trim(),
-                    ),
-                  );
-                  Navigator.of(dialogContext).pop();
-                }
-              },
-              child: const Text('Doğrula ve Giriş Yap', style: TextStyle(color: Color(0xFF1E90FF))),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {

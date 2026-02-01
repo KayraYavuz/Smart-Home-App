@@ -11,7 +11,7 @@ class ShareLockDialog extends StatefulWidget {
   });
 
   @override
-  _ShareLockDialogState createState() => _ShareLockDialogState();
+  State<ShareLockDialog> createState() => _ShareLockDialogState();
 }
 
 class _ShareLockDialogState extends State<ShareLockDialog> {
@@ -294,7 +294,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
           },
         );
 
-        if (!context.mounted) return;
+        if (!mounted) return;
 
         if (pickedDate != null) {
           final pickedTime = await showTimePicker(
@@ -310,12 +310,12 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                   ),
                   timePickerTheme: TimePickerThemeData(
                     backgroundColor: const Color(0xFF2A2A2A),
-                    hourMinuteColor: MaterialStateColor.resolveWith((states) =>
-                        states.contains(MaterialState.selected)
+                    hourMinuteColor: WidgetStateColor.resolveWith((states) =>
+                        states.contains(WidgetState.selected)
                             ? Colors.blue
                             : Colors.grey[800]!),
-                    hourMinuteTextColor: MaterialStateColor.resolveWith(
-                        (states) => states.contains(MaterialState.selected)
+                    hourMinuteTextColor: WidgetStateColor.resolveWith(
+                        (states) => states.contains(WidgetState.selected)
                             ? Colors.white
                             : Colors.grey),
                     dialHandColor: Colors.blue,

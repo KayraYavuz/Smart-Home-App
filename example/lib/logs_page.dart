@@ -187,9 +187,7 @@ class _LogsPageState extends State<LogsPage> {
     }
   }
 
-  Future<void> _readLogsFromLock() async {
-    // Deprecated or alternative method stub
-  }
+
 
   @override
   Widget build(BuildContext context) {

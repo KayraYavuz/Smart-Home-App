@@ -11,7 +11,7 @@ class LockSettingsPage extends StatefulWidget {
   const LockSettingsPage({super.key, required this.lock});
 
   @override
-  _LockSettingsPageState createState() => _LockSettingsPageState();
+  State<LockSettingsPage> createState() => _LockSettingsPageState();
 }
 
 class _LockSettingsPageState extends State<LockSettingsPage> {
@@ -172,25 +172,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     );
   }
 
-  Widget _buildSwitchTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: SwitchListTile(
-        secondary: Icon(icon, color: AppColors.primary),
-        title: Text(title),
-        subtitle: Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-        value: value,
-        onChanged: onChanged,
-        activeTrackColor: AppColors.primary,
-      ),
-    );
-  }
+
 
   // Action Methods
   void _renameLock() {
