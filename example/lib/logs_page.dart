@@ -260,7 +260,7 @@ class _LogsPageState extends State<LogsPage> {
      try {
        print('🔵 Bluetooth logs reading...');
        
-       TTLock.getLog(widget.lockData!, (String log) async {
+       TTLock.getLockOperateRecord(TTOperateRecordType.latest, widget.lockData!, (String log) async {
          try {
            await _apiService.uploadOperationLog(
              lockId: widget.lockId!, 

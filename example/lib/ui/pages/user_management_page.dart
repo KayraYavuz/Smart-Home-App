@@ -194,7 +194,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
   Future<void> _toggleFreeze(Map<String, dynamic> key, bool freeze, AppLocalizations l10n) async {
     try {
-      await _apiService.freezeEKey(keyId: key['keyId'].toString(), freeze: freeze);
+      await _apiService.getAccessToken();
+      if (_apiService.accessToken == null) throw Exception('Token not found');
+
+      if (freeze) {
+        await _apiService.freezeEKey(accessToken: _apiService.accessToken!, keyId: key['keyId'].toString());
+      } else {
+        await _apiService.unfreezeEKey(accessToken: _apiService.accessToken!, keyId: key['keyId'].toString());
+      }
+
       setState(() {
         key['keyStatus'] = freeze ? '110402' : '110401';
       });
