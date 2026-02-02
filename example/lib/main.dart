@@ -159,6 +159,7 @@ class _MyAppState extends State<MyApp> {
     final languageProvider = Provider.of<LanguageProvider>(context);
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       locale: languageProvider.locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
