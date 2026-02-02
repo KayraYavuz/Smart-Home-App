@@ -3441,6 +3441,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Update error: {error}'**
   String updateErrorWithMsg(Object error);
+
+  /// No description provided for @scanGatewayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Gateway'**
+  String get scanGatewayTitle;
+
+  /// No description provided for @scanLockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Lock'**
+  String get scanLockTitle;
+
+  /// No description provided for @stopScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Scan'**
+  String get stopScan;
+
+  /// No description provided for @reScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-Scan'**
+  String get reScan;
+
+  /// No description provided for @deviceAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Device successfully added'**
+  String get deviceAddedSuccess;
+
+  /// No description provided for @scanningGatewayStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to gateway...'**
+  String get scanningGatewayStatus;
+
+  /// No description provided for @scanningLockStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Please stay close to the lock...'**
+  String get scanningLockStatus;
+
+  /// No description provided for @scanningGateways.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning for gateways...'**
+  String get scanningGateways;
+
+  /// No description provided for @scanningLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning for locks...'**
+  String get scanningLocks;
+
+  /// No description provided for @ensureBluetooth.
+  ///
+  /// In en, this message translates to:
+  /// **'Please ensure Bluetooth is on'**
+  String get ensureBluetooth;
+
+  /// No description provided for @gatewayNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway not found'**
+  String get gatewayNotFound;
+
+  /// No description provided for @lockNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock not found'**
+  String get lockNotFound;
+
+  /// No description provided for @scanNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanned surrounding devices but nothing found.'**
+  String get scanNotFoundMessage;
+
+  /// No description provided for @gatewaySetupNotAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway setup not added yet'**
+  String get gatewaySetupNotAdded;
+
+  /// No description provided for @foundDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} devices found'**
+  String foundDevices(int count);
+
+  /// No description provided for @connectingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to {name}...'**
+  String connectingTo(String name);
+
+  /// No description provided for @unnamedLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed Lock'**
+  String get unnamedLock;
+
+  /// No description provided for @unknownGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Gateway'**
+  String get unknownGateway;
+
+  /// No description provided for @gatewayDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway Detail'**
+  String get gatewayDetailTitle;
+
+  /// No description provided for @gatewayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway Name'**
+  String get gatewayName;
+
+  /// No description provided for @gatewayMac.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway MAC'**
+  String get gatewayMac;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @lockCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Count'**
+  String get lockCountLabel;
+
+  /// No description provided for @renameGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Gateway'**
+  String get renameGateway;
+
+  /// No description provided for @deleteGatewayAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Gateway'**
+  String get deleteGatewayAction;
+
+  /// No description provided for @transferGatewayAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Gateway'**
+  String get transferGatewayAction;
+
+  /// No description provided for @checkUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for Upgrade'**
+  String get checkUpgrade;
+
+  /// No description provided for @setUpgradeMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Set to Upgrade Mode'**
+  String get setUpgradeMode;
+
+  /// No description provided for @viewLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'View Locks'**
+  String get viewLocks;
+
+  /// No description provided for @enterNewGatewayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new gateway name'**
+  String get enterNewGatewayName;
+
+  /// No description provided for @deleteGatewayConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this gateway?'**
+  String get deleteGatewayConfirmation;
+
+  /// No description provided for @enterReceiverUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter receiver\'s username'**
+  String get enterReceiverUsername;
+
+  /// No description provided for @gatewayRenamedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway renamed successfully'**
+  String get gatewayRenamedSuccess;
+
+  /// No description provided for @gatewayDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway deleted successfully'**
+  String get gatewayDeletedSuccess;
+
+  /// No description provided for @gatewayTransferredSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway transferred successfully'**
+  String get gatewayTransferredSuccess;
+
+  /// No description provided for @errorRenamingGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Error renaming gateway: {error}'**
+  String errorRenamingGateway(Object error);
+
+  /// No description provided for @errorDeletingGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting gateway: {error}'**
+  String errorDeletingGateway(Object error);
+
+  /// No description provided for @errorTransferringGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Error transferring gateway: {error}'**
+  String errorTransferringGateway(Object error);
+
+  /// No description provided for @errorCheckingUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Error checking for upgrade: {error}'**
+  String errorCheckingUpgrade(Object error);
+
+  /// No description provided for @errorSettingUpgradeMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Error setting upgrade mode: {error}'**
+  String errorSettingUpgradeMode(Object error);
+
+  /// No description provided for @upgradeCheckTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade Check'**
+  String get upgradeCheckTitle;
+
+  /// No description provided for @needUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Need Upgrade'**
+  String get needUpgrade;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @gatewaySetToUpgradeMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway is set to upgrade mode'**
+  String get gatewaySetToUpgradeMode;
+
+  /// No description provided for @noGatewaysFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No gateways found.'**
+  String get noGatewaysFound;
 }
 
 class _AppLocalizationsDelegate

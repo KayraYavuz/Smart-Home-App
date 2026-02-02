@@ -650,5 +650,42 @@
   "expired": "Abgelaufen",
   "deleteGroup": "Gruppe löschen",
   "updateErrorWithMsg": "Fehler beim Aktualisieren: {error}",
-  "errorWithMsg": "Fehler: {error}"
+  "unknownGateway": "Unbekanntes Gateway",
+  "gatewayDetailTitle": "Gateway-Details",
+  "gatewayName": "Gateway-Name",
+  "gatewayMac": "Gateway-MAC",
+  "networkName": "Netzwerkname",
+  "yes": "Ja",
+  "no": "Nein",
+  "lockCountLabel": "Anzahl der Schlösser",
+  "renameGateway": "Gateway umbenennen",
+  "deleteGatewayAction": "Gateway löschen",
+  "transferGatewayAction": "Gateway übertragen",
+  "checkUpgrade": "Auf Update prüfen",
+  "setUpgradeMode": "In Upgrade-Modus versetzen",
+  "viewLocks": "Schlösser anzeigen",
+  "enterNewGatewayName": "Neuen Gateway-Namen eingeben",
+  "deleteGatewayConfirmation": "Sind Sie sicher, dass Sie dieses Gateway löschen möchten?",
+  "enterReceiverUsername": "Empfänger-Benutzernamen eingeben",
+  "gatewayRenamedSuccess": "Gateway erfolgreich umbenannt",
+  "gatewayDeletedSuccess": "Gateway erfolgreich gelöscht",
+  "gatewayTransferredSuccess": "Gateway erfolgreich übertragen",
+  "errorRenamingGateway": "Fehler beim Umbenennen des Gateways: {error}",
+  "errorDeletingGateway": "Fehler beim Löschen des Gateways: {error}",
+  "errorTransferringGateway": "Fehler beim Übertragen des Gateways: {error}",
+  "errorCheckingUpgrade": "Fehler beim Prüfen auf Updates: {error}",
+  "errorSettingUpgradeMode": "Fehler beim Einstellen des Upgrade-Modus: {error}",
+  "upgradeCheckTitle": "Update-Prüfung",
+  "needUpgrade": "Update erforderlich",
+  "version": "Version",
+  "gatewaySetToUpgradeMode": "Gateway ist im Upgrade-Modus",
+  "noGatewaysFound": "Keine Gateways gefunden.",
+  "connectingTo": "Verbindung zu {name}...",
+  "@connectingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

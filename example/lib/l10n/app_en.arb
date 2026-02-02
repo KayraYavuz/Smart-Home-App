@@ -816,5 +816,66 @@
   "expired": "Expired",
   "deleteGroup": "Delete Group",
   "updateErrorWithMsg": "Update error: {error}",
-  "errorWithMsg": "Error: {error}"
+  "errorWithMsg": "Error: {error}",
+  "scanGatewayTitle": "Scan Gateway",
+  "scanLockTitle": "Scan Lock",
+  "stopScan": "Stop Scan",
+  "reScan": "Re-Scan",
+  "deviceAddedSuccess": "Device successfully added",
+  "scanningGatewayStatus": "Connecting to gateway...",
+  "scanningLockStatus": "Please stay close to the lock...",
+  "scanningGateways": "Scanning for gateways...",
+  "scanningLocks": "Scanning for locks...",
+  "ensureBluetooth": "Please ensure Bluetooth is on",
+  "gatewayNotFound": "Gateway not found",
+  "lockNotFound": "Lock not found",
+  "scanNotFoundMessage": "Scanned surrounding devices but nothing found.",
+  "gatewaySetupNotAdded": "Gateway setup not added yet",
+  "foundDevices": "{count} devices found",
+  "@foundDevices": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "connectingTo": "Connecting to {name}...",
+  "@connectingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unnamedLock": "Unnamed Lock",
+  "unknownGateway": "Unknown Gateway",
+  "gatewayDetailTitle": "Gateway Detail",
+  "gatewayName": "Gateway Name",
+  "gatewayMac": "Gateway MAC",
+  "networkName": "Network Name",
+  "yes": "Yes",
+  "no": "No",
+  "lockCountLabel": "Lock Count",
+  "renameGateway": "Rename Gateway",
+  "deleteGatewayAction": "Delete Gateway",
+  "transferGatewayAction": "Transfer Gateway",
+  "checkUpgrade": "Check for Upgrade",
+  "setUpgradeMode": "Set to Upgrade Mode",
+  "viewLocks": "View Locks",
+  "enterNewGatewayName": "Enter new gateway name",
+  "deleteGatewayConfirmation": "Are you sure you want to delete this gateway?",
+  "enterReceiverUsername": "Enter receiver's username",
+  "gatewayRenamedSuccess": "Gateway renamed successfully",
+  "gatewayDeletedSuccess": "Gateway deleted successfully",
+  "gatewayTransferredSuccess": "Gateway transferred successfully",
+  "errorRenamingGateway": "Error renaming gateway: {error}",
+  "errorDeletingGateway": "Error deleting gateway: {error}",
+  "errorTransferringGateway": "Error transferring gateway: {error}",
+  "errorCheckingUpgrade": "Error checking for upgrade: {error}",
+  "errorSettingUpgradeMode": "Error setting upgrade mode: {error}",
+  "upgradeCheckTitle": "Upgrade Check",
+  "needUpgrade": "Need Upgrade",
+  "version": "Version",
+  "gatewaySetToUpgradeMode": "Gateway is set to upgrade mode",
+  "noGatewaysFound": "No gateways found."
 }

@@ -399,6 +399,7 @@ class WifiLockPage extends StatefulWidget {
 class _WifiLockPageState extends State<WifiLockPage> {
   Map<String, dynamic>? _detail;
   bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -417,8 +418,11 @@ class _WifiLockPageState extends State<WifiLockPage> {
       });
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
+        setState(() {
+          _isLoading = false;
+          _errorMessage = e.toString();
+        });
+        // Optional: still show snackbar or just show in body
       }
     }
   }
@@ -429,7 +433,37 @@ class _WifiLockPageState extends State<WifiLockPage> {
       title: AppLocalizations.of(context)!.wifiLockDetails,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : _errorMessage != null 
+             ? Center(
+                 child: Padding(
+                   padding: const EdgeInsets.all(20.0),
+                   child: Column(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     children: [
+                       const Icon(Icons.error_outline, color: Colors.orange, size: 48),
+                       const SizedBox(height: 16),
+                       Text(
+                         "This feature is only for locks with built-in Wi-Fi.",
+                         textAlign: TextAlign.center,
+                         style: const TextStyle(color: Colors.white, fontSize: 16),
+                       ),
+                       const SizedBox(height: 8),
+                       Text(
+                         "If you use a Gateway, please check the Gateway menu.",
+                         textAlign: TextAlign.center,
+                         style: TextStyle(color: Colors.grey[400]),
+                       ),
+                       const SizedBox(height: 16),
+                       Text(
+                         _errorMessage!,
+                         textAlign: TextAlign.center,
+                         style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                       ),
+                     ],
+                   ),
+                 ),
+               )
+             : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [

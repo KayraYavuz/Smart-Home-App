@@ -989,7 +989,9 @@ class ApiService {
             // Orijinal alanları da sakla (lazım olursa)
             'lockAlias': key['lockAlias'],
             'lockName': key['lockName'],
-            'groupId': key['groupId'], // Add groupId here
+            'groupId': key['groupId'], 
+            'hasGateway': key['hasGateway'], // Add hasGateway
+            'endDate': key['endDate'], // Add endDate
           };
         }).toList();
 

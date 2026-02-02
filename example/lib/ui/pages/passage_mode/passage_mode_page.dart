@@ -186,6 +186,19 @@ class _PassageModePageState extends State<PassageModePage> {
   }
 
   Future<void> _saveConfiguration() async {
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Validation: If passage mode is enabled, at least one time period is required
+    if (_passageModeEnabled && _timePeriods.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.noPlanAdded), // "Plan eklenmedi" veya benzer bir mesaj
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
     HapticFeedback.mediumImpact();
 

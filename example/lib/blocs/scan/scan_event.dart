@@ -8,7 +8,13 @@ abstract class ScanEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class StartScan extends ScanEvent {}
+class StartScan extends ScanEvent {
+  final bool isGateway;
+  const StartScan({this.isGateway = false});
+
+  @override
+  List<Object> get props => [isGateway];
+}
 
 class StopScan extends ScanEvent {}
 

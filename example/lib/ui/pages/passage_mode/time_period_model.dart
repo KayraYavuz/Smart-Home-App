@@ -93,8 +93,9 @@ class TimePeriod {
     List<Map<String, dynamic>> configs = [];
     
     for (int day in selectedDays) {
-      // TTLock API uses 1-7 for Sunday-Saturday
-      int apiDay = day + 1;
+      // TTLock API uses 1-7 (1=Monday ... 7=Sunday)
+      // Our day: 0=Sunday, 1=Monday ... 6=Saturday
+      int apiDay = (day == 0) ? 7 : day;
       
       int startMinutes = isAllHours ? 0 : ((startHour ?? 0) * 60 + (startMinute ?? 0));
       int endMinutes = isAllHours ? 1439 : ((endHour ?? 23) * 60 + (endMinute ?? 59));
@@ -135,7 +136,8 @@ class TimePeriod {
     int endTime = config['endTime'] ?? 1439;
     
     // Convert API day (1-7) to our format (0-6)
-    int day = weekDay - 1;
+    // 7=Sunday -> 0, 1=Monday -> 1
+    int day = (weekDay == 7) ? 0 : weekDay;
     
     bool isAllHours = startTime == 0 && endTime >= 1439;
     

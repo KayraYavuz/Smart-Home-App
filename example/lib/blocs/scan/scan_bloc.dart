@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ttlock_flutter/ttlock.dart';
+import 'package:ttlock_flutter/ttgateway.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/blocs/scan/scan_event.dart';
 import 'package:yavuz_lock/blocs/scan/scan_state.dart';
@@ -10,7 +11,8 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   final ApiService apiService;
   StreamSubscription? _scanSubscription;
   final List<TTLockScanModel> _locks = [];
-  StreamController<TTLockScanModel>? _scanController;
+  final List<Map<String, dynamic>> _gateways = [];
+  StreamController<dynamic>? _scanController; // Changed to dynamic to handle both
 
   ScanBloc({required this.apiService}) : super(ScanInitial()) {
     on<StartScan>(_onStartScan);
@@ -39,23 +41,50 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     }
 
     _locks.clear();
+    _gateways.clear();
     _scanController?.close();
-    _scanController = StreamController<TTLockScanModel>();
+    _scanController = StreamController<dynamic>();
     
-    TTLock.startScanLock((lock) {
-      if (!_locks.any((element) => element.lockMac == lock.lockMac)) {
-        _locks.add(lock);
-        if (!(_scanController?.isClosed ?? true)) {
-          _scanController?.add(lock);
+    if (event.isGateway) {
+      // Gateway Scanning
+      TTGateway.startScan((gateway) {
+        // gateway is TTGatewayScanModel
+        final gwMap = {
+          'gatewayName': gateway.gatewayName,
+          'gatewayMac': gateway.gatewayMac,
+          'rssi': gateway.rssi,
+          'type': gateway.type?.index ?? 0, // Assuming enum
+          'isDfuMode': gateway.isDfuMode
+        };
+        
+        final mac = gwMap['gatewayMac'];
+        if (!_gateways.any((element) => element['gatewayMac'] == mac)) {
+          _gateways.add(gwMap);
+          if (!(_scanController?.isClosed ?? true)) {
+            _scanController?.add(gwMap);
+          }
         }
-      }
-    });
+      });
+    } else {
+      // Lock Scanning
+      TTLock.startScanLock((lock) {
+        if (!_locks.any((element) => element.lockMac == lock.lockMac)) {
+          _locks.add(lock);
+          if (!(_scanController?.isClosed ?? true)) {
+            _scanController?.add(lock);
+          }
+        }
+      });
+    }
 
-    // Stream'i dinle ve her yeni kilitte state'i güncelle
+    // Stream'i dinle ve her yeni cihazda state'i güncelle
     try {
-      await emit.forEach<TTLockScanModel>(
+      await emit.forEach<dynamic>(
         _scanController!.stream,
-        onData: (lock) => ScanLoaded(List.from(_locks)),
+        onData: (_) => ScanLoaded(
+          locks: List.from(_locks),
+          gateways: List.from(_gateways),
+        ),
       );
     } catch (e) {
       print('Scan stream error: $e');
@@ -64,17 +93,18 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
 
   void _onStopScan(StopScan event, Emitter<ScanState> emit) {
     TTLock.stopScanLock();
+    TTGateway.stopScan();
     _scanSubscription?.cancel();
     _scanController?.close();
     if (!emit.isDone) {
-      emit(ScanLoaded(List.from(_locks)));
+      emit(ScanLoaded(locks: List.from(_locks), gateways: List.from(_gateways)));
     }
   }
 
   Future<void> _onAddLock(AddLock event, Emitter<ScanState> emit) async {
     if (emit.isDone) return;
     // Show connecting state with specific lock name
-    emit(ScanConnecting('${event.lock.lockName.isNotEmpty ? event.lock.lockName : "Kilit"} bağlanılıyor...'));
+    emit(ScanConnecting(event.lock.lockName.isNotEmpty ? event.lock.lockName : "Unnamed Lock"));
 
     try {
       // TTLock initLock için gerekli parametre haritası

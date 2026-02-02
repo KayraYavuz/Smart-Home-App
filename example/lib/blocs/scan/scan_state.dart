@@ -14,11 +14,12 @@ class ScanLoading extends ScanState {}
 
 class ScanLoaded extends ScanState {
   final List<TTLockScanModel> locks;
+  final List<Map<String, dynamic>> gateways;
 
-  const ScanLoaded(this.locks);
+  const ScanLoaded({this.locks = const [], this.gateways = const []});
 
   @override
-  List<Object> get props => [locks];
+  List<Object> get props => [locks, gateways];
 }
 
 class ScanFailure extends ScanState {
@@ -40,10 +41,10 @@ class AddLockSuccess extends ScanState {
 }
 
 class ScanConnecting extends ScanState {
-  final String message;
+  final String lockName;
   
-  const ScanConnecting(this.message);
+  const ScanConnecting(this.lockName);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [lockName];
 }

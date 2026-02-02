@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_state.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class GatewaysPage extends StatefulWidget {
   const GatewaysPage({super.key});
@@ -55,17 +56,19 @@ class _GatewaysPageState extends State<GatewaysPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        title: const Text('Gateways'),
+        title: Text(l10n.gateways),
       ),
       body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context)!;
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -77,8 +80,8 @@ class _GatewaysPageState extends State<GatewaysPage> {
     }
 
     if (_gateways.isEmpty) {
-      return const Center(
-        child: Text('No gateways found.', style: TextStyle(color: Colors.white)),
+      return Center(
+        child: Text(l10n.noGatewaysFound, style: const TextStyle(color: Colors.white)),
       );
     }
 
@@ -89,7 +92,7 @@ class _GatewaysPageState extends State<GatewaysPage> {
         final isOnline = gateway['isOnline'] == 1;
         return ListTile(
           leading: Icon(Icons.router, color: isOnline ? Colors.green : Colors.grey),
-          title: Text(gateway['gatewayName'] ?? 'Unknown Gateway', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          title: Text(gateway['gatewayName'] ?? l10n.unknownGateway, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
           subtitle: Text(gateway['gatewayMac'] ?? '', style: TextStyle(color: Colors.grey[400])),
           trailing: const Icon(Icons.chevron_right, color: Colors.grey),
           onTap: () {

@@ -51,19 +51,6 @@ class WorkTogetherPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             _buildPartnerService(
-              icon: Icons.electrical_services,
-              iconColor: Colors.orange,
-              title: l10n.utilityMeter,
-              description: l10n.utilityMeterDesc,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const UtilityMeterPage()),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            _buildPartnerService(
               icon: Icons.contactless,
               iconColor: Colors.green,
               title: l10n.cardEncoder,
@@ -72,45 +59,6 @@ class WorkTogetherPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const CardEncoderPage()),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            _buildPartnerService(
-              icon: Icons.hotel,
-              iconColor: Colors.purple,
-              title: l10n.hotelPMS,
-              description: l10n.hotelPMSDesc,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HotelPMSPage()),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            _buildPartnerService(
-              icon: Icons.devices_other,
-              iconColor: Colors.teal,
-              title: l10n.thirdPartyDevice,
-              description: l10n.thirdPartyDeviceDesc,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ThirdPartyDevicePage()),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            _buildPartnerService(
-              icon: Icons.home,
-              iconColor: Colors.indigo,
-              title: l10n.ttRenting,
-              description: l10n.ttRentingDesc,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TTRentingPage()),
                 );
               },
             ),

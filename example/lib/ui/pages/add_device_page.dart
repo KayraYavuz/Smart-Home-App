@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yavuz_lock/ui/pages/scan_page.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class AddDevicePage extends StatefulWidget {
   const AddDevicePage({super.key});
@@ -14,12 +15,13 @@ class _AddDevicePageState extends State<AddDevicePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text(
-          'Cihaz Ekle',
-          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+        title: Text(
+          l10n.addDeviceTitle,
+          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
         ),
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
@@ -36,27 +38,27 @@ class _AddDevicePageState extends State<AddDevicePage> {
 
             _buildSection(
               context,
-              'Kilitler',
+              l10n.categoryLocks,
               _buildLockTypes(context),
             ),
             _buildSection(
               context,
-              'Ağ geçidi',
+              l10n.categoryGateways,
               _buildGateways(context),
             ),
             _buildSection(
               context,
-              'Kamera',
+              l10n.categoryCameras,
               _buildCameras(context),
             ),
             _buildSection(
               context,
-              'Kapı sensörü',
+              l10n.doorSensorMenu.replaceAll('\n', ' '), // Reuse existing if suitable
               _buildDoorSensors(context),
             ),
             _buildSection(
               context,
-              'Sayaçlar',
+              l10n.utilityMeter, // Use existing
               _buildMeters(context),
             ),
             const SizedBox(height: 20),
@@ -67,6 +69,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
   }
 
   Widget _buildTTLockScanSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(20),
@@ -93,20 +96,22 @@ class _AddDevicePageState extends State<AddDevicePage> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'Yavuz Lock Kilidi Tara',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  l10n.scanLockTitle, // 'Yavuz Lock Kilidi Tara' or similar
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Bluetooth ile çevredeki Yavuz Lock kilitlerini tara ve uygulamanıza ekleyin.',
-            style: TextStyle(
+          Text(
+            'Bluetooth ile çevredeki Yavuz Lock kilitlerini tara ve uygulamanıza ekleyin.', // TODO: Add to l10n
+            style: const TextStyle(
               color: Colors.grey,
               fontSize: 14,
             ),
@@ -121,16 +126,15 @@ class _AddDevicePageState extends State<AddDevicePage> {
                   MaterialPageRoute(builder: (context) => const ScanPage()),
                 ).then((result) {
                   if (result != null && result is Map<String, dynamic>) {
-                    // Scan sayfasından geri dönüldü, cihaz eklendi
                     if (!context.mounted) return;
                     Navigator.of(context).pop(result);
                   }
                 });
               },
               icon: const Icon(Icons.search, color: Colors.white),
-              label: const Text(
-                'Kilidi Tara',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+              label: Text(
+                l10n.scanLockTitle,
+                style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -180,46 +184,48 @@ class _AddDevicePageState extends State<AddDevicePage> {
   }
 
   List<Widget> _buildLockTypes(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return [
-      _buildDeviceButton(context, 'Tüm kilitler', Icons.lock, () {
+      _buildDeviceButton(context, l10n.deviceAllLocks, Icons.lock, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Kapı kilidi', Icons.door_front_door, () {
+      _buildDeviceButton(context, l10n.deviceDoorLock, Icons.door_front_door, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Asma kilit', Icons.lock_outline, () {
+      _buildDeviceButton(context, l10n.devicePadlock, Icons.lock_outline, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Güvenli kilit', Icons.security, () {
+      _buildDeviceButton(context, l10n.deviceSafe, Icons.security, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Kilit silindiri', Icons.vpn_key, () {
+      _buildDeviceButton(context, 'Kilit silindiri', Icons.vpn_key, () { // TODO: Add l10n
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Park kilidi', Icons.local_parking, () {
+      _buildDeviceButton(context, 'Park kilidi', Icons.local_parking, () { // TODO: Add l10n
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Dolap Kilidi', Icons.inventory_2, () {
+      _buildDeviceButton(context, 'Dolap Kilidi', Icons.inventory_2, () { // TODO: Add l10n
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Bisiklet kilidi', Icons.pedal_bike, () {
+      _buildDeviceButton(context, 'Bisiklet kilidi', Icons.pedal_bike, () { // TODO: Add l10n
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Uzaktan kumanda', Icons.settings_remote, () {
+      _buildDeviceButton(context, 'Uzaktan kumanda', Icons.settings_remote, () { // TODO: Add l10n
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
     ];
   }
 
   List<Widget> _buildGateways(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return [
-      _buildDeviceButton(context, 'G1 (Wi-Fi) 2.4G', Icons.router, () {
+      _buildDeviceButton(context, l10n.deviceGatewayWifi, Icons.router, () {
         _navigateToGatewayScan(context, 'G1');
       }),
-      _buildDeviceButton(context, 'G2 (Wi-Fi) 2.4G', Icons.router, () {
+      _buildDeviceButton(context, 'G2 (Wi-Fi) 2.4G', Icons.router, () { // Use l10n if added
         _navigateToGatewayScan(context, 'G2');
       }),
-      _buildDeviceButton(context, 'G3 (Kablolu)', Icons.cable, () {
+      _buildDeviceButton(context, l10n.deviceGatewayG3, Icons.cable, () {
         _navigateToGatewayScan(context, 'G3');
       }),
       _buildDeviceButton(context, 'G4 (4G)', Icons.signal_cellular_4_bar, () {
@@ -235,25 +241,27 @@ class _AddDevicePageState extends State<AddDevicePage> {
   }
 
   List<Widget> _buildCameras(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return [
-      _buildDeviceButton(context, 'TC2', Icons.videocam, () {
+      _buildDeviceButton(context, l10n.deviceCameraSurveillance, Icons.videocam, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('TC2 kamera tarama başlatılıyor...')),
+          const SnackBar(content: Text('TC2 scanning...')),
         );
       }),
       _buildDeviceButton(context, 'DB2', Icons.doorbell, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('DB2 kapı zili tarama başlatılıyor...')),
+          const SnackBar(content: Text('DB2 scanning...')),
         );
       }),
     ];
   }
 
   List<Widget> _buildDoorSensors(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return [
-      _buildDeviceButton(context, 'Kapı sensörü', Icons.sensors, () {
+      _buildDeviceButton(context, l10n.doorSensor, Icons.sensors, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kapı sensörü tarama başlatılıyor...')),
+          const SnackBar(content: Text('Sensor scanning...')),
         );
       }),
     ];
@@ -261,14 +269,14 @@ class _AddDevicePageState extends State<AddDevicePage> {
 
   List<Widget> _buildMeters(BuildContext context) {
     return [
-      _buildDeviceButton(context, 'Elektrik', Icons.electrical_services, () {
+      _buildDeviceButton(context, 'Electric', Icons.electrical_services, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Elektrik sayacı tarama başlatılıyor...')),
+          const SnackBar(content: Text('Electric meter scanning...')),
         );
       }),
-      _buildDeviceButton(context, 'Su', Icons.water_drop, () {
+      _buildDeviceButton(context, 'Water', Icons.water_drop, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Su sayacı tarama başlatılıyor...')),
+          const SnackBar(content: Text('Water meter scanning...')),
         );
       }),
     ];
@@ -314,7 +322,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const ScanPage(), // TODO: Pass gateway type
+        builder: (context) => const ScanPage(isGateway: true), 
       ),
     );
   }

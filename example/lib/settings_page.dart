@@ -138,18 +138,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       onTap: () => _showHideInvalidAccessSelection(),
                     ),
 
-                    const SizedBox(height: 24),
-
-                    // Gateway Yönetimi Bölümü
-                    _buildSectionHeader(l10n.deviceManagement),
-                    _buildNavigationTile(
-                      context,
-                      icon: Icons.router,
-                      title: l10n.gatewayManagement,
-                      subtitle: l10n.gatewayManagementSubtitle,
-                      onTap: () => _showGatewayManagement(context),
-                    ),
-
                     const SizedBox(height: 48),
 
             // Alt Kısım - Çıkış Butonları

@@ -148,12 +148,6 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           subtitle: l10n.transferGatewaySubtitle,
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const GatewayManagementPage())),
         ),
-        _buildMenuItem(
-          icon: Icons.folder_open_outlined,
-          title: l10n.groupManagement,
-          subtitle: l10n.newGroupComingSoon,
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const GroupManagementPage())),
-        ),
       ],
     );
   }

@@ -204,7 +204,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
       
       // Always show success dialog if sendEKey worked, even if link failed
       if (mounted) {
-        _showSuccessDialog(unlockLink, l10n);
+        _showSuccessDialog(unlockLink, receiver, l10n);
       }
     } catch (e) {
       if (mounted) {
@@ -216,7 +216,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
     }
   }
 
-  void _showSuccessDialog(String? link, AppLocalizations l10n) {
+  void _showSuccessDialog(String? link, String receiver, AppLocalizations l10n) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -268,16 +268,16 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                       tooltip: l10n.copy,
                     ),
                     // Email
-                    if (_receiverInput.contains('@'))
+                    if (receiver.contains('@'))
                       IconButton(
                         icon: const Icon(Icons.email, color: AppColors.primary),
-                        onPressed: () => _launchEmail(_receiverInput, link),
+                        onPressed: () => _launchEmail(receiver, link),
                         tooltip: l10n.sendViaEmail,
                       )
                     else 
                       IconButton(
                         icon: const Icon(Icons.message, color: Colors.green),
-                        onPressed: () => _launchSMS(_receiverInput, link),
+                        onPressed: () => _launchSMS(receiver, link),
                         tooltip: l10n.sendViaSMS,
                       ),
                  ],
@@ -290,10 +290,10 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                  textAlign: TextAlign.center,
                ),
                const SizedBox(height: 12),
-                if (_receiverInput.contains('@'))
+                if (receiver.contains('@'))
                   TextButton.icon(
                     icon: const Icon(Icons.email, color: AppColors.primary),
-                    onPressed: () => _launchEmail(_receiverInput, null),
+                    onPressed: () => _launchEmail(receiver, null),
                     label: Text(l10n.sendAppDownloadLink),
                   ),
             ],
@@ -327,7 +327,10 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: email,
-      query: 'subject=${l10n.keyAccessSubject}&body=$body',
+      queryParameters: {
+        'subject': l10n.keyAccessSubject,
+        'body': body,
+      },
     );
     try {
       if (!await launchUrl(emailLaunchUri)) {
@@ -477,6 +480,8 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                    : Text(l10n.send, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),
+            
+            const SizedBox(height: 60), // Extra padding for bottom navigation area
 
           ],
         ),

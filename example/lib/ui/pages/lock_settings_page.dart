@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/ui/pages/feature_pages.dart';
 import 'package:yavuz_lock/ui/pages/passage_mode/passage_mode_page.dart';
+import 'package:ttlock_flutter/ttlock.dart';
 
 
 class LockSettingsPage extends StatefulWidget {
@@ -25,12 +27,14 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
   String _lockName = '';
   String? _groupName;
   int _autoLockSeconds = 0;
+  String _lockData = '';
 
   @override
   void initState() {
     super.initState();
     _apiService = ApiService(AuthRepository());
     _lockName = widget.lock['name'] ?? '';
+    _lockData = widget.lock['lockData'] ?? '';
     _fetchSettings();
   }
 
@@ -42,6 +46,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       // Fetch Passage Mode
       final passageConfig = await _apiService.getPassageModeConfiguration(lockId: lockId);
       
+      // Fetch Lock Detail for Auto Lock Time and fresh LockData
+      final lockDetail = await _apiService.getLockDetail(lockId: lockId);
+      final autoLockTime = lockDetail['autoLockTime'] ?? 0;
+      final freshLockData = lockDetail['lockData'];
+
       // Fetch Group Info
       final groupList = await _apiService.getGroupList();
       final currentGroupId = widget.lock['groupId']?.toString();
@@ -54,8 +63,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       if (!mounted) return;
       setState(() {
         _passageModeEnabled = passageConfig['passageMode'] == 1;
-        // _autoLockSeconds = autoLockConfig['autoLockTime'] ?? 0; // Removing non-existent method call
+        _autoLockSeconds = autoLockTime;
         _groupName = (currentGroup.isNotEmpty) ? currentGroup['name'] : null;
+        if (freshLockData != null && freshLockData.isNotEmpty) {
+          _lockData = freshLockData;
+        }
       });
     } catch (e) {
       print('Error fetching settings: $e');
@@ -93,12 +105,6 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                 onTap: _updateBattery,
               ),
               _buildSettingTile(
-                icon: Icons.folder,
-                title: l10n.groupSetting,
-                subtitle: _groupName ?? l10n.manageGroup,
-                onTap: _showGroupSelection,
-              ),
-              _buildSettingTile(
                 icon: Icons.wifi,
                 title: l10n.wifiSettingsTitle,
                 subtitle: l10n.manageWifiConnection,
@@ -119,12 +125,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                 subtitle: _passageModeEnabled ? l10n.activeLabel : l10n.passiveLabel,
                 onTap: _openPassageModePage,
               ),
-              _buildSettingTile(
-                icon: Icons.work_history,
-                title: l10n.workingHours,
-                subtitle: l10n.configureWorkingFreezingModes,
-                onTap: _showWorkingModeSettings,
-              ),
+              // Working Hours removed as per request (not supported/redundant)
 
               const SizedBox(height: 24),
               _buildSectionHeader(l10n.security),
@@ -336,7 +337,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(l10n.autoLockTime),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -348,30 +349,198 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(suffixText: l10n.secondsShortcut),
             ),
+            const SizedBox(height: 12),
+            const Text(
+              "Note: Only the Lock Admin can change this setting.",
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+          TextButton(
+            onPressed: () {
+              // Properly dispose controller when cancelling
+              // (Ideally should be done in a StatefulWidget dialog, but this is okay for now if we don't leak)
+              Navigator.pop(dialogContext);
+            },
+            child: Text(l10n.cancel)
+          ),
           TextButton(
             onPressed: () async {
+              // Check if user is Admin
+              // userType 110301 is Admin usually.
+              // We check if it is available in lock map.
+              // If we are not sure, we proceed but warn on failure.
+              
               final seconds = int.tryParse(controller.text) ?? 0;
+              final lockData = _lockData;
+              final lockId = widget.lock['lockId'].toString();
+              
+              bool hasGateway = false;
+              if (widget.lock['hasGateway'] is int) {
+                hasGateway = widget.lock['hasGateway'] == 1;
+              } else if (widget.lock['hasGateway'] is bool) {
+                hasGateway = widget.lock['hasGateway'];
+              }
+              
+              if (lockData.isEmpty) {
+                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Lock data not found")));
+                 return;
+              }
+
+              // 1. Close Input Dialog
+              Navigator.pop(dialogContext); 
+              
+              // 2. Small delay to ensure dialog closed
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              // 3. Show Loading Dialog
+              if (!context.mounted) return;
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (loadingContext) => const Center(child: CircularProgressIndicator()),
+              );
+
+              bool bluetoothSuccess = false;
+              String bluetoothError = "";
+
+              final completer = Completer<void>();
+              print("Attempting Bluetooth set Auto Lock: $seconds");
+
+              TTLock.setLockAutomaticLockingPeriodicTime(seconds, lockData, () {
+                  if (!completer.isCompleted) completer.complete();
+              }, (errorCode, errorMsg) {
+                  if (!completer.isCompleted) completer.completeError('$errorMsg (Code: $errorCode)');
+              });
+
               try {
-                await _apiService.setAutoLockTime(
-                  lockId: widget.lock['lockId'].toString(),
-                  seconds: seconds,
-                  type: 2, // Gateway/WiFi simulation
-                );
-                if (!context.mounted) return;
-                setState(() {
-                  _autoLockSeconds = seconds;
-                });
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.timeSet)));
+                await completer.future.timeout(const Duration(seconds: 3));
+                bluetoothSuccess = true;
+                print("Bluetooth set success.");
               } catch (e) {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
-                );
+                bluetoothSuccess = false;
+                bluetoothError = e.toString();
+                print("Bluetooth set failed: $bluetoothError");
+              }
+
+              // 4. Close Loading Dialog ALWAYS
+              if (context.mounted) {
+                Navigator.of(context).pop(); 
+              }
+
+              // 5. Handle Result
+              if (bluetoothSuccess) {
+                 try {
+                    await _apiService.setAutoLockTime(
+                      lockId: lockId,
+                      seconds: seconds,
+                      type: 1, 
+                    );
+                  } catch (e) {
+                    print("Cloud sync (Type 1) failed: $e");
+                  }
+                  
+                  if (mounted) {
+                    setState(() => _autoLockSeconds = seconds);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.timeSet)));
+                  }
+
+              } else {
+                if (hasGateway) {
+                   print("Bluetooth failed, trying Gateway (Type 2)...");
+                   // Show Gateway Loading
+                   if (!mounted) return;
+                   showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (c) => const Center(child: CircularProgressIndicator(color: Colors.green)),
+                   );
+
+                   try {
+                      await _apiService.setAutoLockTime(
+                        lockId: lockId,
+                        seconds: seconds,
+                        type: 2, 
+                      );
+                      
+                      if (mounted) {
+                        Navigator.pop(context); // Close gateway loading
+                        setState(() => _autoLockSeconds = seconds);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${l10n.timeSet} (via Gateway)")));
+                      }
+
+                   } catch (e) {
+                      print("Gateway set failed: $e");
+                      if (mounted) {
+                        Navigator.pop(context); // Close gateway loading
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text("Error"),
+                            content: Text("Failed via Bluetooth: $bluetoothError\n\nFailed via Gateway: $e"),
+                            actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+                          ),
+                        );
+                      }
+                   }
+                } else {
+                   if (mounted) {
+                     String errorMsg = l10n.errorLabel;
+                     if (bluetoothError.contains("Timeout")) {
+                       errorMsg = "Bluetooth operation timed out.";
+                     } else {
+                       errorMsg = bluetoothError;
+                     }
+
+                     showDialog(
+                       context: context,
+                       builder: (dialogCtx) => AlertDialog(
+                         title: const Text("Error"),
+                         content: Text(errorMsg),
+                         actions: [
+                           TextButton(onPressed: () => Navigator.pop(dialogCtx), child: const Text("OK")),
+                           TextButton(
+                             onPressed: () async {
+                               Navigator.pop(dialogCtx); // Close error dialog
+                               
+                               // Use the Page's context (this.context), not the dialog's context
+                               if (!mounted) return;
+                               
+                               showDialog(
+                                  context: context, 
+                                  barrierDismissible: false,
+                                  builder: (c) => const Center(child: CircularProgressIndicator(color: Colors.green)),
+                               );
+
+                               try {
+                                  await _apiService.setAutoLockTime(
+                                    lockId: lockId,
+                                    seconds: seconds,
+                                    type: 2, 
+                                  );
+                                  
+                                  if (mounted) {
+                                    Navigator.of(context).pop(); // Close gateway loading
+                                    setState(() => _autoLockSeconds = seconds);
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${l10n.timeSet} (via Gateway)")));
+                                  }
+                               } catch (e) {
+                                  print("Gateway retry failed: $e");
+                                  if (mounted) {
+                                    Navigator.of(context).pop(); // Close gateway loading
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Gateway failed: $e")));
+                                  }
+                               }
+                             },
+                             child: const Text("Try Gateway"),
+                           )
+                         ],
+                       ),
+                     );
+                   }
+                }
               }
             },
             child: Text(l10n.set),

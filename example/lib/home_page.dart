@@ -325,6 +325,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   'deviceType': 'ttlock',
                   'source': 'ttlock',
                   'shared': false,
+                  'hasGateway': lock['hasGateway'] ?? 0,
+                  'endDate': lock['endDate'] ?? 0, // Add endDate
                 });
               }
 
@@ -351,6 +353,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   'deviceType': 'ttlock',
                   'source': 'ttlock_shared',
                   'shared': true,
+                  'hasGateway': lock['hasGateway'] ?? 0,
+                  'endDate': lock['endDate'] ?? 0, // Add endDate
                 });
               }
 
@@ -638,10 +642,50 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       statusText = lock['isLocked'] == true ? l10n.locked : l10n.unlocked;
     }
 
+    // Calculate remaining days for shared locks
+    String? remainingDaysText;
+    Color badgeColor = Colors.blue.withValues(alpha: 0.2);
+    Color textColor = Colors.blueAccent;
+
+    if (lock['shared'] == true) {
+      print("DEBUG: Checking remaining days for ${lock['name']}. EndDate: ${lock['endDate']} (Type: ${lock['endDate'].runtimeType})");
+      
+      if (lock['endDate'] != null && (lock['endDate'] is num) && lock['endDate'] > 0) {
+        final endDate = DateTime.fromMillisecondsSinceEpoch((lock['endDate'] as num).toInt());
+        final now = DateTime.now();
+        final diff = endDate.difference(now);
+        
+        print("DEBUG: Diff: ${diff.inDays} days, ${diff.inHours} hours");
+
+        if (diff.isNegative) {
+          remainingDaysText = "Süresi Doldu"; // Expired
+          badgeColor = Colors.red.withValues(alpha: 0.2);
+          textColor = Colors.red;
+        } else {
+          final days = diff.inDays;
+          final hours = diff.inHours % 24;
+          if (days > 0) {
+            remainingDaysText = "$days Gün Kaldı"; // Days left
+            badgeColor = Colors.orange.withValues(alpha: 0.2);
+            textColor = Colors.orange;
+          } else {
+            remainingDaysText = "$hours Saat Kaldı"; // Hours left
+            badgeColor = Colors.orange.withValues(alpha: 0.2);
+            textColor = Colors.orange;
+          }
+        }
+      } else {
+         // endDate 0 or null means permanent
+         remainingDaysText = "Süresiz"; // Permanent
+         badgeColor = Colors.green.withValues(alpha: 0.2);
+         textColor = Colors.green;
+      }
+    }
+
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-      color: const Color.fromRGBO(30, 30, 30, 0.85), // Dark semi-transparent background
+      color: const Color.fromRGBO(30, 30, 30, 0.85),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
           onTap: () async {
@@ -799,6 +843,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             l10n.deviceTypeLabel(lock['deviceType']),
                             style: TextStyle(color: Colors.grey[500], fontSize: 12),
                         ),
+                        if (remainingDaysText != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: badgeColor,
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: badgeColor.withOpacity(0.5)),
+                              ),
+                              child: Text(
+                                remainingDaysText!,
+                                style: TextStyle(color: textColor, fontSize: 11, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),

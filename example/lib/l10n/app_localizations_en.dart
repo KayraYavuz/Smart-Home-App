@@ -1823,4 +1823,158 @@ class AppLocalizationsEn extends AppLocalizations {
   String updateErrorWithMsg(Object error) {
     return 'Update error: $error';
   }
+
+  @override
+  String get scanGatewayTitle => 'Scan Gateway';
+
+  @override
+  String get scanLockTitle => 'Scan Lock';
+
+  @override
+  String get stopScan => 'Stop Scan';
+
+  @override
+  String get reScan => 'Re-Scan';
+
+  @override
+  String get deviceAddedSuccess => 'Device successfully added';
+
+  @override
+  String get scanningGatewayStatus => 'Connecting to gateway...';
+
+  @override
+  String get scanningLockStatus => 'Please stay close to the lock...';
+
+  @override
+  String get scanningGateways => 'Scanning for gateways...';
+
+  @override
+  String get scanningLocks => 'Scanning for locks...';
+
+  @override
+  String get ensureBluetooth => 'Please ensure Bluetooth is on';
+
+  @override
+  String get gatewayNotFound => 'Gateway not found';
+
+  @override
+  String get lockNotFound => 'Lock not found';
+
+  @override
+  String get scanNotFoundMessage =>
+      'Scanned surrounding devices but nothing found.';
+
+  @override
+  String get gatewaySetupNotAdded => 'Gateway setup not added yet';
+
+  @override
+  String foundDevices(int count) {
+    return '$count devices found';
+  }
+
+  @override
+  String connectingTo(String name) {
+    return 'Connecting to $name...';
+  }
+
+  @override
+  String get unnamedLock => 'Unnamed Lock';
+
+  @override
+  String get unknownGateway => 'Unknown Gateway';
+
+  @override
+  String get gatewayDetailTitle => 'Gateway Detail';
+
+  @override
+  String get gatewayName => 'Gateway Name';
+
+  @override
+  String get gatewayMac => 'Gateway MAC';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get lockCountLabel => 'Lock Count';
+
+  @override
+  String get renameGateway => 'Rename Gateway';
+
+  @override
+  String get deleteGatewayAction => 'Delete Gateway';
+
+  @override
+  String get transferGatewayAction => 'Transfer Gateway';
+
+  @override
+  String get checkUpgrade => 'Check for Upgrade';
+
+  @override
+  String get setUpgradeMode => 'Set to Upgrade Mode';
+
+  @override
+  String get viewLocks => 'View Locks';
+
+  @override
+  String get enterNewGatewayName => 'Enter new gateway name';
+
+  @override
+  String get deleteGatewayConfirmation =>
+      'Are you sure you want to delete this gateway?';
+
+  @override
+  String get enterReceiverUsername => 'Enter receiver\'s username';
+
+  @override
+  String get gatewayRenamedSuccess => 'Gateway renamed successfully';
+
+  @override
+  String get gatewayDeletedSuccess => 'Gateway deleted successfully';
+
+  @override
+  String get gatewayTransferredSuccess => 'Gateway transferred successfully';
+
+  @override
+  String errorRenamingGateway(Object error) {
+    return 'Error renaming gateway: $error';
+  }
+
+  @override
+  String errorDeletingGateway(Object error) {
+    return 'Error deleting gateway: $error';
+  }
+
+  @override
+  String errorTransferringGateway(Object error) {
+    return 'Error transferring gateway: $error';
+  }
+
+  @override
+  String errorCheckingUpgrade(Object error) {
+    return 'Error checking for upgrade: $error';
+  }
+
+  @override
+  String errorSettingUpgradeMode(Object error) {
+    return 'Error setting upgrade mode: $error';
+  }
+
+  @override
+  String get upgradeCheckTitle => 'Upgrade Check';
+
+  @override
+  String get needUpgrade => 'Need Upgrade';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get gatewaySetToUpgradeMode => 'Gateway is set to upgrade mode';
+
+  @override
+  String get noGatewaysFound => 'No gateways found.';
 }

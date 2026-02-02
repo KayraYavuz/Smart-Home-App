@@ -1831,4 +1831,159 @@ class AppLocalizationsTr extends AppLocalizations {
   String updateErrorWithMsg(Object error) {
     return 'Güncelleme hatası: $error';
   }
+
+  @override
+  String get scanGatewayTitle => 'Ağ Geçidi Tara';
+
+  @override
+  String get scanLockTitle => 'Kilidi Tara';
+
+  @override
+  String get stopScan => 'Taramayı Durdur';
+
+  @override
+  String get reScan => 'Yeniden Tara';
+
+  @override
+  String get deviceAddedSuccess => 'Cihaz başarıyla eklendi';
+
+  @override
+  String get scanningGatewayStatus => 'Ağ geçidine bağlanılıyor...';
+
+  @override
+  String get scanningLockStatus => 'Lütfen kilide yakın durun...';
+
+  @override
+  String get scanningGateways => 'Ağ geçitleri taranıyor...';
+
+  @override
+  String get scanningLocks => 'Kilidi tarıyor...';
+
+  @override
+  String get ensureBluetooth =>
+      'Lütfen Bluetooth\'un açık olduğundan emin olun';
+
+  @override
+  String get gatewayNotFound => 'Ağ geçidi bulunamadı';
+
+  @override
+  String get lockNotFound => 'Kilit bulunamadı';
+
+  @override
+  String get scanNotFoundMessage =>
+      'Çevredeki cihazları taradık ancak hiçbir şey bulunamadı.';
+
+  @override
+  String get gatewaySetupNotAdded => 'Gateway kurulumu henüz eklenmedi';
+
+  @override
+  String foundDevices(int count) {
+    return '$count cihaz bulundu';
+  }
+
+  @override
+  String connectingTo(String name) {
+    return '$name bağlanılıyor...';
+  }
+
+  @override
+  String get unnamedLock => 'İsimsiz Kilit';
+
+  @override
+  String get unknownGateway => 'Bilinmeyen Gateway';
+
+  @override
+  String get gatewayDetailTitle => 'Gateway Detayı';
+
+  @override
+  String get gatewayName => 'Gateway Adı';
+
+  @override
+  String get gatewayMac => 'Gateway MAC';
+
+  @override
+  String get yes => 'Evet';
+
+  @override
+  String get no => 'Hayır';
+
+  @override
+  String get lockCountLabel => 'Kilit Sayısı';
+
+  @override
+  String get renameGateway => 'Gateway Yeniden Adlandır';
+
+  @override
+  String get deleteGatewayAction => 'Gateway Sil';
+
+  @override
+  String get transferGatewayAction => 'Gateway Transfer Et';
+
+  @override
+  String get checkUpgrade => 'Güncelleme Kontrolü';
+
+  @override
+  String get setUpgradeMode => 'Güncelleme Moduna Al';
+
+  @override
+  String get viewLocks => 'Kilitleri Görüntüle';
+
+  @override
+  String get enterNewGatewayName => 'Yeni gateway adı girin';
+
+  @override
+  String get deleteGatewayConfirmation =>
+      'Bu gateway\'i silmek istediğinize emin misiniz?';
+
+  @override
+  String get enterReceiverUsername => 'Alıcı kullanıcı adını girin';
+
+  @override
+  String get gatewayRenamedSuccess => 'Gateway başarıyla yeniden adlandırıldı';
+
+  @override
+  String get gatewayDeletedSuccess => 'Gateway başarıyla silindi';
+
+  @override
+  String get gatewayTransferredSuccess => 'Gateway başarıyla transfer edildi';
+
+  @override
+  String errorRenamingGateway(Object error) {
+    return 'Gateway yeniden adlandırma hatası: $error';
+  }
+
+  @override
+  String errorDeletingGateway(Object error) {
+    return 'Gateway silme hatası: $error';
+  }
+
+  @override
+  String errorTransferringGateway(Object error) {
+    return 'Gateway transfer hatası: $error';
+  }
+
+  @override
+  String errorCheckingUpgrade(Object error) {
+    return 'Güncelleme kontrol hatası: $error';
+  }
+
+  @override
+  String errorSettingUpgradeMode(Object error) {
+    return 'Güncelleme modu ayarlama hatası: $error';
+  }
+
+  @override
+  String get upgradeCheckTitle => 'Güncelleme Kontrolü';
+
+  @override
+  String get needUpgrade => 'Güncelleme Gerekli';
+
+  @override
+  String get version => 'Versiyon';
+
+  @override
+  String get gatewaySetToUpgradeMode => 'Gateway güncelleme moduna alındı';
+
+  @override
+  String get noGatewaysFound => 'Gateway bulunamadı.';
 }

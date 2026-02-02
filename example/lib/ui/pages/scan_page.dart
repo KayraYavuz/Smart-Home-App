@@ -4,24 +4,29 @@ import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/blocs/scan/scan_bloc.dart';
 import 'package:yavuz_lock/blocs/scan/scan_event.dart';
 import 'package:yavuz_lock/blocs/scan/scan_state.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
+import 'package:ttlock_flutter/ttlock.dart';
+import 'package:yavuz_lock/wifi_page.dart';
 
 class ScanPage extends StatelessWidget {
-  const ScanPage({super.key});
+  final bool isGateway;
+  const ScanPage({super.key, this.isGateway = false});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocProvider(
       create: (context) => ScanBloc(
         apiService: RepositoryProvider.of<ApiService>(context),
-      )..add(StartScan()),
+      )..add(StartScan(isGateway: isGateway)),
       child: Scaffold(
         backgroundColor: const Color(0xFF121212),
         appBar: AppBar(
           backgroundColor: const Color(0xFF121212),
           elevation: 0,
-          title: const Text(
-            'Kilidi Tara',
-            style: TextStyle(
+          title: Text(
+            isGateway ? l10n.scanGatewayTitle : l10n.scanLockTitle,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -43,10 +48,10 @@ class ScanPage extends StatelessWidget {
                     if (state is ScanLoading) {
                       context.read<ScanBloc>().add(StopScan());
                     } else {
-                      context.read<ScanBloc>().add(StartScan());
+                      context.read<ScanBloc>().add(StartScan(isGateway: isGateway));
                     }
                   },
-                  tooltip: state is ScanLoading ? 'Taramayı Durdur' : 'Yeniden Tara',
+                  tooltip: state is ScanLoading ? l10n.stopScan : l10n.reScan,
                 );
               },
             ),
@@ -56,8 +61,8 @@ class ScanPage extends StatelessWidget {
           listener: (context, state) {
             if (state is AddLockSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Kilit başarıyla eklendi'),
+                SnackBar(
+                  content: Text(l10n.deviceAddedSuccess),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -69,7 +74,7 @@ class ScanPage extends StatelessWidget {
             if (state is ScanFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Hata: ${state.error}'),
+                  content: Text(l10n.errorWithMsg(state.error)),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -94,15 +99,15 @@ class ScanPage extends StatelessWidget {
                               color: const Color(0xFF1E90FF).withValues(alpha: 0.2 - (value - 1.0) * 0.2), // Fading ripple
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
-                              Icons.lock_open,
-                              color: Color(0xFF1E90FF),
+                            child: Icon(
+                              isGateway ? Icons.router : Icons.lock_open,
+                              color: const Color(0xFF1E90FF),
                               size: 48,
                             ),
                           ),
                         );
                       },
-                      onEnd: () {}, // Loop handled by parent if stateful, but for stateless we might need a different approach or just simple scale
+                      onEnd: () {}, 
                     ),
                     const SizedBox(height: 32),
                     const CircularProgressIndicator(
@@ -110,7 +115,7 @@ class ScanPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      state.message,
+                      l10n.connectingTo(state.lockName),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
@@ -120,7 +125,7 @@ class ScanPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Lütfen kilide yakın durun...',
+                      isGateway ? l10n.scanningGatewayStatus : l10n.scanningLockStatus,
                       style: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 14,
@@ -139,16 +144,16 @@ class ScanPage extends StatelessWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Kilidi tarıyor...',
-                      style: TextStyle(
+                    Text(
+                      isGateway ? l10n.scanningGateways : l10n.scanningLocks,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Lütfen Bluetooth\'un açık olduğundan emin olun',
+                      l10n.ensureBluetooth,
                       style: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 14,
@@ -159,7 +164,9 @@ class ScanPage extends StatelessWidget {
               );
             }
             if (state is ScanLoaded) {
-              if (state.locks.isEmpty) {
+              final items = isGateway ? state.gateways : state.locks;
+              
+              if (items.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -170,9 +177,9 @@ class ScanPage extends StatelessWidget {
                         size: 64,
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Kilit bulunamadı',
-                        style: TextStyle(
+                      Text(
+                        isGateway ? l10n.gatewayNotFound : l10n.lockNotFound,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
@@ -180,7 +187,7 @@ class ScanPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Çevredeki Yavuz Lock kilitlerini taradık ancak hiç kilit bulunamadı.',
+                        l10n.scanNotFoundMessage,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.grey[400],
@@ -190,12 +197,12 @@ class ScanPage extends StatelessWidget {
                       const SizedBox(height: 24),
                       ElevatedButton.icon(
                         onPressed: () {
-                          context.read<ScanBloc>().add(StartScan());
+                          context.read<ScanBloc>().add(StartScan(isGateway: isGateway));
                         },
                         icon: const Icon(Icons.refresh, color: Colors.white),
-                        label: const Text(
-                          'Yeniden Tara',
-                          style: TextStyle(color: Colors.white),
+                        label: Text(
+                          l10n.reScan,
+                          style: const TextStyle(color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
@@ -220,7 +227,7 @@ class ScanPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '${state.locks.length} kilit bulundu',
+                          l10n.foundDevices(items.length),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -233,93 +240,121 @@ class ScanPage extends StatelessWidget {
                   Expanded(
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemCount: state.locks.length,
+                      itemCount: items.length,
                       itemBuilder: (context, index) {
-                        final lock = state.locks[index];
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1E1E1E),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: ListTile(
-                            leading: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.blue.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.lock_outline,
-                                color: Colors.blue,
-                                size: 24,
+                        if (isGateway) {
+                          final gateway = items[index] as Map<String, dynamic>;
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1E1E1E),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListTile(
+                              leading: const Icon(Icons.router, color: Colors.blue),
+                              title: Text(gateway['gatewayName'] ?? l10n.unknownGateway, style: const TextStyle(color: Colors.white)),
+                              subtitle: Text(gateway['gatewayMac'] ?? '', style: TextStyle(color: Colors.grey[400])),
+                              trailing: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => WifiPage(mac: gateway['gatewayMac']),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                child: Text(l10n.add, style: const TextStyle(color: Colors.white)),
                               ),
                             ),
-                            title: Text(
-                              lock.lockName.isNotEmpty ? lock.lockName : 'İsimsiz Kilit',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          );
+                        } else {
+                          final lock = items[index] as TTLockScanModel;
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1E1E1E),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'MAC: ${lock.lockMac}',
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
+                            child: ListTile(
+                              leading: Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                Text(
-                                  'Versiyon: ${lock.lockVersion}',
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 12,
-                                  ),
+                                child: const Icon(
+                                  Icons.lock_outline,
+                                  color: Colors.blue,
+                                  size: 24,
                                 ),
-                              ],
-                            ),
-                            trailing: ElevatedButton(
-                              onPressed: () {
-                                context.read<ScanBloc>().add(AddLock(lock));
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               ),
-                              child: const Text(
-                                'Ekle',
-                                style: TextStyle(
+                              title: Text(
+                                lock.lockName.isNotEmpty ? lock.lockName : l10n.unnamedLock,
+                                style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'MAC: ${lock.lockMac}',
+                                    style: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Versiyon: ${lock.lockVersion}',
+                                    style: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              trailing: ElevatedButton(
+                                onPressed: () {
+                                  context.read<ScanBloc>().add(AddLock(lock));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                ),
+                                child: Text(
+                                  l10n.add,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          ),
-                        );
+                          );
+                        }
                       },
                     ),
                   ),
                 ],
               );
             }
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(
+                  const CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
-                    'Tarama başlatılıyor...',
-                    style: TextStyle(
+                    l10n.scanning,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                     ),
