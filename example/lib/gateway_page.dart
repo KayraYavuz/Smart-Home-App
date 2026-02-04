@@ -33,8 +33,9 @@ class _GatewayPageState extends State<GatewayPage> {
   }
 
   void _initGateway_2(String? wifi, String? wifiPassword) {
-    if (_wifi == null || _wifiPassword != null || _wifiPassword!.isEmpty) {
-      _showAndDismiss(ProgressHudType.error, '"wifi or password cant be empty');
+    if (_wifi == null || _wifiPassword == null || _wifiPassword!.isEmpty) {
+      _showAndDismiss(ProgressHudType.error, 'wifi or password cant be empty');
+      return;
     }
 
     Map paramMap = {};
@@ -69,7 +70,7 @@ class _GatewayPageState extends State<GatewayPage> {
     _showLoading();
     TTGateway.init(paramMap, (map) {
       debugPrint("网关添加结果");
-      debugPrint(map);
+      debugPrint(map.toString());
       _showAndDismiss(ProgressHudType.success, 'Init Gateway Success');
     }, (errorCode, errorMsg) {
       _showAndDismiss(

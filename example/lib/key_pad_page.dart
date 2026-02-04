@@ -18,7 +18,7 @@ class KeyPadPage extends StatefulWidget {
   final String lockData;
 
   @override
-  State<KeyPad> createState() => _KeyPadState();
+  State<KeyPadPage> createState() => _KeyPadState();
 }
 
 enum Command { getStoredLocks, deleteStoredLock, addFingerprint, addCard }
