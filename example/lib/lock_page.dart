@@ -16,7 +16,7 @@ class LockPage extends StatefulWidget {
   final String lockData;
   final String lockMac;
   @override
-  _LockPageState createState() => _LockPageState(lockData, lockMac);
+  State<LockPage> createState() => _LockPageState(lockData, lockMac);
 }
 
 enum Command {
@@ -225,7 +225,7 @@ class _LockPageState extends State<LockPage> {
     switch (command) {
       case Command.resetLock:
         TTLock.resetLock(lockData, () {
-          print("Reset lock success");
+          debugPrint("Reset lock success");
           Navigator.popAndPushNamed(context, '/');
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);

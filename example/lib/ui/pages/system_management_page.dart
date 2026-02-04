@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yavuz_lock/ui/pages/user_management_page.dart';
 import 'package:yavuz_lock/ui/pages/gateway_management_page.dart';
-import 'package:yavuz_lock/ui/pages/group_management_page.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
@@ -77,7 +76,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           }
           allRecords.addAll(records);
         } catch (e) {
-          print('Export error for lock ${lock['lockId']}: $e');
+          debugPrint('Export error for lock ${lock['lockId']}: $e');
         }
       }));
 
@@ -93,7 +92,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
       final file = File('${directory.path}/yavuz_lock_records.json');
       await file.writeAsString(jsonEncode(allRecords));
 
-      await Share.shareXFiles([XFile(file.path)], text: 'Yavuz Lock Records Export');
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'Yavuz Lock Records Export'));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

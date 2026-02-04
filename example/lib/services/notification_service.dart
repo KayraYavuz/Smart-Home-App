@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("🌙 Arka Planda Bildirim Geldi: ${message.messageId}");
+  debugPrint("🌙 Arka Planda Bildirim Geldi: ${message.messageId}");
 }
 
 class NotificationService {
@@ -22,7 +23,7 @@ class NotificationService {
   bool _isInitialized = false;
 
   Future<void> initialize() async {
-    print("🚀 NotificationService: initialize() başladı...");
+    debugPrint("🚀 NotificationService: initialize() başladı...");
     if (_isInitialized) return;
 
     try {
@@ -37,9 +38,9 @@ class NotificationService {
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized || 
           settings.authorizationStatus == AuthorizationStatus.provisional) {
-        print('✅ Bildirim izni var.');
+        debugPrint('✅ Bildirim izni var.');
       } else {
-        print('❌ Bildirim izni yok.');
+        debugPrint('❌ Bildirim izni yok.');
         _isInitialized = true;
         return;
       }
@@ -49,17 +50,17 @@ class NotificationService {
       _fetchTokenAsync();
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print("☀️ Ön planda mesaj geldi: ${message.data}");
+        debugPrint("☀️ Ön planda mesaj geldi: ${message.data}");
         _showLocalNotification(message);
       });
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        print("👆 Bildirime tıklandı.");
+        debugPrint("👆 Bildirime tıklandı.");
       });
 
       _isInitialized = true;
     } catch (e) {
-      print("❌ NotificationService Hatası: $e");
+      debugPrint("❌ NotificationService Hatası: $e");
       _isInitialized = true;
     }
   }
@@ -76,10 +77,10 @@ class NotificationService {
 
       if (apnsToken != null) {
         final token = await _firebaseMessaging.getToken();
-        if (token != null) print("\n🔥 FCM Token: $token\n");
+        if (token != null) debugPrint("\n🔥 FCM Token: $token\n");
       }
     } catch (e) {
-      print("❌ Token alma hatası: $e");
+      debugPrint("❌ Token alma hatası: $e");
     }
   }
 
@@ -145,7 +146,7 @@ class NotificationService {
           }
         }
       } catch (e) {
-        print("Cache lookup error: $e");
+        debugPrint("Cache lookup error: $e");
       }
     }
 

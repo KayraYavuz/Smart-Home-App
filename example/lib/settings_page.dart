@@ -4,13 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/providers/language_provider.dart';
 import 'package:yavuz_lock/ui/pages/login_page.dart';
-import 'package:yavuz_lock/ui/pages/gateway_management_dialog.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
@@ -543,56 +542,5 @@ class _SettingsPageState extends State<SettingsPage> {
         (route) => false,
       );
     }
-  }
-
-  void _showGatewayManagement(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const GatewayManagementDialog(),
-    );
-  }
-
-  Widget _buildNavigationTile(BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListTile(
-        leading: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Colors.blue.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: Colors.blue, size: 24),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(
-            color: Colors.grey[400],
-            fontSize: 14,
-          ),
-        ),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      ),
-    );
   }
 }

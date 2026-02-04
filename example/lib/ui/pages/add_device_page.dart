@@ -6,7 +6,7 @@ class AddDevicePage extends StatefulWidget {
   const AddDevicePage({super.key});
 
   @override
-  _AddDevicePageState createState() => _AddDevicePageState();
+  State<AddDevicePage> createState() => _AddDevicePageState();
 }
 
 

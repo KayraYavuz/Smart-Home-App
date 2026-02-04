@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/ui/pages/work_together/query_lock_page.dart';
-import 'package:yavuz_lock/ui/pages/work_together/utility_meter_page.dart';
 import 'package:yavuz_lock/ui/pages/work_together/card_encoder_page.dart';
-import 'package:yavuz_lock/ui/pages/work_together/hotel_pms_page.dart';
-import 'package:yavuz_lock/ui/pages/work_together/third_party_device_page.dart';
-import 'package:yavuz_lock/ui/pages/work_together/tt_renting_page.dart';
 import 'package:yavuz_lock/ui/pages/work_together/open_platform_page.dart';
 
 class WorkTogetherPage extends StatelessWidget {

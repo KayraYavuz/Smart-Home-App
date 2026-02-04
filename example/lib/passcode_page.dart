@@ -75,7 +75,7 @@ class PasscodePage extends StatelessWidget {
                       icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                       onPressed: () {
                         // TODO: Implement delete passcode functionality using Cubit
-                        print('Deleting ${passcode.keyboardPwd}');
+                        debugPrint('Deleting ${passcode.keyboardPwd}');
                       },
                     ),
                   );

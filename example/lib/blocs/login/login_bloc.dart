@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +26,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         newPassword: event.password,
         verifyCode: event.code,
       );
-      print('✅ [LoginBloc] TTLock şifresi kod ile başarıyla güncellendi.');
+      debugPrint('✅ [LoginBloc] TTLock şifresi kod ile başarıyla güncellendi.');
 
       // 2. Yeni şifreyle giriş yap
       final success = await _apiService.getAccessToken(
@@ -45,7 +46,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(const LoginFailure('Şifre güncellendi ancak giriş yapılamadı.'));
       }
     } catch (e) {
-      print('❌ [LoginBloc] SyncPassword Hatası: $e');
+      debugPrint('❌ [LoginBloc] SyncPassword Hatası: $e');
       emit(LoginFailure('Doğrulama başarısız: ${e.toString().replaceAll('Exception: ', '')}'));
     }
   }
@@ -61,23 +62,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     // 1. Firebase Girişi Dene
     User? firebaseUser;
     try {
-      print('🚀 [LoginBloc] Firebase girişi deneniyor: ${event.username}');
+      debugPrint('🚀 [LoginBloc] Firebase girişi deneniyor: ${event.username}');
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: event.username.trim(), 
         password: event.password
       );
       firebaseSuccess = true;
       firebaseUser = credential.user;
-      print('✅ [LoginBloc] Firebase girişi başarılı: ${firebaseUser?.uid}');
+      debugPrint('✅ [LoginBloc] Firebase girişi başarılı: ${firebaseUser?.uid}');
     } on FirebaseAuthException catch (e) {
-      print('❌ [LoginBloc] Firebase Girişi Başarısız: ${e.code} - ${e.message}');
+      debugPrint('❌ [LoginBloc] Firebase Girişi Başarısız: ${e.code} - ${e.message}');
       if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
-         print('⚠️ [LoginBloc] Firebase şifresi hatalı, TTLock ile devam ediliyor...');
+         debugPrint('⚠️ [LoginBloc] Firebase şifresi hatalı, TTLock ile devam ediliyor...');
       } else {
-         print('⚠️ [LoginBloc] Firebase hatası: ${e.code}. TTLock ile devam ediliyor...');
+         debugPrint('⚠️ [LoginBloc] Firebase hatası: ${e.code}. TTLock ile devam ediliyor...');
       }
     } catch (e) {
-      print('❌ [LoginBloc] Firebase Beklenmedik Hata: $e');
+      debugPrint('❌ [LoginBloc] Firebase Beklenmedik Hata: $e');
     }
 
     // TTLock kullanıcı adlarını hazırla
@@ -92,45 +93,45 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (firebaseUser?.displayName != null) firebaseUser!.displayName!,
     ];
 
-    print('👤 Giriş denenecek formatlar: $usernamesToTry');
+    debugPrint('👤 Giriş denenecek formatlar: $usernamesToTry');
 
     // 2. TTLock Girişi Dene
     for (String username in usernamesToTry) {
       if (username.isEmpty) continue;
       try {
-        print('🔐 Deneniyor: User="$username"');
+        debugPrint('🔐 Deneniyor: User="$username"');
         ttlockSuccess = await _apiService.getAccessToken(
           username: username,
           password: event.password,
         );
         if (ttlockSuccess) {
-           print('✅ Giriş BAŞARILI! (Format: $username)');
+           debugPrint('✅ Giriş BAŞARILI! (Format: $username)');
            break;
         }
       } catch (e) {
-        print('⚠️  $username başarısız: $e');
+        debugPrint('⚠️  $username başarısız: $e');
       }
     }
 
     // 3. Durum Analizi ve Aksiyon
     if (ttlockSuccess) {
-        print('✅ [LoginBloc] TTLock girişi başarılı, login tamamlanıyor.');
+        debugPrint('✅ [LoginBloc] TTLock girişi başarılı, login tamamlanıyor.');
         final accessToken = _apiService.accessToken;
         if (accessToken != null) {
           _authBloc.add(LoggedIn(accessToken));
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('saved_email', event.username);
-          print('🎉 [LoginBloc] LoginSuccess emit ediliyor');
+          debugPrint('🎉 [LoginBloc] LoginSuccess emit ediliyor');
           emit(LoginSuccess());
         } else {
           emit(const LoginFailure('Giriş başarılı ancak anahtar alınamadı.'));
         }
                 } else if (firebaseSuccess && !ttlockSuccess) {
                     // Şifre uyuşmazlığı durumunda karmaşık süreçler yerine doğrudan Web Portalına yönlendir.
-                    print('⚠️ [LoginBloc] Şifre uyuşmazlığı (Firebase OK, TTLock FAIL). Web Portalına yönlendiriliyor...');
+                    debugPrint('⚠️ [LoginBloc] Şifre uyuşmazlığı (Firebase OK, TTLock FAIL). Web Portalına yönlendiriliyor...');
                     emit(LoginTTLockWebRedirect());
                 } else {
-                    print('❌ [LoginBloc] Tüm giriş yöntemleri başarısız');
+                    debugPrint('❌ [LoginBloc] Tüm giriş yöntemleri başarısız');
                     emit(LoginFailure(loginErrorMsg.isNotEmpty ? loginErrorMsg : 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.'));
                 }
               }

@@ -31,7 +31,7 @@ class LockDetailPage extends StatefulWidget {
   });
 
   @override
-  _LockDetailPageState createState() => _LockDetailPageState();
+  State<LockDetailPage> createState() => _LockDetailPageState();
 }
 
 class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProviderStateMixin {
@@ -62,7 +62,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
   }
 
   Future<void> _checkConnectivity() async {
-    print('🔄 Connectivity kontrolü başlatılıyor...');
+    debugPrint('🔄 Connectivity kontrolü başlatılıyor...');
     setState(() {
       _isLoadingConnectivity = true;
     });
@@ -73,25 +73,25 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
       final accessToken = apiService.accessToken;
       if (accessToken != null) {
-        print('🔑 Access token var, connectivity kontrolü yapılıyor...');
+        debugPrint('🔑 Access token var, connectivity kontrolü yapılıyor...');
         final isConnected = await apiService.checkDeviceConnectivity(
           accessToken: accessToken,
           lockId: widget.lock['lockId'].toString(),
         );
-        print('🔍 Lock detail connectivity sonucu: ${widget.lock['lockId']} -> ${isConnected ? 'ONLINE' : 'OFFLINE'}');
+        debugPrint('🔍 Lock detail connectivity sonucu: ${widget.lock['lockId']} -> ${isConnected ? 'ONLINE' : 'OFFLINE'}');
         if (!mounted) return;
         setState(() {
           _isOnline = isConnected;
         });
       } else {
-        print('❌ Access token bulunamadı');
+        debugPrint('❌ Access token bulunamadı');
         if (!mounted) return;
         setState(() {
           _isOnline = false;
         });
       }
     } catch (e) {
-      print('❌ Connectivity check hatası: $e');
+      debugPrint('❌ Connectivity check hatası: $e');
       // Bağlantı hatası durumunda offline kabul edelim
       if (!mounted) return;
       setState(() {
@@ -103,7 +103,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
           _isLoadingConnectivity = false;
         });
       }
-      print('✅ Connectivity kontrolü tamamlandı');
+      debugPrint('✅ Connectivity kontrolü tamamlandı');
     }
   }
 
@@ -547,14 +547,14 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       if (accessToken == null) throw Exception('Erişim anahtarı alınamadı');
 
       // TTLock API ile uzaktan açma komutunu gönder
-      print('🚀 TTLock /v3/lock/unlock API çağrısı başlatılıyor...');
+      debugPrint('🚀 TTLock /v3/lock/unlock API çağrısı başlatılıyor...');
       await apiService.sendRemoteUnlock(
         lockId: widget.lock['lockId'].toString(),
       );
 
       if (!mounted) return;
 
-      print('✅ Uzaktan açma komutu başarıyla gönderildi');
+      debugPrint('✅ Uzaktan açma komutu başarıyla gönderildi');
 
       // Ana sayfaya güncelleme gönder
       Navigator.of(context).pop({

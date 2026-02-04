@@ -10,7 +10,7 @@ class AddFingerprintPage extends StatefulWidget {
   const AddFingerprintPage({super.key, required this.lockId, required this.lockData});
 
   @override
-  _AddFingerprintPageState createState() => _AddFingerprintPageState();
+  State<AddFingerprintPage> createState() => _AddFingerprintPageState();
 }
 
 class _AddFingerprintPageState extends State<AddFingerprintPage> {

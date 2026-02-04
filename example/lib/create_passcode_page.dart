@@ -10,7 +10,7 @@ class CreatePasscodePage extends StatefulWidget {
   const CreatePasscodePage({super.key});
 
   @override
-  _CreatePasscodePageState createState() => _CreatePasscodePageState();
+  State<CreatePasscodePage> createState() => _CreatePasscodePageState();
 }
 
 class _CreatePasscodePageState extends State<CreatePasscodePage> {
@@ -42,7 +42,7 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> {
       _formKey.currentState!.save();
       // TODO: Implement actual passcode creation with SDK:
       // TTLock.createCustomPasscode(_passcode, _startDate.millisecondsSinceEpoch, _endDate.millisecondsSinceEpoch, widget.lockData, ...);
-      print('Creating passcode: $_passcode from $_startDate to $_endDate');
+      debugPrint('Creating passcode: $_passcode from $_startDate to $_endDate');
       Navigator.of(context).pop();
     }
   }

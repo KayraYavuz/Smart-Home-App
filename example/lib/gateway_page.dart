@@ -10,7 +10,7 @@ class GatewayPage extends StatefulWidget {
   final String? wifi;
   final TTGatewayType type;
   @override
-  _GatewayPageState createState() => _GatewayPageState(type, wifi);
+  State<GatewayPage> createState() => _GatewayPageState(type, wifi);
 }
 
 class _GatewayPageState extends State<GatewayPage> {
@@ -62,21 +62,21 @@ class _GatewayPageState extends State<GatewayPage> {
     //   String errorDesc =
     //       "Please config ttlockUid and ttlockLoginPassword. Reference documentation ‘https://open.sciener.com/doc/api/v3/user/getUid’";
     //   _showAndDismiss(ProgressHudType.error, errorDesc);
-    //   print(errorDesc);
+    //   debugPrint(errorDesc);
     //   return;
     // }
 
     _showLoading();
     TTGateway.init(paramMap, (map) {
-      print("网关添加结果");
-      print(map);
+      debugPrint("网关添加结果");
+      debugPrint(map);
       _showAndDismiss(ProgressHudType.success, 'Init Gateway Success');
     }, (errorCode, errorMsg) {
       _showAndDismiss(
           ProgressHudType.error, 'errorCode:$errorCode msg:$errorMsg');
       if (errorCode == TTGatewayError.notConnect ||
           errorCode == TTGatewayError.disconnect) {
-        print("Please repower  and connect the gateway again");
+        debugPrint("Please repower  and connect the gateway again");
       }
     });
   }

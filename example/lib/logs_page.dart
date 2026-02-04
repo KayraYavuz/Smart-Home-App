@@ -13,7 +13,7 @@ class LogsPage extends StatefulWidget {
   const LogsPage({super.key, this.lockId, this.lockName, this.lockData});
 
   @override
-  _LogsPageState createState() => _LogsPageState();
+  State<LogsPage> createState() => _LogsPageState();
 }
 
 class _LogsPageState extends State<LogsPage> {
@@ -65,7 +65,7 @@ class _LogsPageState extends State<LogsPage> {
             );
             allRecords.addAll(recs);
           } catch (e) {
-            print('Error fetching records for ${key['lockId']}: $e');
+            debugPrint('Error fetching records for ${key['lockId']}: $e');
           }
         }
         
@@ -256,7 +256,7 @@ class _LogsPageState extends State<LogsPage> {
      );
 
      try {
-       print('🔵 Bluetooth logs reading...');
+       debugPrint('🔵 Bluetooth logs reading...');
        
        TTLock.getLockOperateRecord(TTOperateRecordType.latest, widget.lockData!, (String log) async {
          try {
@@ -272,13 +272,13 @@ class _LogsPageState extends State<LogsPage> {
            _fetchRecords();
            
          } catch (e) {
-           print('❌ Upload hatası: $e');
+           debugPrint('❌ Upload hatası: $e');
            if (!mounted) return;
            Navigator.pop(context);
            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.uploadError(e.toString())), backgroundColor: Colors.orange));
          }
        }, (errorCode, errorMsg) {
-         print('❌ Bluetooth error: $errorCode - $errorMsg');
+         debugPrint('❌ Bluetooth error: $errorCode - $errorMsg');
          if (!mounted) return;
          Navigator.pop(context);
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.readError(errorMsg)), backgroundColor: Colors.red));

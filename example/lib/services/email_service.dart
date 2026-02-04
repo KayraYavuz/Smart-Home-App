@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import 'dart:math';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
@@ -16,7 +17,7 @@ class EmailService {
     String password = ApiConfig.smtpPassword;
 
     if (username == 'your_email@gmail.com' || password == 'your_app_password') {
-      print('⚠️ UYARI: E-posta ayarları yapılandırılmamış (lib/config.dart). Mail gönderilemedi.');
+      debugPrint('⚠️ UYARI: E-posta ayarları yapılandırılmamış (lib/config.dart). Mail gönderilemedi.');
       return false;
     }
 
@@ -40,16 +41,16 @@ class EmailService {
 
     try {
       final sendReport = await send(message, smtpServer);
-      print('✅ E-posta gönderildi: $sendReport');
+      debugPrint('✅ E-posta gönderildi: $sendReport');
       return true;
     } on MailerException catch (e) {
-      print('❌ E-posta gönderme hatası: $e');
+      debugPrint('❌ E-posta gönderme hatası: $e');
       for (var p in e.problems) {
-        print('Problem: ${p.code}: ${p.msg}');
+        debugPrint('Problem: ${p.code}: ${p.msg}');
       }
       return false;
     } catch (e) {
-       print('❌ Bilinmeyen E-posta hatası: $e');
+       debugPrint('❌ Bilinmeyen E-posta hatası: $e');
        return false;
     }
   }

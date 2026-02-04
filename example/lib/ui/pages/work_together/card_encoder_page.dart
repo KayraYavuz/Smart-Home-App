@@ -5,7 +5,7 @@ class CardEncoderPage extends StatefulWidget {
   const CardEncoderPage({super.key});
 
   @override
-  _CardEncoderPageState createState() => _CardEncoderPageState();
+  State<CardEncoderPage> createState() => _CardEncoderPageState();
 }
 
 class _CardEncoderPageState extends State<CardEncoderPage> {

@@ -9,7 +9,7 @@ class AddCardPage extends StatefulWidget {
   const AddCardPage({super.key, required this.lockId});
 
   @override
-  _AddCardPageState createState() => _AddCardPageState();
+  State<AddCardPage> createState() => _AddCardPageState();
 }
 
 class _AddCardPageState extends State<AddCardPage> {

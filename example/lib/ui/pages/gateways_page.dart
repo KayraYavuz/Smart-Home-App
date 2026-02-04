@@ -11,7 +11,7 @@ class GatewaysPage extends StatefulWidget {
   const GatewaysPage({super.key});
 
   @override
-  _GatewaysPageState createState() => _GatewaysPageState();
+  State<GatewaysPage> createState() => _GatewaysPageState();
 }
 
 class _GatewaysPageState extends State<GatewaysPage> {

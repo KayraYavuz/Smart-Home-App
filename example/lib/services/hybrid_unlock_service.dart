@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -22,16 +23,16 @@ class HybridUnlockService {
     bool onlyBluetooth = false,
   }) async {
     // First, try Bluetooth unlock
-    print('Attempting Bluetooth unlock for lock: $lockMac');
+    debugPrint('Attempting Bluetooth unlock for lock: $lockMac');
     final bluetoothResult = await _tryBluetoothUnlock(lockData, lockMac);
 
     if (bluetoothResult.success) {
-      print('Bluetooth unlock successful');
+      debugPrint('Bluetooth unlock successful');
       return bluetoothResult;
     }
 
     if (onlyBluetooth) {
-      print('Bluetooth unlock failed and fallback is disabled.');
+      debugPrint('Bluetooth unlock failed and fallback is disabled.');
       return UnlockResult(
         success: false,
         error: bluetoothResult.error ?? 'Bluetooth unlock failed',
@@ -40,17 +41,17 @@ class HybridUnlockService {
     }
 
     // If Bluetooth fails, try Gateway API unlock
-    print('Bluetooth unlock failed: ${bluetoothResult.error}. Trying Gateway API...');
+    debugPrint('Bluetooth unlock failed: ${bluetoothResult.error}. Trying Gateway API...');
     if (lockId != null) {
       final gatewayResult = await _tryGatewayUnlock(lockId);
       if (gatewayResult.success) {
-        print('Gateway API unlock successful');
+        debugPrint('Gateway API unlock successful');
         return gatewayResult;
       }
     }
 
     // All methods failed
-    print('All unlock methods failed');
+    debugPrint('All unlock methods failed');
     return UnlockResult(
       success: false,
       error: bluetoothResult.error ?? 'Unlock failed via all methods',
@@ -65,7 +66,7 @@ class HybridUnlockService {
     String? lockId,
     bool onlyBluetooth = false,
   }) async {
-    print('Attempting Bluetooth lock for lock: $lockMac');
+    debugPrint('Attempting Bluetooth lock for lock: $lockMac');
     final bluetoothResult = await _tryBluetoothLock(lockData, lockMac);
 
     if (bluetoothResult.success) {
@@ -114,7 +115,7 @@ class HybridUnlockService {
       );
     }
 
-    print('📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
+    debugPrint('📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
 
     try {
       final completer = Completer<UnlockResult>();
@@ -135,7 +136,7 @@ class HybridUnlockService {
         },
         (errorCode, errorMsg) {
           if (!completer.isCompleted) {
-            print('❌ TTLock BT Hata Kodu: $errorCode - Mesaj: $errorMsg');
+            debugPrint('❌ TTLock BT Hata Kodu: $errorCode - Mesaj: $errorMsg');
             // TTLock hata kodlarına göre mesaj belirle
             String errorType = _getBluetoothErrorType(errorCode, errorMsg);
             completer.complete(UnlockResult(
@@ -150,7 +151,7 @@ class HybridUnlockService {
       return await completer.future.timeout(
         const Duration(seconds: _bluetoothTimeoutSeconds),
         onTimeout: () {
-          print('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
+          debugPrint('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(
             success: false,
             error: 'LOCK_OUT_OF_RANGE',
@@ -159,7 +160,7 @@ class HybridUnlockService {
         },
       );
     } catch (e) {
-      print('❌ Bluetooth istisnası: $e');
+      debugPrint('❌ Bluetooth istisnası: $e');
       return UnlockResult(
         success: false,
         error: 'CONNECTION_FAILED:$e',
@@ -186,7 +187,7 @@ class HybridUnlockService {
       );
     }
 
-    print('📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
+    debugPrint('📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
 
     try {
       final completer = Completer<UnlockResult>();
@@ -207,7 +208,7 @@ class HybridUnlockService {
         },
         (errorCode, errorMsg) {
           if (!completer.isCompleted) {
-            print('❌ TTLock BT Hata Kodu: $errorCode - Mesaj: $errorMsg');
+            debugPrint('❌ TTLock BT Hata Kodu: $errorCode - Mesaj: $errorMsg');
             String errorType = _getBluetoothErrorType(errorCode, errorMsg);
             completer.complete(UnlockResult(
               success: false,
@@ -221,7 +222,7 @@ class HybridUnlockService {
       return await completer.future.timeout(
         const Duration(seconds: _bluetoothTimeoutSeconds),
         onTimeout: () {
-          print('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
+          debugPrint('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(
             success: false,
             error: 'LOCK_OUT_OF_RANGE',
@@ -230,7 +231,7 @@ class HybridUnlockService {
         },
       );
     } catch (e) {
-      print('❌ Bluetooth istisnası: $e');
+      debugPrint('❌ Bluetooth istisnası: $e');
       return UnlockResult(
         success: false,
         error: 'CONNECTION_FAILED:$e',

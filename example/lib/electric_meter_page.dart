@@ -8,7 +8,7 @@ class ElectricMeterPage extends StatefulWidget {
   final String name;
   final String mac;
   @override
-  _ElectricMeterState createState() => _ElectricMeterState(name, mac);
+  State<ElectricMeter> createState() => _ElectricMeterState(name, mac);
 }
 
 enum Command {

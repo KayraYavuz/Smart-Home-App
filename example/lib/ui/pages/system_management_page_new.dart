@@ -4,7 +4,7 @@ class SystemManagementPage extends StatefulWidget {
   const SystemManagementPage({super.key});
 
   @override
-  _SystemManagementPageState createState() => _SystemManagementPageState();
+  State<SystemManagementPage> createState() => _SystemManagementPageState();
 }
 
 class _SystemManagementPageState extends State<SystemManagementPage> {

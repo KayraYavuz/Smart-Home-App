@@ -6,7 +6,7 @@ class GatewayManagementDialog extends StatefulWidget {
   const GatewayManagementDialog({super.key});
 
   @override
-  _GatewayManagementDialogState createState() => _GatewayManagementDialogState();
+  State<GatewayManagementDialog> createState() => _GatewayManagementDialogState();
 }
 
 class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
@@ -43,10 +43,10 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
         _isLoading = false;
       });
 
-      print('📡 ${gateways.length} gateway bulundu');
+      debugPrint('📡 ${gateways.length} gateway bulundu');
 
     } catch (e) {
-      print('❌ Gateway listesi yükleme hatası: $e');
+      debugPrint('❌ Gateway listesi yükleme hatası: $e');
       if (!mounted) return;
       setState(() {
         _errorMessage = e.toString();

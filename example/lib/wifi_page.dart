@@ -8,14 +8,15 @@ class WifiPage extends StatefulWidget {
   const WifiPage({super.key, required this.mac});
   final String mac;
   @override
-  _WifiPageState createState() => _WifiPageState();
+  State<WifiPage> createState() => _WifiPageState();
 }
 
 class _WifiPageState extends State<WifiPage> {
   List _wifiList = [];
   // BuildContext _context;
 
-  _WifiPageState() {
+  @override
+  void initState() {
     super.initState();
     _getNearbyWifi();
   }
@@ -44,12 +45,10 @@ class _WifiPageState extends State<WifiPage> {
           title: const Text('Select Wifi'),
         ),
         body: Material(child: ProgressHud(
-          child: Container(
-            child: Builder(builder: (context) {
-              // _context = context;
-              return getList();
-            }),
-          ),
+          child: Builder(builder: (context) {
+            // _context = context;
+            return getList();
+          }),
         )));
   }
 

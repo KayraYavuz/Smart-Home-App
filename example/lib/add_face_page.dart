@@ -11,7 +11,7 @@ class AddFacePage extends StatefulWidget {
   const AddFacePage({super.key, required this.lockId});
 
   @override
-  _AddFacePageState createState() => _AddFacePageState();
+  State<AddFacePage> createState() => _AddFacePageState();
 }
 
 class _AddFacePageState extends State<AddFacePage> {

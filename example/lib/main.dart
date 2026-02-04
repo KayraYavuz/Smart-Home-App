@@ -31,18 +31,18 @@ import 'package:yavuz_lock/services/notification_service.dart'; // Bildirim Serv
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  print("🏁 Main fonksiyonu başladı."); // DEBUG LOG
+  debugPrint("🏁 Main fonksiyonu başladı."); // DEBUG LOG
 
   try {
     await dotenv.load(fileName: ".env");
-    print('📝 .env yüklendi: ${dotenv.env.keys.length} adet anahtar bulundu.');
+    debugPrint('📝 .env yüklendi: ${dotenv.env.keys.length} adet anahtar bulundu.');
   } catch (e) {
-    print('❌ .env yükleme hatası: $e');
+    debugPrint('❌ .env yükleme hatası: $e');
     // .env yüklenemese bile uygulama çalışmaya devam etsin (fallback değerlerle)
   }
   
-  print('🚀 Uygulama başlatılıyor...');
-  print('⚙️  API Config: ClientId=${app_config.ApiConfig.clientId.isNotEmpty ? "OK" : "BOŞ"}, Username=${app_config.ApiConfig.username.isNotEmpty ? "OK" : "BOŞ"}');
+  debugPrint('🚀 Uygulama başlatılıyor...');
+  debugPrint('⚙️  API Config: ClientId=${app_config.ApiConfig.clientId.isNotEmpty ? "OK" : "BOŞ"}, Username=${app_config.ApiConfig.username.isNotEmpty ? "OK" : "BOŞ"}');
 
   final authRepository = AuthRepository();
   runApp(
@@ -70,7 +70,7 @@ class MyApp extends StatefulWidget {
 
 
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -93,15 +93,15 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _initFirebaseAndNotifications() async {
     try {
-      print("🔥 Firebase.initializeApp() başlatılıyor...");
+      debugPrint("🔥 Firebase.initializeApp() başlatılıyor...");
       await Firebase.initializeApp();
-      print("✅ Firebase başarıyla başlatıldı");
+      debugPrint("✅ Firebase başarıyla başlatıldı");
       
-      print("🚀 NotificationService başlatılıyor...");
+      debugPrint("🚀 NotificationService başlatılıyor...");
       await NotificationService().initialize();
     } catch (e, stackTrace) {
-      print("❌ Firebase/Notification başlatma hatası: $e");
-      print("Stack Trace: $stackTrace");
+      debugPrint("❌ Firebase/Notification başlatma hatası: $e");
+      debugPrint("Stack Trace: $stackTrace");
     }
   }
 
@@ -109,7 +109,7 @@ class _MyAppState extends State<MyApp> {
      if (Platform.isIOS || Platform.isAndroid) {
       try {
         if (app_config.ApiConfig.clientId.isEmpty) {
-          print('❌ TTLock Client ID boş! SDK başlatılmıyor. .env dosyasını kontrol edin.');
+          debugPrint('❌ TTLock Client ID boş! SDK başlatılmıyor. .env dosyasını kontrol edin.');
           return;
         }
 
@@ -121,15 +121,15 @@ class _MyAppState extends State<MyApp> {
         
         // 2. SDK Durum Kontrolü (Başlangıçta bir kez kontrol et)
         TTLock.getBluetoothState((status) {
-          print("✅ TTLock SDK Bluetooth Başlangıç Durumu: $status");
+          debugPrint("✅ TTLock SDK Bluetooth Başlangıç Durumu: $status");
         });
 
-        print('✅ TTLock SDK başarıyla başlatıldı');
+        debugPrint('✅ TTLock SDK başarıyla başlatıldı');
       } catch (e) {
-        print('❌ TTLock SDK başlatma hatası: $e');
+        debugPrint('❌ TTLock SDK başlatma hatası: $e');
       }
     } else {
-      print('ℹ️ TTLock SDK initialization is skipped on this platform (${Platform.operatingSystem}).');
+      debugPrint('ℹ️ TTLock SDK initialization is skipped on this platform (${Platform.operatingSystem}).');
     }
   }
 

@@ -21,7 +21,7 @@ class EKeyDetailPage extends StatefulWidget {
   });
 
   @override
-  _EKeyDetailPageState createState() => _EKeyDetailPageState();
+  State<EKeyDetailPage> createState() => _EKeyDetailPageState();
 }
 
 class _EKeyDetailPageState extends State<EKeyDetailPage> {
@@ -631,7 +631,7 @@ class _ChangePeriodDialog extends StatefulWidget {
   });
 
   @override
-  __ChangePeriodDialogState createState() => __ChangePeriodDialogState();
+  State<_ChangePeriodDialog> createState() => __ChangePeriodDialogState();
 }
 
 class __ChangePeriodDialogState extends State<_ChangePeriodDialog> {

@@ -11,7 +11,7 @@ class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
@@ -135,9 +135,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   margin: const EdgeInsets.only(top: 8),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                    border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
@@ -218,17 +218,17 @@ class _RegisterPageState extends State<RegisterPage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    const Color(0xFF1E90FF).withOpacity(0.8),
-                    const Color(0xFF4169E1).withOpacity(0.6),
-                    const Color(0xFF000428).withOpacity(0.9),
-                    const Color(0xFF004e92).withOpacity(0.8),
+                    const Color(0xFF1E90FF).withValues(alpha: 0.8),
+                    const Color(0xFF4169E1).withValues(alpha: 0.6),
+                    const Color(0xFF000428).withValues(alpha: 0.9),
+                    const Color(0xFF004e92).withValues(alpha: 0.8),
                   ],
                   stops: const [0.0, 0.3, 0.7, 1.0],
                 ),
               ),
             ),
           ),
-          Positioned.fill(child: Container(color: Colors.black.withOpacity(0.5))),
+          Positioned.fill(child: Container(color: Colors.black.withValues(alpha: 0.5))),
           
           SafeArea(
             child: Center(
@@ -379,9 +379,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.green.withOpacity(0.5)),
+                            border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
                           ),
                           child: Column(
                             children: [
@@ -435,9 +435,9 @@ class _RegisterPageState extends State<RegisterPage> {
       prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: Colors.white70) : null,
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: Colors.white.withOpacity(0.1),
+      fillColor: Colors.white.withValues(alpha: 0.1),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white.withOpacity(0.2))),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
       focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF1E90FF))),
     );
   }

@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -33,7 +34,7 @@ class TTLockWebhookService {
 
   void startListening(String webhookUrl) {
     _webhookUrl = webhookUrl;
-    print('TTLock Webhook Service initialized. Ready to process events for: $webhookUrl');
+    debugPrint('TTLock Webhook Service initialized. Ready to process events for: $webhookUrl');
     // In a real app, this would typically connect to a backend WebSocket
     // or register the webhook URL with the TTLock API if dynamic registration is supported
     // and this client acts as a proxy for a server.
@@ -41,7 +42,7 @@ class TTLockWebhookService {
 
   void stopListening() {
     _eventController.close();
-    print('TTLock Webhook Service stopped.');
+    debugPrint('TTLock Webhook Service stopped.');
   }
 
   /// This method would be called by your backend server
@@ -54,9 +55,9 @@ class TTLockWebhookService {
       _eventController.add(eventData); // Add to internal stream for other listeners
       _bloc?.add(TTLockWebhookEventReceived(eventData)); // Dispatch to BLoC
 
-      print('✅ Processed TTLock Webhook event: ${eventData.eventType} for lock ${eventData.lockId}');
+      debugPrint('✅ Processed TTLock Webhook event: ${eventData.eventType} for lock ${eventData.lockId}');
     } catch (e) {
-      print('❌ Error processing incoming webhook payload: $e');
+      debugPrint('❌ Error processing incoming webhook payload: $e');
     }
   }
 
@@ -69,7 +70,7 @@ class TTLockWebhookService {
   /// Sends an event to the configured webhook URL
   Future<void> sendEvent({required String eventType, required Map<String, dynamic> data}) async {
     if (_webhookUrl == null || _webhookUrl!.isEmpty) {
-      print('❌ Webhook URL is not configured.');
+      debugPrint('❌ Webhook URL is not configured.');
       return;
     }
 
@@ -80,7 +81,7 @@ class TTLockWebhookService {
         ...data,
       };
 
-      print('🚀 Sending webhook event to $_webhookUrl');
+      debugPrint('🚀 Sending webhook event to $_webhookUrl');
       final response = await http.post(
         Uri.parse(_webhookUrl!),
         headers: {'Content-Type': 'application/json'},
@@ -88,12 +89,12 @@ class TTLockWebhookService {
       );
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        print('✅ Webhook sent successfully: ${response.statusCode}');
+        debugPrint('✅ Webhook sent successfully: ${response.statusCode}');
       } else {
-        print('⚠️ Webhook sent but returned error: ${response.statusCode} - ${response.body}');
+        debugPrint('⚠️ Webhook sent but returned error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('❌ Webhook send error: $e');
+      debugPrint('❌ Webhook send error: $e');
     }
   }
 }

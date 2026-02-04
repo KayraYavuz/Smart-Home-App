@@ -100,12 +100,10 @@ class _WaterMeterPageState extends State<WaterMeterPage> {
           title: const Text('Water Meter'),
         ),
         body: Material(child: ProgressHud(
-          child: Container(
-            child: Builder(builder: (context) {
-              _context = context;
-              return getListView();
-            }),
-          ),
+          child: Builder(builder: (context) {
+            _context = context;
+            return getListView();
+          }),
         )));
   }
 }

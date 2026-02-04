@@ -9,7 +9,7 @@ class QueryLockPage extends StatefulWidget {
   const QueryLockPage({super.key});
 
   @override
-  _QueryLockPageState createState() => _QueryLockPageState();
+  State<QueryLockPage> createState() => _QueryLockPageState();
 }
 
 class _QueryLockPageState extends State<QueryLockPage> {

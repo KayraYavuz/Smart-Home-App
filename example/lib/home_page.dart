@@ -20,7 +20,7 @@ import 'repositories/auth_repository.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
@@ -57,10 +57,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             _locks = decoded.cast<Map<String, dynamic>>();
           });
         }
-        print('✅ Önbellekten ${_locks.length} kilit yüklendi.');
+        debugPrint('✅ Önbellekten ${_locks.length} kilit yüklendi.');
       }
     } catch (e) {
-      print('❌ Önbellek yükleme hatası: $e');
+      debugPrint('❌ Önbellek yükleme hatası: $e');
     }
   }
 
@@ -69,9 +69,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       final prefs = await SharedPreferences.getInstance();
       final String encoded = json.encode(locks);
       await prefs.setString('cached_locks', encoded);
-      print('💾 Kilitler önbelleğe kaydedildi.');
+      debugPrint('💾 Kilitler önbelleğe kaydedildi.');
     } catch (e) {
-      print('❌ Önbellek kaydetme hatası: $e');
+      debugPrint('❌ Önbellek kaydetme hatası: $e');
     }
   }
 
@@ -270,7 +270,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     });
 
             try {
-              print('🔄 TTLock key listesi çekme işlemi başladı...');
+              debugPrint('🔄 TTLock key listesi çekme işlemi başladı...');
 
               // TTLock key listesini çek (hem kendi hem paylaşılan kilitler)
               final apiService = ApiService(context.read<AuthRepository>());
@@ -280,22 +280,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               final ttlockDevices = allKeys.where((key) => key['shared'] == false).toList();
               final sharedTTLockDevices = allKeys.where((key) => key['shared'] == true).toList();
 
-              print('📊 TTLock Key List API Sonuçları:');
-              print('  TTLock kendi kilitleri: ${ttlockDevices.length}');
-              print('  TTLock paylaşılan kilitleri: ${sharedTTLockDevices.length}');
-              print('  Toplam kilit: ${allKeys.length}');
+              debugPrint('📊 TTLock Key List API Sonuçları:');
+              debugPrint('  TTLock kendi kilitleri: ${ttlockDevices.length}');
+              debugPrint('  TTLock paylaşılan kilitleri: ${sharedTTLockDevices.length}');
+              debugPrint('  Toplam kilit: ${allKeys.length}');
 
               // Debug: Tüm kilitleri detaylı logla
               if (allKeys.isNotEmpty) {
-                print('🔍 Tüm TTLock Kilit Detayları:');
+                debugPrint('🔍 Tüm TTLock Kilit Detayları:');
                 for (var i = 0; i < allKeys.length; i++) {
                   final lock = allKeys[i];
                   final sharedText = lock['shared'] ? '[PAYLAŞILAN]' : '[KENDİ]';
-                  print('  ${i + 1}. $sharedText ID: ${lock['lockId']}, KeyID: ${lock['keyId']}, İsim: ${lock['name']}');
+                  debugPrint('  ${i + 1}. $sharedText ID: ${lock['lockId']}, KeyID: ${lock['keyId']}, İsim: ${lock['name']}');
                 }
               } else {
-                print('⚠️  TTLock hesabında hiç kilit bulunamadı!');
-                print('   Kilitleriniz paylaşıldığından emin olun.');
+                debugPrint('⚠️  TTLock hesabında hiç kilit bulunamadı!');
+                debugPrint('   Kilitleriniz paylaşıldığından emin olun.');
               }
 
               // Tüm kilitleri birleştir
@@ -311,8 +311,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 final isLocked = keyState == 0 || keyState == 2; 
                 final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
-                print('🔋 Kilit $lockId: keyState=$keyState, battery=$electricQuantity');
-                print('🏷️  Kilit adı: $lockAlias');
+                debugPrint('🔋 Kilit $lockId: keyState=$keyState, battery=$electricQuantity');
+                debugPrint('🏷️  Kilit adı: $lockAlias');
 
                 allLocks.add({
                   'name': lockAlias,
@@ -340,7 +340,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 final isLocked = keyState == 0 || keyState == 2; 
                 final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
-                print('🔋 Paylaşılan kilit $lockId: keyState=$keyState, battery=$electricQuantity');
+                debugPrint('🔋 Paylaşılan kilit $lockId: keyState=$keyState, battery=$electricQuantity');
 
                 allLocks.add({
                   'name': lockAlias,
@@ -370,21 +370,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               // Bildirimler için kilit konularına (topic) abone ol
               _subscribeToLockTopics(allLocks);
 
-              print('✅ Toplam ${allLocks.length} TTLock cihazı yüklendi');
-              print('  - ${ttlockDevices.length} TTLock kendi kilidi');
-              print('  - ${sharedTTLockDevices.length} TTLock paylaşılmış kilidi');
+              debugPrint('✅ Toplam ${allLocks.length} TTLock cihazı yüklendi');
+              debugPrint('  - ${ttlockDevices.length} TTLock kendi kilidi');
+              debugPrint('  - ${sharedTTLockDevices.length} TTLock paylaşılmış kilidi');
 
               if (allLocks.isEmpty) {
-                print('⚠️  UYARI: TTLock hesabınızda hiç kilit bulunamadı!');
-                print('   TTLock hesabınızı kontrol edin: https://lock.ttlock.com');
+                debugPrint('⚠️  UYARI: TTLock hesabınızda hiç kilit bulunamadı!');
+                debugPrint('   TTLock hesabınızı kontrol edin: https://lock.ttlock.com');
               }
             } catch (e) {
-              print('❌ Kilit listesi çekme hatası: $e');
-              print('   Hata detayları: ${e.toString()}');
+              debugPrint('❌ Kilit listesi çekme hatası: $e');
+              debugPrint('   Hata detayları: ${e.toString()}');
 
               // Token hatası mı kontrol et
               if (e.toString().contains('access_token') || e.toString().contains('token')) {
-                print('   🔑 Öneri: TTLock hesabınıza tekrar giriş yapın');
+                debugPrint('   🔑 Öneri: TTLock hesabınıza tekrar giriş yapın');
               }
 
               setState(() {
@@ -631,9 +631,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final isSharedTTLockDevice = lock['source'] == 'ttlock_shared';
 
     // Debug: Lock verilerini logla
-    print('🔍 Building lock item: ${lock['name']} (ID: ${lock['lockId']})');
-    print('   Source: ${lock['source']}, Shared: ${lock['shared']}');
-    print('   All keys: ${lock.keys.join(', ')}');
+    debugPrint('🔍 Building lock item: ${lock['name']} (ID: ${lock['lockId']})');
+    debugPrint('   Source: ${lock['source']}, Shared: ${lock['shared']}');
+    debugPrint('   All keys: ${lock.keys.join(', ')}');
 
     String statusText = '';
     if (lock['status'] == l10n.statusSecurityWarning) {
@@ -648,14 +648,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     Color textColor = Colors.blueAccent;
 
     if (lock['shared'] == true) {
-      print("DEBUG: Checking remaining days for ${lock['name']}. EndDate: ${lock['endDate']} (Type: ${lock['endDate'].runtimeType})");
+      debugPrint("DEBUG: Checking remaining days for ${lock['name']}. EndDate: ${lock['endDate']} (Type: ${lock['endDate'].runtimeType})");
       
       if (lock['endDate'] != null && (lock['endDate'] is num) && lock['endDate'] > 0) {
         final endDate = DateTime.fromMillisecondsSinceEpoch((lock['endDate'] as num).toInt());
         final now = DateTime.now();
         final diff = endDate.difference(now);
         
-        print("DEBUG: Diff: ${diff.inDays} days, ${diff.inHours} hours");
+        debugPrint("DEBUG: Diff: ${diff.inDays} days, ${diff.inHours} hours");
 
         if (diff.isNegative) {
           remainingDaysText = "Süresi Doldu"; // Expired
@@ -851,10 +851,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               decoration: BoxDecoration(
                                 color: badgeColor,
                                 borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: badgeColor.withOpacity(0.5)),
+                                border: Border.all(color: badgeColor.withValues(alpha: 0.5)),
                               ),
                               child: Text(
-                                remainingDaysText!,
+                                remainingDaysText,
                                 style: TextStyle(color: textColor, fontSize: 11, fontWeight: FontWeight.bold),
                               ),
                             ),
@@ -1108,7 +1108,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       final lockId = lock['lockId']?.toString();
       if (lockId != null && lockId.isNotEmpty) {
         FirebaseMessaging.instance.subscribeToTopic('lock_$lockId');
-        print('🔔 Subscribed to topic: lock_$lockId');
+        debugPrint('🔔 Subscribed to topic: lock_$lockId');
       }
     }
   }

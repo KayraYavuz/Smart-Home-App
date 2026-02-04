@@ -1,3 +1,4 @@
+import "package:flutter/foundation.dart";
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -87,7 +88,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         ),
       );
     } catch (e) {
-      print('Scan stream error: $e');
+      debugPrint('Scan stream error: $e');
     }
   }
 
@@ -115,26 +116,26 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         'isInited': event.lock.isInited,
       };
 
-      print('🏗️ Bluetooth Başlatma İşlemi Başlıyor...');
-      print('   Kilit Adı: ${event.lock.lockName}');
-      print('   Kilit MAC: ${event.lock.lockMac}');
-      print('   Kilit Versiyonu: ${event.lock.lockVersion}');
-      print('   Sinyal Gücü (RSSI): ${event.lock.rssi}');
-      print('   Kilit Başlatılmış mı? (isInited): ${event.lock.isInited}');
+      debugPrint('🏗️ Bluetooth Başlatma İşlemi Başlıyor...');
+      debugPrint('   Kilit Adı: ${event.lock.lockName}');
+      debugPrint('   Kilit MAC: ${event.lock.lockMac}');
+      debugPrint('   Kilit Versiyonu: ${event.lock.lockVersion}');
+      debugPrint('   Sinyal Gücü (RSSI): ${event.lock.rssi}');
+      debugPrint('   Kilit Başlatılmış mı? (isInited): ${event.lock.isInited}');
 
       final Completer<String> initCompleter = Completer();
 
       // 1. Bluetooth üzerinden kilidi başlat
       TTLock.initLock(map, (lockData) {
         if (!initCompleter.isCompleted) {
-          print('✅ Bluetooth Handshake Başarılı!');
+          debugPrint('✅ Bluetooth Handshake Başarılı!');
           initCompleter.complete(lockData);
         }
       }, (errorCode, errorMsg) {
         if (!initCompleter.isCompleted) {
           String detailedError = errorMsg;
           
-          print('🔍 Ham Hata Alındı - Kod: $errorCode (${errorCode.runtimeType}), Mesaj: $errorMsg');
+          debugPrint('🔍 Ham Hata Alındı - Kod: $errorCode (${errorCode.runtimeType}), Mesaj: $errorMsg');
 
           // TTLock spesifik hata kodlarını anlamlandır
           if (errorCode.toString().contains('4')) {
@@ -148,7 +149,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
             detailedError = 'Bluetooth bağlantısı kurulamadı ($errorMsg). Kilit başka bir hesaba bağlı olabilir, Bluetooth önbelleği dolmuş olabilir veya kilit koruma modunda olabilir.';
           }
 
-          print('❌ Bluetooth Handshake Hatası: $errorCode - $detailedError');
+          debugPrint('❌ Bluetooth Handshake Hatası: $errorCode - $detailedError');
           initCompleter.completeError('BT_ERROR (Kod: $errorCode): $detailedError');
         }
       });
@@ -159,7 +160,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         lockData = await initCompleter.future.timeout(
           const Duration(seconds: 20),
           onTimeout: () {
-            print('⏳ Bluetooth Başlatma Zaman Aşımı!');
+            debugPrint('⏳ Bluetooth Başlatma Zaman Aşımı!');
             throw TimeoutException('Kilit yanıt vermedi. Lütfen daha yakın olun ve kilidi uyandırın.');
           },
         );
@@ -171,7 +172,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       }
 
       if (emit.isDone) return;
-      print('☁️ Kilit Buluta Kaydediliyor...');
+      debugPrint('☁️ Kilit Buluta Kaydediliyor...');
 
       try {
         // 2. Bluetooth'tan alınan lockData'yı TTLock Cloud'a kaydet
@@ -181,8 +182,8 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         );
 
         if (emit.isDone) return;
-        print('Lock registered successfully on Cloud: $apiResult');
-        print('🎉 Kilit Başarıyla Kuruldu!');
+        debugPrint('Lock registered successfully on Cloud: $apiResult');
+        debugPrint('🎉 Kilit Başarıyla Kuruldu!');
 
         final addedLock = {
           'name': apiResult['lockAlias'] ?? event.lock.lockName,
@@ -197,16 +198,16 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
 
         emit(AddLockSuccess(addedLock));
       } catch (apiError) {
-        print('❌ Bulut Kayıt Hatası: $apiError');
+        debugPrint('❌ Bulut Kayıt Hatası: $apiError');
         
         String userFriendlyApiError = _parseApiErrorMessage(apiError.toString());
 
         // DÖKÜMANTASYON UYARISI: Bulut kaydı başarısız olursa kilidi Bluetooth üzerinden resetle!
-        print('♻️ Bulut kaydı başarısız olduğu için kilit Bluetooth üzerinden temizleniyor...');
+        debugPrint('♻️ Bulut kaydı başarısız olduğu için kilit Bluetooth üzerinden temizleniyor...');
         TTLock.resetLock(lockData, () {
-          print('✅ Kilit başarıyla temizlendi (tekrar denenebilir).');
+          debugPrint('✅ Kilit başarıyla temizlendi (tekrar denenebilir).');
         }, (errorCode, errorMsg) {
-          print('⚠️ Kilit temizlenemedi: $errorMsg');
+          debugPrint('⚠️ Kilit temizlenemedi: $errorMsg');
         });
 
         if (emit.isDone) return;
@@ -214,7 +215,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       }
     } catch (e) {
       if (emit.isDone) return;
-      print('Unexpected exception during lock addition: $e');
+      debugPrint('Unexpected exception during lock addition: $e');
       emit(ScanFailure('Beklenmeyen hata: $e'));
     }
   }

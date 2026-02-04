@@ -5,7 +5,7 @@ class UtilityMeterPage extends StatefulWidget {
   const UtilityMeterPage({super.key});
 
   @override
-  _UtilityMeterPageState createState() => _UtilityMeterPageState();
+  State<UtilityMeterPage> createState() => _UtilityMeterPageState();
 }
 
 class _UtilityMeterPageState extends State<UtilityMeterPage> {

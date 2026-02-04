@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
@@ -7,6 +9,8 @@ import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/ui/pages/feature_pages.dart';
 import 'package:yavuz_lock/ui/pages/passage_mode/passage_mode_page.dart';
 import 'package:ttlock_flutter/ttlock.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
 
 
 class LockSettingsPage extends StatefulWidget {
@@ -70,7 +74,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         }
       });
     } catch (e) {
-      print('Error fetching settings: $e');
+      debugPrint('Error fetching settings: $e');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -126,6 +130,15 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                 onTap: _openPassageModePage,
               ),
               // Working Hours removed as per request (not supported/redundant)
+
+              const SizedBox(height: 24),
+              _buildSectionHeader(l10n.dataManagement),
+              _buildSettingTile(
+                icon: Icons.file_download_outlined,
+                title: l10n.exportData,
+                subtitle: l10n.exportDataSubtitle,
+                onTap: _exportLockRecords,
+              ),
 
               const SizedBox(height: 24),
               _buildSectionHeader(l10n.security),
@@ -229,6 +242,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     );
   }
 
+  // ignore: unused_element - Reserved for future use (group assignment feature)
   void _showGroupSelection() async {
     final groups = await _apiService.getGroupList();
     
@@ -407,7 +421,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               String bluetoothError = "";
 
               final completer = Completer<void>();
-              print("Attempting Bluetooth set Auto Lock: $seconds");
+              debugPrint("Attempting Bluetooth set Auto Lock: $seconds");
 
               TTLock.setLockAutomaticLockingPeriodicTime(seconds, lockData, () {
                   if (!completer.isCompleted) completer.complete();
@@ -418,11 +432,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               try {
                 await completer.future.timeout(const Duration(seconds: 3));
                 bluetoothSuccess = true;
-                print("Bluetooth set success.");
+                debugPrint("Bluetooth set success.");
               } catch (e) {
                 bluetoothSuccess = false;
                 bluetoothError = e.toString();
-                print("Bluetooth set failed: $bluetoothError");
+                debugPrint("Bluetooth set failed: $bluetoothError");
               }
 
               // 4. Close Loading Dialog ALWAYS
@@ -439,7 +453,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                       type: 1, 
                     );
                   } catch (e) {
-                    print("Cloud sync (Type 1) failed: $e");
+                    debugPrint("Cloud sync (Type 1) failed: $e");
                   }
                   
                   if (mounted) {
@@ -449,7 +463,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
 
               } else {
                 if (hasGateway) {
-                   print("Bluetooth failed, trying Gateway (Type 2)...");
+                   debugPrint("Bluetooth failed, trying Gateway (Type 2)...");
                    // Show Gateway Loading
                    if (!mounted) return;
                    showDialog(
@@ -472,7 +486,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                       }
 
                    } catch (e) {
-                      print("Gateway set failed: $e");
+                      debugPrint("Gateway set failed: $e");
                       if (mounted) {
                         Navigator.pop(context); // Close gateway loading
                         showDialog(
@@ -527,7 +541,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${l10n.timeSet} (via Gateway)")));
                                   }
                                } catch (e) {
-                                  print("Gateway retry failed: $e");
+                                  debugPrint("Gateway retry failed: $e");
                                   if (mounted) {
                                     Navigator.of(context).pop(); // Close gateway loading
                                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Gateway failed: $e")));
@@ -561,6 +575,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     _fetchSettings();
   }
 
+  // ignore: unused_element - Reserved for future use (working mode feature)
   void _showWorkingModeSettings() {
     // This could be a complex dialog or a separate page. For simplicity, let's show a basic choice.
     final l10n = AppLocalizations.of(context)!;
@@ -728,5 +743,74 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         builder: (context) => WifiLockPage(lockId: int.parse(widget.lock['lockId'].toString())),
       ),
     );
+  }
+
+  Future<void> _exportLockRecords() async {
+    final l10n = AppLocalizations.of(context)!;
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.primary,
+              onPrimary: Colors.black,
+              surface: Color(0xFF1E1E1E),
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+      saveText: l10n.save,
+      cancelText: l10n.cancel,
+    );
+
+    if (picked == null) return;
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.preparingRecords)),
+    );
+
+    try {
+      final lockId = widget.lock['lockId'].toString();
+      final lockName = widget.lock['lockAlias'] ?? widget.lock['lockName'] ?? _lockName ?? 'Lock';
+      
+      final records = await _apiService.getLockRecords(
+        accessToken: _apiService.accessToken!,
+        lockId: lockId,
+        startDate: picked.start.millisecondsSinceEpoch,
+        endDate: picked.end.millisecondsSinceEpoch,
+        pageSize: 100,
+      );
+      
+      // Add lock name to each record
+      for (var r in records) {
+        r['lockName'] = lockName;
+      }
+
+      if (records.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.noData)),
+        );
+        return;
+      }
+
+      final directory = await getTemporaryDirectory();
+      final sanitizedLockName = lockName.replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(' ', '_');
+      final file = File('${directory.path}/${sanitizedLockName}_records.json');
+      await file.writeAsString(jsonEncode(records));
+
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: '$lockName - Records Export'));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.exportError(e.toString())), backgroundColor: Colors.red),
+      );
+    }
   }
 }

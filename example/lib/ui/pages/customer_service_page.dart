@@ -7,7 +7,7 @@ class CustomerServicePage extends StatefulWidget {
   const CustomerServicePage({super.key});
 
   @override
-  _CustomerServicePageState createState() => _CustomerServicePageState();
+  State<CustomerServicePage> createState() => _CustomerServicePageState();
 }
 
 class _CustomerServicePageState extends State<CustomerServicePage> with TickerProviderStateMixin {

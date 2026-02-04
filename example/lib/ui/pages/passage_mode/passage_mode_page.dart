@@ -321,15 +321,15 @@ class _PassageModePageState extends State<PassageModePage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.5),
+        color: AppColors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border.withOpacity(0.5)),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
           Icon(
             Icons.info_outline,
-            color: AppColors.primary.withOpacity(0.7),
+            color: AppColors.primary.withValues(alpha: 0.7),
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -367,8 +367,8 @@ class _PassageModePageState extends State<PassageModePage> {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: _passageModeEnabled 
-                        ? AppColors.primary.withOpacity(0.2)
-                        : AppColors.border.withOpacity(0.3),
+                        ? AppColors.primary.withValues(alpha: 0.2)
+                        : AppColors.border.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -391,8 +391,8 @@ class _PassageModePageState extends State<PassageModePage> {
             Switch(
               value: _passageModeEnabled,
               onChanged: _togglePassageMode,
-              activeColor: AppColors.primary,
-              activeTrackColor: AppColors.primary.withOpacity(0.4),
+              activeThumbColor: AppColors.primary,
+              activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
             ),
           ],
         ),
@@ -423,7 +423,7 @@ class _PassageModePageState extends State<PassageModePage> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.border.withOpacity(0.3),
+                        color: AppColors.border.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
@@ -446,7 +446,7 @@ class _PassageModePageState extends State<PassageModePage> {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.15),
+                    color: AppColors.primary.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -472,7 +472,7 @@ class _PassageModePageState extends State<PassageModePage> {
           Icon(
             Icons.schedule_outlined,
             size: 48,
-            color: AppColors.textSecondary.withOpacity(0.5),
+            color: AppColors.textSecondary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -511,7 +511,7 @@ class _PassageModePageState extends State<PassageModePage> {
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 20),
             decoration: BoxDecoration(
-              color: AppColors.error.withOpacity(0.2),
+              color: AppColors.error.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(Icons.delete, color: AppColors.error),
@@ -535,7 +535,7 @@ class _PassageModePageState extends State<PassageModePage> {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.15),
+                          color: AppColors.primary.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Icon(
@@ -593,7 +593,7 @@ class _PassageModePageState extends State<PassageModePage> {
       decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(
-          top: BorderSide(color: AppColors.border.withOpacity(0.5)),
+          top: BorderSide(color: AppColors.border.withValues(alpha: 0.5)),
         ),
       ),
       child: SafeArea(
@@ -605,7 +605,7 @@ class _PassageModePageState extends State<PassageModePage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: _hasChanges 
                   ? AppColors.primary 
-                  : AppColors.textSecondary.withOpacity(0.3),
+                  : AppColors.textSecondary.withValues(alpha: 0.3),
               foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

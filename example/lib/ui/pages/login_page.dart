@@ -152,10 +152,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin(BuildContext context) async {
-    print('🔵 Giriş butonu basıldı');
+    debugPrint('🔵 Giriş butonu basıldı');
     if (_formKey.currentState!.validate()) {
       final email = _usernameController.text.trim();
-      print('🔵 Form doğrulandı, email: $email');
+      debugPrint('🔵 Form doğrulandı, email: $email');
       final prefs = await SharedPreferences.getInstance();
       
       if (!mounted) return;
@@ -163,15 +163,15 @@ class _LoginPageState extends State<LoginPage> {
       final accepted = prefs.getBool('terms_accepted_$email') ?? false;
 
       if (!accepted) {
-        print('🔵 Kullanıcı sözleşmesi henüz onaylanmamış, diyaloğu gösteriyor...');
+        debugPrint('🔵 Kullanıcı sözleşmesi henüz onaylanmamış, diyaloğu gösteriyor...');
         // Bloc'u parametre olarak gönder
         _showTermsDialog(context, email, context.read<LoginBloc>());
       } else {
-        print('🔵 Kullanıcı sözleşmesi zaten onaylanmış, girişi başlatıyor...');
+        debugPrint('🔵 Kullanıcı sözleşmesi zaten onaylanmış, girişi başlatıyor...');
         _performLogin(context);
       }
     } else {
-      print('🟠 Form doğrulanamadı, lütfen alanları kontrol edin');
+      debugPrint('🟠 Form doğrulanamadı, lütfen alanları kontrol edin');
     }
   }
 

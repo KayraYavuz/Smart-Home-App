@@ -5,7 +5,7 @@ class HotelPMSPage extends StatefulWidget {
   const HotelPMSPage({super.key});
 
   @override
-  _HotelPMSPageState createState() => _HotelPMSPageState();
+  State<HotelPMSPage> createState() => _HotelPMSPageState();
 }
 
 class _HotelPMSPageState extends State<HotelPMSPage> {

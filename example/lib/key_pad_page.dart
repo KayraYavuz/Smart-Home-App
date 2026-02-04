@@ -18,7 +18,7 @@ class KeyPadPage extends StatefulWidget {
   final String lockData;
 
   @override
-  _KeyPadState createState() => _KeyPadState();
+  State<KeyPad> createState() => _KeyPadState();
 }
 
 enum Command { getStoredLocks, deleteStoredLock, addFingerprint, addCard }
@@ -88,14 +88,14 @@ class _KeyPadState extends State<KeyPadPage> {
             1746760151000,
             lockData,
                 (int currentCount, int totalCount){
-               print("addFingerprint;;;currentCount:$currentCount;;;;totalCount:$totalCount");
+               debugPrint("addFingerprint;;;currentCount:$currentCount;;;;totalCount:$totalCount");
             }, (String fingerprintNumber) {
-              print("addFingerprint fingerprintNumber:$fingerprintNumber");
+              debugPrint("addFingerprint fingerprintNumber:$fingerprintNumber");
             }, (errorCode, errorMsg) {
-              print("addFingerprint;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
+              debugPrint("addFingerprint;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
 
             }, (TTRemoteKeyPadAccessoryError errorCode, String errorMsg){
-              print("addFingerprint;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
+              debugPrint("addFingerprint;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
             });
         break;
       case Command.addCard:
@@ -106,12 +106,12 @@ class _KeyPadState extends State<KeyPadPage> {
             lockData,
             
                 (){
-              print("addCard;;;请刷卡");
+              debugPrint("addCard;;;请刷卡");
             }, (String cardNumber) {
-              print("addCard fingerprintNumber:$cardNumber");
+              debugPrint("addCard fingerprintNumber:$cardNumber");
               _showSuccessAndDismiss("addCard success");
             }, (errorCode, errorMsg) {
-              print("addCard;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
+              debugPrint("addCard;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
               ProgressHud.of(_context!)!.showErrorAndDismiss(
                   text: 'errorCode:$errorCode errorMessage:$errorMsg');
             });

@@ -5,7 +5,7 @@ class TTRentingPage extends StatefulWidget {
   const TTRentingPage({super.key});
 
   @override
-  _TTRentingPageState createState() => _TTRentingPageState();
+  State<TTRentingPage> createState() => _TTRentingPageState();
 }
 
 class _TTRentingPageState extends State<TTRentingPage> {

@@ -12,7 +12,7 @@ class GatewayLocksPage extends StatefulWidget {
   const GatewayLocksPage({super.key, required this.gatewayId, required this.gatewayName});
 
   @override
-  _GatewayLocksPageState createState() => _GatewayLocksPageState();
+  State<GatewayLocksPage> createState() => _GatewayLocksPageState();
 }
 
 class _GatewayLocksPageState extends State<GatewayLocksPage> {

@@ -38,7 +38,6 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
 
   bool _allowRemoteUnlock = false;
   bool _isLoading = false;
-  String _receiverInput = "";
 
   List<String> _getTabs(AppLocalizations l10n) => [l10n.tabTimed, l10n.tabOneTime, l10n.tabPermanent, l10n.tabRecurring];
 
@@ -189,7 +188,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                break; // Success, exit loop
              }
           } catch (e) {
-            print("Link retry ${retryCount + 1} failed: $e");
+            debugPrint("Link retry ${retryCount + 1} failed: $e");
             retryCount++;
             
             // If it's the last try, log the error but don't stop the flow
@@ -238,7 +237,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                  decoration: BoxDecoration(
                    color: Colors.black,
                    borderRadius: BorderRadius.circular(8),
-                   border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                   border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
                  ),
                  child: Column(
                    children: [
@@ -445,7 +444,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
             const SizedBox(height: 10),
              SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                activeColor: AppColors.primary,
+                activeThumbColor: AppColors.primary,
                 title: Text(l10n.allowRemoteUnlock, style: const TextStyle(color: Colors.white, fontSize: 16)),
                 value: _allowRemoteUnlock,
                 onChanged: (val) => setState(() => _allowRemoteUnlock = val),

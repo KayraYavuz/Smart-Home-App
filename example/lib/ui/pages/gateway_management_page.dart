@@ -5,7 +5,7 @@ class GatewayManagementPage extends StatefulWidget {
   const GatewayManagementPage({super.key});
 
   @override
-  _GatewayManagementPageState createState() => _GatewayManagementPageState();
+  State<GatewayManagementPage> createState() => _GatewayManagementPageState();
 }
 
 class _GatewayManagementPageState extends State<GatewayManagementPage> {

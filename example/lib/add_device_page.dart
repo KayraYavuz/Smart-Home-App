@@ -86,7 +86,7 @@ class AddDevicePage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         // TODO: Navigate to specific device scanning page
-        print('Tapped on ${device['name']}');
+        debugPrint('Tapped on ${device['name']}');
       },
       child: Container(
         decoration: BoxDecoration(

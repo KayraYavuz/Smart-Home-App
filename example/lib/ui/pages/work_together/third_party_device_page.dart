@@ -5,7 +5,7 @@ class ThirdPartyDevicePage extends StatefulWidget {
   const ThirdPartyDevicePage({super.key});
 
   @override
-  _ThirdPartyDevicePageState createState() => _ThirdPartyDevicePageState();
+  State<ThirdPartyDevicePage> createState() => _ThirdPartyDevicePageState();
 }
 
 class _ThirdPartyDevicePageState extends State<ThirdPartyDevicePage> {

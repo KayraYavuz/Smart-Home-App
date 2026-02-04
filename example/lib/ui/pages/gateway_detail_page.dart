@@ -13,7 +13,7 @@ class GatewayDetailPage extends StatefulWidget {
   const GatewayDetailPage({super.key, required this.gateway});
 
   @override
-  _GatewayDetailPageState createState() => _GatewayDetailPageState();
+  State<GatewayDetailPage> createState() => _GatewayDetailPageState();
 }
 
 class _GatewayDetailPageState extends State<GatewayDetailPage> {

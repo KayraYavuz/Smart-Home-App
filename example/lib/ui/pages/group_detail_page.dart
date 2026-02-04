@@ -155,7 +155,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         await _apiService.setLockGroup(lockId: lockId, groupId: groupId);
         successCount++;
       } catch (e) {
-        print("Add lock $lockId failed: $e");
+        debugPrint("Add lock $lockId failed: $e");
         failCount++;
       }
     }
@@ -167,7 +167,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         await _apiService.setLockGroup(lockId: lockId, groupId: "0"); // 0 to ungroup
         successCount++;
       } catch (e) {
-        print("Remove lock $lockId failed: $e");
+        debugPrint("Remove lock $lockId failed: $e");
         failCount++;
       }
     }
