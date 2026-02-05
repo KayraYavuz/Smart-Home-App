@@ -646,8 +646,20 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     String? remainingDaysText;
     Color badgeColor = Colors.blue.withValues(alpha: 0.2);
     Color textColor = Colors.blueAccent;
+    String sharedRoleText = l10n.sharedLock;
 
     if (lock['shared'] == true) {
+      final userType = lock['userType']?.toString();
+      String roleLabel = l10n.roleNormal; 
+      
+      if (userType == '110301') {
+        roleLabel = l10n.roleAdmin;
+      } else if (userType == '110302') {
+        roleLabel = l10n.roleNormal;
+      } 
+      
+      sharedRoleText = '$sharedRoleText ($roleLabel)';
+
       debugPrint("DEBUG: Checking remaining days for ${lock['name']}. EndDate: ${lock['endDate']} (Type: ${lock['endDate'].runtimeType})");
       
       if (lock['endDate'] != null && (lock['endDate'] is num) && lock['endDate'] > 0) {
@@ -806,7 +818,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               const Icon(Icons.share, color: Colors.orange, size: 12),
                               const SizedBox(width: 4),
                               Text(
-                                l10n.sharedLock,
+                                sharedRoleText,
                                 style: const TextStyle(
                                   color: Colors.orange,
                                   fontSize: 10,

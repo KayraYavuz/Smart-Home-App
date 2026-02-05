@@ -1986,4 +1986,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noGatewaysFound => 'Gateway bulunamadı.';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get roleNormal => 'Normal';
+
+  @override
+  String get roleObserver => 'Gözetmen';
 }

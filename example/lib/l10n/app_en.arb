@@ -877,5 +877,8 @@
   "needUpgrade": "Need Upgrade",
   "version": "Version",
   "gatewaySetToUpgradeMode": "Gateway is set to upgrade mode",
-  "noGatewaysFound": "No gateways found."
+  "noGatewaysFound": "No gateways found.",
+  "roleAdmin": "Admin",
+  "roleNormal": "Normal",
+  "roleObserver": "Observer"
 }

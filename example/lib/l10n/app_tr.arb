@@ -718,5 +718,8 @@
   "needUpgrade": "Güncelleme Gerekli",
   "version": "Versiyon",
   "gatewaySetToUpgradeMode": "Gateway güncelleme moduna alındı",
-  "noGatewaysFound": "Gateway bulunamadı."
+  "noGatewaysFound": "Gateway bulunamadı.",
+  "roleAdmin": "Admin",
+  "roleNormal": "Normal",
+  "roleObserver": "Gözetmen"
 }

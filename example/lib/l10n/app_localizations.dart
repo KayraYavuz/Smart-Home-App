@@ -3717,6 +3717,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No gateways found.'**
   String get noGatewaysFound;
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get roleAdmin;
+
+  /// No description provided for @roleNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get roleNormal;
+
+  /// No description provided for @roleObserver.
+  ///
+  /// In en, this message translates to:
+  /// **'Observer'**
+  String get roleObserver;
 }
 
 class _AppLocalizationsDelegate

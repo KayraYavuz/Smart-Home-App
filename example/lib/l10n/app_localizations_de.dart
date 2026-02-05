@@ -1997,4 +1997,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noGatewaysFound => 'Keine Gateways gefunden.';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get roleNormal => 'Normal';
+
+  @override
+  String get roleObserver => 'Observer';
 }
