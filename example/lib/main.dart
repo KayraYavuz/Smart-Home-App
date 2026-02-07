@@ -1,6 +1,7 @@
 import 'package:yavuz_lock/blocs/fingerprint/fingerprint_bloc.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +31,9 @@ import 'package:yavuz_lock/services/notification_service.dart'; // Bildirim Serv
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Enable Edge-to-Edge for Android 15 compatibility
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   
   debugPrint("🏁 Main fonksiyonu başladı."); // DEBUG LOG
 

@@ -40,7 +40,7 @@ class _EKeyListPageState extends State<EKeyListPage> {
       await apiService.getAccessToken();
       final accessToken = apiService.accessToken;
 
-      if (accessToken == null) throw Exception('Erişim izni yok');
+      if (accessToken == null) throw Exception(AppLocalizations.of(context)!.noAccessPermission);
 
       final keys = await apiService.getLockEKeys(
         accessToken: accessToken,
@@ -107,75 +107,89 @@ class _EKeyListPageState extends State<EKeyListPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF2C2C2C),
-                borderRadius: BorderRadius.circular(10),
+          Column(
+            children: [
+              // Search Bar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2C2C2C),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    style: const TextStyle(color: Colors.white),
+                    onChanged: _filterKeys,
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.search,
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                  ),
+                ),
               ),
-              child: TextField(
-                controller: _searchController,
-                style: const TextStyle(color: Colors.white),
-                onChanged: _filterKeys,
-                decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.search,
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
+
+              // Content
+              Expanded(
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _errorMessage != null
+                        ? Center(child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)))
+                        : _filteredKeys.isEmpty
+                            ? Center(child: Text(AppLocalizations.of(context)!.noEKeysFound, style: const TextStyle(color: Colors.grey)))
+                            : ListView.builder(
+                                itemCount: _filteredKeys.length,
+                                padding: const EdgeInsets.only(bottom: 150), // Increased padding for bottom button
+                                itemBuilder: (context, index) {
+                                  final key = _filteredKeys[index];
+                                  return _buildKeyCard(key);
+                                },
+                              ),
+              ),
+            ],
+          ),
+          
+          // Floating Bottom Button
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              color: const Color(0xFF1E1E1E),
+              padding: EdgeInsets.only(
+                left: 16.0, 
+                right: 16.0, 
+                top: 16.0, 
+                bottom: 80.0 + MediaQuery.of(context).padding.bottom
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SendEKeyPage(lock: widget.lock)),
+                    ).then((_) => _fetchKeys()); // Refresh on return
+                  },
+                  icon: const Icon(Icons.add, color: AppColors.primary),
+                  label: Text(AppLocalizations.of(context)!.sendKey, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2C2C2C),
+                    foregroundColor: AppColors.primary,
+                    side: BorderSide.none,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
                 ),
               ),
             ),
           ),
-
-          // Content
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _errorMessage != null
-                    ? Center(child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)))
-                    : _filteredKeys.isEmpty
-                        ? Center(child: Text(AppLocalizations.of(context)!.noEKeysFound, style: const TextStyle(color: Colors.grey)))
-                        : ListView.builder(
-                            itemCount: _filteredKeys.length,
-                            padding: const EdgeInsets.only(bottom: 100), // Space for bottom button
-                            itemBuilder: (context, index) {
-                              final key = _filteredKeys[index];
-                              return _buildKeyCard(key);
-                            },
-                          ),
-          ),
         ],
-      ),
-      bottomSheet: Container(
-        color: const Color(0xFF1E1E1E),
-        padding: const EdgeInsets.all(16.0),
-        child: SafeArea(
-          child: SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SendEKeyPage(lock: widget.lock)),
-                ).then((_) => _fetchKeys()); // Refresh on return
-              },
-              icon: const Icon(Icons.add, color: AppColors.primary),
-              label: Text(AppLocalizations.of(context)!.sendKey, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2C2C2C),
-                foregroundColor: AppColors.primary,
-                side: BorderSide.none,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

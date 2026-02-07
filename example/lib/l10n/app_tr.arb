@@ -278,7 +278,7 @@
   "@lockCount": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -721,5 +721,27 @@
   "noGatewaysFound": "Gateway bulunamadı.",
   "roleAdmin": "Admin",
   "roleNormal": "Normal",
-  "roleObserver": "Gözetmen"
+  "roleObserver": "Gözetmen",
+  "accessTokenNotFound": "Erişim anahtarı alınamadı",
+  "lockIdNotFound": "Kilit ID bulunamadı.",
+  "invalidLockIdFormat": "Geçersiz Kilit ID formatı.",
+  "loginToSeePasscodes": "Şifreleri görmek için giriş yapmalısınız.",
+  "noAccessPermission": "Erişim izni yok",
+  "daysLeft": "{days} gün",
+  "@daysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursLeft": "{hours} saat",
+  "@hoursLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "Bilinmiyor"
 }

@@ -613,7 +613,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     // Calculate remaining days and role for shared locks
     String? remainingDaysText;
-    String roleText = "Admin";
+    String roleText = l10n.roleAdmin;
     final bool isShared = lock['shared'] == true;
     final bool hasGateway = lock['hasGateway'] == 1;
 
@@ -623,9 +623,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       
       // Check both userType and keyRight for Admin status
       if (userType == '110301' || keyRight == '1') {
-        roleText = "Admin";
+        roleText = l10n.roleAdmin;
       } else {
-        roleText = "Normal";
+        roleText = l10n.roleNormal;
       }
       
       if (lock['endDate'] != null && (lock['endDate'] is num) && lock['endDate'] > 0) {
@@ -634,14 +634,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         final diff = endDate.difference(now);
 
         if (diff.isNegative) {
-          remainingDaysText = "Süresi Doldu";
+          remainingDaysText = l10n.expired;
         } else {
           final days = diff.inDays;
           if (days > 0) {
-            remainingDaysText = "$days gün";
+            remainingDaysText = l10n.daysLeft(days);
           } else {
             final hours = diff.inHours % 24;
-            remainingDaysText = "$hours saat";
+            remainingDaysText = l10n.hoursLeft(hours);
           }
         }
       }
@@ -751,8 +751,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
-                                    Icons.battery_charging_full,
+                                  Icon(
+                                    _getBatteryIcon(lock['battery'] ?? 0),
                                     color: Colors.white,
                                     size: 13,
                                   ),
@@ -793,7 +793,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           const Icon(Icons.people, color: Colors.white60, size: 13),
                           const SizedBox(width: 3),
                           Text(
-                            "Paylaşılan",
+                            l10n.sharedLock,
                             style: const TextStyle(
                               color: Colors.white60,
                               fontSize: 11,
@@ -803,10 +803,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       ),
                     const Spacer(),
                     // Status button and Days badge - only show admin role and days
-                    if (roleText == "Admin" || (isShared && remainingDaysText != null))
+                    if (roleText == l10n.roleAdmin || (isShared && remainingDaysText != null))
                       Row(
                         children: [
-                          if (roleText == "Admin")
+                          if (roleText == l10n.roleAdmin)
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
@@ -823,7 +823,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               ),
                             ),
                           if (remainingDaysText != null) ...[
-                            if (roleText == "Admin")
+                            if (roleText == l10n.roleAdmin)
                               const SizedBox(width: 5),
                             Flexible(
                               child: Container(

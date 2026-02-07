@@ -27,6 +27,7 @@
 
     <application
         android:label="Yavuz Lock"
+        android:extractNativeLibs="true"
         tools:replace="android:label,android:icon"
         android:icon="@mipmap/launcher_icon">
         <activity

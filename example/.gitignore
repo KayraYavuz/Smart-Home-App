@@ -57,3 +57,5 @@ android/app/*.jks
 android/key.properties
 key.properties
 **/*.jks
+analyze_output.txt
+full_analyze.txt

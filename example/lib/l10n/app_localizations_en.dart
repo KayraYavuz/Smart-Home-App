@@ -854,7 +854,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unnamedGroup => 'Unnamed Group';
 
   @override
-  String lockCount(int count) {
+  String lockCount(String count) {
     return 'Lock Count: $count';
   }
 
@@ -1986,4 +1986,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roleObserver => 'Observer';
+
+  @override
+  String get accessTokenNotFound => 'Access token not found';
+
+  @override
+  String get lockIdNotFound => 'Lock ID not found.';
+
+  @override
+  String get invalidLockIdFormat => 'Invalid Lock ID format.';
+
+  @override
+  String get loginToSeePasscodes => 'Please login to see passcodes.';
+
+  @override
+  String get noAccessPermission => 'No access permission';
+
+  @override
+  String daysLeft(int days) {
+    return '$days days';
+  }
+
+  @override
+  String hoursLeft(int hours) {
+    return '$hours hours';
+  }
+
+  @override
+  String get unknown => 'Unknown';
 }

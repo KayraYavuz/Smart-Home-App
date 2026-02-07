@@ -10,18 +10,16 @@ class GatewayPage extends StatefulWidget {
   final String? wifi;
   final TTGatewayType type;
   @override
-  State<GatewayPage> createState() => _GatewayPageState(type, wifi);
+  State<GatewayPage> createState() => _GatewayPageState();
 }
 
 class _GatewayPageState extends State<GatewayPage> {
   BuildContext? _context;
-  String? _wifi;
   String? _wifiPassword;
-  TTGatewayType? _type;
-  _GatewayPageState(TTGatewayType type, String? wifi) {
+
+  @override
+  void initState() {
     super.initState();
-    _wifi = wifi;
-    _type = type;
   }
 
   void _showLoading() {
@@ -33,7 +31,7 @@ class _GatewayPageState extends State<GatewayPage> {
   }
 
   void _initGateway_2(String? wifi, String? wifiPassword) {
-    if (_wifi == null || _wifiPassword == null || _wifiPassword!.isEmpty) {
+    if (widget.wifi == null || wifiPassword == null || wifiPassword.isEmpty) {
       _showAndDismiss(ProgressHudType.error, 'wifi or password cant be empty');
       return;
     }
@@ -41,7 +39,7 @@ class _GatewayPageState extends State<GatewayPage> {
     Map paramMap = {};
     paramMap["wifi"] = wifi;
     paramMap["wifiPassword"] = wifiPassword;
-    paramMap["type"] = _type!.index;
+    paramMap["type"] = widget.type.index;
     paramMap["gatewayName"] = GatewayConfig.gatewayName;
     paramMap["uid"] = GatewayConfig.uid;
     paramMap["ttlockLoginPassword"] = GatewayConfig.ttlockLoginPassword;
@@ -50,7 +48,7 @@ class _GatewayPageState extends State<GatewayPage> {
 
   void _initGateway_3_4() {
     Map paramMap = {};
-    paramMap["type"] = _type!.index;
+    paramMap["type"] = widget.type.index;
     paramMap["gatewayName"] = GatewayConfig.gatewayName;
     paramMap["uid"] = GatewayConfig.uid;
     paramMap["ttlockLoginPassword"] = GatewayConfig.ttlockLoginPassword;
@@ -89,19 +87,17 @@ class _GatewayPageState extends State<GatewayPage> {
           title: const Text("Gateway"),
         ),
         body: Material(child: ProgressHud(
-          child: Container(
-            child: Builder(builder: (context) {
-              _context = context;
-              return getChild();
-            }),
-          ),
+          child: Builder(builder: (context) {
+            _context = context;
+            return getChild();
+          }),
         )));
   }
 
   Widget getChild() {
     TextField wifiTextField = TextField(
       textAlign: TextAlign.center,
-      controller: TextEditingController(text: _wifi),
+      controller: TextEditingController(text: widget.wifi),
       enabled: false,
     );
 
@@ -118,8 +114,8 @@ class _GatewayPageState extends State<GatewayPage> {
       onPressed: () {
         FocusScope.of(_context!).requestFocus(FocusNode());
         //g2
-        if (_type == TTGatewayType.g2) {
-          _initGateway_2(_wifi, _wifiPassword);
+        if (widget.type == TTGatewayType.g2) {
+          _initGateway_2(widget.wifi, _wifiPassword);
         } else {
           //g3 g4
           _initGateway_3_4();
@@ -127,7 +123,7 @@ class _GatewayPageState extends State<GatewayPage> {
       },
     );
 
-    if (_type == TTGatewayType.g2) {
+    if (widget.type == TTGatewayType.g2) {
       return Column(
         children: <Widget>[
           wifiTextField,

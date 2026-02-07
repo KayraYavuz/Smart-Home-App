@@ -191,6 +191,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _launchUrl(String url) async {
+    final l10n = AppLocalizations.of(context)!;
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -198,7 +199,7 @@ class _RegisterPageState extends State<RegisterPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('URL açılamadı: $url'),
+          content: Text(l10n.urlOpenError(url)),
           backgroundColor: Colors.red,
         ),
       );

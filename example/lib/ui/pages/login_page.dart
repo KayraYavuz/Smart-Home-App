@@ -127,12 +127,12 @@ class _LoginPageState extends State<LoginPage> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Hata'),
+            title: Text(l10n.errorLabel),
             content: Text(l10n.urlOpenError(url)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Tamam'),
+                child: Text(l10n.ok),
               ),
             ],
           ),
@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _performLogin(BuildContext context) {
+  void _performLogin() {
     _saveCredentials();
     context.read<LoginBloc>().add(
           LoginButtonPressed(
@@ -155,6 +155,7 @@ class _LoginPageState extends State<LoginPage> {
     debugPrint('🔵 Giriş butonu basıldı');
     if (_formKey.currentState!.validate()) {
       final email = _usernameController.text.trim();
+      final loginBloc = context.read<LoginBloc>();
       debugPrint('🔵 Form doğrulandı, email: $email');
       final prefs = await SharedPreferences.getInstance();
       
@@ -165,17 +166,17 @@ class _LoginPageState extends State<LoginPage> {
       if (!accepted) {
         debugPrint('🔵 Kullanıcı sözleşmesi henüz onaylanmamış, diyaloğu gösteriyor...');
         // Bloc'u parametre olarak gönder
-        _showTermsDialog(context, email, context.read<LoginBloc>());
+        _showTermsDialog(email, loginBloc);
       } else {
         debugPrint('🔵 Kullanıcı sözleşmesi zaten onaylanmış, girişi başlatıyor...');
-        _performLogin(context);
+        _performLogin();
       }
     } else {
       debugPrint('🟠 Form doğrulanamadı, lütfen alanları kontrol edin');
     }
   }
 
-  void _showTermsDialog(BuildContext context, String email, LoginBloc loginBloc) {
+  void _showTermsDialog(String email, LoginBloc loginBloc) {
     final l10n = AppLocalizations.of(context)!;
     bool isAgreed = false;
     showDialog(

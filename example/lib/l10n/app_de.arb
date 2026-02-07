@@ -257,7 +257,7 @@
   "@lockCount": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -687,5 +687,27 @@
         "type": "String"
       }
     }
-  }
+  },
+  "accessTokenNotFound": "Zugriffstoken nicht gefunden",
+  "lockIdNotFound": "Schloss-ID nicht gefunden.",
+  "invalidLockIdFormat": "Ungültiges Schloss-ID-Format.",
+  "loginToSeePasscodes": "Bitte melden Sie sich an, um Passcodes zu sehen.",
+  "noAccessPermission": "Keine Zugriffsberechtigung",
+  "daysLeft": "{days} Tage",
+  "@daysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursLeft": "{hours} Stunden",
+  "@hoursLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "Unbekannt"
 }

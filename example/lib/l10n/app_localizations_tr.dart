@@ -860,7 +860,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get unnamedGroup => 'İsimsiz Grup';
 
   @override
-  String lockCount(int count) {
+  String lockCount(String count) {
     return 'Kilit Sayısı: $count';
   }
 
@@ -1995,4 +1995,32 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get roleObserver => 'Gözetmen';
+
+  @override
+  String get accessTokenNotFound => 'Erişim anahtarı alınamadı';
+
+  @override
+  String get lockIdNotFound => 'Kilit ID bulunamadı.';
+
+  @override
+  String get invalidLockIdFormat => 'Geçersiz Kilit ID formatı.';
+
+  @override
+  String get loginToSeePasscodes => 'Şifreleri görmek için giriş yapmalısınız.';
+
+  @override
+  String get noAccessPermission => 'Erişim izni yok';
+
+  @override
+  String daysLeft(int days) {
+    return '$days gün';
+  }
+
+  @override
+  String hoursLeft(int hours) {
+    return '$hours saat';
+  }
+
+  @override
+  String get unknown => 'Bilinmiyor';
 }

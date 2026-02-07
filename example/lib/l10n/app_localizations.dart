@@ -1706,7 +1706,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Lock Count: {count}'**
-  String lockCount(int count);
+  String lockCount(String count);
 
   /// No description provided for @editingGroup.
   ///
@@ -3735,6 +3735,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Observer'**
   String get roleObserver;
+
+  /// No description provided for @accessTokenNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Access token not found'**
+  String get accessTokenNotFound;
+
+  /// No description provided for @lockIdNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock ID not found.'**
+  String get lockIdNotFound;
+
+  /// No description provided for @invalidLockIdFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Lock ID format.'**
+  String get invalidLockIdFormat;
+
+  /// No description provided for @loginToSeePasscodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Please login to see passcodes.'**
+  String get loginToSeePasscodes;
+
+  /// No description provided for @noAccessPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'No access permission'**
+  String get noAccessPermission;
+
+  /// No description provided for @daysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String daysLeft(int days);
+
+  /// No description provided for @hoursLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hours'**
+  String hoursLeft(int hours);
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
 }
 
 class _AppLocalizationsDelegate

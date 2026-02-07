@@ -146,12 +146,10 @@ class _KeyPadState extends State<KeyPadPage> {
           title: const Text('Key Pad'),
         ),
         body: Material(child: ProgressHud(
-          child: Container(
-            child: Builder(builder: (context) {
-              _context = context;
-              return getListView();
-            }),
-          ),
+          child: Builder(builder: (context) {
+            _context = context;
+            return getListView();
+          }),
         )));
   }
 }

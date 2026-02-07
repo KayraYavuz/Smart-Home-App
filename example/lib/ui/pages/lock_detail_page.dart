@@ -245,6 +245,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
               // Kısa bir gecikmeden sonra sayfayı kapat
               Future.delayed(const Duration(seconds: 1), () {
+                if (!mounted) return;
                 Navigator.of(context).pop({
                   'action': 'lock_updated',
                   'lock': updatedLock,
@@ -376,7 +377,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                                 ],
                               ),
                               child: IconButton(
-                                onPressed: () => _remoteUnlock(context),
+                                onPressed: () => _remoteUnlock(),
                                 icon: const Icon(Icons.wifi_tethering, color: Colors.blue, size: 28),
                                 tooltip: l10n.remoteUnlock,
                               ),
@@ -476,13 +477,13 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                               context,
                               icon: Icons.settings,
                               label: l10n.settingsMenu,
-                              onTap: () => _showSettings(context),
+                              onTap: () => _showSettings(),
                             ),
                           ],
                         ),
                       ),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 80),
                     ],
                   ),
                 ),
@@ -523,20 +524,20 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     );
   }
 
-  void _showSettings(BuildContext context) {
+  void _showSettings() {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => LockSettingsPage(lock: widget.lock),
       ),
     ).then((val) {
-      if (val == 'deleted') {
+      if (val == 'deleted' && mounted) {
          Navigator.pop(context, 'deleted');
       }
     });
   }
 
 
-  void _remoteUnlock(BuildContext context) async {
+  void _remoteUnlock() async {
     final l10n = AppLocalizations.of(context)!;
     try {
       final authRepository = context.read<AuthRepository>();
@@ -544,7 +545,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       await apiService.getAccessToken();
       
       final accessToken = apiService.accessToken;
-      if (accessToken == null) throw Exception('Erişim anahtarı alınamadı');
+      if (accessToken == null) throw Exception(l10n.accessTokenNotFound);
 
       // TTLock API ile uzaktan açma komutunu gönder
       debugPrint('🚀 TTLock /v3/lock/unlock API çağrısı başlatılıyor...');
@@ -590,19 +591,20 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
   }
 
   void _showPasswords(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = context.read<AuthBloc>().state;
     if (authState is Authenticated) {
       final lockIdString = widget.lock['lockId']?.toString();
       if (lockIdString == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Kilit ID bulunamadı.')),
+          SnackBar(content: Text(l10n.lockIdNotFound)),
         );
         return;
       }
       final lockId = int.tryParse(lockIdString);
       if (lockId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Geçersiz Kilit ID formatı.')),
+          SnackBar(content: Text(l10n.invalidLockIdFormat)),
         );
         return;
       }
@@ -619,7 +621,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Şifreleri görmek için giriş yapmalısınız.')),
+        SnackBar(content: Text(l10n.loginToSeePasscodes)),
       );
     }
   }

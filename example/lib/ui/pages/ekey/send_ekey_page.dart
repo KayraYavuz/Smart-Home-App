@@ -480,7 +480,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
               ),
             ),
             
-            const SizedBox(height: 60), // Extra padding for bottom navigation area
+            const SizedBox(height: 100), // Extra padding for bottom navigation area
 
           ],
         ),

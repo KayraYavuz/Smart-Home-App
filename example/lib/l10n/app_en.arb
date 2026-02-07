@@ -416,7 +416,7 @@
   "@lockCount": {
     "placeholders": {
       "count": {
-        "type": "int"
+        "type": "String"
       }
     }
   },
@@ -880,5 +880,27 @@
   "noGatewaysFound": "No gateways found.",
   "roleAdmin": "Admin",
   "roleNormal": "Normal",
-  "roleObserver": "Observer"
+  "roleObserver": "Observer",
+  "accessTokenNotFound": "Access token not found",
+  "lockIdNotFound": "Lock ID not found.",
+  "invalidLockIdFormat": "Invalid Lock ID format.",
+  "loginToSeePasscodes": "Please login to see passcodes.",
+  "noAccessPermission": "No access permission",
+  "daysLeft": "{days} days",
+  "@daysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursLeft": "{hours} hours",
+  "@hoursLeft": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "Unknown"
 }

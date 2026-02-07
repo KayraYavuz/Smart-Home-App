@@ -863,7 +863,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unnamedGroup => 'Unbenannte Gruppe';
 
   @override
-  String lockCount(int count) {
+  String lockCount(String count) {
     return 'Anzahl der Schlösser: $count';
   }
 
@@ -2006,4 +2006,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get roleObserver => 'Observer';
+
+  @override
+  String get accessTokenNotFound => 'Zugriffstoken nicht gefunden';
+
+  @override
+  String get lockIdNotFound => 'Schloss-ID nicht gefunden.';
+
+  @override
+  String get invalidLockIdFormat => 'Ungültiges Schloss-ID-Format.';
+
+  @override
+  String get loginToSeePasscodes =>
+      'Bitte melden Sie sich an, um Passcodes zu sehen.';
+
+  @override
+  String get noAccessPermission => 'Keine Zugriffsberechtigung';
+
+  @override
+  String daysLeft(int days) {
+    return '$days Tage';
+  }
+
+  @override
+  String hoursLeft(int hours) {
+    return '$hours Stunden';
+  }
+
+  @override
+  String get unknown => 'Unbekannt';
 }

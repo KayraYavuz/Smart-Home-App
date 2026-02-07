@@ -8,7 +8,7 @@ class ElectricMeterPage extends StatefulWidget {
   final String name;
   final String mac;
   @override
-  State<ElectricMeterPage> createState() => _ElectricMeterState(name, mac);
+  State<ElectricMeterPage> createState() => _ElectricMeterState();
 }
 
 enum Command {
@@ -43,10 +43,11 @@ class _ElectricMeterState extends State<ElectricMeterPage> {
   String name = '';
   BuildContext? _context;
 
-  _ElectricMeterState(String name, String mac) {
+  @override
+  void initState() {
     super.initState();
-    this.name = name;
-    this.mac = mac;
+    name = widget.name;
+    mac = widget.mac;
   }
 
   void _showLoading(String text) {
@@ -166,12 +167,10 @@ class _ElectricMeterState extends State<ElectricMeterPage> {
           title: const Text('Electric Meter'),
         ),
         body: Material(child: ProgressHud(
-          child: Container(
-            child: Builder(builder: (context) {
-              _context = context;
-              return getListView();
-            }),
-          ),
+          child: Builder(builder: (context) {
+            _context = context;
+            return getListView();
+          }),
         )));
   }
 }

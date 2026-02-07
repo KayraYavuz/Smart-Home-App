@@ -224,11 +224,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               if (newName.isNotEmpty) {
                 try {
                   await _apiService.renameLock(lockId: widget.lock['lockId'].toString(), newName: newName);
-                  if (!context.mounted) return;
+                  if (!mounted) return;
                   setState(() => _lockName = newName);
                   Navigator.pop(context);
                 } catch (e) {
-                  if (!context.mounted) return;
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                   );
@@ -271,7 +271,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                             lockId: widget.lock['lockId'].toString(),
                             groupId: group['groupId'].toString(),
                           );
-                          if (!context.mounted) return;
+                          if (!mounted) return;
                           setState(() {
                             _groupName = group['name'];
                           });
@@ -279,7 +279,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                             SnackBar(content: Text(l10n.lockAssignedToGroup(group['name']))),
                           );
                         } catch (e) {
-                          if (!context.mounted) return;
+                          if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                           );
@@ -304,7 +304,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                     lockId: widget.lock['lockId'].toString(),
                     groupId: "0",
                   );
-                  if (!context.mounted) return;
+                  if (!mounted) return;
                   setState(() {
                     _groupName = null;
                   });
@@ -312,7 +312,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                     SnackBar(content: Text(l10n.groupAssignmentRemoved)),
                   );
                 } catch (e) {
-                  if (!context.mounted) return;
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                   );
@@ -410,7 +410,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               await Future.delayed(const Duration(milliseconds: 200));
 
               // 3. Show Loading Dialog
-              if (!context.mounted) return;
+              if (!mounted) return;
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -440,8 +440,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               }
 
               // 4. Close Loading Dialog ALWAYS
-              if (context.mounted) {
-                Navigator.of(context).pop(); 
+              if (mounted) {
+                Navigator.pop(context); 
               }
 
               // 5. Handle Result
@@ -648,11 +648,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                     lockId: widget.lock['lockId'].toString(),
                     password: controller.text,
                   );
-                  if (!context.mounted) return;
+                  if (!mounted) return;
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.operationSuccessful)));
                 } catch (e) {
-                  if (!context.mounted) return;
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                   );
@@ -687,12 +687,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                     lockIdList: [int.parse(widget.lock['lockId'].toString())],
                     receiverUsername: controller.text,
                   );
-                  if (!context.mounted) return;
+                  if (!mounted) return;
                   Navigator.pop(context);
                   Navigator.pop(context); // Close settings page
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.transferInitiated)));
                 } catch (e) {
-                  if (!context.mounted) return;
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                   );
@@ -719,11 +719,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
             onPressed: () async {
               try {
                 await _apiService.deleteLock(lockId: widget.lock['lockId'].toString());
-                if (!context.mounted) return;
+                if (!mounted) return;
                 Navigator.pop(context);
                 Navigator.pop(context, 'deleted'); // Go back to list
               } catch (e) {
-                if (!context.mounted) return;
+                if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                 );

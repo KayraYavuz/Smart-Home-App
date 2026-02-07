@@ -16,7 +16,7 @@ class LockPage extends StatefulWidget {
   final String lockData;
   final String lockMac;
   @override
-  State<LockPage> createState() => _LockPageState(lockData, lockMac);
+  State<LockPage> createState() => _LockPageState();
 }
 
 enum Command {
@@ -188,10 +188,11 @@ class _LockPageState extends State<LockPage> {
   String? addFaceNumber;
   BuildContext? _context;
 
-  _LockPageState(String lockData, String lockMac) {
+  @override
+  void initState() {
     super.initState();
-    this.lockData = lockData;
-    this.lockMac = lockMac;
+    lockData = widget.lockData;
+    lockMac = widget.lockMac;
   }
 
   void _showLoading(String text) {
@@ -877,12 +878,10 @@ class _LockPageState extends State<LockPage> {
           title: const Text('Lock'),
         ),
         body: Material(child: ProgressHud(
-          child: Container(
-            child: Builder(builder: (context) {
-              _context = context;
-              return getListView();
-            }),
-          ),
+          child: Builder(builder: (context) {
+            _context = context;
+            return getListView();
+          }),
         )));
   }
 }

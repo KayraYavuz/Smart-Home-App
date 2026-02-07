@@ -203,14 +203,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
         await _apiService.unfreezeEKey(accessToken: _apiService.accessToken!, keyId: key['keyId'].toString());
       }
 
-      setState(() {
-        key['keyStatus'] = freeze ? '110402' : '110401';
-      });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(freeze ? l10n.keyFrozen : l10n.keyUnfrozen),
         backgroundColor: freeze ? Colors.orange : Colors.green
       ));
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red));
     }
   }
