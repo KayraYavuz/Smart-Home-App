@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'ui/pages/lock_detail_page.dart';
 import 'ui/pages/add_device_page.dart';
-import 'ui/pages/gateways_page.dart';
+
 import 'profile_page.dart';
 import 'api_service.dart';
 import 'blocs/ttlock_webhook/ttlock_webhook_bloc.dart';
@@ -560,11 +560,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         style: const TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
+                  : GridView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.85,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+
                       itemCount: _locks.length,
                       itemBuilder: (context, index) {
-                        return _buildLockListItem(_locks[index], context);
+                        return _buildLockCard(_locks[index], context);
                       },
                     ),
         ),
@@ -573,375 +580,277 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Widget _buildHeader(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            l10n.allLocks,
-            style: const TextStyle(
+          const Text(
+            'Yavuz Lock',
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: FontWeight.bold,
             ),
           ),
-          Row( // Use a Row to hold multiple icons
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[850],
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.cloud_sync, color: Colors.white),
-                  onPressed: _fetchAndSetLocks,
-                  tooltip: l10n.refreshLocks,
-                ),
-              ),
-              const SizedBox(width: 8), // Spacing between icons
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[850],
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.router, color: Colors.white),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const GatewaysPage()),
-                    );
-                  },
-                  tooltip: l10n.gateways,
-                ),
-              ),
-              const SizedBox(width: 8), // Spacing between icons
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[850],
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.add, color: Colors.white),
-                  onPressed: () => _addNewDevice(context),
-                ),
-              ),
-            ],
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.black,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.add, color: Colors.white, size: 28),
+              onPressed: () => _addNewDevice(context),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLockListItem(Map<String, dynamic> lock, BuildContext context) {
+  Widget _buildLockCard(Map<String, dynamic> lock, BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isTTLockDevice = lock['source'] == 'ttlock';
-    final isSharedTTLockDevice = lock['source'] == 'ttlock_shared';
 
-    // Debug: Lock verilerini logla
-    debugPrint('🔍 Building lock item: ${lock['name']} (ID: ${lock['lockId']})');
-    debugPrint('   Source: ${lock['source']}, Shared: ${lock['shared']}');
-    debugPrint('   All keys: ${lock.keys.join(', ')}');
-
-    String statusText = '';
-    if (lock['status'] == l10n.statusSecurityWarning) {
-      statusText = l10n.securityWarning;
-    } else {
-      statusText = lock['isLocked'] == true ? l10n.locked : l10n.unlocked;
-    }
-
-    // Calculate remaining days for shared locks
+    // Calculate remaining days and role for shared locks
     String? remainingDaysText;
-    Color badgeColor = Colors.blue.withValues(alpha: 0.2);
-    Color textColor = Colors.blueAccent;
-    String sharedRoleText = l10n.sharedLock;
+    String roleText = "Admin";
+    final bool isShared = lock['shared'] == true;
+    final bool hasGateway = lock['hasGateway'] == 1;
 
-    // Check if user has admin permission
-    final bool isAdmin = lock['source'] == 'ttlock' || 
-                         lock['userType']?.toString() == '110301' || 
-                         lock['userType'] == 110301 ||
-                         lock['keyRight'] == 1;
-
-    if (lock['shared'] == true) {
+    if (isShared) {
       final userType = lock['userType']?.toString();
-      String roleLabel = l10n.roleNormal; 
+      final keyRight = lock['keyRight']?.toString();
       
-      if (userType == '110301') {
-        roleLabel = l10n.roleAdmin;
-      } else if (userType == '110302') {
-        roleLabel = l10n.roleNormal;
-      } 
-      
-      sharedRoleText = '$sharedRoleText ($roleLabel)';
-
-      debugPrint("DEBUG: Checking remaining days for ${lock['name']}. EndDate: ${lock['endDate']} (Type: ${lock['endDate'].runtimeType})");
+      // Check both userType and keyRight for Admin status
+      if (userType == '110301' || keyRight == '1') {
+        roleText = "Admin";
+      } else {
+        roleText = "Normal";
+      }
       
       if (lock['endDate'] != null && (lock['endDate'] is num) && lock['endDate'] > 0) {
         final endDate = DateTime.fromMillisecondsSinceEpoch((lock['endDate'] as num).toInt());
         final now = DateTime.now();
         final diff = endDate.difference(now);
-        
-        debugPrint("DEBUG: Diff: ${diff.inDays} days, ${diff.inHours} hours");
 
         if (diff.isNegative) {
-          remainingDaysText = "Süresi Doldu"; // Expired
-          badgeColor = Colors.red.withValues(alpha: 0.2);
-          textColor = Colors.red;
+          remainingDaysText = "Süresi Doldu";
         } else {
           final days = diff.inDays;
-          final hours = diff.inHours % 24;
           if (days > 0) {
-            remainingDaysText = "$days Gün Kaldı"; // Days left
-            badgeColor = Colors.orange.withValues(alpha: 0.2);
-            textColor = Colors.orange;
+            remainingDaysText = "$days gün";
           } else {
-            remainingDaysText = "$hours Saat Kaldı"; // Hours left
-            badgeColor = Colors.orange.withValues(alpha: 0.2);
-            textColor = Colors.orange;
+            final hours = diff.inHours % 24;
+            remainingDaysText = "$hours saat";
           }
         }
-      } else {
-         // endDate 0 or null means permanent
-         remainingDaysText = "Süresiz"; // Permanent
-         badgeColor = Colors.green.withValues(alpha: 0.2);
-         textColor = Colors.green;
       }
     }
 
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-      color: const Color.fromRGBO(30, 30, 30, 0.85),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-          onTap: () async {
-            final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => LockDetailPage(
-                  lock: lock,
-                ),
-              ),
-            );
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(50, 50, 50, 0.65),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: const Color.fromRGBO(255, 255, 255, 0.25),
+              width: 1.5,
+            ),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LockDetailPage(lock: lock),
+                  ),
+                );
 
-            // Lock detail sayfasından dönen sonucu işle
-            if (result != null && result is Map<String, dynamic>) {
-              if (result['action'] == 'lock_updated') {
-                final updatedLock = Map<String, dynamic>.from(lock);
-                final deviceId = result['device_id'];
-                final newState = result['new_state'] as bool?;
+                if (result != null && result is Map<String, dynamic>) {
+                  if (result['action'] == 'lock_updated') {
+                    final deviceId = result['device_id'];
+                    final newState = result['new_state'] as bool?;
 
-                // Listede bu kilidi bul ve güncelle
-                setState(() {
-                  final index = _locks.indexWhere((lock) =>
-                    (lock['seamDeviceId'] == deviceId) ||
-                    (lock['lockId'] == deviceId) ||
-                    (lock['lockData'] == deviceId)
-                  );
+                    setState(() {
+                      final index = _locks.indexWhere((lock) =>
+                        (lock['seamDeviceId'] == deviceId) ||
+                        (lock['lockId'] == deviceId) ||
+                        (lock['lockData'] == deviceId)
+                      );
 
-                  if (index != -1) {
-                    // Sadece durumu güncelle, diğer bilgileri koru
+                      if (index != -1 && newState != null) {
+                        _locks[index]['isLocked'] = newState;
+                        _locks[index]['status'] = newState ? l10n.statusLocked : l10n.statusUnlocked;
+                      }
+                    });
+
+                    if (!mounted) return;
                     if (newState != null) {
-                      _locks[index]['isLocked'] = newState;
-                      _locks[index]['status'] = newState ? l10n.statusLocked : l10n.statusUnlocked;
+                      final lockName = lock['name'] ?? l10n.unknownLock;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('$lockName ${newState ? l10n.locked.toLowerCase() : l10n.unlocked.toLowerCase()}'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
                     }
                   }
-                });
-
-                if (!mounted) return;
-                // Başarılı işlem için bildirim göster
-                if (newState != null) {
-                  final lockName = updatedLock['name'] ?? l10n.unknownLock;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('$lockName ${newState ? l10n.locked.toLowerCase() : l10n.unlocked.toLowerCase()}'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
                 }
-              }
-            }
-          },
-          onLongPress: () async {
-            if (lock['shared'] == true) {
-              // Paylaşılan kilit için paylaşımı iptal etme seçeneği
-              final action = await _showSharedLockOptionsDialog(context, lock);
-              if (action == 'cancel_share') {
-                await _cancelLockShare(lock);
-              }
-            } else {
-              // Kendi kilidi için silme seçeneği
-              final shouldDelete = await _showDeleteConfirmationDialog(lock);
-              if (shouldDelete) {
-                _removeDevice(lock);
-              }
-            }
-        },
-        borderRadius: BorderRadius.circular(15),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    lock['isLocked'] ? Icons.lock : Icons.lock_open,
-                    color: lock['isLocked'] ? const Color(0xFF1E90FF) : Colors.amber,
-                    size: 40,
-                        ),
-                      if (isTTLockDevice)
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color.fromRGBO(76, 175, 80, 0.2), // Colors.green with 0.2 opacity
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color.fromRGBO(76, 175, 80, 0.3), width: 1),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.lock_outline, color: Colors.green, size: 12),
-                              const SizedBox(width: 4),
-                              Text(
-                                l10n.defaultLockName,
-                                style: const TextStyle(
-                                  color: Colors.green,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      if (isSharedTTLockDevice)
-                        Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: const Color.fromRGBO(255, 152, 0, 0.2), // Colors.orange with 0.2 opacity
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color.fromRGBO(255, 152, 0, 0.3), width: 1),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.share, color: Colors.orange, size: 12),
-                              const SizedBox(width: 4),
-                              Text(
-                                sharedRoleText,
-                                style: const TextStyle(
-                                  color: Colors.orange,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
+              },
+              onLongPress: () async {
+                if (lock['shared'] == true) {
+                  final action = await _showSharedLockOptionsDialog(context, lock);
+                  if (action == 'cancel_share') {
+                    await _cancelLockShare(lock);
+                  }
+                } else {
+                  final shouldDelete = await _showDeleteConfirmationDialog(lock);
+                  if (shouldDelete) {
+                    _removeDevice(lock);
+                  }
+                }
+              },
+              borderRadius: BorderRadius.circular(20),
+              child: Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top row: Lock icon, WiFi, Battery
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          lock['name'],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                        Icon(
+                          lock['isLocked'] ? Icons.lock : Icons.lock_open,
+                          color: const Color(0xFF3B9EFF),
+                          size: 32,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          statusText,
-                          style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                        ),
-                        if (lock['deviceType'] != null)
-                          Text(
-                            l10n.deviceTypeLabel(lock['deviceType']),
-                            style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                        ),
-                        if (remainingDaysText != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: badgeColor,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: badgeColor.withValues(alpha: 0.5)),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (hasGateway)
+                              const Icon(
+                                Icons.wifi,
+                                color: Colors.white70,
+                                size: 18,
                               ),
-                              child: Text(
-                                remainingDaysText,
-                                style: TextStyle(color: textColor, fontSize: 11, fontWeight: FontWeight.bold),
+                            if (hasGateway)
+                              const SizedBox(width: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: _getBatteryColor(lock['battery'] ?? 0),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.battery_charging_full,
+                                    color: Colors.white,
+                                    size: 13,
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    '${lock['battery'] ?? 0}%',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
+                          ],
+                        ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-            // Battery at bottom right
-            Positioned(
-              bottom: 12,
-              right: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(0, 0, 0, 0.3),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _getBatteryIcon(lock['battery'] ?? 0),
-                      color: _getBatteryColor(lock['battery'] ?? 0),
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
+                    const SizedBox(height: 12),
+                    // Lock name
                     Text(
-                      '${lock['battery'] ?? 0}%',
+                      lock['name'],
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        height: 1.1,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 6),
+                    // Shared label
+                    if (isShared)
+                      Row(
+                        children: [
+                          const Icon(Icons.people, color: Colors.white60, size: 13),
+                          const SizedBox(width: 3),
+                          Text(
+                            "Paylaşılan",
+                            style: const TextStyle(
+                              color: Colors.white60,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    const Spacer(),
+                    // Status button and Days badge - only show admin role and days
+                    if (roleText == "Admin" || (isShared && remainingDaysText != null))
+                      Row(
+                        children: [
+                          if (roleText == "Admin")
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: const Color(0xFF3B9EFF), width: 1.5),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                roleText,
+                                style: const TextStyle(
+                                  color: Color(0xFF3B9EFF),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          if (remainingDaysText != null) ...[
+                            if (roleText == "Admin")
+                              const SizedBox(width: 5),
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFF9500),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  remainingDaysText,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ],
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
-            // Wi-Fi icon at top right
-            Positioned(
-              top: 12,
-              right: 12,
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(0, 0, 0, 0.3),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Icon(
-                  Icons.wifi,
-                  color: Colors.white70,
-                  size: 16,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -1125,9 +1034,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Color _getBatteryColor(int battery) {
-    if (battery >= 50) return Colors.green;
-    if (battery >= 20) return Colors.orange;
-    return Colors.red;
+    if (battery >= 50) return const Color(0xFF34C759); // iOS green
+    if (battery >= 20) return const Color(0xFFFF9500); // Orange
+    return const Color(0xFFFF3B30); // Red
   }
 
   // Her kilit için FCM topic aboneliği yap

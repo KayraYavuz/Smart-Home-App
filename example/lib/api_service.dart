@@ -993,6 +993,7 @@ class ApiService {
             'groupId': key['groupId'], 
             'hasGateway': key['hasGateway'], // Add hasGateway
             'endDate': key['endDate'], // Add endDate
+            'keyRight': key['keyRight'], // Add keyRight for admin check
           };
         }).toList();
 
