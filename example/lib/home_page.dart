@@ -307,12 +307,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 final lockAlias = lock['name'] ?? l10n.defaultLockName; // ApiService'den gelen name'i kullan
                 final keyState = lock['keyState'] ?? 0;
                 final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
+                final keyRight = lock['keyRight'] ?? 0; // 0: Normal, 1: Admin
+                final userType = lock['userType'];
 
                 final isLocked = keyState == 0 || keyState == 2; 
                 final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
                 debugPrint('🔋 Kilit $lockId: keyState=$keyState, battery=$electricQuantity');
                 debugPrint('🏷️  Kilit adı: $lockAlias');
+                debugPrint('👤 KeyRight: $keyRight, UserType: $userType');
 
                 allLocks.add({
                   'name': lockAlias,
@@ -326,7 +329,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   'source': 'ttlock',
                   'shared': false,
                   'hasGateway': lock['hasGateway'] ?? 0,
-                  'endDate': lock['endDate'] ?? 0, // Add endDate
+                  'endDate': lock['endDate'] ?? 0,
+                  'userType': userType,
+                  'keyRight': keyRight,
                 });
               }
 
@@ -336,11 +341,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 final lockAlias = lock['name'] ?? l10n.defaultSharedLockName; // ApiService'den gelen name'i kullan
                 final keyState = lock['keyState'] ?? 0;
                 final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
+                final keyRight = lock['keyRight'] ?? 0; // 0: Normal, 1: Admin
+                final userType = lock['userType'];
 
                 final isLocked = keyState == 0 || keyState == 2; 
                 final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
                 debugPrint('🔋 Paylaşılan kilit $lockId: keyState=$keyState, battery=$electricQuantity');
+                debugPrint('👤 KeyRight: $keyRight, UserType: $userType');
 
                 allLocks.add({
                   'name': lockAlias,
@@ -354,7 +362,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   'source': 'ttlock_shared',
                   'shared': true,
                   'hasGateway': lock['hasGateway'] ?? 0,
-                  'endDate': lock['endDate'] ?? 0, // Add endDate
+                  'endDate': lock['endDate'] ?? 0,
+                  'userType': userType,
+                  'keyRight': keyRight,
                 });
               }
 
@@ -647,6 +657,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     Color badgeColor = Colors.blue.withValues(alpha: 0.2);
     Color textColor = Colors.blueAccent;
     String sharedRoleText = l10n.sharedLock;
+
+    // Check if user has admin permission
+    final bool isAdmin = lock['source'] == 'ttlock' || 
+                         lock['userType']?.toString() == '110301' || 
+                         lock['userType'] == 110301 ||
+                         lock['keyRight'] == 1;
 
     if (lock['shared'] == true) {
       final userType = lock['userType']?.toString();
