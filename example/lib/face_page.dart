@@ -128,6 +128,7 @@ class _FacePageState extends State<FacePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          final bloc = context.read<FaceBloc>();
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
@@ -135,7 +136,7 @@ class _FacePageState extends State<FacePage> {
             ),
           );
           if (result == true) {
-            context.read<FaceBloc>().add(LoadFaces(widget.lockId));
+            bloc.add(LoadFaces(widget.lockId));
           }
         },
         child: const Icon(Icons.add),

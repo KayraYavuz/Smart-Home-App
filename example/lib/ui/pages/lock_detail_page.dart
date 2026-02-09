@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:yavuz_lock/fingerprint_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -231,8 +232,10 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
         ),
         body: BlocConsumer<DeviceBloc, DeviceState>(
           listener: (context, state) {
+            final scaffoldMessenger = ScaffoldMessenger.of(context);
+            final l10n = AppLocalizations.of(context)!;
             if (state is DeviceSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
+              scaffoldMessenger.showSnackBar(
                 SnackBar(content: Text(l10n.operationSuccessful)),
               );
 
@@ -244,7 +247,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
               }
 
               // Kısa bir gecikmeden sonra sayfayı kapat
-              Future.delayed(const Duration(seconds: 1), () {
+              Timer(const Duration(seconds: 1), () {
                 if (!mounted) return;
                 Navigator.of(context).pop({
                   'action': 'lock_updated',
@@ -266,7 +269,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                 errorMessage = l10n.lockConnectionFailedInstructions;
               }
               
-              ScaffoldMessenger.of(context).showSnackBar(
+              scaffoldMessenger.showSnackBar(
                 SnackBar(content: Text(l10n.operationFailedWithMsg(errorMessage))),
               );
             }

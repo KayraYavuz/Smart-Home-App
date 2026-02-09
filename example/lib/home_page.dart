@@ -264,173 +264,166 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _fetchAndSetLocks() async {
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final authRepository = context.read<AuthRepository>();
+
     setState(() {
       _isLoading = true;
     });
 
-            try {
-              debugPrint('🔄 TTLock key listesi çekme işlemi başladı...');
+    try {
+      debugPrint('🔄 TTLock key listesi çekme işlemi başladı...');
 
-              // TTLock key listesini çek (hem kendi hem paylaşılan kilitler)
-              final apiService = ApiService(context.read<AuthRepository>());
-              final allKeys = await apiService.getKeyList();
+      final apiService = ApiService(authRepository);
+      final allKeys = await apiService.getKeyList();
 
-              // Kilitleri kendi ve paylaşılan olarak ayır
-              final ttlockDevices = allKeys.where((key) => key['shared'] == false).toList();
-              final sharedTTLockDevices = allKeys.where((key) => key['shared'] == true).toList();
+      final ttlockDevices = allKeys.where((key) => key['shared'] == false).toList();
+      final sharedTTLockDevices = allKeys.where((key) => key['shared'] == true).toList();
 
-              debugPrint('📊 TTLock Key List API Sonuçları:');
-              debugPrint('  TTLock kendi kilitleri: ${ttlockDevices.length}');
-              debugPrint('  TTLock paylaşılan kilitleri: ${sharedTTLockDevices.length}');
-              debugPrint('  Toplam kilit: ${allKeys.length}');
+      debugPrint('📊 TTLock Key List API Sonuçları:');
+      debugPrint('  TTLock kendi kilitleri: ${ttlockDevices.length}');
+      debugPrint('  TTLock paylaşılan kilitleri: ${sharedTTLockDevices.length}');
+      debugPrint('  Toplam kilit: ${allKeys.length}');
 
-              // Debug: Tüm kilitleri detaylı logla
-              if (allKeys.isNotEmpty) {
-                debugPrint('🔍 Tüm TTLock Kilit Detayları:');
-                for (var i = 0; i < allKeys.length; i++) {
-                  final lock = allKeys[i];
-                  final sharedText = lock['shared'] ? '[PAYLAŞILAN]' : '[KENDİ]';
-                  debugPrint('  ${i + 1}. $sharedText ID: ${lock['lockId']}, KeyID: ${lock['keyId']}, İsim: ${lock['name']}');
-                }
-              } else {
-                debugPrint('⚠️  TTLock hesabında hiç kilit bulunamadı!');
-                debugPrint('   Kilitleriniz paylaşıldığından emin olun.');
-              }
+      if (allKeys.isNotEmpty) {
+        debugPrint('🔍 Tüm TTLock Kilit Detayları:');
+        for (var i = 0; i < allKeys.length; i++) {
+          final lock = allKeys[i];
+          final sharedText = lock['shared'] ? '[PAYLAŞILAN]' : '[KENDİ]';
+          debugPrint('  ${i + 1}. $sharedText ID: ${lock['lockId']}, KeyID: ${lock['keyId']}, İsim: ${lock['name']}');
+        }
+      } else {
+        debugPrint('⚠️  TTLock hesabında hiç kilit bulunamadı!');
+        debugPrint('   Kilitleriniz paylaşıldığından emin olun.');
+      }
 
-              // Tüm kilitleri birleştir
-              final allLocks = <Map<String, dynamic>>[];
+      final allLocks = <Map<String, dynamic>>[];
 
-              // TTLock kendi cihazlarını ekle
-              for (final lock in ttlockDevices) {
-                final lockId = lock['lockId']?.toString() ?? '';
-                final lockAlias = lock['name'] ?? l10n.defaultLockName; // ApiService'den gelen name'i kullan
-                final keyState = lock['keyState'] ?? 0;
-                final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
-                final keyRight = lock['keyRight'] ?? 0; // 0: Normal, 1: Admin
-                final userType = lock['userType'];
+      for (final lock in ttlockDevices) {
+        final lockId = lock['lockId']?.toString() ?? '';
+        final lockAlias = lock['name'] ?? l10n.defaultLockName;
+        final keyState = lock['keyState'] ?? 0;
+        final electricQuantity = lock['battery'] ?? 0;
+        final keyRight = lock['keyRight'] ?? 0;
+        final userType = lock['userType'];
 
-                final isLocked = keyState == 0 || keyState == 2; 
-                final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
+        final isLocked = keyState == 0 || keyState == 2;
+        final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
-                debugPrint('🔋 Kilit $lockId: keyState=$keyState, battery=$electricQuantity');
-                debugPrint('🏷️  Kilit adı: $lockAlias');
-                debugPrint('👤 KeyRight: $keyRight, UserType: $userType');
+        debugPrint('🔋 Kilit $lockId: keyState=$keyState, battery=$electricQuantity');
+        debugPrint('🏷️  Kilit adı: $lockAlias');
+        debugPrint('👤 KeyRight: $keyRight, UserType: $userType');
 
-                allLocks.add({
-                  'name': lockAlias,
-                  'status': status,
-                  'isLocked': isLocked,
-                  'battery': electricQuantity > 0 ? electricQuantity : 85,
-                  'lockData': lock['lockData'] ?? '',
-                  'lockMac': lock['lockMac'] ?? '',
-                  'lockId': lockId,
-                  'deviceType': 'ttlock',
-                  'source': 'ttlock',
-                  'shared': false,
-                  'hasGateway': lock['hasGateway'] ?? 0,
-                  'endDate': lock['endDate'] ?? 0,
-                  'userType': userType,
-                  'keyRight': keyRight,
-                });
-              }
+        allLocks.add({
+          'name': lockAlias,
+          'status': status,
+          'isLocked': isLocked,
+          'battery': electricQuantity > 0 ? electricQuantity : 85,
+          'lockData': lock['lockData'] ?? '',
+          'lockMac': lock['lockMac'] ?? '',
+          'lockId': lockId,
+          'deviceType': 'ttlock',
+          'source': 'ttlock',
+          'shared': false,
+          'hasGateway': lock['hasGateway'] ?? 0,
+          'endDate': lock['endDate'] ?? 0,
+          'userType': userType,
+          'keyRight': keyRight,
+        });
+      }
 
-              // TTLock paylaşılmış cihazlarını ekle
-              for (final lock in sharedTTLockDevices) {
-                final lockId = lock['lockId']?.toString() ?? '';
-                final lockAlias = lock['name'] ?? l10n.defaultSharedLockName; // ApiService'den gelen name'i kullan
-                final keyState = lock['keyState'] ?? 0;
-                final electricQuantity = lock['battery'] ?? 0; // ApiService'den gelen battery'i kullan
-                final keyRight = lock['keyRight'] ?? 0; // 0: Normal, 1: Admin
-                final userType = lock['userType'];
+      for (final lock in sharedTTLockDevices) {
+        final lockId = lock['lockId']?.toString() ?? '';
+        final lockAlias = lock['name'] ?? l10n.defaultSharedLockName;
+        final keyState = lock['keyState'] ?? 0;
+        final electricQuantity = lock['battery'] ?? 0;
+        final keyRight = lock['keyRight'] ?? 0;
+        final userType = lock['userType'];
 
-                final isLocked = keyState == 0 || keyState == 2; 
-                final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
+        final isLocked = keyState == 0 || keyState == 2;
+        final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
-                debugPrint('🔋 Paylaşılan kilit $lockId: keyState=$keyState, battery=$electricQuantity');
-                debugPrint('👤 KeyRight: $keyRight, UserType: $userType');
+        debugPrint('🔋 Paylaşılan kilit $lockId: keyState=$keyState, battery=$electricQuantity');
+        debugPrint('👤 KeyRight: $keyRight, UserType: $userType');
 
-                allLocks.add({
-                  'name': lockAlias,
-                  'status': status,
-                  'isLocked': isLocked,
-                  'battery': electricQuantity > 0 ? electricQuantity : 85,
-                  'lockData': lock['lockData'] ?? '',
-                  'lockMac': lock['lockMac'] ?? '',
-                  'lockId': lockId,
-                  'deviceType': 'ttlock',
-                  'source': 'ttlock_shared',
-                  'shared': true,
-                  'hasGateway': lock['hasGateway'] ?? 0,
-                  'endDate': lock['endDate'] ?? 0,
-                  'userType': userType,
-                  'keyRight': keyRight,
-                });
-              }
+        allLocks.add({
+          'name': lockAlias,
+          'status': status,
+          'isLocked': isLocked,
+          'battery': electricQuantity > 0 ? electricQuantity : 85,
+          'lockData': lock['lockData'] ?? '',
+          'lockMac': lock['lockMac'] ?? '',
+          'lockId': lockId,
+          'deviceType': 'ttlock',
+          'source': 'ttlock_shared',
+          'shared': true,
+          'hasGateway': lock['hasGateway'] ?? 0,
+          'endDate': lock['endDate'] ?? 0,
+          'userType': userType,
+          'keyRight': keyRight,
+        });
+      }
 
-              if (!mounted) return;
-              setState(() {
-                _locks = allLocks;
-                _isLoading = false;
-              });
+      if (!mounted) return;
+      setState(() {
+        _locks = allLocks;
+        _isLoading = false;
+      });
 
-              // Kilitleri önbelleğe kaydet
-              _cacheLocks(allLocks);
+      _cacheLocks(allLocks);
+      _subscribeToLockTopics(allLocks);
 
-              // Bildirimler için kilit konularına (topic) abone ol
-              _subscribeToLockTopics(allLocks);
+      debugPrint('✅ Toplam ${allLocks.length} TTLock cihazı yüklendi');
+      debugPrint('  - ${ttlockDevices.length} TTLock kendi kilidi');
+      debugPrint('  - ${sharedTTLockDevices.length} TTLock paylaşılmış kilidi');
 
-              debugPrint('✅ Toplam ${allLocks.length} TTLock cihazı yüklendi');
-              debugPrint('  - ${ttlockDevices.length} TTLock kendi kilidi');
-              debugPrint('  - ${sharedTTLockDevices.length} TTLock paylaşılmış kilidi');
+      if (allLocks.isEmpty) {
+        debugPrint('⚠️  UYARI: TTLock hesabınızda hiç kilit bulunamadı!');
+        debugPrint('   TTLock hesabınızı kontrol edin: https://lock.ttlock.com');
+      }
+    } catch (e) {
+      debugPrint('❌ Kilit listesi çekme hatası: $e');
+      debugPrint('   Hata detayları: ${e.toString()}');
 
-              if (allLocks.isEmpty) {
-                debugPrint('⚠️  UYARI: TTLock hesabınızda hiç kilit bulunamadı!');
-                debugPrint('   TTLock hesabınızı kontrol edin: https://lock.ttlock.com');
-              }
-            } catch (e) {
-              debugPrint('❌ Kilit listesi çekme hatası: $e');
-              debugPrint('   Hata detayları: ${e.toString()}');
+      if (e.toString().contains('access_token') || e.toString().contains('token')) {
+        debugPrint('   🔑 Öneri: TTLock hesabınıza tekrar giriş yapın');
+      }
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
 
-              // Token hatası mı kontrol et
-              if (e.toString().contains('access_token') || e.toString().contains('token')) {
-                debugPrint('   🔑 Öneri: TTLock hesabınıza tekrar giriş yapın');
-              }
+      String errorMessage = l10n.errorDevicesLoading;
+      if (e.toString().contains('network') || e.toString().contains('connection')) {
+        errorMessage = l10n.errorInternetConnection;
+      } else if (e.toString().contains('timeout')) {
+        errorMessage = l10n.errorServerTimeout;
+      } else {
+        errorMessage = '$errorMessage: ${e.toString()}';
+      }
 
-              setState(() {
-      _isLoading = false;
-    });
-
-              String errorMessage = l10n.errorDevicesLoading;
-              if (e.toString().contains('network') || e.toString().contains('connection')) {
-                errorMessage = l10n.errorInternetConnection;
-              } else if (e.toString().contains('timeout')) {
-                errorMessage = l10n.errorServerTimeout;
-              } else {
-                errorMessage = '$errorMessage: ${e.toString()}';
-              }
-
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(errorMessage),
-                    backgroundColor: Colors.red,
-                    action: SnackBarAction(
-                      label: l10n.retry,
-                      textColor: Colors.white,
-                      onPressed: _fetchAndSetLocks,
-                    ),
-                  ),
-                );
-              }
-            }
-          }
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+          action: SnackBarAction(
+            label: l10n.retry,
+            textColor: Colors.white,
+            onPressed: _fetchAndSetLocks,
+          ),
+        ),
+      );
+    }
+  }
 
   Future<void> _addNewDevice(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     // Navigates to the new AddDevicePage and waits for result
-    final result = await Navigator.push(
-      context,
+    final result = await navigator.push(
       MaterialPageRoute(builder: (context) => const AddDevicePage()),
     );
 
@@ -467,7 +460,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         });
 
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(l10n.seamDevicesAdded(seamDevices.length)),
             backgroundColor: Colors.green,
@@ -493,7 +486,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         });
 
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(l10n.lockAddedSuccess),
             backgroundColor: Colors.green,
@@ -664,6 +657,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             color: Colors.transparent,
             child: InkWell(
               onTap: () async {
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -692,7 +686,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     if (!mounted) return;
                     if (newState != null) {
                       final lockName = lock['name'] ?? l10n.unknownLock;
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      scaffoldMessenger.showSnackBar(
                         SnackBar(
                           content: Text('$lockName ${newState ? l10n.locked.toLowerCase() : l10n.unlocked.toLowerCase()}'),
                           backgroundColor: Colors.green,
@@ -906,9 +900,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Future<void> _cancelLockShare(Map<String, dynamic> lock) async {
     final l10n = AppLocalizations.of(context)!;
+    final apiService = ApiService(context.read<AuthRepository>());
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       // TTLock API ile paylaşımı iptal et
-      final apiService = ApiService(context.read<AuthRepository>());
       await apiService.getAccessToken();
 
       final accessToken = apiService.accessToken;
@@ -930,7 +925,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         );
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('${lock['name']} ${l10n.shareCancelled}'),
           backgroundColor: Colors.orange,
@@ -938,7 +933,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       );
 
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text(l10n.shareCancelError(e.toString())), // Error message often technical, keeping as is or generic
           backgroundColor: Colors.red,

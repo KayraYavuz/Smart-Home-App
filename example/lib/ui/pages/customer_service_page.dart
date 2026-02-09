@@ -52,8 +52,8 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                const Color(0xFF1E90FF).withValues(alpha: 0.8),
-                const Color(0xFF4169E1).withValues(alpha: 0.8),
+                const Color(0xFF1E90FF).withAlpha(204),
+                const Color(0xFF4169E1).withAlpha(204),
               ],
             ),
           ),
@@ -210,23 +210,27 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
 
 
   Future<void> _copyToClipboard(BuildContext context, String text) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.copiedToClipboardMsg(text))),
+    scaffoldMessenger.showSnackBar(
+      SnackBar(content: Text(l10n.copiedToClipboardMsg(text))),
     );
   }
 
   Future<void> _launchURL(BuildContext context, String url) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     try {
       final uri = Uri.parse(url.startsWith('http') ? url : 'https://$url');
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.urlOpenError(url)),
+              content: Text(l10n.urlOpenError(url)),
               backgroundColor: Colors.red,
             ),
           );
@@ -234,9 +238,9 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.errorWithMsg(e.toString())),
+            content: Text(l10n.errorWithMsg(e.toString())),
             backgroundColor: Colors.red,
           ),
         );

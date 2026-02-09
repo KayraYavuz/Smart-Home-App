@@ -132,7 +132,7 @@ class _PassageModePageState extends State<PassageModePage> {
         backgroundColor: AppColors.surface,
         title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: AppColors.warning),
+            const Icon(Icons.warning_amber_rounded, color: AppColors.warning),
             const SizedBox(width: 12),
             Text(
               l10n.timeConflict,

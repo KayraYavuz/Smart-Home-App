@@ -35,12 +35,15 @@ class _EKeyListPageState extends State<EKeyListPage> {
       _errorMessage = null;
     });
 
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    final apiService = ApiService(context.read<AuthRepository>());
+
     try {
-      final apiService = ApiService(context.read<AuthRepository>());
       await apiService.getAccessToken();
       final accessToken = apiService.accessToken;
 
-      if (accessToken == null) throw Exception(AppLocalizations.of(context)!.noAccessPermission);
+      if (accessToken == null) throw Exception(l10n.noAccessPermission);
 
       final keys = await apiService.getLockEKeys(
         accessToken: accessToken,

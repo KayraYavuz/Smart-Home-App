@@ -61,6 +61,7 @@ class _CardPageState extends State<CardPage> {
     );
 
     if (confirm == true) {
+      if (!mounted) return;
       setState(() => _isLoading = true);
       try {
         final apiService = Provider.of<ApiService>(context, listen: false);
@@ -123,6 +124,7 @@ class _CardPageState extends State<CardPage> {
     );
 
     if (save == true) {
+      if (!mounted) return;
       setState(() => _isLoading = true);
       try {
         final apiService = Provider.of<ApiService>(context, listen: false);
@@ -169,6 +171,7 @@ class _CardPageState extends State<CardPage> {
     );
 
     if (confirm == true) {
+      if (!mounted) return;
       setState(() => _isLoading = true);
       try {
         final apiService = Provider.of<ApiService>(context, listen: false);

@@ -27,6 +27,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
 
   Future<void> _fetchGroups() async {
     setState(() => _isLoading = true);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     try {
       final groups = await _apiService.getGroupList();
       if (!mounted) return;
@@ -37,14 +39,16 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.groupListLoadError(e.toString()))),
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text(l10n.groupListLoadError(e.toString()))),
       );
     }
   }
 
   Future<void> _addGroup() async {
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final controller = TextEditingController();
     await showDialog(
       context: context,
@@ -63,25 +67,25 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => navigator.pop(),
             child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
               if (controller.text.isNotEmpty) {
                 final groupName = controller.text;
-                Navigator.pop(context);
+                navigator.pop();
                 try {
                   await _apiService.addGroup(name: groupName);
                   _fetchGroups();
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.groupAddedSuccessfully)),
                     );
                   }
                 } catch (e) {
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.groupAddError(e.toString()))),
                     );
                   }
@@ -97,6 +101,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
 
   Future<void> _editGroup(Map<String, dynamic> group) async {
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final controller = TextEditingController(text: group['name']);
     await showDialog(
       context: context,
@@ -115,14 +121,14 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => navigator.pop(),
             child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
               if (controller.text.isNotEmpty) {
                 final newName = controller.text;
-                Navigator.pop(context);
+                navigator.pop();
                 try {
                   await _apiService.updateGroup(
                     groupId: group['groupId'].toString(),
@@ -130,13 +136,13 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                   );
                   _fetchGroups();
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.groupUpdated)),
                     );
                   }
                 } catch (e) {
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.updateErrorWithMsg(e.toString()))),
                     );
                   }
@@ -152,6 +158,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
 
   Future<void> _deleteGroup(Map<String, dynamic> group) async {
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -163,11 +171,11 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => navigator.pop(false),
             child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => navigator.pop(true),
             child: Text(l10n.delete, style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
@@ -179,13 +187,13 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         await _apiService.deleteGroup(groupId: group['groupId'].toString());
         _fetchGroups();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             SnackBar(content: Text(l10n.groupDeleted)),
           );
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          scaffoldMessenger.showSnackBar(
             SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))),
           );
         }

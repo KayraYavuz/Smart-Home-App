@@ -22,7 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
   
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  final bool _obscureConfirmPassword = true;
   bool _verificationEmailSent = false;
   bool _isAgreed = false;
   
@@ -370,7 +370,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           onPressed: () => _launchUrl('https://lock2.ttlock.com/'),
                           icon: const Icon(Icons.language, color: Colors.blue, size: 20),
                           label: Text(
-                            '${l10n.ttlockWebPortalRegister}',
+                            l10n.ttlockWebPortalRegister,
                             style: const TextStyle(color: Colors.white70, fontSize: 13, decoration: TextDecoration.underline),
                           ),
                         ),

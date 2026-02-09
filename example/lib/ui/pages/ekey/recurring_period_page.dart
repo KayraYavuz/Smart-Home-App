@@ -141,9 +141,9 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
 
             const SizedBox(height: 30),
 
-            _buildRow(AppLocalizations.of(context)!.tabTimed + ' ' + AppLocalizations.of(context)!.startDate.split(' ')[1] , _formatTime(_startTime), () => _selectTime(true)),
+            _buildRow('${AppLocalizations.of(context)!.tabTimed} ${AppLocalizations.of(context)!.startDate.split(' ')[1]}' , _formatTime(_startTime), () => _selectTime(true)),
             _buildDivider(),
-            _buildRow(AppLocalizations.of(context)!.tabTimed + ' ' + AppLocalizations.of(context)!.endDate.split(' ')[1], _formatTime(_endTime), () => _selectTime(false)),
+            _buildRow('${AppLocalizations.of(context)!.tabTimed} ${AppLocalizations.of(context)!.endDate.split(' ')[1]}', _formatTime(_endTime), () => _selectTime(false)),
 
             const SizedBox(height: 50),
 

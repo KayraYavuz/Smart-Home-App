@@ -161,6 +161,9 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
   void _renameGateway() {
     final TextEditingController nameController = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     showDialog(
       context: context,
       builder: (context) {
@@ -172,29 +175,29 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => navigator.pop(),
               child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () async {
-                final authState = context.read<AuthBloc>().state;
+                final authState = this.context.read<AuthBloc>().state;
                 if (authState is Authenticated) {
                   try {
-                    final apiService = ApiService(context.read<AuthRepository>());
+                    final apiService = ApiService(this.context.read<AuthRepository>());
                     await apiService.renameGateway(
                       gatewayId: widget.gateway['gatewayId'].toString(),
                       gatewayName: nameController.text,
                     );
                     if (!mounted) return;
-                    Navigator.of(context).pop();
+                    navigator.pop();
                     _fetchGatewayDetails();
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.gatewayRenamedSuccess)),
                     );
                   } catch (e) {
                     if (!mounted) return;
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    navigator.pop();
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.errorRenamingGateway(e.toString()))),
                     );
                   }
@@ -210,6 +213,8 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
 
   void _deleteGateway() {
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (context) {
@@ -218,28 +223,28 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
           content: Text(l10n.deleteGatewayConfirmation),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => navigator.pop(),
               child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () async {
-                final authState = context.read<AuthBloc>().state;
+                final authState = this.context.read<AuthBloc>().state;
                 if (authState is Authenticated) {
                   try {
-                    final apiService = ApiService(context.read<AuthRepository>());
+                    final apiService = ApiService(this.context.read<AuthRepository>());
                     await apiService.deleteGateway(
                       gatewayId: widget.gateway['gatewayId'].toString(),
                     );
                     if (!mounted) return;
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop(); // Go back to the gateways list
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    navigator.pop();
+                    navigator.pop(); // Go back to the gateways list
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.gatewayDeletedSuccess)),
                     );
                   } catch (e) {
                     if (!mounted) return;
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    navigator.pop();
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.errorDeletingGateway(e.toString()))),
                     );
                   }
@@ -257,6 +262,8 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
   void _transferGateway() {
     final TextEditingController usernameController = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (context) {
@@ -268,29 +275,29 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => navigator.pop(),
               child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () async {
-                final authState = context.read<AuthBloc>().state;
+                final authState = this.context.read<AuthBloc>().state;
                 if (authState is Authenticated) {
                   try {
-                    final apiService = ApiService(context.read<AuthRepository>());
+                    final apiService = ApiService(this.context.read<AuthRepository>());
                     await apiService.transferGateway(
                       receiverUsername: usernameController.text,
                       gatewayIdList: [widget.gateway['gatewayId'] as int],
                     );
                     if (!mounted) return;
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop(); // Go back to the gateways list
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    navigator.pop();
+                    navigator.pop(); // Go back to the gateways list
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.gatewayTransferredSuccess)),
                     );
                   } catch (e) {
                     if (!mounted) return;
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    navigator.pop();
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(content: Text(l10n.errorTransferringGateway(e.toString()))),
                     );
                   }
@@ -307,6 +314,8 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
   void _checkUpgrade() async {
     final authState = context.read<AuthBloc>().state;
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     if (authState is Authenticated) {
       try {
         final apiService = ApiService(context.read<AuthRepository>());
@@ -325,7 +334,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => navigator.pop(),
                   child: Text(l10n.ok),
                 ),
               ],
@@ -334,7 +343,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text(l10n.errorCheckingUpgrade(e.toString()))),
         );
       }
@@ -344,6 +353,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
   void _setUpgradeMode() async {
     final authState = context.read<AuthBloc>().state;
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     if (authState is Authenticated) {
       try {
         final apiService = ApiService(context.read<AuthRepository>());
@@ -351,12 +361,12 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
           gatewayId: widget.gateway['gatewayId'].toString(),
         );
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text(l10n.gatewaySetToUpgradeMode)),
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text(l10n.errorSettingUpgradeMode(e.toString()))),
         );
       }

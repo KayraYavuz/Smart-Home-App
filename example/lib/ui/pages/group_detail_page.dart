@@ -33,6 +33,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
   Future<void> _fetchGroupLocks() async {
     setState(() => _isLoading = true);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     try {
       final locks = await _apiService.getGroupLockList(widget.group['groupId'].toString());
       if (!mounted) return;
@@ -43,13 +45,16 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.groupLocksLoadError(e.toString()))),
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text(l10n.groupLocksLoadError(e.toString()))),
       );
     }
   }
 
   Future<void> _manageGroupLocks() async {
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     // Show loading
     showDialog(
       context: context,
@@ -66,7 +71,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       final Set<String> groupLockIds = currentGroupLocks.map((l) => l['lockId'].toString()).toSet();
 
       if (!mounted) return;
-      Navigator.pop(context); // Close loading
+      navigator.pop(); // Close loading
 
       // Selected locks state
       final Set<String> selectedLockIds = Set.from(groupLockIds);
@@ -78,12 +83,12 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             builder: (context, setState) {
               return AlertDialog(
                 backgroundColor: const Color(0xFF1E1E1E),
-                title: Text(AppLocalizations.of(context)!.groupLocksTitle(widget.group['name'] ?? ''), style: const TextStyle(color: Colors.white)),
+                title: Text(l10n.groupLocksTitle(widget.group['name'] ?? ''), style: const TextStyle(color: Colors.white)),
                 content: SizedBox(
                   width: double.maxFinite,
                   height: 400,
                   child: allLocks.isEmpty 
-                    ? Center(child: Text(AppLocalizations.of(context)!.noLocksFound, style: const TextStyle(color: Colors.grey)))
+                    ? Center(child: Text(l10n.noLocksFound, style: const TextStyle(color: Colors.grey)))
                     : ListView.builder(
                         itemCount: allLocks.length,
                         itemBuilder: (context, index) {
@@ -92,7 +97,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                           final isSelected = selectedLockIds.contains(lockId);
                           
                           return CheckboxListTile(
-                            title: Text(lock['name'] ?? AppLocalizations.of(context)!.lock, style: const TextStyle(color: Colors.white)),
+                            title: Text(lock['name'] ?? l10n.lock, style: const TextStyle(color: Colors.white)),
                             subtitle: Text(lockId, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                             value: isSelected,
                             activeColor: AppColors.primary,
@@ -112,16 +117,16 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                 ),
                 actions: [
                   TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.grey)),
+                    onPressed: () => navigator.pop(),
+                    child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
                   ),
                   TextButton(
                     onPressed: () async {
-                      Navigator.pop(context);
+                      navigator.pop();
                       await _saveGroupLocks(widget.group['groupId'].toString(), groupLockIds, selectedLockIds);
                       _fetchGroupLocks(); // Refresh list
                     },
-                    child: Text(AppLocalizations.of(context)!.save, style: const TextStyle(color: AppColors.primary)),
+                    child: Text(l10n.save, style: const TextStyle(color: AppColors.primary)),
                   ),
                 ],
               );
@@ -131,14 +136,17 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       );
 
     } catch (e) {
-      Navigator.pop(context); // Close loading
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.lockListRetrievalError(e.toString())), backgroundColor: Colors.red),
+      navigator.pop(); // Close loading
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text(l10n.lockListRetrievalError(e.toString())), backgroundColor: Colors.red),
       );
     }
   }
 
   Future<void> _saveGroupLocks(String groupId, Set<String> oldLockIds, Set<String> newLockIds) async {
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -173,11 +181,11 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     }
 
     if (!mounted) return;
-    Navigator.pop(context); // Close loading
+    navigator.pop(); // Close loading
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    scaffoldMessenger.showSnackBar(
       SnackBar(
-        content: Text(AppLocalizations.of(context)!.operationCompletedWithCounts(successCount.toString(), failCount.toString())),
+        content: Text(l10n.operationCompletedWithCounts(successCount.toString(), failCount.toString())),
         backgroundColor: failCount > 0 ? Colors.orange : Colors.green,
       ),
     );
@@ -188,12 +196,14 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     // Default start now, end 1 year later
     int startDate = DateTime.now().millisecondsSinceEpoch;
     int endDate = DateTime.now().add(const Duration(days: 365)).millisecondsSinceEpoch;
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
 
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(AppLocalizations.of(context)!.shareGroupTitle(widget.group['name'] ?? ''), style: const TextStyle(color: Colors.white)),
+        title: Text(l10n.shareGroupTitle(widget.group['name'] ?? ''), style: const TextStyle(color: Colors.white)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -201,7 +211,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               controller: usernameController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.receiverHintUserEmail,
+                hintText: l10n.receiverHintUserEmail,
                 hintStyle: const TextStyle(color: Colors.grey),
                 enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
                 prefixIcon: const Icon(Icons.person, color: Colors.grey),
@@ -209,21 +219,21 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              AppLocalizations.of(context)!.groupShareNote,
+              l10n.groupShareNote,
               style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.grey)),
+            onPressed: () => navigator.pop(),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
               if (usernameController.text.isNotEmpty) {
-                Navigator.pop(context);
-                _processGroupShare(
+                navigator.pop();
+                await _processGroupShare(
                   widget.group['groupId'].toString(),
                   usernameController.text,
                   startDate,
@@ -231,7 +241,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                 );
               }
             },
-            child: Text(AppLocalizations.of(context)!.send, style: const TextStyle(color: AppColors.primary)),
+            child: Text(l10n.send, style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -240,6 +250,9 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
   Future<void> _processGroupShare(String groupId, String receiverUsername, int startDateMs, int endDateMs) async {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -249,14 +262,14 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     try {
       await _apiService.getAccessToken();
       final token = _apiService.accessToken;
-      if (token == null) throw Exception(AppLocalizations.of(context)!.tokenNotFound);
+      if (token == null) throw Exception(l10n.tokenNotFound);
 
       final locks = await _apiService.getGroupLockList(groupId);
       
       if (locks.isEmpty) {
-        if (mounted) Navigator.pop(context);
+        if (mounted) navigator.pop();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.noLocksInGroup)));
+          scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.noLocksInGroup)));
         }
         return;
       }
@@ -281,20 +294,20 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         }
       }
 
-      if (mounted) Navigator.pop(context);
+      if (mounted) navigator.pop();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.locksSharedCounts(successCount.toString(), failCount.toString())),
+            content: Text(l10n.locksSharedCounts(successCount.toString(), failCount.toString())),
             backgroundColor: failCount > 0 ? Colors.orange : Colors.green,
           ),
         );
       }
 
     } catch (e) {
-      if (mounted) Navigator.pop(context);
+      if (mounted) navigator.pop();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
+        scaffoldMessenger.showSnackBar(SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
       }
     }
   }

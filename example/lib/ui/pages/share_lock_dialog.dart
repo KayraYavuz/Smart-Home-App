@@ -116,6 +116,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
 
                 Column(
                   children: [
+                    // ignore: deprecated_member_use
                     RadioListTile<int>(
                       title: Text(
                         permissionOptions[1]!,
@@ -131,6 +132,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                       dense: true,
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
+                    // ignore: deprecated_member_use
                     RadioListTile<int>(
                       title: Text(
                         permissionOptions[2]!,
@@ -146,6 +148,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                       dense: true,
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
+                    // ignore: deprecated_member_use
                     RadioListTile<int>(
                       title: Text(
                         permissionOptions[3]!,

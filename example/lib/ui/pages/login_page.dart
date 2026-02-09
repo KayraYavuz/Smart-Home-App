@@ -464,7 +464,7 @@ class _LoginPageState extends State<LoginPage> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     elevation: 8,
-                                    shadowColor: Color(0xFF1E90FF).withValues(alpha: 0.3),
+                                    shadowColor: const Color(0xFF1E90FF).withAlpha(76),
                                   ),
                                   onPressed: () {
                                     _handleLogin(context);
@@ -479,9 +479,9 @@ class _LoginPageState extends State<LoginPage> {
                                 Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: Colors.red.withValues(alpha: 0.1),
+                                    color: Colors.red.withAlpha(25),
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
+                                    border: Border.all(color: Colors.red.withAlpha(128)),
                                   ),
                                   child: Row(
                                     children: [
@@ -503,7 +503,7 @@ class _LoginPageState extends State<LoginPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => RegisterPage(),
+                                      builder: (context) => const RegisterPage(),
                                     ),
                                   );
                                 },

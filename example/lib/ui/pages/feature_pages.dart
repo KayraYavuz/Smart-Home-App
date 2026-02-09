@@ -49,6 +49,8 @@ class _RemoteListPageState extends State<RemoteListPage> {
   }
 
   Future<void> _loadRemotes() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     try {
       final api = ApiService(context.read<AuthRepository>());
       final result = await api.getRemoteList(lockId: widget.lockId);
@@ -60,7 +62,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
+        scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
       }
     }
   }
@@ -84,6 +86,8 @@ class _RemoteListPageState extends State<RemoteListPage> {
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        final l10n = AppLocalizations.of(context)!;
                         // Implement delete
                         try {
                            final api = ApiService(context.read<AuthRepository>());
@@ -91,7 +95,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
                            _loadRemotes();
                         } catch(e) {
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.deleteErrorWithMsg(e.toString()))));
+                            scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
                           }
                         }
                       },
@@ -133,6 +137,8 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
   }
 
   Future<void> _loadKeypads() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     try {
       final api = ApiService(context.read<AuthRepository>());
       final result = await api.getWirelessKeypadList(lockId: widget.lockId);
@@ -144,7 +150,7 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
     } catch (e) {
        if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
+        scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
       }
     }
   }
@@ -168,13 +174,15 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
                      trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        final l10n = AppLocalizations.of(context)!;
                         try {
                            final api = ApiService(context.read<AuthRepository>());
                            await api.deleteWirelessKeypad(wirelessKeypadId: keypad['wirelessKeypadId']);
                            _loadKeypads();
                         } catch(e) {
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.deleteErrorWithMsg(e.toString()))));
+                          scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
                         }
                       },
                     ),
@@ -249,6 +257,8 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        final l10n = AppLocalizations.of(context)!;
                          try {
                            final api = ApiService(context.read<AuthRepository>());
                            await api.deleteDoorSensor(doorSensorId: _sensor!['doorSensorId']);
@@ -258,7 +268,7 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
                            });
                         } catch(e) {
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.deleteErrorWithMsg(e.toString()))));
+                          scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
                         }
                       },
                     ),
@@ -290,6 +300,8 @@ class _QrCodePageState extends State<QrCodePage> {
   }
 
   Future<void> _loadQrCodes() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     try {
       final api = ApiService(context.read<AuthRepository>());
       final result = await api.getQrCodeList(lockId: widget.lockId);
@@ -301,27 +313,29 @@ class _QrCodePageState extends State<QrCodePage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
+        scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
       }
     }
   }
   
   void _addQrCode() async {
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
+      final l10n = AppLocalizations.of(context)!;
       try {
            final api = ApiService(context.read<AuthRepository>());
            await api.addQrCode(
                lockId: widget.lockId, 
                type: 1, 
-               name: AppLocalizations.of(context)!.newQrWithName("${DateTime.now().minute}"),
+               name: l10n.newQrWithName("${DateTime.now().minute}"),
                startDate: DateTime.now().millisecondsSinceEpoch,
                endDate: DateTime.now().add(const Duration(days: 1)).millisecondsSinceEpoch,
            );
            _loadQrCodes();
            if (!mounted) return;
-           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.qrCodeCreated)));
+           scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.qrCodeCreated)));
         } catch(e) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
+          scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
         }
   }
 
@@ -342,6 +356,8 @@ class _QrCodePageState extends State<QrCodePage> {
                     title: Text(qr['name'] ?? AppLocalizations.of(context)!.qrCode, style: const TextStyle(color: Colors.white)),
                     subtitle: Text('ID: ${qr['qrCodeId']}', style: const TextStyle(color: Colors.grey)),
                     onTap: () async {
+                       final scaffoldMessenger = ScaffoldMessenger.of(context);
+                       final l10n = AppLocalizations.of(context)!;
                        // Show QR content
                        try {
                            final api = ApiService(context.read<AuthRepository>());
@@ -350,26 +366,28 @@ class _QrCodePageState extends State<QrCodePage> {
                            showDialog(
                                context: context, 
                                builder: (c) => AlertDialog(
-                                   title: Text(AppLocalizations.of(context)!.qrContent),
-                                   content: Text(data['qrCodeContent'] ?? AppLocalizations.of(context)!.empty),
-                                   actions: [TextButton(onPressed: () => Navigator.pop(c), child: Text(AppLocalizations.of(context)!.ok))],
+                                   title: Text(l10n.qrContent),
+                                   content: Text(data['qrCodeContent'] ?? l10n.empty),
+                                   actions: [TextButton(onPressed: () => Navigator.pop(c), child: Text(l10n.ok))],
                                )
                            );
                        } catch (e) {
                            if (!context.mounted) return;
-                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.errorLabel}: $e')));
+                           scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
                        }
                     },
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        final l10n = AppLocalizations.of(context)!;
                          try {
                            final api = ApiService(context.read<AuthRepository>());
                            await api.deleteQrCode(lockId: widget.lockId, qrCodeId: qr['qrCodeId']);
                            _loadQrCodes();
                         } catch(e) {
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.deleteErrorWithMsg(e.toString()))));
+                          scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
                         }
                       },
                     ),
@@ -442,10 +460,10 @@ class _WifiLockPageState extends State<WifiLockPage> {
                      children: [
                        const Icon(Icons.error_outline, color: Colors.orange, size: 48),
                        const SizedBox(height: 16),
-                       Text(
+                       const Text(
                          "This feature is only for locks with built-in Wi-Fi.",
                          textAlign: TextAlign.center,
-                         style: const TextStyle(color: Colors.white, fontSize: 16),
+                         style: TextStyle(color: Colors.white, fontSize: 16),
                        ),
                        const SizedBox(height: 8),
                        Text(

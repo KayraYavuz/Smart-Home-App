@@ -37,11 +37,13 @@ class _AddFacePageState extends State<AddFacePage> {
     final XFile? selectedImage =
         await _picker.pickImage(source: ImageSource.gallery);
     if (selectedImage != null) {
+      if (!mounted) return;
       setState(() {
         _imageFile = selectedImage;
         _isProcessing = true;
       });
       try {
+        if (!mounted) return;
         final repository = context.read<TTLockRepository>();
         final result = await repository.getFeatureDataByPhoto(
             lockId: widget.lockId, imagePath: selectedImage.path);
@@ -50,6 +52,7 @@ class _AddFacePageState extends State<AddFacePage> {
           _featureData = result['featureData'];
           _isProcessing = false;
         });
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Face feature data obtained successfully.')));
       } catch (e) {
@@ -57,6 +60,7 @@ class _AddFacePageState extends State<AddFacePage> {
         setState(() {
           _isProcessing = false;
         });
+        if (!mounted) return;
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Failed to get feature data: $e')));
       }
@@ -65,10 +69,12 @@ class _AddFacePageState extends State<AddFacePage> {
 
   Future<void> _addFace() async {
     if (_formKey.currentState!.validate() && _featureData != null) {
+      if (!mounted) return;
       setState(() {
         _isProcessing = true;
       });
       try {
+        if (!mounted) return;
         final repository = context.read<TTLockRepository>();
         await repository.addFace(
           lockId: widget.lockId,
@@ -82,18 +88,22 @@ class _AddFacePageState extends State<AddFacePage> {
         setState(() {
           _isProcessing = false;
         });
+        if (!mounted) return;
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text('Face added successfully.')));
+        if (!mounted) return;
         Navigator.pop(context, true);
       } catch (e) {
         if (!mounted) return;
         setState(() {
           _isProcessing = false;
         });
+        if (!mounted) return;
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Failed to add face: $e')));
       }
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please select an image and get feature data first.')));
     }

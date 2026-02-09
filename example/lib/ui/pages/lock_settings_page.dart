@@ -208,6 +208,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
   void _renameLock() {
     final controller = TextEditingController(text: _lockName);
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -217,7 +219,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
           decoration: InputDecoration(labelText: l10n.newName),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+          TextButton(onPressed: () => navigator.pop(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () async {
               final newName = controller.text;
@@ -226,10 +228,10 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   await _apiService.renameLock(lockId: widget.lock['lockId'].toString(), newName: newName);
                   if (!mounted) return;
                   setState(() => _lockName = newName);
-                  Navigator.pop(context);
+                  navigator.pop();
                 } catch (e) {
                   if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                   );
                 }
@@ -244,11 +246,13 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
 
   // ignore: unused_element - Reserved for future use (group assignment feature)
   void _showGroupSelection() async {
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final groups = await _apiService.getGroupList();
     
     if (!mounted) return;
 
-    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -265,7 +269,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                     return ListTile(
                       title: Text(group['name']),
                       onTap: () async {
-                        Navigator.pop(context);
+                        navigator.pop();
                         try {
                           await _apiService.setLockGroup(
                             lockId: widget.lock['lockId'].toString(),
@@ -275,12 +279,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                           setState(() {
                             _groupName = group['name'];
                           });
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          scaffoldMessenger.showSnackBar(
                             SnackBar(content: Text(l10n.lockAssignedToGroup(group['name']))),
                           );
                         } catch (e) {
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          scaffoldMessenger.showSnackBar(
                             SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                           );
                         }
@@ -291,13 +295,13 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => navigator.pop(),
             child: Text(l10n.cancel),
           ),
           if (_groupName != null)
             TextButton(
               onPressed: () async {
-                Navigator.pop(context);
+                navigator.pop();
                 // 0 sets to no group
                 try {
                   await _apiService.setLockGroup(
@@ -308,12 +312,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   setState(() {
                     _groupName = null;
                   });
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(content: Text(l10n.groupAssignmentRemoved)),
                   );
                 } catch (e) {
                   if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                   );
                 }
@@ -328,6 +332,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
   void _updateBattery() async {
     setState(() => _isLoading = true);
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       // Simulation: assuming we read battery via SDK first
       await _apiService.updateElectricQuantity(
@@ -335,10 +340,10 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         electricQuantity: widget.lock['battery'] ?? 100,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.batterySynced)));
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.batterySynced)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -349,6 +354,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
   void _showAutoLockDialog() {
     final controller = TextEditingController(text: _autoLockSeconds.toString());
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -376,7 +383,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
             onPressed: () {
               // Properly dispose controller when cancelling
               // (Ideally should be done in a StatefulWidget dialog, but this is okay for now if we don't leak)
-              Navigator.pop(dialogContext);
+              navigator.pop();
             },
             child: Text(l10n.cancel)
           ),
@@ -399,12 +406,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               }
               
               if (lockData.isEmpty) {
-                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Lock data not found")));
+                 scaffoldMessenger.showSnackBar(const SnackBar(content: Text("Lock data not found")));
                  return;
               }
 
               // 1. Close Input Dialog
-              Navigator.pop(dialogContext); 
+              navigator.pop(); 
               
               // 2. Small delay to ensure dialog closed
               await Future.delayed(const Duration(milliseconds: 200));
@@ -441,7 +448,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
 
               // 4. Close Loading Dialog ALWAYS
               if (mounted) {
-                Navigator.pop(context); 
+                navigator.pop(); 
               }
 
               // 5. Handle Result
@@ -458,7 +465,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   
                   if (mounted) {
                     setState(() => _autoLockSeconds = seconds);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.timeSet)));
+                    scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.timeSet)));
                   }
 
               } else {
@@ -480,21 +487,21 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                       );
                       
                       if (mounted) {
-                        Navigator.pop(context); // Close gateway loading
+                        navigator.pop(); // Close gateway loading
                         setState(() => _autoLockSeconds = seconds);
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${l10n.timeSet} (via Gateway)")));
+                        scaffoldMessenger.showSnackBar(SnackBar(content: Text("${l10n.timeSet} (via Gateway)")));
                       }
 
                    } catch (e) {
                       debugPrint("Gateway set failed: $e");
                       if (mounted) {
-                        Navigator.pop(context); // Close gateway loading
+                        navigator.pop(); // Close gateway loading
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
                             title: const Text("Error"),
                             content: Text("Failed via Bluetooth: $bluetoothError\n\nFailed via Gateway: $e"),
-                            actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+                            actions: [TextButton(onPressed: () => navigator.pop(), child: const Text("OK"))],
                           ),
                         );
                       }
@@ -514,10 +521,10 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                          title: const Text("Error"),
                          content: Text(errorMsg),
                          actions: [
-                           TextButton(onPressed: () => Navigator.pop(dialogCtx), child: const Text("OK")),
+                           TextButton(onPressed: () => Navigator.of(dialogCtx).pop(), child: const Text("OK")),
                            TextButton(
                              onPressed: () async {
-                               Navigator.pop(dialogCtx); // Close error dialog
+                               Navigator.of(dialogCtx).pop(); // Close error dialog
                                
                                // Use the Page's context (this.context), not the dialog's context
                                if (!mounted) return;
@@ -538,13 +545,13 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                                   if (mounted) {
                                     Navigator.of(context).pop(); // Close gateway loading
                                     setState(() => _autoLockSeconds = seconds);
-                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${l10n.timeSet} (via Gateway)")));
+                                    scaffoldMessenger.showSnackBar(SnackBar(content: Text("${l10n.timeSet} (via Gateway)")));
                                   }
                                } catch (e) {
                                   debugPrint("Gateway retry failed: $e");
                                   if (mounted) {
                                     Navigator.of(context).pop(); // Close gateway loading
-                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Gateway failed: $e")));
+                                    scaffoldMessenger.showSnackBar(SnackBar(content: Text("Gateway failed: $e")));
                                   }
                                }
                              },
@@ -565,8 +572,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
   }
 
   void _openPassageModePage() async {
-    await Navigator.push(
-      context,
+    final navigator = Navigator.of(context);
+    await navigator.push(
       MaterialPageRoute(
         builder: (context) => PassageModePage(lock: widget.lock),
       ),
@@ -611,6 +618,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
 
   Future<void> _setWorkingMode(int mode) async {
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     try {
       await _apiService.configWorkingMode(
         lockId: widget.lock['lockId'].toString(),
@@ -618,17 +627,19 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         type: 2,
       );
       if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.modeUpdated)));
+      navigator.pop();
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.modeUpdated)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
     }
   }
 
   void _changeAdminPasscode() {
     final controller = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -639,7 +650,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
           obscureText: true,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+          TextButton(onPressed: () => navigator.pop(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () async {
               if (controller.text.isNotEmpty) {
@@ -649,11 +660,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                     password: controller.text,
                   );
                   if (!mounted) return;
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.operationSuccessful)));
+                  navigator.pop();
+                  scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.operationSuccessful)));
                 } catch (e) {
                   if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                   );
                 }
@@ -669,6 +680,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
   void _transferLock() {
     final controller = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -678,7 +691,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
           decoration: InputDecoration(labelText: l10n.receiverUsernameTitle),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+          TextButton(onPressed: () => navigator.pop(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () async {
               if (controller.text.isNotEmpty) {
@@ -688,12 +701,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                     receiverUsername: controller.text,
                   );
                   if (!mounted) return;
-                  Navigator.pop(context);
-                  Navigator.pop(context); // Close settings page
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.transferInitiated)));
+                  navigator.pop();
+                  navigator.pop(); // Close settings page
+                  scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.transferInitiated)));
                 } catch (e) {
                   if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                   );
                 }
@@ -708,23 +721,25 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
 
   void _deleteLock() {
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.deleteLockConfirmationTitle),
         content: Text(l10n.deleteLockConfirmationMessage),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+          TextButton(onPressed: () => navigator.pop(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () async {
               try {
                 await _apiService.deleteLock(lockId: widget.lock['lockId'].toString());
                 if (!mounted) return;
-                Navigator.pop(context);
-                Navigator.pop(context, 'deleted'); // Go back to list
+                navigator.pop();
+                navigator.pop('deleted'); // Go back to list
               } catch (e) {
                 if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
                 );
               }
@@ -747,7 +762,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
 
   Future<void> _exportLockRecords() async {
     final l10n = AppLocalizations.of(context)!;
-    final DateTimeRange? picked = await showDateRangePicker(
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
@@ -771,7 +787,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     if (picked == null) return;
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+    scaffoldMessenger.showSnackBar(
       SnackBar(content: Text(l10n.preparingRecords)),
     );
 
@@ -794,7 +810,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
 
       if (records.isEmpty) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text(l10n.noData)),
         );
         return;
@@ -808,7 +824,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: '$lockName - Records Export'));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text(l10n.exportError(e.toString())), backgroundColor: Colors.red),
       );
     }

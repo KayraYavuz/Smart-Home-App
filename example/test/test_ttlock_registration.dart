@@ -17,12 +17,15 @@ void main() async {
           }
         }
       }
+      // ignore: avoid_print
       print("Environment loaded manually.");
     } else {
+      // ignore: avoid_print
       print(".env file not found.");
       return;
     }
   } catch (e) {
+    // ignore: avoid_print
     print("Error loading .env: $e");
     return;
   }
@@ -31,6 +34,7 @@ void main() async {
   final String clientSecret = env['TTLOCK_CLIENT_SECRET'] ?? '';
 
   if (clientId.isEmpty || clientSecret.isEmpty) {
+    // ignore: avoid_print
     print("Error: Client ID or Secret is empty.");
     return;
   }
@@ -38,9 +42,10 @@ void main() async {
   // Test username (randomly generated to avoid conflict)
   final String rawEmail = "testuser${DateTime.now().millisecondsSinceEpoch}@gmail.com";
   final String username = rawEmail.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-  final String password = "Password123!";
+  const String password = "Password123!";
   final String passwordMd5 = md5.convert(utf8.encode(password)).toString().toLowerCase();
 
+  // ignore: avoid_print
   print("Attempting to register user: $username");
 
   final url = Uri.parse('https://api.ttlock.com/v3/user/register');
@@ -59,9 +64,12 @@ void main() async {
       body: body,
     );
 
+    // ignore: avoid_print
     print('Response Status: ${response.statusCode}');
+    // ignore: avoid_print
     print('Response Body: ${response.body}');
   } catch (e) {
+    // ignore: avoid_print
     print("Exception during request: $e");
   }
 }

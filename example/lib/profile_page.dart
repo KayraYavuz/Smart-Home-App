@@ -230,7 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     child: ElevatedButton(
-                      onPressed: () => _logout(context),
+                      onPressed: () => _logout(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -248,7 +248,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     child: OutlinedButton(
-                      onPressed: () => _deleteAccount(context),
+                      onPressed: () => _deleteAccount(),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.red, width: 1),
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -315,7 +315,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> _logout(BuildContext context) async {
+  void _logout() {
     final l10n = AppLocalizations.of(context)!;
     // SharedPreferences temizleme ve AuthService token temizleme işlemi
     // AuthBloc'un LoggedOut eventi içinde yapılıyor (AuthRepository.deleteTokens)
@@ -336,8 +336,12 @@ class _ProfilePageState extends State<ProfilePage> {
     // Manuel navigasyon kaldırıldı. Main.dart içindeki BlocBuilder durumu dinleyip sayfayı değiştirecek.
   }
 
-  Future<void> _deleteAccount(BuildContext context) async {
+  Future<void> _deleteAccount() async {
     final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final authBloc = context.read<AuthBloc>();
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -355,11 +359,11 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => navigator.pop(false),
             child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => navigator.pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: Text(l10n.delete),
           ),
@@ -370,11 +374,11 @@ class _ProfilePageState extends State<ProfilePage> {
     if (confirmed == true) {
       // AuthBloc'a çıkış eventi gönder (Hesap silme API'si varsa önce o çağrılmalı)
       // Şimdilik sadece logout gibi davranıyor
-      context.read<AuthBloc>().add(LoggedOut());
+      authBloc.add(LoggedOut());
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text(l10n.accountDeletedMessage),
           backgroundColor: Colors.red,

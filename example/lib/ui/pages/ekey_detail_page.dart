@@ -313,7 +313,9 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
   Future<void> _toggleFreezeStatus(bool isCurrentlyFrozen) async {
     if (_accessToken == null) return;
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     setState(() => _isLoading = true);
 
@@ -333,22 +335,26 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
       }
       if (!mounted) return;
       setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text(isCurrentlyFrozen ? l10n.unfreezeSuccess : l10n.freezeSuccess)),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   Future<void> _toggleAuthorization(bool isCurrentlyAuthorized) async {
     if (_accessToken == null) return;
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     setState(() => _isLoading = true);
 
@@ -370,22 +376,27 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
       }
       if (!mounted) return;
       setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text(isCurrentlyAuthorized ? l10n.revokeSuccess : l10n.authorizeSuccess)),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
    Future<void> _getUnlockLink() async {
     if (_accessToken == null) return;
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
 
     setState(() => _isLoading = true);
 
@@ -422,15 +433,15 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
               TextButton(
                 onPressed: () {
                    Clipboard.setData(ClipboardData(text: link));
-                   ScaffoldMessenger.of(context).showSnackBar(
+                   scaffoldMessenger.showSnackBar(
                      SnackBar(content: Text(l10n.linkCopied)),
                    );
-                   Navigator.pop(context);
+                   navigator.pop();
                 },
                  child: Text(l10n.copy),
                ),
                TextButton(
-                 onPressed: () => Navigator.pop(context),
+                 onPressed: () => navigator.pop(),
                  child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
                ),
             ],
@@ -442,11 +453,14 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
       if (e.toString().contains('20002') || e.toString().contains('Not lock admin')) {
         msg = l10n.authorityError;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(
         SnackBar(content: Text(msg), backgroundColor: Colors.red),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -455,6 +469,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     DateTime currentStart = DateTime.fromMillisecondsSinceEpoch(_eKey['startDate']);
     DateTime currentEnd = DateTime.fromMillisecondsSinceEpoch(_eKey['endDate']);
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     showDialog(
       context: context,
@@ -477,12 +492,12 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                _eKey['endDate'] = end.millisecondsSinceEpoch;
              });
              
-             ScaffoldMessenger.of(context).showSnackBar(
+             scaffoldMessenger.showSnackBar(
                SnackBar(content: Text(l10n.updateSuccess)),
              );
            } catch(e) {
              if (!mounted) return;
-             ScaffoldMessenger.of(context).showSnackBar(
+             scaffoldMessenger.showSnackBar(
                 SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
              );
            }
@@ -496,6 +511,8 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     // remoteEnable: 1-yes, 2-no
     bool remoteInfo = _eKey['remoteEnable'] == 1;
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
 
     showDialog(
       context: context,
@@ -532,12 +549,12 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => navigator.pop(),
                   child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
                 ),
                 TextButton(
                   onPressed: () async {
-                    Navigator.pop(context);
+                    navigator.pop();
                     if (_accessToken == null) return;
                     
                     try {
@@ -554,12 +571,12 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                          _eKey['remoteEnable'] = remoteEnabled ? 1 : 2;
                        });
                        
-                       ScaffoldMessenger.of(context).showSnackBar(
+                       scaffoldMessenger.showSnackBar(
                           SnackBar(content: Text(l10n.updateSuccess)),
                        );
                     } catch(e) {
                       if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      scaffoldMessenger.showSnackBar(
                           SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
                       );
                     }
@@ -577,6 +594,8 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
   void _confirmDelete() {
     final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -588,12 +607,12 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => navigator.pop(),
             child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
-               Navigator.pop(context);
+               navigator.pop();
                if (_accessToken == null) return;
 
                try {
@@ -603,10 +622,10 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                  );
                  
                  if (!mounted) return;
-                 Navigator.pop(context, 'deleted'); // Return to list with deleted signal
+                 navigator.pop('deleted'); // Return to list with deleted signal
                } catch(e) {
                  if (!mounted) return;
-                 ScaffoldMessenger.of(context).showSnackBar(
+                 scaffoldMessenger.showSnackBar(
                     SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
                  );
                }
@@ -660,6 +679,7 @@ class __ChangePeriodDialogState extends State<_ChangePeriodDialog> {
     );
 
     if (picked != null) {
+      if (!mounted) return;
       final time = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(isStart ? _startDate : _endDate),
