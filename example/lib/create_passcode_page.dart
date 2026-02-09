@@ -94,7 +94,7 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> {
                 onPressed: () => _selectDate(context, false),
                 child: Text(DateFormat('dd/MM/yyyy').format(_endDate), style: const TextStyle(color: Colors.white)),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 60),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1E90FF),
