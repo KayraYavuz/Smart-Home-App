@@ -16,9 +16,13 @@ public class MainActivity extends FlutterFragmentActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        TtlockFlutterPlugin ttlockflutterpluginPlugin = (TtlockFlutterPlugin) getFlutterEngine().getPlugins().get(TtlockFlutterPlugin.class);
-        if (ttlockflutterpluginPlugin != null) {
-            ttlockflutterpluginPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (getFlutterEngine() != null) {
+            TtlockFlutterPlugin ttlockflutterpluginPlugin = (TtlockFlutterPlugin) getFlutterEngine().getPlugins()
+                    .get(TtlockFlutterPlugin.class);
+            if (ttlockflutterpluginPlugin != null) {
+                ttlockflutterpluginPlugin.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
         }
     }
 }

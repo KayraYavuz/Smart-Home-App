@@ -141,9 +141,9 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _performLogin() {
+  void _performLogin(LoginBloc loginBloc) {
     _saveCredentials();
-    context.read<LoginBloc>().add(
+    loginBloc.add(
           LoginButtonPressed(
             username: _usernameController.text,
             password: _passwordController.text,
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
         _showTermsDialog(email, loginBloc);
       } else {
         debugPrint('🔵 Kullanıcı sözleşmesi zaten onaylanmış, girişi başlatıyor...');
-        _performLogin();
+        _performLogin(loginBloc);
       }
     } else {
       debugPrint('🟠 Form doğrulanamadı, lütfen alanları kontrol edin');
