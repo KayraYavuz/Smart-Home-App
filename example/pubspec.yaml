@@ -1,6 +1,6 @@
 name: yavuz_lock
 description: Yavuz Lock
-version: 1.0.6+145
+version: 1.0.7+146
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -109,3 +109,5 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icon/icon.png"
