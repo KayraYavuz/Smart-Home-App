@@ -280,7 +280,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get issueCard => 'Issue Card';
 
   @override
-  String get readCard => 'Read Card';
+  String get readCard => 'Card';
 
   @override
   String get clearCard => 'Clear Card';
@@ -2020,6 +2020,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get all => 'All';
+
+  @override
+  String get validityType => 'Validity Type';
+
+  @override
+  String get scanCard => 'Scan Card';
+
+  @override
+  String get connectAndScan => 'Connect to lock and scan card';
+
+  @override
+  String get cardNameRequired => 'Card name is required';
+
+  @override
+  String get bluetoothRequired => 'Bluetooth connection required';
+
+  @override
+  String get selectDays => 'Select Days';
+
+  @override
+  String get startTime => 'Start Time';
+
+  @override
+  String get endTime => 'End Time';
+
+  @override
+  String get weekend => 'Weekend';
+
+  @override
+  String get daily => 'Daily';
+
+  @override
+  String get workday => 'Workday';
+
+  @override
+  String get monday => 'Monday';
+
+  @override
+  String get tuesday => 'Tuesday';
+
+  @override
+  String get wednesday => 'Wednesday';
+
+  @override
+  String get thursday => 'Thursday';
+
+  @override
+  String get friday => 'Friday';
+
+  @override
+  String get saturday => 'Saturday';
+
+  @override
+  String get sunday => 'Sunday';
 
   @override
   String get scanLockDescription =>

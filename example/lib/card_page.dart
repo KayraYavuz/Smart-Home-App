@@ -6,7 +6,8 @@ import 'add_card_page.dart';
 
 class CardPage extends StatefulWidget {
   final String lockId;
-  const CardPage({super.key, required this.lockId});
+  final String lockData;
+  const CardPage({super.key, required this.lockId, required this.lockData});
 
   @override
   State<CardPage> createState() => _CardPageState();
@@ -255,7 +256,12 @@ class _CardPageState extends State<CardPage> {
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddCardPage(lockId: widget.lockId)),
+            MaterialPageRoute(
+            builder: (context) => AddCardPage(
+              lockId: widget.lockId,
+              lockData: widget.lockData,
+            ),
+          ),
           );
           if (result == true) await _fetchCards();
         },

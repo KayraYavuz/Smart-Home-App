@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../theme.dart';
 import '../../../api_service.dart';
 import '../../../repositories/auth_repository.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
-import 'send_ekey_page.dart';  // Will be created next
+import 'send_ekey_page.dart';
 import '../ekey_detail_page.dart';
 
 class EKeyListPage extends StatefulWidget {
@@ -22,34 +23,49 @@ class _EKeyListPageState extends State<EKeyListPage> {
   List<Map<String, dynamic>> _filteredKeys = [];
   bool _isLoading = true;
   String? _errorMessage;
-  bool _showOnlyAdmins = false; // New filter state
+  bool _showOnlyAdmins = false;
+
+  AppLocalizations? _l10n;
+  bool _isInitialFetchCompleted = false;
 
   @override
-  void initState() {
-    super.initState();
-    _fetchKeys();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialFetchCompleted) {
+      _l10n = AppLocalizations.of(context)!;
+      _fetchKeys();
+      _isInitialFetchCompleted = true;
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchKeys() async {
+    // Ensure l10n is initialized
+    if (_l10n == null) return;
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
     final apiService = ApiService(context.read<AuthRepository>());
 
     try {
       await apiService.getAccessToken();
       final accessToken = apiService.accessToken;
 
-      if (accessToken == null) throw Exception(l10n.noAccessPermission);
+      if (accessToken == null) throw Exception(_l10n!.noAccessPermission);
 
       final keys = await apiService.getLockEKeys(
         accessToken: accessToken,
         lockId: widget.lock['lockId'].toString(),
-      );
+      ).timeout(const Duration(seconds: 10));
 
       if (mounted) {
         setState(() {
@@ -77,7 +93,6 @@ class _EKeyListPageState extends State<EKeyListPage> {
         
         if (_showOnlyAdmins) {
           final keyRight = key['keyRight'];
-          // keyRight 1 means Admin
           final isAdmin = keyRight == 1 || keyRight == '1';
           return matchesQuery && isAdmin;
         }
@@ -95,27 +110,29 @@ class _EKeyListPageState extends State<EKeyListPage> {
   }
 
   void _resetKeys() {
-    // Reset function - for now just re-fetch as per "Sıfırla" button intent often implies reset filters or reload
-    // Based on user request "Sıfırla" button on top right usually resets data or filters. 
-    // Assuming reload here or reset custom aliases if implemented. For now, reload.
     _searchController.clear();
     _fetchKeys();
   }
 
   @override
   Widget build(BuildContext context) {
+    // If _l10n is not ready, show a loading indicator. This is a safeguard.
+    if (_l10n == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
-      backgroundColor: Colors.black, // Dark background
+      backgroundColor: Colors.black,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(AppLocalizations.of(context)!.electronicKeysMenu.replaceAll('\n', ' '), style: const TextStyle(color: Colors.white, fontSize: 18)),
+        title: Text(_l10n!.electronicKeysMenu.replaceAll('\n', ' '), style: const TextStyle(color: Colors.white, fontSize: 18)),
         actions: [
           TextButton(
             onPressed: _resetKeys,
-            child: Text(AppLocalizations.of(context)!.reset, style: const TextStyle(color: Colors.white)),
+            child: Text(_l10n!.reset, style: const TextStyle(color: Colors.white)),
           ),
         ],
         backgroundColor: Colors.transparent,
@@ -125,7 +142,6 @@ class _EKeyListPageState extends State<EKeyListPage> {
         children: [
           Column(
             children: [
-              // Search Bar
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Container(
@@ -138,7 +154,7 @@ class _EKeyListPageState extends State<EKeyListPage> {
                     style: const TextStyle(color: Colors.white),
                     onChanged: _filterKeys,
                     decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context)!.search,
+                      hintText: _l10n!.search,
                       hintStyle: const TextStyle(color: Colors.grey),
                       prefixIcon: const Icon(Icons.search, color: Colors.grey),
                       border: InputBorder.none,
@@ -147,15 +163,12 @@ class _EKeyListPageState extends State<EKeyListPage> {
                   ),
                 ),
               ),
-
-
-              // Filter Tabs
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: [
                     _buildFilterChip(
-                      label: AppLocalizations.of(context)!.all,
+                      label: _l10n!.all,
                       isSelected: !_showOnlyAdmins,
                       onTap: () {
                         if (_showOnlyAdmins) _toggleAdminFilter();
@@ -163,7 +176,7 @@ class _EKeyListPageState extends State<EKeyListPage> {
                     ),
                     const SizedBox(width: 12),
                     _buildFilterChip(
-                      label: AppLocalizations.of(context)!.admins, // Make sure to add this to localization if missing, or use 'Admins'
+                      label: _l10n!.admins,
                       isSelected: _showOnlyAdmins,
                       onTap: () {
                         if (!_showOnlyAdmins) _toggleAdminFilter();
@@ -173,18 +186,16 @@ class _EKeyListPageState extends State<EKeyListPage> {
                 ),
               ),
               const SizedBox(height: 8),
-
-              // Content
               Expanded(
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : _errorMessage != null
                         ? Center(child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)))
                         : _filteredKeys.isEmpty
-                            ? Center(child: Text(AppLocalizations.of(context)!.noEKeysFound, style: const TextStyle(color: Colors.grey)))
+                            ? Center(child: Text(_l10n!.noEKeysFound, style: const TextStyle(color: Colors.grey)))
                             : ListView.builder(
                                 itemCount: _filteredKeys.length,
-                                padding: const EdgeInsets.only(bottom: 150), // Increased padding for bottom button
+                                padding: const EdgeInsets.only(bottom: 150),
                                 itemBuilder: (context, index) {
                                   final key = _filteredKeys[index];
                                   return _buildKeyCard(key);
@@ -193,8 +204,6 @@ class _EKeyListPageState extends State<EKeyListPage> {
               ),
             ],
           ),
-          
-          // Floating Bottom Button
           Positioned(
             left: 0,
             right: 0,
@@ -215,10 +224,10 @@ class _EKeyListPageState extends State<EKeyListPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => SendEKeyPage(lock: widget.lock)),
-                    ).then((_) => _fetchKeys()); // Refresh on return
+                    ).then((_) => _fetchKeys());
                   },
                   icon: const Icon(Icons.add, color: AppColors.primary),
-                  label: Text(AppLocalizations.of(context)!.sendKey, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                  label: Text(_l10n!.sendKey, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2C2C2C),
                     foregroundColor: AppColors.primary,
@@ -235,26 +244,19 @@ class _EKeyListPageState extends State<EKeyListPage> {
   }
 
   Widget _buildKeyCard(Map<String, dynamic> keyItem) {
-    /* 
-       Keys map fields based on typical TTLock responses:
-       keyName, username, startDate, endDate, keyStatus
-    */
-    final username = keyItem['username'] ?? ''; // Often email or phone
+    final username = keyItem['username'] ?? '';
     final startDate = DateTime.fromMillisecondsSinceEpoch(keyItem['startDate'] ?? 0);
     final endDate = DateTime.fromMillisecondsSinceEpoch(keyItem['endDate'] ?? 0);
     final keyRight = keyItem['keyRight'];
     final isAdmin = keyRight == 1 || keyRight == '1';
     
-    // Check if expired
     final isExpired = DateTime.now().isAfter(endDate);
     
-    // Format dates: 2026.01.30 00:00
     final startStr = "${startDate.year}.${startDate.month.toString().padLeft(2,'0')}.${startDate.day.toString().padLeft(2,'0')} ${startDate.hour.toString().padLeft(2,'0')}:${startDate.minute.toString().padLeft(2,'0')}";
     final endStr = "${endDate.year}.${endDate.month.toString().padLeft(2,'0')}.${endDate.day.toString().padLeft(2,'0')} ${endDate.hour.toString().padLeft(2,'0')}:${endDate.minute.toString().padLeft(2,'0')}";
 
     return InkWell(
       onTap: () {
-        // Navigate to details if needed, reusing existing EKeyDetailPage
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -262,7 +264,7 @@ class _EKeyListPageState extends State<EKeyListPage> {
                  eKey: keyItem, 
                  lockId: widget.lock['lockId'].toString(),
                  lockName: widget.lock['name'] ?? '',
-                 isOwner: true // Assuming user viewing list is owner/admin
+                 isOwner: true
                )
             )
         ).then((_) => _fetchKeys());
@@ -274,26 +276,23 @@ class _EKeyListPageState extends State<EKeyListPage> {
         ),
         child: Row(
           children: [
-            // Icon
             Container(
               width: 50,
               height: 50,
               decoration: const BoxDecoration(
-                color: Color(0xFF0A84FF), // Blue circle
+                color: Color(0xFF0A84FF),
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
               child: const Icon(Icons.person, color: Colors.white, size: 28),
             ),
             const SizedBox(width: 16),
-            
-            // Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.keyFor(username), // Per design request mostly shows "Key for [receiver]"
+                    _l10n!.keyFor(username),
                     style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 4),
@@ -307,12 +306,12 @@ class _EKeyListPageState extends State<EKeyListPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.2),
+                          color: Colors.orange.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
+                          border: Border.all(color: Colors.orange.withOpacity(0.5)),
                         ),
                         child: Text(
-                          AppLocalizations.of(context)!.roleAdmin, // 'Yönetici' or 'Admin'
+                          _l10n!.roleAdmin,
                           style: const TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -320,19 +319,13 @@ class _EKeyListPageState extends State<EKeyListPage> {
                 ],
               ),
             ),
-            
-            // Status / Arrow
             if (isExpired)
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                   Text(AppLocalizations.of(context)!.expired, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                   Text(_l10n!.expired, style: const TextStyle(color: Colors.red, fontSize: 12)),
                   const SizedBox(height: 4),
-                  const Row(
-                    children: [
-                       Icon(Icons.watch_later_outlined, color: Colors.red, size: 16),
-                    ]
-                  )
+                  const Icon(Icons.watch_later_outlined, color: Colors.red, size: 16),
                 ],
               )
             else

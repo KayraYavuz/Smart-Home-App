@@ -86,6 +86,34 @@ class ApiService {
 
   ApiService(this._authRepository);
 
+  int _serverTimeOffset = 0;
+
+  /// Sync client time with server time using HTTP Date header
+  Future<void> _syncServerTime() async {
+    try {
+      final url = Uri.parse(_baseUrl);
+      // Using a HEAD request to get headers without downloading body
+      final response = await http.head(url);
+      
+      if (response.headers.containsKey('date')) {
+        final serverDateStr = response.headers['date'];
+        if (serverDateStr != null) {
+           final serverTime = HttpDate.parse(serverDateStr).millisecondsSinceEpoch;
+           final clientTime = DateTime.now().millisecondsSinceEpoch;
+           _serverTimeOffset = serverTime - clientTime;
+           debugPrint('⏱️ Server time sync: client=$clientTime, server=$serverTime, offset=$_serverTimeOffset ms');
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Time sync failed: $e');
+    }
+  }
+
+  /// Get corrected timestamp for API calls
+  String _getApiTime() {
+     return (DateTime.now().millisecondsSinceEpoch + _serverTimeOffset).toString();
+  }
+
   String? get accessToken => _accessToken;
 
   void setAccessToken(String? token) {
@@ -213,7 +241,7 @@ class ApiService {
       'clientSecret': ApiConfig.clientSecret,
       'username': username,
       'password': passwordMd5,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (verifyCode != null && verifyCode.isNotEmpty) {
@@ -256,7 +284,7 @@ class ApiService {
       'clientSecret': ApiConfig.clientSecret,
       'username': username,
       'password': passwordMd5,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (verifyCode != null && verifyCode.isNotEmpty) {
@@ -395,7 +423,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final imageFile = File(imagePath);
@@ -456,7 +484,7 @@ class ApiService {
       'featureData': featureData,
       'addType': addType.toString(),
       'type': type.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (name != null) {
@@ -511,7 +539,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
       if (searchStr != null) 'searchStr': searchStr,
     });
 
@@ -548,7 +576,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'faceId': faceId.toString(),
       'type': type.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -589,7 +617,7 @@ class ApiService {
       'startDate': startDate.toString(),
       'endDate': endDate.toString(),
       'type': type.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (cyclicConfig != null) {
@@ -625,7 +653,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -661,7 +689,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'faceId': faceId.toString(),
       'name': name,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -701,7 +729,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'fingerprintNumber': fingerprintNumber,
       'fingerprintType': fingerprintType.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (fingerprintName != null) {
@@ -754,7 +782,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
       if (searchStr != null) 'searchStr': searchStr,
       'orderBy': orderBy.toString(),
     });
@@ -795,7 +823,7 @@ class ApiService {
       'startDate': startDate.toString(),
       'endDate': endDate.toString(),
       'changeType': changeType.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -825,7 +853,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -860,7 +888,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'fingerprintId': fingerprintId.toString(),
       'fingerprintName': fingerprintName,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -885,6 +913,7 @@ class ApiService {
     int pageSize = 100,
     String? lockAlias,
     int? groupId,
+    bool isRetry = false, // Internal flag to prevent infinite loops
   }) async {
     debugPrint('🔑 TTLock key listesi çekme işlemi başladı...');
 
@@ -904,7 +933,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(), // Use synchronized time
     };
 
     if (lockAlias != null) {
@@ -928,10 +957,24 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      debugPrint('🔍 TTLock Key List API Full Response: $responseData');
+      // debugPrint('🔍 TTLock Key List API Full Response: $responseData');
 
       // Check for error in response body
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        
+        // Handle Error 80000: Timestamp invalid
+        if (responseData['errcode'] == 80000 && !isRetry) {
+           debugPrint('⚠️ Error 80000 detected (Time mismatch). Syncing time and retrying...');
+           await _syncServerTime();
+           return getKeyList(
+             pageNo: pageNo,
+             pageSize: pageSize,
+             lockAlias: lockAlias,
+             groupId: groupId,
+             isRetry: true,
+           );
+        }
+
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
         debugPrint('❌ Key List API Error: ${responseData['errcode']} - $errorMsg');
         throw Exception('Key List API Error ${responseData['errcode']}: $errorMsg');
@@ -941,34 +984,17 @@ class ApiService {
         final List<dynamic> keysFromApi = responseData['list'];
         debugPrint('✅ Successfully fetched ${keysFromApi.length} keys from TTLock API.');
 
-        // Debug: Her key'in detaylarını logla
-        for (var i = 0; i < keysFromApi.length; i++) {
-          final key = keysFromApi[i];
-          debugPrint('  🔑 Key ${i + 1}: ID=${key['keyId']}, LockID=${key['lockId']}, Name=${key['lockName'] ?? key['lockAlias'] ?? key['lockNickName'] ?? key['name'] ?? 'Unknown'}, Status=${key['keyStatus']}');
-          debugPrint('     🔍 API Fields: lockName=${key['lockName']}, lockAlias=${key['lockAlias']}, lockNickName=${key['lockNickName']}, name=${key['name']}');
-          debugPrint('     📋 Raw key data: ${key.keys.join(', ')}'); // Tüm alanları listele
-        }
-
         // Map to lock format for UI compatibility
         final locks = keysFromApi.map((key) {
           final lockId = key['lockId']?.toString() ?? '';
           final keyId = key['keyId']?.toString() ?? '';
           
-          // TTLock Cloud API'de lockAlias orijinal adı temsil eder.
-          // Eğer lockAlias yoksa lockName, o da yoksa diğer alanları kullan.
           final lockAlias = key['lockAlias'] ?? key['lockName'] ?? key['lockNickName'] ?? key['name'] ?? 'Yavuz Lock';
           
-          final keyStatus = key['keyStatus']; // Keep raw value
+          final keyStatus = key['keyStatus']; 
           final electricQuantity = key['electricQuantity'] ?? key['battery'] ?? 0;
-          final userType = key['userType']; // "110301"-admin, "110302"-common
+          final userType = key['userType']; 
 
-          // Determine if this is a shared key
-          // Logic update: Check userType or keyStatus if available
-          // userType "110302" is common user (likely shared)
-          // keyStatus "110405" or similar might mean something else
-          // For backwards compatibility, we try to interpret keyStatus as int if possible, 
-          // but relying on userType "110302" for shared status is safer if available.
-          
           bool isShared = false;
           if (userType != null) {
              isShared = userType.toString() == '110302';
@@ -979,7 +1005,7 @@ class ApiService {
           return {
             'lockId': lockId,
             'keyId': keyId,
-            'name': lockAlias, // Orijinal ad
+            'name': lockAlias, 
             'lockData': key['lockData'] ?? '',
             'lockMac': key['lockMac'] ?? '',
             'battery': electricQuantity,
@@ -987,13 +1013,12 @@ class ApiService {
             'userType': userType,
             'source': isShared ? 'ttlock_shared' : 'ttlock',
             'shared': isShared,
-            // Orijinal alanları da sakla (lazım olursa)
             'lockAlias': key['lockAlias'],
             'lockName': key['lockName'],
             'groupId': key['groupId'], 
-            'hasGateway': key['hasGateway'], // Add hasGateway
-            'endDate': key['endDate'], // Add endDate
-            'keyRight': key['keyRight'], // Add keyRight for admin check
+            'hasGateway': key['hasGateway'],
+            'endDate': key['endDate'],
+            'keyRight': key['keyRight'],
           };
         }).toList();
 
@@ -1027,7 +1052,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     debugPrint('📡 Get eKey API çağrısı: $url');
@@ -1071,7 +1096,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     debugPrint('📡 Query Lock Open State API çağrısı: $url');
@@ -1119,7 +1144,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     debugPrint('📡 Query Lock Time API çağrısı: $url');
@@ -1224,7 +1249,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     debugPrint('📡 Query Lock Battery API çağrısı: $url');
@@ -1268,7 +1293,7 @@ class ApiService {
       'lockId': lockId,
       'pageNo': '1',
       'pageSize': '50',
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -1305,7 +1330,7 @@ class ApiService {
       'lockId': lockId,
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (startDate != null) queryParams['startDate'] = startDate.toString();
@@ -1348,7 +1373,7 @@ class ApiService {
       'accessToken': accessToken,
       'lockId': lockId,
       'records': json.encode(records),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -1383,7 +1408,7 @@ class ApiService {
       'accessToken': accessToken,
       'lockId': lockId,
       'recordIdList': json.encode(recordIdList),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -1416,7 +1441,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -1453,7 +1478,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'name': name,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -1490,7 +1515,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'orderBy': orderBy.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -1519,7 +1544,7 @@ class ApiService {
       'groupId': groupId,
       'pageNo': '1',
       'pageSize': '100', // Assuming max 100 locks per group for simplicity
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -1552,7 +1577,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockId': lockId,
       'groupId': groupId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -1587,7 +1612,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'groupId': groupId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -1624,7 +1649,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'groupId': groupId,
       'name': newName,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -1656,7 +1681,7 @@ class ApiService {
       'lockId': lockId,
       'pageNo': '1',
       'pageSize': '50',
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -1695,7 +1720,7 @@ class ApiService {
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
       'orderBy': orderBy.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (searchStr != null && searchStr.isNotEmpty) {
@@ -1742,7 +1767,7 @@ class ApiService {
       'lockId': lockId,
       'pageNo': '1',
       'pageSize': '50',
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -1779,7 +1804,7 @@ class ApiService {
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
       'orderBy': orderBy.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final url = Uri.parse('$_baseUrl/v3/gateway/list').replace(queryParameters: queryParams.cast<String, String>());
@@ -1820,7 +1845,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Remote unlock API çağrısı: $url');
@@ -1855,6 +1880,7 @@ class ApiService {
     String? lockAlias,
     int? groupId,
     int? nbInitSuccess, // 1-yes, 0-no (Only for NB-IoT locks)
+    bool isRetry = false,
   }) async {
     debugPrint('🏗️ Kilidi TTLock bulutuna kaydediyor...');
 
@@ -1872,7 +1898,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockData': lockData,
       'lockAlias': lockAlias ?? 'Yavuz Lock',
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (groupId != null) {
@@ -1884,7 +1910,7 @@ class ApiService {
     }
 
     debugPrint('📡 Lock init API çağrısı: $url');
-    debugPrint('📝 Body: $body');
+    // debugPrint('📝 Body: $body');
 
     final response = await http.post(
       url,
@@ -1899,7 +1925,22 @@ class ApiService {
       
       // Check for both errcode (standard) or direct lockId return
       if (responseData is Map<String, dynamic>) {
+
         if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+           
+           // Handle Error 80000: Timestamp invalid
+           if (responseData['errcode'] == 80000 && !isRetry) {
+             debugPrint('⚠️ Error 80000 detected (Time mismatch) during init. Syncing time and retrying...');
+             await _syncServerTime();
+             return initializeLock(
+               lockData: lockData,
+               lockAlias: lockAlias,
+               groupId: groupId,
+               nbInitSuccess: nbInitSuccess,
+               isRetry: true,
+             );
+           }
+
            debugPrint('❌ Kilit kaydı API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
            throw Exception('Lock init failed: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
         }
@@ -1932,7 +1973,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'gatewayId': gatewayId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.post(url);
@@ -1961,7 +2002,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'gatewayId': gatewayId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.post(url);
@@ -1995,7 +2036,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'gatewayId': gatewayId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -2031,7 +2072,7 @@ class ApiService {
       if (gatewayName != null) 'gatewayName': gatewayName,
       if (networkName != null) 'networkName': networkName,
       if (networkPassword != null) 'networkPassword': networkPassword,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.post(url);
@@ -2065,7 +2106,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     debugPrint('📡 Get Gateways by Lock API çağrısı: $url');
@@ -2106,7 +2147,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'gatewayId': gatewayId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -2148,7 +2189,7 @@ class ApiService {
       'lockId': lockId,
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (searchStr != null && searchStr.isNotEmpty) {
@@ -2175,7 +2216,8 @@ class ApiService {
       debugPrint('🔍 Lock Key List Response: $responseData');
       
       if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
-        return (responseData['list'] as List).cast<Map<String, dynamic>>();
+        final list = responseData['list'] as List;
+        return list.map((e) => Map<String, dynamic>.from(e)).toList();
       } else {
         debugPrint('⚠️ Lock Key List Error: ${responseData['errmsg']}');
         return [];
@@ -2201,7 +2243,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'keyId': keyId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Delete eKey API çağrısı: $url');
@@ -2247,7 +2289,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'keyId': keyId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Freeze eKey API çağrısı: $url');
@@ -2293,7 +2335,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'keyId': keyId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Unfreeze eKey API çağrısı: $url');
@@ -2341,7 +2383,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'keyId': keyId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (keyName != null && keyName.isNotEmpty) {
@@ -2399,7 +2441,7 @@ class ApiService {
       'keyId': keyId,
       'startDate': startDate.millisecondsSinceEpoch.toString(),
       'endDate': endDate.millisecondsSinceEpoch.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Change eKey Period API çağrısı: $url');
@@ -2447,7 +2489,7 @@ class ApiService {
       'accessToken': accessToken,
       'lockId': lockId,
       'keyId': keyId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Authorize eKey API çağrısı: $url');
@@ -2495,7 +2537,7 @@ class ApiService {
       'accessToken': accessToken,
       'lockId': lockId,
       'keyId': keyId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Unauthorize eKey API çağrısı: $url');
@@ -2541,7 +2583,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'keyId': keyId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Get Unlock Link API çağrısı: $url');
@@ -2610,7 +2652,7 @@ class ApiService {
       'startDate': startDateStr,
       'endDate': endDateStr,
       'createUser': createUser.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (keyRight != 0) {
@@ -2668,7 +2710,7 @@ class ApiService {
       'accessToken': accessToken,
       'lockId': lockId,
       'username': username,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.post(url);
@@ -2710,7 +2752,7 @@ class ApiService {
       'keyboardPwdName': passcodeName,
       'startDate': startDate.toString(),
       'endDate': endDate.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -2743,7 +2785,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockId': lockId,
       'keyboardPwdId': keyboardPwdId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -2786,7 +2828,7 @@ class ApiService {
       'startDate': startDate.toString(),
       if (endDate != null) 'endDate': endDate.toString(),
       if (passcodeName != null) 'keyboardPwdName': passcodeName,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -2821,7 +2863,7 @@ class ApiService {
       'lockId': lockId,
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -2861,7 +2903,7 @@ class ApiService {
       if (newPasscode != null) 'newKeyboardPwd': newPasscode,
       if (startDate != null) 'startDate': startDate.toString(),
       if (endDate != null) 'endDate': endDate.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -2902,7 +2944,7 @@ class ApiService {
       'endDate': endDate.toString(),
       'addType': '2', // 2 = via gateway
       if (cardName != null) 'cardName': cardName,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -2925,6 +2967,7 @@ class ApiService {
   /// This method uses the `addForReversedCardNumber` endpoint, which is suitable
   /// for cards where the number might be reversed depending on the card reader.
   /// The `addType` is set to 2, indicating addition via gateway or WiFi lock.
+  /// Add an Identity Card
   Future<Map<String, dynamic>> addIdentityCard({
     required String lockId,
     required String cardNumber,
@@ -2932,15 +2975,17 @@ class ApiService {
     required int endDate,
     String? cardName,
     int cardType = 1, // Default to normal card
+    int addType = 1, // 1-APP Bluetooth, 2-Gateway/WiFi
+    List<Map<String, dynamic>>? cyclicConfig,
   }) async {
-    debugPrint('💳 Kimlik Kartı cloud üzerinden ekleniyor: $cardNumber');
+    debugPrint('💳 Kimlik Kartı ekleniyor: $cardNumber (addType: $addType)');
     await getAccessToken();
 
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/identityCard/addForReversedCardNumber');
+    final url = Uri.parse('$_baseUrl/v3/identityCard/add');
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -2950,12 +2995,16 @@ class ApiService {
       'startDate': startDate.toString(),
       'endDate': endDate.toString(),
       'cardType': cardType.toString(),
-      'addType': '2', // 2 = via gateway or WiFi lock
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'addType': addType.toString(),
+      'date': _getApiTime(),
     };
 
+    if (cyclicConfig != null) {
+      body['cyclicConfig'] = jsonEncode(cyclicConfig);
+    }
+
     debugPrint('📡 Add Identity Card API çağrısı: $url');
-    debugPrint('📝 Body: $body');
+    // debugPrint('📝 Body: $body');
 
     final response = await http.post(
       url,
@@ -2963,7 +3012,7 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Add Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    // debugPrint('📨 Add Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -3000,7 +3049,7 @@ class ApiService {
       'lockId': lockId,
       'cardId': cardId.toString(),
       'deleteType': '2', // 2 = via gateway or WiFi lock
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Delete Identity Card API çağrısı: $url');
@@ -3052,7 +3101,7 @@ class ApiService {
       'startDate': startDate.toString(),
       'endDate': endDate.toString(),
       'changeType': '2', // 2 = via gateway or WiFi lock
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Change Identity Card Period API çağrısı: $url');
@@ -3100,7 +3149,7 @@ class ApiService {
       'lockId': lockId,
       'cardId': cardId.toString(),
       'cardName': cardName,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Rename Identity Card API çağrısı: $url');
@@ -3146,7 +3195,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Clear Identity Cards API çağrısı: $url');
@@ -3193,7 +3242,7 @@ class ApiService {
       'startDate': startDate.toString(),
       'endDate': endDate.toString(),
       'changeType': '2', // 2 = via gateway
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -3231,7 +3280,7 @@ class ApiService {
       'endDate': endDate.toString(),
       'addType': '2', // 2 = via gateway
       if (fingerprintName != null) 'fingerprintName': fingerprintName,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -3269,7 +3318,7 @@ class ApiService {
       'startDate': startDate.toString(),
       'endDate': endDate.toString(),
       'changeType': '2', // 2 = via gateway
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -3306,7 +3355,7 @@ class ApiService {
       'modelNum': modelNum,
       'hardwareRevision': hardwareRevision,
       'firmwareRevision': firmwareRevision,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -3337,7 +3386,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'gatewayId': gatewayId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -3374,7 +3423,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'gatewayId': gatewayId,
       'gatewayName': gatewayName,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Rename Gateway API çağrısı: $url');
@@ -3425,7 +3474,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'receiverUsername': receiverUsername,
       'gatewayIdList': json.encode(gatewayIdList), // Convert list to JSON string
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Transfer Gateway API çağrısı: $url');
@@ -3475,7 +3524,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'gatewayNetMac': gatewayNetMac,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Query Gateway Init Status API çağrısı: $url');
@@ -3537,7 +3586,7 @@ class ApiService {
       'hardwareRevision': hardwareRevision,
       'firmwareRevision': firmwareRevision,
       'networkName': networkName,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Upload Gateway Detail API çağrısı: $url');
@@ -3585,7 +3634,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'gatewayId': gatewayId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     debugPrint('📡 Gateway Upgrade Check API çağrısı: $url');
@@ -3629,7 +3678,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'gatewayId': gatewayId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     debugPrint('📡 Set Gateway Upgrade Mode API çağrısı: $url');
@@ -3675,7 +3724,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockId': lockId,
       'cardId': cardId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -3705,7 +3754,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockId': lockId,
       'fingerprintId': fingerprintId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -3757,7 +3806,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     debugPrint('📡 queryOpenState ile kontrol ediliyor...');
@@ -3776,7 +3825,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     debugPrint('📋 lock detail ile kontrol ediliyor...');
@@ -3797,7 +3846,7 @@ class ApiService {
       'lockId': lockId,
       'pageNo': '1',
       'pageSize': '1',
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     debugPrint('📝 lock records ile kontrol ediliyor...');
@@ -3880,7 +3929,7 @@ class ApiService {
           'username': userFormat,
           'password': _generateMd5(password),
           'grant_type': 'password',
-          'date': DateTime.now().millisecondsSinceEpoch.toString(), 
+          'date': _getApiTime(), 
         };
 
         try {
@@ -3954,7 +4003,7 @@ class ApiService {
             'clientSecret': ApiConfig.clientSecret,
             'refresh_token': _refreshToken!,
             'grant_type': 'refresh_token',
-            'date': DateTime.now().millisecondsSinceEpoch.toString(),
+            'date': _getApiTime(),
           },
         ).timeout(const Duration(seconds: 15));
 
@@ -4011,7 +4060,7 @@ class ApiService {
       'clientSecret': ApiConfig.clientSecret,
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
       if (startDate != null) 'startDate': startDate.toString(),
       if (endDate != null) 'endDate': endDate.toString(),
     });
@@ -4107,7 +4156,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (lockAlias != null) {
@@ -4184,7 +4233,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final url = Uri.parse('$_baseUrl/v3/lock/detail').replace(queryParameters: queryParams);
@@ -4746,7 +4795,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final url = Uri.parse('$_baseUrl/v3/lock/getPassageModeConfiguration').replace(queryParameters: queryParams);
@@ -4934,7 +4983,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final url = Uri.parse('$_baseUrl/v3/lock/getWorkingMode');
@@ -5063,7 +5112,7 @@ class ApiService {
         'clientId': ApiConfig.clientId,
         'accessToken': accessToken,
         'lockId': lockId,
-        'date': DateTime.now().millisecondsSinceEpoch.toString(),
+        'date': _getApiTime(),
       },
     );
 
@@ -5096,7 +5145,7 @@ class ApiService {
         'clientId': ApiConfig.clientId,
         'accessToken': accessToken,
         'url': callbackUrl,
-        'date': DateTime.now().millisecondsSinceEpoch.toString(),
+        'date': _getApiTime(),
       },
     );
 
@@ -5138,7 +5187,7 @@ class ApiService {
           'accessToken': _accessToken,
           'pageNo': '1',
           'pageSize': '100',
-          'date': DateTime.now().millisecondsSinceEpoch.toString(),
+          'date': _getApiTime(),
         });
 
         final response = await http.get(url);
@@ -5213,7 +5262,7 @@ class ApiService {
         'lockId': lockId,
         'pageNo': pageNo.toString(),
         'pageSize': pageSize.toString(),
-        'date': DateTime.now().millisecondsSinceEpoch.toString(),
+        'date': _getApiTime(),
       },
     );
 
@@ -5260,7 +5309,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -5305,7 +5354,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
       'lockData': lockData,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -5356,7 +5405,7 @@ class ApiService {
       'wirelessKeypadName': wirelessKeypadName,
       'wirelessKeypadMac': wirelessKeypadMac,
       'wirelessKeypadFeatureValue': wirelessKeypadFeatureValue,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (electricQuantity != null) {
@@ -5395,7 +5444,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -5427,7 +5476,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'wirelessKeypadId': wirelessKeypadId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -5461,7 +5510,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'wirelessKeypadId': wirelessKeypadId.toString(),
       'wirelessKeypadName': wirelessKeypadName,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -5495,7 +5544,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'wirelessKeypadId': wirelessKeypadId.toString(),
       'slotNumber': slotNumber.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -5532,7 +5581,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'wirelessKeypadId': wirelessKeypadId.toString(),
       'slotNumber': slotNumber.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (featureValue != null) {
@@ -5583,7 +5632,7 @@ class ApiService {
       'mac': mac,
       'electricQuantity': electricQuantity.toString(),
       'firmwareInfo': jsonEncode(firmwareInfo),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (name != null) body['name'] = name;
@@ -5630,7 +5679,7 @@ class ApiService {
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
       'orderBy': orderBy.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -5662,7 +5711,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'remoteId': remoteId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -5694,7 +5743,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -5732,7 +5781,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'remoteId': remoteId.toString(),
       'changeType': changeType.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (name != null) body['name'] = name;
@@ -5772,7 +5821,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'remoteId': remoteId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (modelNum != null) body['modelNum'] = modelNum;
@@ -5812,7 +5861,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'remoteId': remoteId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (slotNumber != null) body['slotNumber'] = slotNumber.toString();
@@ -5858,7 +5907,7 @@ class ApiService {
       'mac': mac,
       'electricQuantity': electricQuantity.toString(),
       'firmwareInfo': jsonEncode(firmwareInfo),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (name != null) body['name'] = name;
@@ -5896,7 +5945,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -5933,7 +5982,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'doorSensorId': doorSensorId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -5966,7 +6015,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'doorSensorId': doorSensorId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (name != null) body['name'] = name;
@@ -6003,7 +6052,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'doorSensorId': doorSensorId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (modelNum != null) body['modelNum'] = modelNum;
@@ -6041,7 +6090,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'doorSensorId': doorSensorId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -6083,7 +6132,7 @@ class ApiService {
       'nbCardNumber': nbCardNumber,
       'nbOperator': nbOperator,
       'nbRssi': nbRssi.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -6115,7 +6164,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -6143,7 +6192,7 @@ class ApiService {
     final url = Uri.parse('$_baseUrl/v3/lock/getNbPlatformIpAndPort').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -6191,7 +6240,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'type': type.toString(),
       'addType': addType.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (name != null) body['name'] = name;
@@ -6237,7 +6286,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
       if (name != null) 'name': name,
     });
 
@@ -6269,7 +6318,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'qrCodeId': qrCodeId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     });
 
     final response = await http.get(url);
@@ -6312,7 +6361,7 @@ class ApiService {
       'qrCodeId': qrCodeId.toString(),
       'type': type.toString(),
       'changeType': changeType.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (name != null) body['name'] = name;
@@ -6353,7 +6402,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'qrCodeId': qrCodeId.toString(),
       'deleteType': deleteType.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -6387,7 +6436,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
       'type': type.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -6430,7 +6479,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (networkName != null) body['networkName'] = networkName;
@@ -6473,7 +6522,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -6514,7 +6563,7 @@ class ApiService {
       'lockId': lockId.toString(),
       'pageNo': pageNo.toString(),
       'pageSize': pageSize.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (searchStr != null) body['searchStr'] = searchStr;
@@ -6566,7 +6615,7 @@ class ApiService {
       'startDate': startDate.toString(),
       'endDate': endDate.toString(),
       'type': type.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (name != null) body['name'] = name;
@@ -6605,7 +6654,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'id': palmVeinId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (name != null) body['name'] = name;
@@ -6645,7 +6694,7 @@ class ApiService {
       'id': palmVeinId.toString(),
       'startDate': startDate.toString(),
       'endDate': endDate.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     if (type != null) body['type'] = type.toString();
@@ -6681,7 +6730,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'id': palmVeinId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
     
     if (type != null) body['type'] = type.toString();
@@ -6715,7 +6764,7 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(
@@ -6778,7 +6827,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockId': lockId,
       'records': records,
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+      'date': _getApiTime(),
     };
 
     final response = await http.post(

@@ -633,7 +633,10 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CardPage(lockId: widget.lock['lockId'].toString()),
+        builder: (context) => CardPage(
+          lockId: widget.lock['lockId'].toString(),
+          lockData: widget.lock['lockData'],
+        ),
       ),
     );
   }

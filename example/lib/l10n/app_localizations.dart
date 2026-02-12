@@ -637,7 +637,7 @@ abstract class AppLocalizations {
   /// No description provided for @readCard.
   ///
   /// In en, this message translates to:
-  /// **'Read Card'**
+  /// **'Card'**
   String get readCard;
 
   /// No description provided for @clearCard.
@@ -3795,6 +3795,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get all;
+
+  /// No description provided for @validityType.
+  ///
+  /// In en, this message translates to:
+  /// **'Validity Type'**
+  String get validityType;
+
+  /// No description provided for @scanCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Card'**
+  String get scanCard;
+
+  /// No description provided for @connectAndScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to lock and scan card'**
+  String get connectAndScan;
+
+  /// No description provided for @cardNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Card name is required'**
+  String get cardNameRequired;
+
+  /// No description provided for @bluetoothRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth connection required'**
+  String get bluetoothRequired;
+
+  /// No description provided for @selectDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Days'**
+  String get selectDays;
+
+  /// No description provided for @startTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Time'**
+  String get startTime;
+
+  /// No description provided for @endTime.
+  ///
+  /// In en, this message translates to:
+  /// **'End Time'**
+  String get endTime;
+
+  /// No description provided for @weekend.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekend'**
+  String get weekend;
+
+  /// No description provided for @daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get daily;
+
+  /// No description provided for @workday.
+  ///
+  /// In en, this message translates to:
+  /// **'Workday'**
+  String get workday;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
 
   /// No description provided for @scanLockDescription.
   ///

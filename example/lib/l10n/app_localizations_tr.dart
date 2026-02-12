@@ -2031,6 +2031,60 @@ class AppLocalizationsTr extends AppLocalizations {
   String get all => 'Tümü';
 
   @override
+  String get validityType => 'Geçerlilik Tipi';
+
+  @override
+  String get scanCard => 'Kartı Tara';
+
+  @override
+  String get connectAndScan => 'Kilide bağlan ve kartı tara';
+
+  @override
+  String get cardNameRequired => 'Kart adı gerekli';
+
+  @override
+  String get bluetoothRequired => 'Bluetooth bağlantısı gerekli';
+
+  @override
+  String get selectDays => 'Günleri Seç';
+
+  @override
+  String get startTime => 'Başlangıç Saati';
+
+  @override
+  String get endTime => 'Bitiş Saati';
+
+  @override
+  String get weekend => 'Haftasonu';
+
+  @override
+  String get daily => 'Günlük';
+
+  @override
+  String get workday => 'Hafta içi';
+
+  @override
+  String get monday => 'Pazartesi';
+
+  @override
+  String get tuesday => 'Salı';
+
+  @override
+  String get wednesday => 'Çarşamba';
+
+  @override
+  String get thursday => 'Perşembe';
+
+  @override
+  String get friday => 'Cuma';
+
+  @override
+  String get saturday => 'Cumartesi';
+
+  @override
+  String get sunday => 'Pazar';
+
+  @override
   String get scanLockDescription =>
       'Bluetooth ile çevredeki Yavuz Lock kilitlerini tara ve uygulamanıza ekleyin.';
 }
