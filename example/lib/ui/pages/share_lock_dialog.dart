@@ -22,6 +22,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
   final _remarksController = TextEditingController();
 
   int _selectedPermission = 2; // Default: Normal user
+  int _shareType = 0; // 0: Timed, 1: One-Time, 2: Permanent
   DateTime? _startDate;
   DateTime? _endDate;
 
@@ -103,7 +104,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 ),
                 const SizedBox(height: 20),
 
-                // Permission Selection
+                // Sharing Type Selection
                 Text(
                   l10n.permissionLevel,
                   style: const TextStyle(
@@ -114,6 +115,30 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 ),
                 const SizedBox(height: 12),
 
+                // Share type chips (Timed, One-Time, Permanent)
+                Row(
+                  children: [
+                    _buildShareTypeChip(l10n.tabTimed, 0),
+                    const SizedBox(width: 8),
+                    _buildShareTypeChip(l10n.tabOneTime, 1),
+                    const SizedBox(width: 8),
+                    _buildShareTypeChip(l10n.tabPermanent, 2),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Note text based on share type
+                Text(
+                  _shareType == 0
+                      ? l10n.timedKeyNote
+                      : _shareType == 1
+                          ? l10n.oneTimeKeyNote
+                          : l10n.permanentKeyNote,
+                  style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Permission Selection
                 Column(
                   children: [
                     // ignore: deprecated_member_use
@@ -169,35 +194,37 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
 
                 const SizedBox(height: 20),
 
-                // Date Selection
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildDateTimePicker(
-                        label: l10n.startDate,
-                        selectedDate: _startDate,
-                        onDateSelected: (date) {
-                          setState(() {
-                            _startDate = date;
-                          });
-                        },
+                // Date Selection - Only show for Timed type
+                if (_shareType == 0) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildDateTimePicker(
+                          label: l10n.startDate,
+                          selectedDate: _startDate,
+                          onDateSelected: (date) {
+                            setState(() {
+                              _startDate = date;
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildDateTimePicker(
-                        label: l10n.endDate,
-                        selectedDate: _endDate,
-                        onDateSelected: (date) {
-                          setState(() {
-                            _endDate = date;
-                          });
-                        },
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildDateTimePicker(
+                          label: l10n.endDate,
+                          selectedDate: _endDate,
+                          onDateSelected: (date) {
+                            setState(() {
+                              _endDate = date;
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                ],
 
                 // Remarks
                 TextFormField(
@@ -377,12 +404,41 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
     );
   }
 
+  Widget _buildShareTypeChip(String label, int value) {
+    final isSelected = _shareType == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _shareType = value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.blue : Colors.grey[850],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isSelected ? Colors.blue : Colors.grey[700]!,
+            ),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.grey,
+              fontSize: 13,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _shareLock() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    if (_startDate == null || _endDate == null) {
+    // Only require dates for Timed type
+    if (_shareType == 0 && (_startDate == null || _endDate == null)) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -422,14 +478,17 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
 
       for (String receiver in receiversToTry) {
         if (receiver.isEmpty) continue;
-        try {
+          try {
+          // For One-Time and Permanent: pass null dates (API sends '0')
+          final DateTime? shareStart = _shareType == 0 ? _startDate : null;
+          final DateTime? shareEnd = _shareType == 0 ? _endDate : null;
           await apiService.sendEKey(
             accessToken: accessToken,
             lockId: widget.lock['lockId'].toString(),
             receiverUsername: receiver,
             keyName: 'Key for $originalReceiver',
-            startDate: _startDate!,
-            endDate: _endDate!,
+            startDate: shareStart,
+            endDate: shareEnd,
             remoteEnable: _selectedPermission == 1 ? 1 : 2, // Map permission logic as needed
             createUser: 2, 
           );
@@ -442,13 +501,15 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
 
       if (!shareSuccess) {
         try {
+          final DateTime? shareStart2 = _shareType == 0 ? _startDate : null;
+          final DateTime? shareEnd2 = _shareType == 0 ? _endDate : null;
           await apiService.sendEKey(
             accessToken: accessToken,
             lockId: widget.lock['lockId'].toString(),
             receiverUsername: originalReceiver,
             keyName: 'Key for $originalReceiver',
-            startDate: _startDate!,
-            endDate: _endDate!,
+            startDate: shareStart2,
+            endDate: shareEnd2,
             remoteEnable: _selectedPermission == 1 ? 1 : 2,
             createUser: 1, 
           );

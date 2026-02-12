@@ -131,19 +131,23 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
 
       final apiService = ApiService(AuthRepository());
       
-      // Prepare parameters based on tab
-      int? finalStart;
-      int? finalEnd;
+      // Determine startDate/endDate based on key type
+      // Timed (tab 0): use selected dates
+      // One-Time (tab 1): null (API sends '0')
+      // Permanent (tab 2): null (API sends '0')
+      // Recurring (tab 3): use recurring dates
+      DateTime? finalStartDate;
+      DateTime? finalEndDate;
       List<Map<String, dynamic>>? cyclicConfig;
 
       if (_tabController.index == 0) {
         // Timed
-        finalStart = _startDate.millisecondsSinceEpoch;
-        finalEnd = _endDate.millisecondsSinceEpoch;
+        finalStartDate = _startDate;
+        finalEndDate = _endDate;
       } else if (_tabController.index == 3) {
         // Recurring
-        finalStart = _recStartDate.millisecondsSinceEpoch;
-        finalEnd = _recEndDate.millisecondsSinceEpoch;
+        finalStartDate = _recStartDate;
+        finalEndDate = _recEndDate;
         
         cyclicConfig = [
           {
@@ -153,14 +157,15 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
           }
         ];
       }
+      // For tab 1 (One-Time) and tab 2 (Permanent): finalStartDate and finalEndDate remain null
 
       final result = await apiService.sendEKey(
         accessToken: token,
         lockId: widget.lock['lockId'].toString(),
         receiverUsername: receiver,
         keyName: _nameController.text.isEmpty ? receiver : _nameController.text,
-        startDate: DateTime.fromMillisecondsSinceEpoch(finalStart ?? 0),
-        endDate: DateTime.fromMillisecondsSinceEpoch(finalEnd ?? 0),
+        startDate: finalStartDate,
+        endDate: finalEndDate,
         remoteEnable: _allowRemoteUnlock ? 1 : 2,
         cyclicConfig: cyclicConfig,
         createUser: 1, // Auto-create user if not exists

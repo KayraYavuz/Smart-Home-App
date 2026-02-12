@@ -365,15 +365,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                               : Text(l10n.registerBtn, style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
                         ),
-                        const SizedBox(height: 16),
-                        TextButton.icon(
-                          onPressed: () => _launchUrl('https://lock2.ttlock.com/'),
-                          icon: const Icon(Icons.language, color: Colors.blue, size: 20),
-                          label: Text(
-                            l10n.ttlockWebPortalRegister,
-                            style: const TextStyle(color: Colors.white70, fontSize: 13, decoration: TextDecoration.underline),
-                          ),
-                        ),
                       ],
 
                       if (_verificationEmailSent) ...[

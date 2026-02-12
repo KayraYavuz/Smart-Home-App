@@ -902,5 +902,8 @@
       }
     }
   },
-  "unknown": "Unknown"
+  "unknown": "Unknown",
+  "admins": "Admins",
+  "all": "All",
+  "roleAdmin": "Admin"
 }

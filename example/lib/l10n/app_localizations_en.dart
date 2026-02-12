@@ -2014,4 +2014,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unknown => 'Unknown';
+
+  @override
+  String get admins => 'Admins';
+
+  @override
+  String get all => 'All';
 }

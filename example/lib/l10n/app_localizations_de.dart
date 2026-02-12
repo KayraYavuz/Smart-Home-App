@@ -2035,4 +2035,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get unknown => 'Unbekannt';
+
+  @override
+  String get admins => 'Admins';
+
+  @override
+  String get all => 'All';
 }

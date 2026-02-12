@@ -22,6 +22,7 @@ class _EKeyListPageState extends State<EKeyListPage> {
   List<Map<String, dynamic>> _filteredKeys = [];
   bool _isLoading = true;
   String? _errorMessage;
+  bool _showOnlyAdmins = false; // New filter state
 
   @override
   void initState() {
@@ -68,18 +69,28 @@ class _EKeyListPageState extends State<EKeyListPage> {
   }
 
   void _filterKeys(String query) {
-    if (query.isEmpty) {
-      setState(() => _filteredKeys = _allKeys);
-      return;
-    }
-
-    final lowerQuery = query.toLowerCase();
     setState(() {
       _filteredKeys = _allKeys.where((key) {
         final name = (key['keyName'] ?? '').toLowerCase();
         final username = (key['username'] ?? '').toLowerCase();
-        return name.contains(lowerQuery) || username.contains(lowerQuery);
+        final matchesQuery = query.isEmpty || name.contains(query.toLowerCase()) || username.contains(query.toLowerCase());
+        
+        if (_showOnlyAdmins) {
+          final keyRight = key['keyRight'];
+          // keyRight 1 means Admin
+          final isAdmin = keyRight == 1 || keyRight == '1';
+          return matchesQuery && isAdmin;
+        }
+        
+        return matchesQuery;
       }).toList();
+    });
+  }
+
+  void _toggleAdminFilter() {
+    setState(() {
+      _showOnlyAdmins = !_showOnlyAdmins;
+      _filterKeys(_searchController.text);
     });
   }
 
@@ -136,6 +147,32 @@ class _EKeyListPageState extends State<EKeyListPage> {
                   ),
                 ),
               ),
+
+
+              // Filter Tabs
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                    _buildFilterChip(
+                      label: AppLocalizations.of(context)!.all,
+                      isSelected: !_showOnlyAdmins,
+                      onTap: () {
+                        if (_showOnlyAdmins) _toggleAdminFilter();
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    _buildFilterChip(
+                      label: AppLocalizations.of(context)!.admins, // Make sure to add this to localization if missing, or use 'Admins'
+                      isSelected: _showOnlyAdmins,
+                      onTap: () {
+                        if (!_showOnlyAdmins) _toggleAdminFilter();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
 
               // Content
               Expanded(
@@ -205,6 +242,8 @@ class _EKeyListPageState extends State<EKeyListPage> {
     final username = keyItem['username'] ?? ''; // Often email or phone
     final startDate = DateTime.fromMillisecondsSinceEpoch(keyItem['startDate'] ?? 0);
     final endDate = DateTime.fromMillisecondsSinceEpoch(keyItem['endDate'] ?? 0);
+    final keyRight = keyItem['keyRight'];
+    final isAdmin = keyRight == 1 || keyRight == '1';
     
     // Check if expired
     final isExpired = DateTime.now().isAfter(endDate);
@@ -262,6 +301,22 @@ class _EKeyListPageState extends State<EKeyListPage> {
                     '$startStr - $endStr',
                     style: const TextStyle(color: Colors.grey, fontSize: 13),
                   ),
+                  if (isAdmin)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)!.roleAdmin, // 'Yönetici' or 'Admin'
+                          style: const TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -283,6 +338,27 @@ class _EKeyListPageState extends State<EKeyListPage> {
             else
               const Icon(Icons.chevron_right, color: Colors.grey),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip({required String label, required bool isSelected, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : const Color(0xFF2C2C2C),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.grey,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontSize: 14,
+          ),
         ),
       ),
     );

@@ -2576,13 +2576,15 @@ class ApiService {
   }
 
   /// Send eKey (Share lock)
+  /// For permanent/one-time keys, pass startDate and endDate as null.
+  /// The API will receive '0' for both, indicating no time restriction.
   Future<Map<String, dynamic>> sendEKey({
     required String accessToken,
     required String lockId,
     required String receiverUsername, // Email or phone
     required String keyName, // Required by API
-    required DateTime startDate, // Required by API
-    required DateTime endDate, // Required by API
+    DateTime? startDate, // null for permanent/one-time keys
+    DateTime? endDate, // null for permanent/one-time keys
     int keyRight = 0, // 0: Normal user (default), 1: Admin
     String? remarks,
     int? remoteEnable, // 1-yes, 2-no
@@ -2594,6 +2596,10 @@ class ApiService {
     // TTLock API endpoint: /v3/key/send
     final url = Uri.parse('$_baseUrl/v3/key/send');
 
+    // For permanent/one-time keys, startDate and endDate should be '0'
+    final String startDateStr = startDate != null ? startDate.millisecondsSinceEpoch.toString() : '0';
+    final String endDateStr = endDate != null ? endDate.millisecondsSinceEpoch.toString() : '0';
+
     // Parametreleri body olarak gönder (application/x-www-form-urlencoded)
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
@@ -2601,8 +2607,8 @@ class ApiService {
       'lockId': lockId,
       'receiverUsername': receiverUsername,
       'keyName': keyName,
-      'startDate': startDate.millisecondsSinceEpoch.toString(),
-      'endDate': endDate.millisecondsSinceEpoch.toString(),
+      'startDate': startDateStr,
+      'endDate': endDateStr,
       'createUser': createUser.toString(),
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     };

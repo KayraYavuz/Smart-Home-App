@@ -2023,4 +2023,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get unknown => 'Bilinmiyor';
+
+  @override
+  String get admins => 'Yöneticiler';
+
+  @override
+  String get all => 'Tümü';
 }

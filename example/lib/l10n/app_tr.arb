@@ -743,5 +743,7 @@
       }
     }
   },
-  "unknown": "Bilinmiyor"
+  "unknown": "Bilinmiyor",
+  "admins": "Yöneticiler",
+  "all": "Tümü"
 }
