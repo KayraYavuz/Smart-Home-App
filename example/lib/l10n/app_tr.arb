@@ -745,5 +745,6 @@
   },
   "unknown": "Bilinmiyor",
   "admins": "Yöneticiler",
-  "all": "Tümü"
+  "all": "Tümü",
+  "scanLockDescription": "Bluetooth ile çevredeki Yavuz Lock kilitlerini tara ve uygulamanıza ekleyin."
 }

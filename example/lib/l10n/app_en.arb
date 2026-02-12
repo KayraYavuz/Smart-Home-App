@@ -905,5 +905,5 @@
   "unknown": "Unknown",
   "admins": "Admins",
   "all": "All",
-  "roleAdmin": "Admin"
+  "scanLockDescription": "Scan for nearby Yavuz Lock locks via Bluetooth and add them to your app."
 }

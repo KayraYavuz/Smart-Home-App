@@ -709,5 +709,6 @@
       }
     }
   },
-  "unknown": "Unbekannt"
+  "unknown": "Unbekannt",
+  "scanLockDescription": "Suchen Sie über Bluetooth nach Yavuz Lock-Schlössern in der Nähe und fügen Sie sie Ihrer App hinzu."
 }

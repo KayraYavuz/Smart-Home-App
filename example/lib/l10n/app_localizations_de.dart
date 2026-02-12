@@ -2041,4 +2041,8 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get all => 'All';
+
+  @override
+  String get scanLockDescription =>
+      'Suchen Sie über Bluetooth nach Yavuz Lock-Schlössern in der Nähe und fügen Sie sie Ihrer App hinzu.';
 }

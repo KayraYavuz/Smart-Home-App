@@ -110,7 +110,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Bluetooth ile çevredeki Yavuz Lock kilitlerini tara ve uygulamanıza ekleyin.', // TODO: Add to l10n
+            l10n.scanLockDescription,
             style: const TextStyle(
               color: Colors.grey,
               fontSize: 14,

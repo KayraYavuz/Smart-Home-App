@@ -2020,4 +2020,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get all => 'All';
+
+  @override
+  String get scanLockDescription =>
+      'Scan for nearby Yavuz Lock locks via Bluetooth and add them to your app.';
 }

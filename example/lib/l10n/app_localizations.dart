@@ -3795,6 +3795,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get all;
+
+  /// No description provided for @scanLockDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan for nearby Yavuz Lock locks via Bluetooth and add them to your app.'**
+  String get scanLockDescription;
 }
 
 class _AppLocalizationsDelegate
