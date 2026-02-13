@@ -134,91 +134,100 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
               ),
               const SizedBox(width: 8),
 
-              // Connectivity durumu
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                decoration: BoxDecoration(
-                  color: _isLoadingConnectivity
-                      ? Colors.grey.withValues(alpha: 0.2)
-                      : (_isOnline ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2)),
-                  borderRadius: BorderRadius.circular(6),
-                ),
+              // Durum ikonları (FittedBox ile sığdırıldı)
+              FittedBox(
+                fit: BoxFit.scaleDown,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _isLoadingConnectivity
-                        ? const SizedBox(
-                            width: 14,
-                            height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Icon(
-                            _isOnline ? Icons.wifi : Icons.wifi_off,
-                            color: _isOnline ? Colors.green : Colors.red,
+                    // Connectivity durumu
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _isLoadingConnectivity
+                            ? Colors.grey.withValues(alpha: 0.2)
+                            : (_isOnline ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2)),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _isLoadingConnectivity
+                              ? const SizedBox(
+                                  width: 14,
+                                  height: 14,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : Icon(
+                                  _isOnline ? Icons.wifi : Icons.wifi_off,
+                                  color: _isOnline ? Colors.green : Colors.red,
+                                  size: 14,
+                                ),
+                          const SizedBox(width: 2),
+                          Text(
+                            _isLoadingConnectivity ? '...' : (_isOnline ? l10n.online : l10n.offline),
+                            style: TextStyle(
+                              color: _isLoadingConnectivity
+                                  ? Colors.grey
+                                  : (_isOnline ? Colors.green : Colors.red),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Pil seviyesi
+                    Container(
+                      margin: const EdgeInsets.only(left: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _getBatteryColor(widget.lock['battery'] ?? 85).withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getBatteryIcon(widget.lock['battery'] ?? 85),
+                            color: _getBatteryColor(widget.lock['battery'] ?? 85),
                             size: 14,
                           ),
-                    const SizedBox(width: 2),
-                    Text(
-                      _isLoadingConnectivity ? '...' : (_isOnline ? l10n.online : l10n.offline),
-                      style: TextStyle(
-                        color: _isLoadingConnectivity
-                            ? Colors.grey
-                            : (_isOnline ? Colors.green : Colors.red),
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
+                          const SizedBox(width: 2),
+                          Text(
+                            '${widget.lock['battery'] ?? 85}%',
+                            style: TextStyle(
+                              color: _getBatteryColor(widget.lock['battery'] ?? 85),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+
+                    // Yetki durumu
+                    if (widget.lock['shared'] == true)
+                      Container(
+                        margin: const EdgeInsets.only(left: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          l10n.sharedLock,
+                          style: const TextStyle(
+                            color: Colors.orange,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
-
-              // Pil seviyesi
-              Container(
-                margin: const EdgeInsets.only(left: 4),
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                decoration: BoxDecoration(
-                  color: _getBatteryColor(widget.lock['battery'] ?? 85).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _getBatteryIcon(widget.lock['battery'] ?? 85),
-                      color: _getBatteryColor(widget.lock['battery'] ?? 85),
-                      size: 14,
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      '${widget.lock['battery'] ?? 85}%',
-                      style: TextStyle(
-                        color: _getBatteryColor(widget.lock['battery'] ?? 85),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Yetki durumu
-              if (widget.lock['shared'] == true)
-                Container(
-                  margin: const EdgeInsets.only(left: 4),
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    l10n.sharedLock,
-                    style: const TextStyle(
-                      color: Colors.orange,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
             ],
           ),
           centerTitle: false,

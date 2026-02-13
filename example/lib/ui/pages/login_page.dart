@@ -426,32 +426,48 @@ class _LoginPageState extends State<LoginPage> {
                                     value!.isEmpty ? l10n.codeRequired : null, // codeRequired yerine passwordRequired olmalı ama idare eder
                               ),
                               const SizedBox(height: 12),
-                              // Remember Me checkbox
+                              // Remember Me checkbox and Forgot Password
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Checkbox(
-                                        value: _rememberMe,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _rememberMe = value ?? false;
-                                          });
-                                        },
-                                        activeColor: const Color(0xFF1E90FF),
-                                      ),
-                                      Text(
-                                        l10n.rememberMe,
-                                        style: const TextStyle(color: Colors.white70, fontSize: 14),
-                                      ),
-                                    ],
+                                  Flexible(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Checkbox(
+                                          value: _rememberMe,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _rememberMe = value ?? false;
+                                            });
+                                          },
+                                          activeColor: const Color(0xFF1E90FF),
+                                        ),
+                                        Flexible(
+                                          child: Text(
+                                            l10n.rememberMe,
+                                            style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  TextButton(
-                                    // Link removed
-                                    onPressed: () {}, 
-                                    child: const SizedBox.shrink(), // Hiding the button
-
+                                  Flexible(
+                                    child: TextButton(
+                                      onPressed: () => _launchUrl('https://lock2.ttlock.com/'),
+                                      style: TextButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      child: Text(
+                                        l10n.forgotPasswordTitle,
+                                        style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.end,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),

@@ -7,6 +7,8 @@ class LanguageProvider extends ChangeNotifier {
 
   Locale _locale = const Locale('en'); // Default to English
 
+  bool _isUserModified = false;
+
   Locale get locale => _locale;
 
   /// List of supported locales
@@ -24,6 +26,10 @@ class LanguageProvider extends ChangeNotifier {
   /// If no preference is saved, try to use the system locale.
   Future<void> _loadSavedLocale() async {
     final prefs = await SharedPreferences.getInstance();
+    
+    // If the user modified the locale while we were loading, don't overwrite it.
+    if (_isUserModified) return;
+
     final savedLocale = prefs.getString(_localeKey);
 
     if (savedLocale != null) {
@@ -52,6 +58,7 @@ class LanguageProvider extends ChangeNotifier {
     }
 
     _locale = newLocale;
+    _isUserModified = true; // Mark as modified by user
     notifyListeners();
 
     final prefs = await SharedPreferences.getInstance();

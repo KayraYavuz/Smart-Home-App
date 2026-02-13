@@ -57,15 +57,18 @@ class HomePage extends StatelessWidget {
                       title: Text(lock['name']),
                       subtitle: Text(lock['status']),
                       leading: const Icon(Icons.lock),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.bluetooth),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.wifi),
-                          const SizedBox(width: 8),
-                          Text('${lock['battery']}%'),
-                        ],
+                      trailing: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.bluetooth),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.wifi),
+                            const SizedBox(width: 4),
+                            Text('${lock['battery']}%'),
+                          ],
+                        ),
                       ),
                       onTap: () {
                         Navigator.push(

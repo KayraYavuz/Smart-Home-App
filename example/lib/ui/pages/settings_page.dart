@@ -50,22 +50,26 @@ class SettingsPage extends StatelessWidget {
     LanguageProvider languageProvider,
     AppLocalizations l10n,
   ) {
-    return Card(
-      color: const Color(0xFF1E1E1E),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ListTile(
-        leading: const Icon(Icons.language, color: Colors.blue),
-        title: Text(
-          l10n.changeLanguage,
-          style: const TextStyle(color: Colors.white),
-        ),
-        subtitle: Text(
-          languageProvider.getDisplayName(languageProvider.locale, context),
-          style: const TextStyle(color: Colors.grey),
-        ),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-        onTap: () => _showLanguageDialog(context, languageProvider, l10n),
-      ),
+    return Consumer<LanguageProvider>(
+      builder: (context, provider, child) {
+        return Card(
+          color: const Color(0xFF1E1E1E),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: ListTile(
+            leading: const Icon(Icons.language, color: Colors.blue),
+            title: Text(
+              l10n.changeLanguage,
+              style: const TextStyle(color: Colors.white),
+            ),
+            subtitle: Text(
+              provider.getDisplayName(provider.locale, context),
+              style: const TextStyle(color: Colors.grey),
+            ),
+            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+            onTap: () => _showLanguageDialog(context, provider, l10n),
+          ),
+        );
+      },
     );
   }
 
