@@ -996,6 +996,7 @@ class ApiService {
           final userType = key['userType']; 
 
           // Logic to identify shared locks
+          bool isShared = false;
           // If senderUsername exists and is not empty, it's a shared lock
           final senderUsername = key['senderUsername'];
           if (senderUsername != null && senderUsername.toString().isNotEmpty) {
