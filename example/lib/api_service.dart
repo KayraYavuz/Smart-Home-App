@@ -995,10 +995,19 @@ class ApiService {
           final electricQuantity = key['electricQuantity'] ?? key['battery'] ?? 0;
           final userType = key['userType']; 
 
-          bool isShared = false;
-          if (userType != null) {
+          // Logic to identify shared locks
+          // If senderUsername exists and is not empty, it's a shared lock
+          final senderUsername = key['senderUsername'];
+          if (senderUsername != null && senderUsername.toString().isNotEmpty) {
+             isShared = true;
+          } else if (userType != null) {
+             // Fallback: 110302 is Normal User (definitely shared)
+             // But 110301 could be Owner OR Shared Admin. 
+             // Without senderUsername, we can't be 100% sure for 110301, 
+             // but usually shared keys have senderUsername.
              isShared = userType.toString() == '110302';
           } else if (keyStatus is int) {
+             // Fallback for very old keys
              isShared = keyStatus == 2 || keyStatus == 3;
           }
 
@@ -1019,6 +1028,7 @@ class ApiService {
             'hasGateway': key['hasGateway'],
             'endDate': key['endDate'],
             'keyRight': key['keyRight'],
+            'senderUsername': senderUsername,
           };
         }).toList();
 
