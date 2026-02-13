@@ -923,5 +923,9 @@
   "friday": "Friday",
   "saturday": "Saturday",
   "sunday": "Sunday",
-  "scanLockDescription": "Scan for nearby Yavuz Lock locks via Bluetooth and add them to your app."
+  "scanLockDescription": "Scan for Yavuz Lock locks via Bluetooth and add them to your app.",
+  "notificationsTitle": "Notifications",
+  "noNotifications": "No notifications yet",
+  "clearAll": "Clear All",
+  "markAsRead": "Mark as Read"
 }

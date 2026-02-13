@@ -3907,8 +3907,32 @@ abstract class AppLocalizations {
   /// No description provided for @scanLockDescription.
   ///
   /// In en, this message translates to:
-  /// **'Scan for nearby Yavuz Lock locks via Bluetooth and add them to your app.'**
+  /// **'Scan for Yavuz Lock locks via Bluetooth and add them to your app.'**
   String get scanLockDescription;
+
+  /// No description provided for @notificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get noNotifications;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get clearAll;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Read'**
+  String get markAsRead;
 }
 
 class _AppLocalizationsDelegate

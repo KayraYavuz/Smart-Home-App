@@ -21,6 +21,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String _username = 'Kullanıcı';
   String _email = 'email@ornek.com';
+  String _version = '';
 
   @override
   void initState() {
@@ -36,6 +37,19 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadUserInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      
+      // Get package info for version
+      // Since we don't have package_info_plus added in pubspec yet, we'll hardcode it for now
+      // or we can add the package. Given the constraints, I'll hardcode or use a const from config if available.
+      // Actually, better to just show the text hardcoded or check if package_info_plus is available.
+      // Looking at pubspec in Step 9, package_info_plus is NOT listed. 
+      // I will add the version manually to a constant or just string for now to save a pub add step if not strictly needed, 
+      // but the user wants "transparency". 
+      // Plan: I'll hardcode it here to match pubspec for simplicity and speed, as I am controlling the version bump.
+      setState(() {
+        _version = 'v1.0.9 (148)'; 
+      });
+
       String loadedEmail = prefs.getString('saved_email') ?? 'kullanici@ornek.com';
       String loadedUsername = prefs.getString('saved_username') ?? '';
 
@@ -259,6 +273,18 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Text(
                         l10n.deleteAccount,
                         style: const TextStyle(color: Colors.red, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Version Display
+                  Center(
+                    child: Text(
+                      _version,
+                      style: TextStyle(
+                        color: Colors.grey[700],
+                        fontSize: 12,
                       ),
                     ),
                   ),

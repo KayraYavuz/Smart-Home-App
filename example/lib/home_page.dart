@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'ui/pages/lock_detail_page.dart';
 import 'ui/pages/add_device_page.dart';
+import 'ui/pages/notification_page.dart';
+import 'services/notification_service.dart';
 
 import 'profile_page.dart';
 import 'api_service.dart';
@@ -586,15 +588,63 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Container(
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.add, color: Colors.white, size: 28),
-              onPressed: () => _addNewDevice(context),
-            ),
+          Row(
+            children: [
+              ValueListenableBuilder<int>(
+                valueListenable: NotificationService().unreadCount,
+                builder: (context, count, child) {
+                  return Stack(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications, color: Colors.white, size: 28),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const NotificationPage()),
+                          );
+                        },
+                      ),
+                      if (count > 0)
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 16,
+                              minHeight: 16,
+                            ),
+                            child: Text(
+                              '$count',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(width: 8),
+              Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.add, color: Colors.white, size: 28),
+                  onPressed: () => _addNewDevice(context),
+                ),
+              ),
+            ],
           ),
         ],
       ),

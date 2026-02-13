@@ -48,6 +48,49 @@ Future<void> main() async {
   debugPrint('🚀 Uygulama başlatılıyor...');
   debugPrint('⚙️  API Config: ClientId=${app_config.ApiConfig.clientId.isNotEmpty ? "OK" : "BOŞ"}, Username=${app_config.ApiConfig.username.isNotEmpty ? "OK" : "BOŞ"}');
 
+  // Firebase ve Bildirimleri Başlat
+  try {
+    debugPrint("🔥 Firebase.initializeApp() başlatılıyor...");
+    await Firebase.initializeApp();
+    debugPrint("✅ Firebase başarıyla başlatıldı");
+    
+    debugPrint("🚀 NotificationService başlatılıyor...");
+    await NotificationService().initialize();
+  } catch (e, stackTrace) {
+    debugPrint("❌ Firebase/Notification başlatma hatası: $e");
+    debugPrint("Stack Trace: $stackTrace");
+  }
+
+  // TTLock SDK Yapılandırması
+  if (Platform.isIOS || Platform.isAndroid) {
+    try {
+      if (app_config.ApiConfig.clientId.isEmpty) {
+        debugPrint('❌ TTLock Client ID boş! SDK başlatılmıyor. .env dosyasını kontrol edin.');
+        // return; // We might not want to return here, just log the error and continue if possible.
+      } else {
+        // Request permissions first
+        await _requestPermissions();
+
+        // 1. SDK Yapılandırması
+        TTLock.setupApp(app_config.ApiConfig.clientId, app_config.ApiConfig.clientSecret);
+        
+        // 2. SDK Durum Kontrolü (Başlangıçta bir kez kontrol et)
+        TTLock.getBluetoothState((status) {
+          debugPrint("✅ TTLock SDK Bluetooth Başlangıç Durumu: $status");
+        });
+
+        debugPrint('✅ TTLock SDK başarıyla başlatıldı');
+      }
+    } catch (e) {
+      debugPrint('❌ TTLock SDK başlatma hatası: $e');
+    }
+  } else {
+    debugPrint('ℹ️ TTLock SDK initialization is skipped on this platform (${Platform.operatingSystem}).');
+  }
+
+  // Initialize TTLock Webhook Service
+  TTLockWebhookService().startListening(app_config.TTLockConfig.webhookCallbackUrl);
+
   final authRepository = AuthRepository();
   runApp(
     MultiProvider(
@@ -66,8 +109,20 @@ Future<void> main() async {
   );
 }
 
-
-
+Future<void> _requestPermissions() async {
+  if (Platform.isAndroid) {
+      await [
+        Permission.bluetoothScan,
+        Permission.bluetoothConnect,
+        Permission.location,
+      ].request();
+  } else if (Platform.isIOS) {
+      await [
+        Permission.bluetooth,
+        Permission.location,
+      ].request();
+  }
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -81,75 +136,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
-    // 1. AŞAMA: Firebase ve Bildirimleri Başlat (Arka planda, UI'ı bloklamadan)
-    _initFirebaseAndNotifications();
-
-    // 2. AŞAMA: TTLock SDK Yapılandırması
-    _initializeTTLockSDK();
-
-    // Initialize TTLock Webhook Service
-    TTLockWebhookService().startListening(app_config.TTLockConfig.webhookCallbackUrl);
-
     // Dispatch AppStarted event for AuthBloc
     context.read<AuthBloc>().add(AppStarted());
-  }
-
-  Future<void> _initFirebaseAndNotifications() async {
-    try {
-      debugPrint("🔥 Firebase.initializeApp() başlatılıyor...");
-      await Firebase.initializeApp();
-      debugPrint("✅ Firebase başarıyla başlatıldı");
-      
-      debugPrint("🚀 NotificationService başlatılıyor...");
-      await NotificationService().initialize();
-    } catch (e, stackTrace) {
-      debugPrint("❌ Firebase/Notification başlatma hatası: $e");
-      debugPrint("Stack Trace: $stackTrace");
-    }
-  }
-
-  void _initializeTTLockSDK() async {
-     if (Platform.isIOS || Platform.isAndroid) {
-      try {
-        if (app_config.ApiConfig.clientId.isEmpty) {
-          debugPrint('❌ TTLock Client ID boş! SDK başlatılmıyor. .env dosyasını kontrol edin.');
-          return;
-        }
-
-        // Request permissions first
-        await _requestPermissions();
-
-        // 1. SDK Yapılandırması
-        TTLock.setupApp(app_config.ApiConfig.clientId, app_config.ApiConfig.clientSecret);
-        
-        // 2. SDK Durum Kontrolü (Başlangıçta bir kez kontrol et)
-        TTLock.getBluetoothState((status) {
-          debugPrint("✅ TTLock SDK Bluetooth Başlangıç Durumu: $status");
-        });
-
-        debugPrint('✅ TTLock SDK başarıyla başlatıldı');
-      } catch (e) {
-        debugPrint('❌ TTLock SDK başlatma hatası: $e');
-      }
-    } else {
-      debugPrint('ℹ️ TTLock SDK initialization is skipped on this platform (${Platform.operatingSystem}).');
-    }
-  }
-
-  Future<void> _requestPermissions() async {
-    if (Platform.isAndroid) {
-        await [
-          Permission.bluetoothScan,
-          Permission.bluetoothConnect,
-          Permission.location,
-        ].request();
-    } else if (Platform.isIOS) {
-        await [
-          Permission.bluetooth,
-          Permission.location,
-        ].request();
-    }
   }
 
   @override

@@ -367,7 +367,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 } else if (state is LoginTTLockWebRedirect) {
-                  _showWebPortalDialog(context);
+                  // Dialog removed as per request
+                  // _showWebPortalDialog(context);
                 }
               },
               child: BlocBuilder<LoginBloc, LoginState>(
@@ -447,8 +448,10 @@ class _LoginPageState extends State<LoginPage> {
                                     ],
                                   ),
                                   TextButton(
-                                    onPressed: () => _launchUrl('https://lock2.ttlock.com/'),
-                                    child: Text(l10n.forgotPasswordTitle, style: const TextStyle(color: Colors.white70)),
+                                    // Link removed
+                                    onPressed: () {}, 
+                                    child: const SizedBox.shrink(), // Hiding the button
+
                                   ),
                                 ],
                               ),

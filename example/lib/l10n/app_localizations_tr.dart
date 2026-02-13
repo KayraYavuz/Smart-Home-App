@@ -2087,4 +2087,16 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get scanLockDescription =>
       'Bluetooth ile çevredeki Yavuz Lock kilitlerini tara ve uygulamanıza ekleyin.';
+
+  @override
+  String get notificationsTitle => 'Bildirimler';
+
+  @override
+  String get noNotifications => 'Henüz bildirim yok';
+
+  @override
+  String get clearAll => 'Tümünü Temizle';
+
+  @override
+  String get markAsRead => 'Okundu İşaretle';
 }

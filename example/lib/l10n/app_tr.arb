@@ -764,5 +764,9 @@
   "friday": "Cuma",
   "saturday": "Cumartesi",
   "sunday": "Pazar",
-  "scanLockDescription": "Bluetooth ile çevredeki Yavuz Lock kilitlerini tara ve uygulamanıza ekleyin."
+  "scanLockDescription": "Bluetooth ile çevredeki Yavuz Lock kilitlerini tara ve uygulamanıza ekleyin.",
+  "notificationsTitle": "Bildirimler",
+  "noNotifications": "Henüz bildirim yok",
+  "clearAll": "Tümünü Temizle",
+  "markAsRead": "Okundu İşaretle"
 }
