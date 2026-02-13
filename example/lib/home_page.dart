@@ -590,6 +590,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
           Row(
             children: [
+              IconButton(
+                icon: const Icon(Icons.refresh, color: Colors.white, size: 28),
+                onPressed: _fetchAndSetLocks,
+              ),
+              const SizedBox(width: 8),
               ValueListenableBuilder<int>(
                 valueListenable: NotificationService().unreadCount,
                 builder: (context, count, child) {
