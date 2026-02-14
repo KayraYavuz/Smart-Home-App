@@ -214,7 +214,7 @@ class _EKeyListPageState extends State<EKeyListPage> {
                 left: 16.0, 
                 right: 16.0, 
                 top: 16.0, 
-                bottom: 80.0 + MediaQuery.of(context).padding.bottom
+                bottom: 30.0 + MediaQuery.of(context).padding.bottom
               ),
               child: SizedBox(
                 width: double.infinity,
