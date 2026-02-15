@@ -2996,7 +2996,12 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/identityCard/add');
+    // Use addForReversedCardNumber for Gateway (addType 2) since phone NFC
+    // reads card bytes in reverse order compared to how the lock reads them
+    final endpoint = addType == 2
+        ? '$_baseUrl/v3/identityCard/addForReversedCardNumber'
+        : '$_baseUrl/v3/identityCard/add';
+    final url = Uri.parse(endpoint);
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -3015,7 +3020,7 @@ class ApiService {
     }
 
     debugPrint('📡 Add Identity Card API çağrısı: $url');
-    // debugPrint('📝 Body: $body');
+    debugPrint('📝 Body: $body');
 
     final response = await http.post(
       url,
@@ -3023,7 +3028,7 @@ class ApiService {
       body: body,
     );
 
-    // debugPrint('📨 Add Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint('📨 Add Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
