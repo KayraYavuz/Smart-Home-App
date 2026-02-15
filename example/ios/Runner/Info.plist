@@ -49,6 +49,8 @@
 	<string>Bluetooth taraması için konum izni gereklidir.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Bluetooth taraması için konum izni gereklidir.</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>IC kart numarasını okumak için NFC gereklidir.</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_dartobservatory._tcp</string>

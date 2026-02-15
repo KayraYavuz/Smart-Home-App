@@ -140,27 +140,38 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
       final completer = Completer<String>();
 
       NfcManager.instance.startSession(
+        alertMessage: 'Hold your IC card near the phone',
         onDiscovered: (NfcTag tag) async {
           try {
-            // Read card UID from NFC tag
+            // Read card UID from NFC tag — cross-platform
+            // Android keys: nfca, nfcb, nfcf, nfcv, isodep, mifareclassic, mifareultralight
+            // iOS keys: mifare, iso7816, felica, iso15693
             List<int>? identifier;
 
-            final nfcA = tag.data['nfca'];
-            final nfcB = tag.data['nfcb'];
-            final isoDep = tag.data['isodep'];
-            final mifareClassic = tag.data['mifareclassic'];
-            final mifareUltralight = tag.data['mifareultralight'];
+            // Try all known tag types for identifier
+            final keysToCheck = [
+              // Android
+              'nfca', 'nfcb', 'nfcf', 'nfcv',
+              'isodep', 'mifareclassic', 'mifareultralight',
+              'ndefformatable',
+              // iOS
+              'mifare', 'iso7816', 'iso15693',
+            ];
 
-            if (nfcA != null && nfcA['identifier'] != null) {
-              identifier = List<int>.from(nfcA['identifier']);
-            } else if (nfcB != null && nfcB['identifier'] != null) {
-              identifier = List<int>.from(nfcB['identifier']);
-            } else if (isoDep != null && isoDep['identifier'] != null) {
-              identifier = List<int>.from(isoDep['identifier']);
-            } else if (mifareClassic != null && mifareClassic['identifier'] != null) {
-              identifier = List<int>.from(mifareClassic['identifier']);
-            } else if (mifareUltralight != null && mifareUltralight['identifier'] != null) {
-              identifier = List<int>.from(mifareUltralight['identifier']);
+            for (final key in keysToCheck) {
+              final tagData = tag.data[key];
+              if (tagData != null && tagData['identifier'] != null) {
+                identifier = List<int>.from(tagData['identifier']);
+                break;
+              }
+            }
+
+            // iOS FeliCa uses 'currentIDm' instead of 'identifier'
+            if (identifier == null) {
+              final felica = tag.data['felica'];
+              if (felica != null && felica['currentIDm'] != null) {
+                identifier = List<int>.from(felica['currentIDm']);
+              }
             }
 
             await NfcManager.instance.stopSession();
