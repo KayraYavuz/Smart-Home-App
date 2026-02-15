@@ -159,17 +159,42 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
       }
       // For tab 1 (One-Time) and tab 2 (Permanent): finalStartDate and finalEndDate remain null
 
-      final result = await apiService.sendEKey(
-        accessToken: token,
-        lockId: widget.lock['lockId'].toString(),
-        receiverUsername: receiver,
-        keyName: _nameController.text.isEmpty ? receiver : _nameController.text,
-        startDate: finalStartDate,
-        endDate: finalEndDate,
-        remoteEnable: _allowRemoteUnlock ? 1 : 2,
-        cyclicConfig: cyclicConfig,
-        createUser: 1, // Auto-create user if not exists
-      );
+      Map<String, dynamic> result;
+      try {
+        // First attempt: Try to send to existing global user (createUser: 2)
+        // This handles users registered via TTLock app or other apps
+        debugPrint("Attempting sendEKey with createUser: 2 (Global user check)");
+        result = await apiService.sendEKey(
+          accessToken: token,
+          lockId: widget.lock['lockId'].toString(),
+          receiverUsername: receiver,
+          keyName: _nameController.text.isEmpty ? receiver : _nameController.text,
+          startDate: finalStartDate,
+          endDate: finalEndDate,
+          remoteEnable: _allowRemoteUnlock ? 1 : 2,
+          cyclicConfig: cyclicConfig,
+          createUser: 2, // Do NOT auto-create, check if user exists
+        );
+      } catch (e) {
+        // If user not found (errcode: 10004), fallback to auto-create (createUser: 1)
+        // This handles new users or app-specific users
+        if (e.toString().contains('10004')) {
+           debugPrint("User not found (10004). Retrying with createUser: 1 (Auto-create)");
+           result = await apiService.sendEKey(
+            accessToken: token,
+            lockId: widget.lock['lockId'].toString(),
+            receiverUsername: receiver,
+            keyName: _nameController.text.isEmpty ? receiver : _nameController.text,
+            startDate: finalStartDate,
+            endDate: finalEndDate,
+            remoteEnable: _allowRemoteUnlock ? 1 : 2,
+            cyclicConfig: cyclicConfig,
+            createUser: 1, // Auto-create user
+          );
+        } else {
+          rethrow; // Rethrow other errors
+        }
+      }
 
       // Fetch unlock link with retry mechanism
       String? unlockLink;
