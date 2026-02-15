@@ -2975,9 +2975,9 @@ class ApiService {
   }
 
   /// Add an Identity Card (IC Card) to a lock via the cloud API.
-  /// This method uses the `addForReversedCardNumber` endpoint, which is suitable
-  /// for cards where the number might be reversed depending on the card reader.
-  /// The `addType` is set to 2, indicating addition via gateway or WiFi lock.
+  /// When addType=2 (Gateway) and the card was read via phone NFC,
+  /// the card number bytes are reversed compared to how the lock reads them.
+  /// We reverse the bytes before sending to the standard /add endpoint.
   /// Add an Identity Card
   Future<Map<String, dynamic>> addIdentityCard({
     required String lockId,
@@ -2996,17 +2996,25 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    // Use addForReversedCardNumber for Gateway (addType 2) since phone NFC
-    // reads card bytes in reverse order compared to how the lock reads them
-    final endpoint = addType == 2
-        ? '$_baseUrl/v3/identityCard/addForReversedCardNumber'
-        : '$_baseUrl/v3/identityCard/add';
-    final url = Uri.parse(endpoint);
+    // When adding via Gateway (addType 2) with phone NFC, the card number
+    // bytes are reversed. Reverse them before sending to the standard endpoint.
+    String finalCardNumber = cardNumber;
+    if (addType == 2 && cardNumber.length >= 2 && cardNumber.length % 2 == 0) {
+      // Reverse byte pairs: "12EFCDAB" → "ABCDEF12"
+      final bytes = <String>[];
+      for (int i = 0; i < cardNumber.length; i += 2) {
+        bytes.add(cardNumber.substring(i, i + 2));
+      }
+      finalCardNumber = bytes.reversed.join('');
+      debugPrint('🔄 Kart numarası tersine çevrildi: $cardNumber → $finalCardNumber');
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/identityCard/add');
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'cardNumber': cardNumber,
+      'cardNumber': finalCardNumber,
       'cardName': cardName ?? 'New Card',
       'cardType': cardType.toString(),
       'addType': addType.toString(),
