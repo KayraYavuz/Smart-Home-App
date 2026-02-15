@@ -3008,12 +3008,18 @@ class ApiService {
       'lockId': lockId,
       'cardNumber': cardNumber,
       'cardName': cardName ?? 'New Card',
-      'startDate': startDate.toString(),
-      'endDate': endDate.toString(),
       'cardType': cardType.toString(),
       'addType': addType.toString(),
       'date': _getApiTime(),
     };
+
+    // Only include startDate/endDate if non-zero (omit for permanent cards)
+    if (startDate > 0) {
+      body['startDate'] = startDate.toString();
+    }
+    if (endDate > 0) {
+      body['endDate'] = endDate.toString();
+    }
 
     if (cyclicConfig != null) {
       body['cyclicConfig'] = jsonEncode(cyclicConfig);
@@ -3033,15 +3039,16 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        final errorCode = responseData['errcode'];
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Kimlik Kartı ekleme API hatası: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Kimlik Kartı eklenemedi: ${responseData['errmsg']}');
+        debugPrint('❌ Kimlik Kartı ekleme API hatası: $errorCode - $errorMsg');
+        throw Exception('Hata ($errorCode): $errorMsg');
       }
       debugPrint('✅ Kimlik Kartı başarıyla eklendi');
       return responseData;
     } else {
-      debugPrint('❌ HTTP hatası: ${response.statusCode}');
-      throw Exception('Kimlik Kartı eklenemedi: HTTP ${response.statusCode}');
+      debugPrint('❌ HTTP hatası: ${response.statusCode} - ${response.body}');
+      throw Exception('HTTP ${response.statusCode}: ${response.body}');
     }
   }
 
