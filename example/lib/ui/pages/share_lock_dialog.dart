@@ -463,59 +463,46 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
       }
 
       final originalReceiver = _emailController.text.trim();
-      final String emailSmall = originalReceiver.toLowerCase();
-      final String sanitized = emailSmall.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-      final String beforeAt = emailSmall.contains('@') ? emailSmall.split('@')[0] : emailSmall;
-
-      final List<String> receiversToTry = [
-        'fihbg_$sanitized', 
-        'fihbg_$beforeAt',
-        originalReceiver,
-      ];
-
+      
       bool shareSuccess = false;
       String? lastError;
 
-      for (String receiver in receiversToTry) {
-        if (receiver.isEmpty) continue;
-          try {
-          // For One-Time and Permanent: pass null dates (API sends '0')
-          final DateTime? shareStart = _shareType == 0 ? _startDate : null;
-          final DateTime? shareEnd = _shareType == 0 ? _endDate : null;
-          await apiService.sendEKey(
-            accessToken: accessToken,
-            lockId: widget.lock['lockId'].toString(),
-            receiverUsername: receiver,
-            keyName: 'Key for $originalReceiver',
-            startDate: shareStart,
-            endDate: shareEnd,
-            remoteEnable: _selectedPermission == 1 ? 1 : 2, // Map permission logic as needed
-            createUser: 2, 
-          );
-          shareSuccess = true;
-          break; 
-        } catch (e) {
-          lastError = e.toString();
-        }
-      }
-
-      if (!shareSuccess) {
-        try {
-          final DateTime? shareStart2 = _shareType == 0 ? _startDate : null;
-          final DateTime? shareEnd2 = _shareType == 0 ? _endDate : null;
-          await apiService.sendEKey(
-            accessToken: accessToken,
-            lockId: widget.lock['lockId'].toString(),
-            receiverUsername: originalReceiver,
-            keyName: 'Key for $originalReceiver',
-            startDate: shareStart2,
-            endDate: shareEnd2,
-            remoteEnable: _selectedPermission == 1 ? 1 : 2,
-            createUser: 1, 
-          );
-          shareSuccess = true;
-        } catch (e) {
-          lastError = e.toString();
+      // First attempt: Try to send to existing global user (createUser: 2)
+      try {
+        final DateTime? shareStart = _shareType == 0 ? _startDate : null;
+        final DateTime? shareEnd = _shareType == 0 ? _endDate : null;
+        await apiService.sendEKey(
+          accessToken: accessToken,
+          lockId: widget.lock['lockId'].toString(),
+          receiverUsername: originalReceiver,
+          keyName: 'Key for $originalReceiver',
+          startDate: shareStart,
+          endDate: shareEnd,
+          remoteEnable: _selectedPermission == 1 ? 1 : 2, // Map permission logic as needed
+          createUser: 2, 
+        );
+        shareSuccess = true;
+      } catch (e) {
+        lastError = e.toString();
+        // If user not found (errcode: 10004), fallback to auto-create (createUser: 1)
+        if (e.toString().contains('10004')) {
+           try {
+              final DateTime? shareStart2 = _shareType == 0 ? _startDate : null;
+              final DateTime? shareEnd2 = _shareType == 0 ? _endDate : null;
+              await apiService.sendEKey(
+                accessToken: accessToken,
+                lockId: widget.lock['lockId'].toString(),
+                receiverUsername: originalReceiver,
+                keyName: 'Key for $originalReceiver',
+                startDate: shareStart2,
+                endDate: shareEnd2,
+                remoteEnable: _selectedPermission == 1 ? 1 : 2,
+                createUser: 1, 
+              );
+              shareSuccess = true;
+           } catch (e2) {
+             lastError = e2.toString();
+           }
         }
       }
 
