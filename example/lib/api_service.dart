@@ -2996,25 +2996,73 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    // When adding via Gateway (addType 2) with phone NFC, the card number
-    // bytes are reversed. Reverse them before sending to the standard endpoint.
+    // Try sending the card number as-is first, then reversed if it fails
+    // Phone NFC may or may not reverse the byte order vs how the lock reads it
     String finalCardNumber = cardNumber;
-    if (addType == 2 && cardNumber.length >= 2 && cardNumber.length % 2 == 0) {
-      // Reverse byte pairs: "12EFCDAB" → "ABCDEF12"
+    
+    debugPrint('💳 Trying card number as-is: $finalCardNumber');
+    
+    var result = await _sendAddIdentityCard(
+      lockId: lockId,
+      cardNumber: finalCardNumber,
+      cardName: cardName,
+      startDate: startDate,
+      endDate: endDate,
+      cardType: cardType,
+      addType: addType,
+      cyclicConfig: cyclicConfig,
+    );
+
+    // If error 90000, retry with reversed byte order
+    if (result.containsKey('errcode') && result['errcode'] == 90000 &&
+        cardNumber.length >= 2 && cardNumber.length % 2 == 0) {
       final bytes = <String>[];
       for (int i = 0; i < cardNumber.length; i += 2) {
         bytes.add(cardNumber.substring(i, i + 2));
       }
       finalCardNumber = bytes.reversed.join('');
-      debugPrint('🔄 Kart numarası tersine çevrildi: $cardNumber → $finalCardNumber');
+      debugPrint('🔄 Retrying with reversed card number: $finalCardNumber');
+      
+      result = await _sendAddIdentityCard(
+        lockId: lockId,
+        cardNumber: finalCardNumber,
+        cardName: cardName,
+        startDate: startDate,
+        endDate: endDate,
+        cardType: cardType,
+        addType: addType,
+        cyclicConfig: cyclicConfig,
+      );
     }
 
+    if (result.containsKey('errcode') && result['errcode'] != 0) {
+      final errorCode = result['errcode'];
+      final errorMsg = result['errmsg'] ?? 'Unknown error';
+      debugPrint('❌ Kimlik Kartı ekleme API hatası: $errorCode - $errorMsg');
+      throw Exception('Hata ($errorCode): $errorMsg\nKart: $cardNumber');
+    }
+    
+    debugPrint('✅ Kimlik Kartı başarıyla eklendi');
+    return result;
+  }
+
+  /// Internal helper for sending the add identity card API request
+  Future<Map<String, dynamic>> _sendAddIdentityCard({
+    required String lockId,
+    required String cardNumber,
+    String? cardName,
+    required int startDate,
+    required int endDate,
+    required int cardType,
+    required int addType,
+    List<Map<String, dynamic>>? cyclicConfig,
+  }) async {
     final url = Uri.parse('$_baseUrl/v3/identityCard/add');
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'cardNumber': finalCardNumber,
+      'cardNumber': cardNumber,
       'cardName': cardName ?? 'New Card',
       'cardType': cardType.toString(),
       'addType': addType.toString(),
@@ -3033,7 +3081,7 @@ class ApiService {
       body['cyclicConfig'] = jsonEncode(cyclicConfig);
     }
 
-    debugPrint('📡 Add Identity Card API çağrısı: $url');
+    debugPrint('📡 Add Identity Card API: $url');
     debugPrint('📝 Body: $body');
 
     final response = await http.post(
@@ -3042,20 +3090,11 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Add Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint('📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-        final errorCode = responseData['errcode'];
-        final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Kimlik Kartı ekleme API hatası: $errorCode - $errorMsg');
-        throw Exception('Hata ($errorCode): $errorMsg');
-      }
-      debugPrint('✅ Kimlik Kartı başarıyla eklendi');
-      return responseData;
+      return json.decode(response.body);
     } else {
-      debugPrint('❌ HTTP hatası: ${response.statusCode} - ${response.body}');
       throw Exception('HTTP ${response.statusCode}: ${response.body}');
     }
   }
