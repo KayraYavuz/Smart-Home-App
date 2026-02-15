@@ -3933,6 +3933,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mark as Read'**
   String get markAsRead;
+
+  /// No description provided for @addCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Card'**
+  String get addCard;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @cardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Number'**
+  String get cardNumber;
+
+  /// No description provided for @enterCardNumberOrScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter or scan with NFC'**
+  String get enterCardNumberOrScan;
+
+  /// No description provided for @scanCardWithPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan with Phone'**
+  String get scanCardWithPhone;
 }
 
 class _AppLocalizationsDelegate

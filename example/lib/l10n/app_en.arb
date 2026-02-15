@@ -927,5 +927,10 @@
   "notificationsTitle": "Notifications",
   "noNotifications": "No notifications yet",
   "clearAll": "Clear All",
-  "markAsRead": "Mark as Read"
+  "markAsRead": "Mark as Read",
+  "addCard": "Add Card",
+  "next": "Next",
+  "cardNumber": "Card Number",
+  "enterCardNumberOrScan": "Enter or scan with NFC",
+  "scanCardWithPhone": "Scan with Phone"
 }

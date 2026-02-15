@@ -2099,4 +2099,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get markAsRead => 'Okundu İşaretle';
+
+  @override
+  String get addCard => 'Kart Ekle';
+
+  @override
+  String get next => 'İleri';
+
+  @override
+  String get cardNumber => 'Kart Numarası';
+
+  @override
+  String get enterCardNumberOrScan => 'Girin veya NFC ile tarayın';
+
+  @override
+  String get scanCardWithPhone => 'Telefon ile Tara';
 }

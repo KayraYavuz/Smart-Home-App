@@ -2111,4 +2111,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get markAsRead => 'Mark as Read';
+
+  @override
+  String get addCard => 'Karte hinzufügen';
+
+  @override
+  String get next => 'Weiter';
+
+  @override
+  String get cardNumber => 'Kartennummer';
+
+  @override
+  String get enterCardNumberOrScan => 'Eingeben oder mit NFC scannen';
+
+  @override
+  String get scanCardWithPhone => 'Mit Telefon scannen';
 }

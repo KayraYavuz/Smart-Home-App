@@ -2090,4 +2090,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get markAsRead => 'Mark as Read';
+
+  @override
+  String get addCard => 'Add Card';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get cardNumber => 'Card Number';
+
+  @override
+  String get enterCardNumberOrScan => 'Enter or scan with NFC';
+
+  @override
+  String get scanCardWithPhone => 'Scan with Phone';
 }

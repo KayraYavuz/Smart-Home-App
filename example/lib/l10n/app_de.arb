@@ -710,5 +710,10 @@
     }
   },
   "unknown": "Unbekannt",
-  "scanLockDescription": "Suchen Sie über Bluetooth nach Yavuz Lock-Schlössern in der Nähe und fügen Sie sie Ihrer App hinzu."
+  "scanLockDescription": "Suchen Sie über Bluetooth nach Yavuz Lock-Schlössern in der Nähe und fügen Sie sie Ihrer App hinzu.",
+  "addCard": "Karte hinzufügen",
+  "next": "Weiter",
+  "cardNumber": "Kartennummer",
+  "enterCardNumberOrScan": "Eingeben oder mit NFC scannen",
+  "scanCardWithPhone": "Mit Telefon scannen"
 }

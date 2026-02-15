@@ -768,5 +768,10 @@
   "notificationsTitle": "Bildirimler",
   "noNotifications": "Henüz bildirim yok",
   "clearAll": "Tümünü Temizle",
-  "markAsRead": "Okundu İşaretle"
+  "markAsRead": "Okundu İşaretle",
+  "addCard": "Kart Ekle",
+  "next": "İleri",
+  "cardNumber": "Kart Numarası",
+  "enterCardNumberOrScan": "Girin veya NFC ile tarayın",
+  "scanCardWithPhone": "Telefon ile Tara"
 }
