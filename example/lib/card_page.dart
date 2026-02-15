@@ -236,6 +236,136 @@ class _CardPageState extends State<CardPage> {
     }
   }
 
+  Future<void> _recoverCards() async {
+    final TextEditingController cardNumberController = TextEditingController();
+    DateTime startDate = DateTime.now();
+    DateTime endDate = DateTime.now().add(const Duration(days: 365));
+
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setDialogState) {
+          return AlertDialog(
+            backgroundColor: Colors.grey[900],
+            title: const Text('Kartı Geri Al', style: TextStyle(color: Colors.white)),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Daha önce silinen bir kartı geri almak için kilit ile Bluetooth bağlantısı gerekir.',
+                    style: TextStyle(color: Colors.grey, fontSize: 13),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: cardNumberController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Kart Numarası',
+                      labelStyle: TextStyle(color: Colors.grey[400]),
+                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF4A90FF))),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Başlangıç: ${DateFormat('dd/MM/yyyy').format(startDate)}', style: const TextStyle(color: Colors.white)),
+                    trailing: const Icon(Icons.calendar_today, color: Colors.grey),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: startDate,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (picked != null) setDialogState(() => startDate = picked);
+                    },
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Bitiş: ${DateFormat('dd/MM/yyyy').format(endDate)}', style: const TextStyle(color: Colors.white)),
+                    trailing: const Icon(Icons.calendar_today, color: Colors.grey),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: endDate,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (picked != null) setDialogState(() => endDate = picked);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Geri Al', style: TextStyle(color: Color(0xFF4A90FF))),
+              ),
+            ],
+          );
+        });
+      },
+    );
+
+    if (confirm == true && cardNumberController.text.isNotEmpty) {
+      if (!mounted) return;
+      setState(() => _isLoading = true);
+
+      try {
+        final completer = Completer<void>();
+
+        TTLock.recoverCard(
+          cardNumberController.text.trim(),
+          startDate.millisecondsSinceEpoch,
+          endDate.millisecondsSinceEpoch,
+          widget.lockData,
+          () {
+            if (!completer.isCompleted) completer.complete();
+          },
+          (errorCode, errorMsg) {
+            if (!completer.isCompleted) {
+              completer.completeError(Exception('$errorCode: $errorMsg'));
+            }
+          },
+        );
+
+        await completer.future.timeout(const Duration(seconds: 15));
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('✅ Kart başarıyla geri alındı.'), backgroundColor: Colors.green),
+        );
+        await _fetchCards();
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Kart geri alınamadı: $e'), backgroundColor: Colors.red),
+        );
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _navigateToRemoteAddCard() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddCardPage(
+          lockId: widget.lockId,
+          lockData: widget.lockData,
+        ),
+      ),
+    );
+    if (result == true) await _fetchCards();
+  }
+
   String _formatDate(int timestamp) => DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(timestamp));
 
   @override
@@ -246,10 +376,55 @@ class _CardPageState extends State<CardPage> {
         backgroundColor: Colors.grey[900],
         title: const Text('IC Kartlar'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_sweep),
-            onPressed: _isLoading ? null : _clearAllCards,
-            tooltip: 'Tüm Kartları Temizle',
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            color: Colors.grey[850],
+            onSelected: (value) {
+              switch (value) {
+                case 'recover':
+                  _recoverCards();
+                  break;
+                case 'remote_add':
+                  _navigateToRemoteAddCard();
+                  break;
+                case 'clear_all':
+                  _clearAllCards();
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'recover',
+                child: Row(
+                  children: [
+                    Icon(Icons.restore, color: Colors.white, size: 20),
+                    SizedBox(width: 12),
+                    Text('Geri Alma', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'remote_add',
+                child: Row(
+                  children: [
+                    Icon(Icons.nfc, color: Colors.white, size: 20),
+                    SizedBox(width: 12),
+                    Text('Uzaktan Kart Oluşturma', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem(
+                value: 'clear_all',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete_sweep, color: Colors.redAccent, size: 20),
+                    SizedBox(width: 12),
+                    Text('Tüm Kartları Temizle', style: TextStyle(color: Colors.redAccent)),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
