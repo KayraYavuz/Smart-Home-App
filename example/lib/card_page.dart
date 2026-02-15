@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:intl/intl.dart';
+import 'package:ttlock_flutter/ttlock.dart';
 import 'add_card_page.dart';
 
 class CardPage extends StatefulWidget {
@@ -54,8 +56,14 @@ class _CardPageState extends State<CardPage> {
           title: const Text('Kartı Sil'),
           content: Text('"$cardNumber" numaralı kartı silmek istediğinize emin misiniz?'),
           actions: <Widget>[
-            TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('İptal')),
-            TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Sil')),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false), 
+              child: const Text('İptal')
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true), 
+              child: const Text('Sil', style: TextStyle(color: Colors.red))
+            ),
           ],
         );
       },
@@ -64,11 +72,51 @@ class _CardPageState extends State<CardPage> {
     if (confirm == true) {
       if (!mounted) return;
       setState(() => _isLoading = true);
+      
+      final apiService = Provider.of<ApiService>(context, listen: false);
+      bool bluetoothSuccess = false;
+
+      // 1. Try Bluetooth Deletion First
       try {
-        final apiService = Provider.of<ApiService>(context, listen: false);
-        await apiService.deleteIdentityCard(lockId: widget.lockId, cardId: cardId);
+        // We attempt to delete via Bluetooth. 
+        // If the lock is not connected or reachable, this might fail or timeout.
+        // We can use a short timeout or just try.
+        // Note: TTLock.deleteCard requires the card number.
+        // We'll wrap this in a try-catch to not block the process if BT fails.
+        final completer = Completer<void>();
+        
+        TTLock.deleteCard(cardNumber, widget.lockData, () {
+          // Success
+          completer.complete();
+        }, (errorCode, errorMsg) {
+          // Failure
+          if (!completer.isCompleted) completer.completeError(Exception("$errorCode: $errorMsg"));
+        });
+        
+        // Wait for result with a timeout (e.g., 5 seconds)
+        // If it times out, we assume we are not near the lock and proceed to Gateway deletion.
+        await completer.future.timeout(const Duration(seconds: 5));
+        bluetoothSuccess = true;
+        debugPrint("Card deleted via Bluetooth successfully.");
+      } catch (e) {
+        debugPrint("Bluetooth deletion failed or timed out: $e. Falling back to Gateway/Cloud deletion.");
+        bluetoothSuccess = false;
+      }
+
+      // 2. Call API to update server state
+      try {
+        // If Bluetooth success -> deleteType: 1
+        // If Bluetooth fail -> deleteType: 2 (Gateway/WiFi)
+        await apiService.deleteIdentityCard(
+          lockId: widget.lockId, 
+          cardId: cardId,
+          deleteType: bluetoothSuccess ? 1 : 2
+        );
+        
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart "$cardNumber" başarıyla silindi.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Kart "$cardNumber" başarıyla silindi (${bluetoothSuccess ? "Bluetooth" : "Gateway"}).'))
+        );
         await _fetchCards();
       } catch (e) {
         if (!mounted) return;

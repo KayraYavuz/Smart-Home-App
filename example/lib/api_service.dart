@@ -3041,12 +3041,13 @@ class ApiService {
   }
 
   /// Delete an Identity Card (IC Card) from a lock via the cloud API.
-  /// The `deleteType` is set to 2, indicating deletion via gateway or WiFi lock.
+  /// The `deleteType` indicates deletion method: 1 for Bluetooth (app), 2 for Gateway/WiFi.
   Future<void> deleteIdentityCard({
     required String lockId,
     required int cardId,
+    int deleteType = 2, // 1-APP Bluetooth, 2-Gateway/WiFi
   }) async {
-    debugPrint('🗑️ Kimlik Kartı cloud üzerinden siliniyor: $cardId');
+    debugPrint('🗑️ Kimlik Kartı cloud üzerinden siliniyor: $cardId (deleteType: $deleteType)');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -3059,7 +3060,7 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockId': lockId,
       'cardId': cardId.toString(),
-      'deleteType': '2', // 2 = via gateway or WiFi lock
+      'deleteType': deleteType.toString(),
       'date': _getApiTime(),
     };
 

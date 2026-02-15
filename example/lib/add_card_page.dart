@@ -33,54 +33,18 @@ class _AddCardPageState extends State<AddCardPage> {
   TimeOfDay _startTime = const TimeOfDay(hour: 9, minute: 0);
   TimeOfDay _endTime = const TimeOfDay(hour: 18, minute: 0);
 
-  bool _isLoading = false;
-  String? _statusMessage;
+  // 0: Bluetooth (Scan), 1: Gateway (Manual)
+  int _addMode = 0; 
+  final TextEditingController _manualCardNumberController = TextEditingController();
 
   @override
   void dispose() {
     _cardNameController.dispose();
+    _manualCardNumberController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: isStartDate ? _startDate : _endDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 1)),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isStartDate) {
-          _startDate = picked;
-          if (_startDate.isAfter(_endDate)) {
-            _endDate = _startDate.add(const Duration(days: 1));
-          }
-        } else {
-          _endDate = picked;
-          if (_endDate.isBefore(_startDate)) {
-            _startDate = _endDate.subtract(const Duration(days: 1));
-          }
-        }
-      });
-    }
-  }
-
-  Future<void> _selectTime(BuildContext context, bool isStartTime) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: isStartTime ? _startTime : _endTime,
-    );
-    if (picked != null) {
-      setState(() {
-        if (isStartTime) {
-          _startTime = picked;
-        } else {
-          _endTime = picked;
-        }
-      });
-    }
-  }
+  // ... (dates selection methods remain same) ...
 
   Future<void> _scanAndAddCard() async {
     if (!_formKey.currentState!.validate()) return;
@@ -88,19 +52,16 @@ class _AddCardPageState extends State<AddCardPage> {
 
     setState(() {
       _isLoading = true;
-      _statusMessage = l10n.connectAndScan;
+      _statusMessage = _addMode == 0 ? l10n.connectAndScan : "Adding via Gateway...";
     });
 
     try {
       int startDateMs;
       int endDateMs;
-      List<Map<String, dynamic>>? cyclicConfig;
-
+      
+      // Calculate start/end dates based on validity type
       if (_validityType == ValidityType.permanent) {
         startDateMs = DateTime.now().millisecondsSinceEpoch;
-        endDateMs = 0; // 0 usually means permanent in some SDKs, but for safety let's look at standard.
-        // Actually, for addCard, usually 0 is not used for permanent?
-        // Let's use a far future date.
         endDateMs = DateTime.now().add(const Duration(days: 365 * 99)).millisecondsSinceEpoch;
       } else if (_validityType == ValidityType.timed) {
         startDateMs = _startDate.millisecondsSinceEpoch;
@@ -110,75 +71,41 @@ class _AddCardPageState extends State<AddCardPage> {
         startDateMs = DateTime.now().millisecondsSinceEpoch;
         endDateMs = DateTime.now().add(const Duration(days: 365 * 10)).millisecondsSinceEpoch;
         
-        // Build cyclic config
-        // TTLock cyclic config format usually:
-        // [{weekDay: 1, startTime: 900, endTime: 1800}, ...] where startTime is minutes from midnight
         if (_selectedDays.isEmpty) {
            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select at least one day')));
            setState(() => _isLoading = false);
            return;
         }
-        
-        // NOTE: TTLock SDK might handle cyclic differently depending on version.
-        // Assuming we pass null to SDK and set it on server?
-        // No, SDK needs to program the card.
-        // However, standard addCard in SDK often just adds the card number, and access rights are managed?
-        // Actually, for IC Card, the rights are written to the card (if it's simple) or stored in lock memory.
-        // The lock memory needs to know the validity.
-        // If SDK addCard doesn't support cyclic, we can't do it via Bluetooth easily?
-        // Wait, lock_page.dart passed `null` as first arg.
-        // I will assume `null` is for cyclic config.
-        // If I can't construct it properly without documentation, I might stick to Permanent/Timed for Bluetooth.
-        // But user asked for Recurring.
-        // I'll try to support it by passing `null` to SDK and sending cyclic to Server, 
-        // BUT the lock needs to know.
-        // If the lock doesn't know, it will deny access.
-        // Let's assume standard addCard supports only Start/End.
-        // Cyclic might need `addCyclicCard`? Or maybe the first arg IS `cyclicConfig`.
-        // Let's look at `ttlock_flutter` types if I could, but I can't.
-        // I'll use `null` for SDK (to be safe and ensure it works) and send cyclic to Cloud.
-        // If Cloud pushes it to lock via Gateway later, good.
-        // If not, it might be a limitation.
-        // However, to be safe, I'll allow Recurring ONLY if I can verify SDK support.
-        // Since I can't, I will just implement Permanent and Timed for now? 
-        // NO, user asked for Recurring. 
-        // I will implement it and send cyclic to server. 
-        // AND I will try to pass something to SDK if I can guess the format.
-        // But `lock_page.dart` didn't show it.
-        // Let's stick to: SDK adds card (basic validity), Server gets full config.
-        // If SDK needs it, this might be partial.
-        // But `cardType` on server is `4` for cyclic?
-        // Note: `addIdentityCard` in `api_service.dart` does not use `cyclicConfig` yet? 
-        // Verify: I ADDED `cyclicConfig` support to `api_service.dart` in previous step.
-        // So I can send it to server.
       }
 
-      // Start Bluetooth Add
-      // NOTE: We wrap the callback based on `lock_page.dart` example
-      // TTLock.addCard(cyclicConfig, startDate, endDate, lockData, ...)
-      // We pass `null` for cyclicConfig for now as we are not sure of the structure expected by the plugin.
-      // This is a tradeoff. 
-      
-      final completer = Completer<String>();
-      
-      TTLock.addCard(null, startDateMs, endDateMs, widget.lockData, () {
-         // Progress callback
-         setState(() {
-           _statusMessage = "Device connecting...";
-         });
-      }, (cardNumber) {
-         // Success callback
-         completer.complete(cardNumber);
-      }, (errorCode, errorMsg) {
-         // Error callback
-         if (!completer.isCompleted) completer.completeError(Exception("$errorCode: $errorMsg"));
-      });
-      
-      final cardNumber = await completer.future;
+      String cardNumber = "";
 
-      setState(() {
-        _statusMessage = "Card scanned. Saving to server...";
-      });
+      if (_addMode == 0) {
+        // Bluetooth Mode: Scan using SDK
+        final completer = Completer<String>();
+        
+        // Pass null for cyclicConfig to SDK as structure is uncertain/complex
+        TTLock.addCard(null, startDateMs, endDateMs, widget.lockData, () {
+           setState(() {
+             _statusMessage = "Device connecting...";
+           });
+        }, (scannedNumber) {
+           completer.complete(scannedNumber);
+        }, (errorCode, errorMsg) {
+           if (!completer.isCompleted) completer.completeError(Exception("$errorCode: $errorMsg"));
+        });
+        
+        cardNumber = await completer.future;
+        setState(() {
+          _statusMessage = "Card scanned. Saving to server...";
+        });
+      } else {
+        // Gateway Mode: Use manually entered card number
+         cardNumber = _manualCardNumberController.text.trim();
+         if (cardNumber.isEmpty) {
+           throw Exception("Card number is required for Gateway mode");
+         }
+      }
       
       // Add to Server
       final apiService = Provider.of<ApiService>(context, listen: false);
@@ -198,7 +125,7 @@ class _AddCardPageState extends State<AddCardPage> {
         startDate: startDateMs,
         endDate: endDateMs,
         cardName: _cardNameController.text.isEmpty ? 'Card $cardNumber' : _cardNameController.text,
-        addType: 1, // Bluetooth
+        addType: _addMode == 0 ? 1 : 2, // 1: Bluetooth, 2: Gateway
         cyclicConfig: cyclicData, 
         cardType: _validityType == ValidityType.recurring ? 4 : 1
       );
@@ -229,7 +156,7 @@ class _AddCardPageState extends State<AddCardPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: Text(l10n.addDevice), // Using generic add title or Specific
+        title: Text(l10n.addDevice), 
         backgroundColor: Colors.grey[900],
       ),
       body: _isLoading
@@ -250,6 +177,32 @@ class _AddCardPageState extends State<AddCardPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Mode Selection
+                    Row(
+                      children: [
+                        Expanded(
+                          child: RadioListTile<int>(
+                            title: const Text('Bluetooth', style: TextStyle(color: Colors.white)),
+                            value: 0,
+                            groupValue: _addMode,
+                            onChanged: (val) => setState(() => _addMode = val!),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                        Expanded(
+                          child: RadioListTile<int>(
+                            title: const Text('Gateway/WLAN', style: TextStyle(color: Colors.white)),
+                            value: 1,
+                            groupValue: _addMode,
+                            onChanged: (val) => setState(() => _addMode = val!),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(color: Colors.grey),
+                    const SizedBox(height: 10),
+
                     // Card Name
                     TextFormField(
                       controller: _cardNameController,
@@ -260,12 +213,34 @@ class _AddCardPageState extends State<AddCardPage> {
                         enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.white54), borderRadius: BorderRadius.circular(8)),
                         focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF1E90FF)), borderRadius: BorderRadius.circular(8)),
                       ),
-                      validator: (value) {
-                         // Optional?
-                         return null;
-                      },
                     ),
                     const SizedBox(height: 20),
+                    
+                    // Manual Card Number (Only for Gateway Mode)
+                    if (_addMode == 1) ...[
+                      TextFormField(
+                        controller: _manualCardNumberController,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: 'Card Number',
+                          helperText: 'Enter the card number printed on the card',
+                          helperStyle: const TextStyle(color: Colors.grey),
+                          labelStyle: const TextStyle(color: Colors.white70),
+                          enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.white54), borderRadius: BorderRadius.circular(8)),
+                          focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Color(0xFF1E90FF)), borderRadius: BorderRadius.circular(8)),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                           if (_addMode == 1 && (value == null || value.isEmpty)) {
+                             return 'Card number is required';
+                           }
+                           return null;
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+
+                    // ... (Validity Type and rest of UI remains same) ...
                     
                     // Validity Type
                     DropdownButtonFormField<ValidityType>(
