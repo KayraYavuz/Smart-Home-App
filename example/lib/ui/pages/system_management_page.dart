@@ -67,7 +67,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
             accessToken: _apiService.accessToken!,
             lockId: lock['lockId'].toString(),
             startDate: picked.start.millisecondsSinceEpoch,
-            endDate: picked.end.millisecondsSinceEpoch,
+            endDate: picked.end.add(const Duration(hours: 23, minutes: 59, seconds: 59)).millisecondsSinceEpoch,
             pageSize: 100,
           );
           

@@ -3047,43 +3047,44 @@ class ApiService {
   }
 
   /// Internal helper for sending the add identity card API request
-  Future<Map<String, dynamic>> _sendAddIdentityCard({
-    required String lockId,
-    required String cardNumber,
-    String? cardName,
-    required int startDate,
-    required int endDate,
-    required int cardType,
-    required int addType,
-    List<Map<String, dynamic>>? cyclicConfig,
-  }) async {
-    final url = Uri.parse('$_baseUrl/v3/identityCard/add');
-    final Map<String, String> body = {
-      'clientId': ApiConfig.clientId,
-      'accessToken': _accessToken!,
-      'lockId': lockId,
-      'cardNumber': cardNumber,
-      'cardName': cardName ?? 'New Card',
-      'cardType': cardType.toString(),
-      'addType': addType.toString(),
-      'date': _getApiTime(),
-    };
+Future<Map<String, dynamic>> _sendAddIdentityCard({
+  required String lockId,
+  required String cardNumber,
+  String? cardName,
+  required int startDate,
+  required int endDate,
+  required int cardType,
+  required int addType,
+  List<Map<String, dynamic>>? cyclicConfig,
+}) async {
+  final url = Uri.parse('$_baseUrl/v3/identityCard/add');
+  final Map<String, String> body = {
+    'clientId': ApiConfig.clientId,
+    'accessToken': _accessToken!,
+    'lockId': lockId,
+    'cardNumber': cardNumber,
+    'cardName': cardName ?? 'New Card',
+    'cardType': cardType.toString(),
+    'addType': addType.toString(),
+    'date': _getApiTime(),
+  };
 
-    // Only include startDate/endDate if non-zero (omit for permanent cards)
-    if (startDate > 0) {
-      body['startDate'] = startDate.toString();
-    }
-    if (endDate > 0) {
-      body['endDate'] = endDate.toString();
-    }
+  // Only include startDate/endDate if non-zero (omit for permanent cards)
+  if (startDate > 0) {
+    body['startDate'] = startDate.toString();
+  }
+  if (endDate > 0) {
+    body['endDate'] = endDate.toString();
+  }
 
-    if (cyclicConfig != null) {
-      body['cyclicConfig'] = jsonEncode(cyclicConfig);
-    }
+  if (cyclicConfig != null) {
+    body['cyclicConfig'] = jsonEncode(cyclicConfig);
+  }
 
-    debugPrint('📡 Add Identity Card API: $url');
-    debugPrint('📝 Body: $body');
+  debugPrint('📡 Add Identity Card API: $url');
+  debugPrint('📝 Body: $body');
 
+  try {
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -3093,10 +3094,15 @@ class ApiService {
     debugPrint('📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      final decoded = json.decode(response.body);
+      return decoded;
     } else {
       throw Exception('HTTP ${response.statusCode}: ${response.body}');
     }
+  } catch (e) {
+    debugPrint('❌ API isteği hatası: $e');
+    rethrow;
+  }
   }
 
   /// Delete an Identity Card (IC Card) from a lock via the cloud API.

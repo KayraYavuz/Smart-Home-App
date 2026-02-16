@@ -240,7 +240,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         cardName: cardName,
         addType: 2, // Gateway — remote
         cyclicConfig: cyclicConfig,
-        cardType: _currentTabIndex == 2 ? 4 : 1,
+        cardType: _currentTabIndex == 2 ? 4 : (_currentTabIndex == 1 ? 2 : 1),
       );
 
       if (!mounted) return;
