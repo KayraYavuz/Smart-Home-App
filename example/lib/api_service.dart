@@ -2977,8 +2977,7 @@ class ApiService {
   /// Add an Identity Card (IC Card) to a lock via the cloud API.
   /// When addType=2 (Gateway) and the card was read via phone NFC,
   /// the card number bytes are reversed compared to how the lock reads them.
-  /// We reverse the bytes before sending to the standard /add endpoint.
-  /// Add an Identity Card
+  /// TTLock provides a dedicated endpoint for this: /v3/identityCard/addForReversedCardNumber
   Future<Map<String, dynamic>> addIdentityCard({
     required String lockId,
     required String cardNumber,
@@ -2995,35 +2994,44 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    // Try sending the card number as-is first, then reversed if it fails
-    // Phone NFC may or may not reverse the byte order vs how the lock reads it
-    String finalCardNumber = cardNumber;
-    
-    debugPrint('💳 Trying card number as-is: $finalCardNumber');
-    
-    var result = await _sendAddIdentityCard(
-      lockId: lockId,
-      cardNumber: finalCardNumber,
-      cardName: cardName,
-      startDate: startDate,
-      endDate: endDate,
-      addType: addType,
-      cyclicConfig: cyclicConfig,
-    );
+    Map<String, dynamic> result;
 
-    // If error 90000, retry with reversed byte order
-    if (result.containsKey('errcode') && result['errcode'] == 90000 &&
-        cardNumber.length >= 2 && cardNumber.length % 2 == 0) {
-      final bytes = <String>[];
-      for (int i = 0; i < cardNumber.length; i += 2) {
-        bytes.add(cardNumber.substring(i, i + 2));
-      }
-      finalCardNumber = bytes.reversed.join('');
-      debugPrint('🔄 Retrying with reversed card number: $finalCardNumber');
-      
-      result = await _sendAddIdentityCard(
+    if (addType == 2) {
+      // Gateway/remote mode: phone NFC reads card bytes in reversed order.
+      // Use the dedicated addForReversedCardNumber endpoint first.
+      debugPrint('💳 Gateway mode: using addForReversedCardNumber endpoint');
+      result = await _sendAddIdentityCardRequest(
+        endpoint: '/v3/identityCard/addForReversedCardNumber',
         lockId: lockId,
-        cardNumber: finalCardNumber,
+        cardNumber: cardNumber,
+        cardName: cardName,
+        startDate: startDate,
+        endDate: endDate,
+        addType: addType,
+        cyclicConfig: cyclicConfig,
+      );
+
+      // If addForReversedCardNumber fails, try the standard /add endpoint as fallback
+      if (result.containsKey('errcode') && result['errcode'] != 0) {
+        debugPrint('🔄 addForReversedCardNumber failed (${result['errcode']}), trying /add endpoint...');
+        result = await _sendAddIdentityCardRequest(
+          endpoint: '/v3/identityCard/add',
+          lockId: lockId,
+          cardNumber: cardNumber,
+          cardName: cardName,
+          startDate: startDate,
+          endDate: endDate,
+          addType: addType,
+          cyclicConfig: cyclicConfig,
+        );
+      }
+    } else {
+      // Bluetooth mode: use standard /add endpoint
+      debugPrint('💳 Bluetooth mode: using standard /add endpoint');
+      result = await _sendAddIdentityCardRequest(
+        endpoint: '/v3/identityCard/add',
+        lockId: lockId,
+        cardNumber: cardNumber,
         cardName: cardName,
         startDate: startDate,
         endDate: endDate,
@@ -3044,7 +3052,8 @@ class ApiService {
   }
 
   /// Internal helper for sending the add identity card API request
-  Future<Map<String, dynamic>> _sendAddIdentityCard({
+  Future<Map<String, dynamic>> _sendAddIdentityCardRequest({
+    required String endpoint,
     required String lockId,
     required String cardNumber,
     String? cardName,
@@ -3053,7 +3062,7 @@ class ApiService {
     required int addType,
     List<Map<String, dynamic>>? cyclicConfig,
   }) async {
-    final url = Uri.parse('$_baseUrl/v3/identityCard/add');
+    final url = Uri.parse('$_baseUrl$endpoint');
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -3079,7 +3088,7 @@ class ApiService {
       body['cyclicConfig'] = jsonEncode(cyclicConfig);
     }
 
-    debugPrint('📡 Add Identity Card API: $url');
+    debugPrint('📡 IC Card API: $url');
     debugPrint('📝 Body: $body');
 
     try {
@@ -3092,10 +3101,9 @@ class ApiService {
       debugPrint('📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final decoded = json.decode(response.body);
-        return decoded;
+        return json.decode(response.body);
       } else {
-        throw Exception('HTTP ${response.statusCode}: ${response.body}');
+        return {'errcode': response.statusCode, 'errmsg': 'HTTP ${response.statusCode}: ${response.body}'};
       }
     } catch (e) {
       debugPrint('❌ API isteği hatası: $e');
