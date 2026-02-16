@@ -2936,10 +2936,6 @@ class ApiService {
   /// Add IC Card remotely via gateway.
   /// Tries multiple endpoints because the EU server (euapi.ttlock.com) doesn't
   /// have all the same endpoints as the global server (api.ttlock.com).
-  /// Strategy:
-  ///   1. EU: /v3/identityCard/add
-  ///   2. Global: /v3/lock/addICCard  
-  ///   3. EU: /v3/identityCard/addForReversedCardNumber
   Future<Map<String, dynamic>> addICCardViaGateway({
     required String lockId,
     required String cardNumber,
@@ -2963,13 +2959,21 @@ class ApiService {
       effectiveEndDate = DateTime(2099, 12, 31).millisecondsSinceEpoch;
     }
 
+    // Collect detailed logs for UI display
+    final logs = StringBuffer();
+    logs.writeln('lockId: $lockId');
+    logs.writeln('cardNumber: $cardNumber');
+    logs.writeln('startDate: $effectiveStartDate');
+    logs.writeln('endDate: $effectiveEndDate');
+    logs.writeln('---');
+
     // Build the base parameters (shared across all attempts)
-    Map<String, String> buildBody({String? overrideCardNumber}) {
+    Map<String, String> buildBody() {
       final body = <String, String>{
         'clientId': ApiConfig.clientId,
         'accessToken': _accessToken!,
         'lockId': lockId,
-        'cardNumber': overrideCardNumber ?? cardNumber,
+        'cardNumber': cardNumber,
         'startDate': effectiveStartDate.toString(),
         'endDate': effectiveEndDate.toString(),
         'addType': '2',
@@ -2984,73 +2988,64 @@ class ApiService {
       return body;
     }
 
-    // Helper to call a single endpoint
-    Future<Map<String, dynamic>?> tryEndpoint(String fullUrl, Map<String, String> body) async {
-      debugPrint('📡 Trying: $fullUrl');
-      debugPrint('📝 Body: $body');
+    // Helper to call a single endpoint and log results
+    Future<Map<String, dynamic>?> tryEndpoint(String label, String fullUrl, Map<String, String> body) async {
+      logs.writeln('[$label]');
+      logs.writeln('URL: $fullUrl');
       try {
         final response = await http.post(
           Uri.parse(fullUrl),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: body,
         );
-        debugPrint('📨 Response: ${response.statusCode} - ${response.body}');
 
         // HTML response = endpoint doesn't exist
         if (response.body.trimLeft().startsWith('<')) {
-          debugPrint('⚠️ HTML response (endpoint yok), skipping...');
+          logs.writeln('→ HTML 404 (endpoint yok)');
+          logs.writeln('---');
           return null;
         }
 
         final data = json.decode(response.body);
         if (data is Map<String, dynamic>) {
           if (data['errcode'] == 0 || data['errcode'] == null || data.containsKey('cardId')) {
-            return data; // Success!
+            logs.writeln('→ ✅ BAŞARILI!');
+            return data;
           }
-          debugPrint('⚠️ API error: ${data['errcode']} - ${data['errmsg']}');
-          return data; // Return error data for inspection
+          logs.writeln('→ ❌ errcode: ${data['errcode']}, errmsg: ${data['errmsg']}');
+          logs.writeln('---');
+          return data;
         }
+        logs.writeln('→ Geçersiz yanıt formatı');
+        logs.writeln('---');
         return null;
       } catch (e) {
-        debugPrint('❌ Request failed: $e');
+        logs.writeln('→ Exception: $e');
+        logs.writeln('---');
         return null;
       }
     }
 
-    Map<String, dynamic>? lastError;
-
     // Attempt 1: EU server - /v3/identityCard/add
-    debugPrint('🔵 Attempt 1: EU identityCard/add');
-    var result = await tryEndpoint('$_baseUrl/v3/identityCard/add', buildBody());
+    var result = await tryEndpoint('1-EU identityCard/add', '$_baseUrl/v3/identityCard/add', buildBody());
     if (result != null && (result['errcode'] == 0 || result['errcode'] == null || result.containsKey('cardId'))) {
-      debugPrint('✅ IC Kart eklendi (identityCard/add)');
       return result;
     }
-    if (result != null) lastError = result;
 
     // Attempt 2: Global server - /v3/lock/addICCard
-    debugPrint('🔵 Attempt 2: Global lock/addICCard');
-    result = await tryEndpoint('https://api.ttlock.com/v3/lock/addICCard', buildBody());
+    result = await tryEndpoint('2-Global lock/addICCard', 'https://api.ttlock.com/v3/lock/addICCard', buildBody());
     if (result != null && (result['errcode'] == 0 || result['errcode'] == null || result.containsKey('cardId'))) {
-      debugPrint('✅ IC Kart eklendi (lock/addICCard global)');
       return result;
     }
-    if (result != null && result.containsKey('errcode')) lastError = result;
 
     // Attempt 3: EU server - /v3/identityCard/addForReversedCardNumber
-    debugPrint('🔵 Attempt 3: EU identityCard/addForReversedCardNumber');
-    result = await tryEndpoint('$_baseUrl/v3/identityCard/addForReversedCardNumber', buildBody());
+    result = await tryEndpoint('3-EU addForReversed', '$_baseUrl/v3/identityCard/addForReversedCardNumber', buildBody());
     if (result != null && (result['errcode'] == 0 || result['errcode'] == null || result.containsKey('cardId'))) {
-      debugPrint('✅ IC Kart eklendi (addForReversedCardNumber)');
       return result;
     }
-    if (result != null && result.containsKey('errcode')) lastError = result;
 
-    // All attempts failed
-    final errCode = lastError?['errcode'] ?? 'unknown';
-    final errMsg = lastError?['errmsg'] ?? 'Tüm endpointler başarısız oldu';
-    debugPrint('❌ IC Kart eklenemedi: $errCode - $errMsg');
-    throw Exception('Hata ($errCode): $errMsg\nKart: $cardNumber');
+    // All attempts failed - throw with full detail log
+    throw Exception('IC_CARD_DEBUG\n${logs.toString()}');
   }
 
   /// Add an Identity Card (IC Card) to a lock via the cloud API.
