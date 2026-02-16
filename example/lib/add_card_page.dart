@@ -249,39 +249,9 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
     } catch (e) {
       try { await NfcManager.instance.stopSession(); } catch (_) {}
       if (!mounted) return;
-      
-      final errorStr = e.toString();
-      
-      // Show detailed debug dialog for IC card errors
-      if (errorStr.contains('IC_CARD_DEBUG')) {
-        final debugInfo = errorStr.replaceFirst('Exception: IC_CARD_DEBUG\n', '');
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('IC Card Debug Log'),
-            content: SizedBox(
-              width: double.maxFinite,
-              height: 400,
-              child: SingleChildScrollView(
-                child: SelectableText(
-                  debugInfo,
-                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Kapat'),
-              ),
-            ],
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+      );
       
       setState(() {
         _isLoading = false;

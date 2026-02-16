@@ -2937,6 +2937,10 @@ class ApiService {
   /// Phone NFC reads card UID as hex bytes (e.g. "6A536AA9"),
   /// but TTLock SDK/API expects decimal format (e.g. "1784433321").
   /// This method tries both formats across multiple endpoints.
+  /// Add IC Card remotely via gateway.
+  /// Phone NFC reads card UID as hex bytes (e.g. "6A536AA9"),
+  /// but TTLock SDK/API expects decimal format (e.g. "1784433321").
+  /// This method tries both formats across multiple endpoints.
   Future<Map<String, dynamic>> addICCardViaGateway({
     required String lockId,
     required String cardNumber,
@@ -2970,15 +2974,6 @@ class ApiService {
       // If not valid hex, use as-is
     }
 
-    // Collect detailed logs for UI display
-    final logs = StringBuffer();
-    logs.writeln('lockId: $lockId');
-    logs.writeln('cardHex: $hexCardNumber');
-    logs.writeln('cardDec: $decimalCardNumber');
-    logs.writeln('startDate: $effectiveStartDate');
-    logs.writeln('endDate: $effectiveEndDate');
-    logs.writeln('---');
-
     // Build the base parameters
     Map<String, String> buildBody(String cn) {
       final body = <String, String>{
@@ -3006,56 +3001,62 @@ class ApiService {
       return r['errcode'] == 0 || r['errcode'] == null || r.containsKey('cardId');
     }
 
-    // Helper to call a single endpoint and log results
-    Future<Map<String, dynamic>?> tryEndpoint(String label, String fullUrl, Map<String, String> body) async {
-      logs.writeln('[$label]');
-      logs.writeln('card=${body['cardNumber']}');
+    // Helper to call a single endpoint
+    Future<Map<String, dynamic>?> tryEndpoint(String fullUrl, Map<String, String> body) async {
       try {
         final response = await http.post(
           Uri.parse(fullUrl),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: body,
         );
-        if (response.body.trimLeft().startsWith('<')) {
-          logs.writeln('→ HTML 404');
-          logs.writeln('---');
-          return null;
-        }
+        if (response.body.trimLeft().startsWith('<')) return null; // HTML error
+
         final data = json.decode(response.body);
         if (data is Map<String, dynamic>) {
-          if (isSuccess(data)) {
-            logs.writeln('→ ✅ OK!');
-            return data;
-          }
-          logs.writeln('→ ❌ ${data['errcode']}: ${data['errmsg']}');
-          logs.writeln('---');
           return data;
         }
-        logs.writeln('→ Bad format');
-        logs.writeln('---');
         return null;
       } catch (e) {
-        logs.writeln('→ Err: $e');
-        logs.writeln('---');
+        debugPrint('Error trying endpoint $fullUrl: $e');
         return null;
       }
     }
 
     // Try multiple combinations of endpoint + card number format
+    // Priority: 
+    // 1. EU Server + Decimal (Most likely correct)
+    // 2. EU Server + Hex
+    // 3. Global Server + Decimal
+    // 4. Global Server + Hex
+    // 5. EU Reversed + Decimal
+    // 6. EU Reversed + Hex
     final attempts = [
-      ['1-EU+hex', '$_baseUrl/v3/identityCard/add', hexCardNumber],
-      ['2-EU+dec', '$_baseUrl/v3/identityCard/add', decimalCardNumber],
-      ['3-EU+hex rev', '$_baseUrl/v3/identityCard/addForReversedCardNumber', hexCardNumber],
-      ['4-EU+dec rev', '$_baseUrl/v3/identityCard/addForReversedCardNumber', decimalCardNumber],
+      ['$_baseUrl/v3/identityCard/add', decimalCardNumber],
+      ['$_baseUrl/v3/identityCard/add', hexCardNumber],
+      ['https://api.ttlock.com/v3/lock/addICCard', decimalCardNumber],
+      ['https://api.ttlock.com/v3/lock/addICCard', hexCardNumber],
+      ['$_baseUrl/v3/identityCard/addForReversedCardNumber', decimalCardNumber],
+      ['$_baseUrl/v3/identityCard/addForReversedCardNumber', hexCardNumber],
     ];
 
+    Map<String, dynamic>? lastError;
+
     for (final attempt in attempts) {
-      final result = await tryEndpoint(attempt[0], attempt[1], buildBody(attempt[2]));
-      if (isSuccess(result)) return result!;
+      final url = attempt[0];
+      final cn = attempt[1];
+      final result = await tryEndpoint(url, buildBody(cn));
+      
+      if (isSuccess(result)) {
+        debugPrint('✅ IC Card added successfully via $url with card $cn');
+        return result!;
+      }
+      if (result != null) lastError = result;
     }
 
-    // All attempts failed - throw with full detail log
-    throw Exception('IC_CARD_DEBUG\n${logs.toString()}');
+    // All attempts failed
+    final errCode = lastError?['errcode'] ?? 'unknown';
+    final errMsg = lastError?['errmsg'] ?? 'Failed to add card via gateway (all attempts failed)';
+    throw Exception('Error $errCode: $errMsg');
   }
 
   /// Add an Identity Card (IC Card) to a lock via the cloud API.
