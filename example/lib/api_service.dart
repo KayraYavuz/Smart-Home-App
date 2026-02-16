@@ -2934,8 +2934,9 @@ class ApiService {
 
 
   /// Add IC Card remotely via gateway.
-  /// Tries multiple endpoints because the EU server (euapi.ttlock.com) doesn't
-  /// have all the same endpoints as the global server (api.ttlock.com).
+  /// Phone NFC reads card UID as hex bytes (e.g. "6A536AA9"),
+  /// but TTLock SDK/API expects decimal format (e.g. "1784433321").
+  /// This method tries both formats across multiple endpoints.
   Future<Map<String, dynamic>> addICCardViaGateway({
     required String lockId,
     required String cardNumber,
@@ -2959,21 +2960,32 @@ class ApiService {
       effectiveEndDate = DateTime(2099, 12, 31).millisecondsSinceEpoch;
     }
 
+    // Convert hex card number to decimal (TTLock SDK format)
+    String hexCardNumber = cardNumber.toUpperCase();
+    String decimalCardNumber = hexCardNumber;
+    try {
+      final parsed = int.parse(hexCardNumber, radix: 16);
+      decimalCardNumber = parsed.toString();
+    } catch (_) {
+      // If not valid hex, use as-is
+    }
+
     // Collect detailed logs for UI display
     final logs = StringBuffer();
     logs.writeln('lockId: $lockId');
-    logs.writeln('cardNumber: $cardNumber');
+    logs.writeln('cardHex: $hexCardNumber');
+    logs.writeln('cardDec: $decimalCardNumber');
     logs.writeln('startDate: $effectiveStartDate');
     logs.writeln('endDate: $effectiveEndDate');
     logs.writeln('---');
 
-    // Build the base parameters (shared across all attempts)
-    Map<String, String> buildBody() {
+    // Build the base parameters
+    Map<String, String> buildBody(String cn) {
       final body = <String, String>{
         'clientId': ApiConfig.clientId,
         'accessToken': _accessToken!,
         'lockId': lockId,
-        'cardNumber': cardNumber,
+        'cardNumber': cn,
         'startDate': effectiveStartDate.toString(),
         'endDate': effectiveEndDate.toString(),
         'addType': '2',
@@ -2988,60 +3000,58 @@ class ApiService {
       return body;
     }
 
+    // Helper: check if result is success
+    bool isSuccess(Map<String, dynamic>? r) {
+      if (r == null) return false;
+      return r['errcode'] == 0 || r['errcode'] == null || r.containsKey('cardId');
+    }
+
     // Helper to call a single endpoint and log results
     Future<Map<String, dynamic>?> tryEndpoint(String label, String fullUrl, Map<String, String> body) async {
       logs.writeln('[$label]');
-      logs.writeln('URL: $fullUrl');
+      logs.writeln('card=${body['cardNumber']}');
       try {
         final response = await http.post(
           Uri.parse(fullUrl),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: body,
         );
-
-        // HTML response = endpoint doesn't exist
         if (response.body.trimLeft().startsWith('<')) {
-          logs.writeln('→ HTML 404 (endpoint yok)');
+          logs.writeln('→ HTML 404');
           logs.writeln('---');
           return null;
         }
-
         final data = json.decode(response.body);
         if (data is Map<String, dynamic>) {
-          if (data['errcode'] == 0 || data['errcode'] == null || data.containsKey('cardId')) {
-            logs.writeln('→ ✅ BAŞARILI!');
+          if (isSuccess(data)) {
+            logs.writeln('→ ✅ OK!');
             return data;
           }
-          logs.writeln('→ ❌ errcode: ${data['errcode']}, errmsg: ${data['errmsg']}');
+          logs.writeln('→ ❌ ${data['errcode']}: ${data['errmsg']}');
           logs.writeln('---');
           return data;
         }
-        logs.writeln('→ Geçersiz yanıt formatı');
+        logs.writeln('→ Bad format');
         logs.writeln('---');
         return null;
       } catch (e) {
-        logs.writeln('→ Exception: $e');
+        logs.writeln('→ Err: $e');
         logs.writeln('---');
         return null;
       }
     }
 
-    // Attempt 1: EU server - /v3/identityCard/add
-    var result = await tryEndpoint('1-EU identityCard/add', '$_baseUrl/v3/identityCard/add', buildBody());
-    if (result != null && (result['errcode'] == 0 || result['errcode'] == null || result.containsKey('cardId'))) {
-      return result;
-    }
+    // Try multiple combinations of endpoint + card number format
+    final attempts = [
+      ['1-EU+hex', '$_baseUrl/v3/identityCard/add', hexCardNumber],
+      ['2-EU+dec', '$_baseUrl/v3/identityCard/add', decimalCardNumber],
+      ['3-EU+hex rev', '$_baseUrl/v3/identityCard/addForReversedCardNumber', hexCardNumber],
+      ['4-EU+dec rev', '$_baseUrl/v3/identityCard/addForReversedCardNumber', decimalCardNumber],
+    ];
 
-    // Attempt 2: Global server - /v3/lock/addICCard
-    result = await tryEndpoint('2-Global lock/addICCard', 'https://api.ttlock.com/v3/lock/addICCard', buildBody());
-    if (result != null && (result['errcode'] == 0 || result['errcode'] == null || result.containsKey('cardId'))) {
-      return result;
-    }
-
-    // Attempt 3: EU server - /v3/identityCard/addForReversedCardNumber
-    result = await tryEndpoint('3-EU addForReversed', '$_baseUrl/v3/identityCard/addForReversedCardNumber', buildBody());
-    if (result != null && (result['errcode'] == 0 || result['errcode'] == null || result.containsKey('cardId'))) {
-      return result;
+    for (final attempt in attempts) {
+      final result = await tryEndpoint(attempt[0], attempt[1], buildBody(attempt[2]));
+      if (isSuccess(result)) return result!;
     }
 
     // All attempts failed - throw with full detail log
