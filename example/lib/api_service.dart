@@ -2933,17 +2933,23 @@ class ApiService {
   }
 
 
-  /// Add IC Card remotely via gateway
-  /// Requires lock to be connected to a gateway
+  /// Add IC Card remotely via gateway using /v3/lock/addICCard
+  /// This is the correct endpoint for remote addition via gateway.
+  /// /v3/identityCard/add is only for cloud registration AFTER SDK-based addition.
   Future<Map<String, dynamic>> addICCardViaGateway({
     required String lockId,
     required String cardNumber,
     required int startDate,
     required int endDate,
     String? cardName,
+    List<Map<String, dynamic>>? cyclicConfig,
   }) async {
     debugPrint('💳 IC Kart gateway üzerinden ekleniyor: $cardNumber');
     await getAccessToken();
+
+    if (_accessToken == null) {
+      throw Exception('No access token available');
+    }
 
     final url = Uri.parse('$_baseUrl/v3/lock/addICCard');
     final Map<String, String> body = {
@@ -2951,12 +2957,28 @@ class ApiService {
       'accessToken': _accessToken!,
       'lockId': lockId,
       'cardNumber': cardNumber,
-      'startDate': startDate.toString(),
-      'endDate': endDate.toString(),
       'addType': '2', // 2 = via gateway
-      if (cardName != null) 'cardName': cardName,
       'date': _getApiTime(),
     };
+
+    if (cardName != null && cardName.isNotEmpty) {
+      body['cardName'] = cardName;
+    }
+
+    // Only include startDate/endDate if non-zero (omit for permanent cards)
+    if (startDate > 0) {
+      body['startDate'] = startDate.toString();
+    }
+    if (endDate > 0) {
+      body['endDate'] = endDate.toString();
+    }
+
+    if (cyclicConfig != null) {
+      body['cyclicConfig'] = jsonEncode(cyclicConfig);
+    }
+
+    debugPrint('📡 IC Card API: $url');
+    debugPrint('📝 Body: $body');
 
     final response = await http.post(
       url,
@@ -2964,13 +2986,17 @@ class ApiService {
       body: body,
     );
 
+    debugPrint('📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
       debugPrint('✅ IC Kart gateway üzerinden eklendi');
       return responseData;
     } else {
-      debugPrint('❌ IC Kart eklenemedi: ${responseData['errmsg']}');
-      throw Exception('IC Kart eklenemedi: ${responseData['errmsg']}');
+      final errCode = responseData['errcode'];
+      final errMsg = responseData['errmsg'] ?? 'Unknown error';
+      debugPrint('❌ IC Kart eklenemedi: $errCode - $errMsg');
+      throw Exception('Hata ($errCode): $errMsg\nKart: $cardNumber');
     }
   }
 

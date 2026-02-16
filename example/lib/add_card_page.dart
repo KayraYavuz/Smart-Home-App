@@ -230,15 +230,14 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         }).toList();
       }
 
-      // Register card on server via Gateway (remote)
+      // Register card on lock via Gateway using /v3/lock/addICCard
       final apiService = Provider.of<ApiService>(context, listen: false);
-      await apiService.addIdentityCard(
+      await apiService.addICCardViaGateway(
         lockId: widget.lockId,
         cardNumber: cardNumber,
         startDate: startDateMs,
         endDate: endDateMs,
         cardName: cardName,
-        addType: 2, // Gateway — remote
         cyclicConfig: cyclicConfig,
       );
 
