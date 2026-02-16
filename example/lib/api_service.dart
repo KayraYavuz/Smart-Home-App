@@ -2933,9 +2933,9 @@ class ApiService {
   }
 
 
-  /// Add IC Card remotely via gateway using /v3/lock/addICCard
-  /// This is the correct endpoint for remote addition via gateway.
-  /// /v3/identityCard/add is only for cloud registration AFTER SDK-based addition.
+  /// Add IC Card remotely via gateway using /v3/identityCard/add
+  /// On the EU server (euapi.ttlock.com), /v3/lock/addICCard does NOT exist.
+  /// For permanent cards, we send startDate=now, endDate=year 2099.
   Future<Map<String, dynamic>> addICCardViaGateway({
     required String lockId,
     required String cardNumber,
@@ -2951,26 +2951,29 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/lock/addICCard');
+    // For permanent cards (startDate=0, endDate=0), use actual timestamps
+    // TTLock API requires valid dates — omitting them causes error 90000
+    int effectiveStartDate = startDate;
+    int effectiveEndDate = endDate;
+    if (startDate == 0 && endDate == 0) {
+      effectiveStartDate = DateTime.now().millisecondsSinceEpoch;
+      effectiveEndDate = DateTime(2099, 12, 31).millisecondsSinceEpoch;
+    }
+
+    final url = Uri.parse('$_baseUrl/v3/identityCard/add');
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
       'cardNumber': cardNumber,
+      'startDate': effectiveStartDate.toString(),
+      'endDate': effectiveEndDate.toString(),
       'addType': '2', // 2 = via gateway
       'date': _getApiTime(),
     };
 
     if (cardName != null && cardName.isNotEmpty) {
       body['cardName'] = cardName;
-    }
-
-    // Only include startDate/endDate if non-zero (omit for permanent cards)
-    if (startDate > 0) {
-      body['startDate'] = startDate.toString();
-    }
-    if (endDate > 0) {
-      body['endDate'] = endDate.toString();
     }
 
     if (cyclicConfig != null) {
@@ -2987,6 +2990,11 @@ class ApiService {
     );
 
     debugPrint('📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+
+    // Guard against non-JSON responses (e.g. Tomcat HTML error pages)
+    if (response.body.trimLeft().startsWith('<')) {
+      throw Exception('Sunucu HTML yanıt döndürdü (endpoint mevcut değil). Status: ${response.statusCode}');
+    }
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
