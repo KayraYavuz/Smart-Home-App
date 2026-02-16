@@ -2933,9 +2933,13 @@ class ApiService {
   }
 
 
-  /// Add IC Card remotely via gateway using /v3/identityCard/add
-  /// On the EU server (euapi.ttlock.com), /v3/lock/addICCard does NOT exist.
-  /// For permanent cards, we send startDate=now, endDate=year 2099.
+  /// Add IC Card remotely via gateway.
+  /// Tries multiple endpoints because the EU server (euapi.ttlock.com) doesn't
+  /// have all the same endpoints as the global server (api.ttlock.com).
+  /// Strategy:
+  ///   1. EU: /v3/identityCard/add
+  ///   2. Global: /v3/lock/addICCard  
+  ///   3. EU: /v3/identityCard/addForReversedCardNumber
   Future<Map<String, dynamic>> addICCardViaGateway({
     required String lockId,
     required String cardNumber,
@@ -2952,7 +2956,6 @@ class ApiService {
     }
 
     // For permanent cards (startDate=0, endDate=0), use actual timestamps
-    // TTLock API requires valid dates — omitting them causes error 90000
     int effectiveStartDate = startDate;
     int effectiveEndDate = endDate;
     if (startDate == 0 && endDate == 0) {
@@ -2960,52 +2963,94 @@ class ApiService {
       effectiveEndDate = DateTime(2099, 12, 31).millisecondsSinceEpoch;
     }
 
-    final url = Uri.parse('$_baseUrl/v3/identityCard/add');
-    final Map<String, String> body = {
-      'clientId': ApiConfig.clientId,
-      'accessToken': _accessToken!,
-      'lockId': lockId,
-      'cardNumber': cardNumber,
-      'startDate': effectiveStartDate.toString(),
-      'endDate': effectiveEndDate.toString(),
-      'addType': '2', // 2 = via gateway
-      'date': _getApiTime(),
-    };
-
-    if (cardName != null && cardName.isNotEmpty) {
-      body['cardName'] = cardName;
+    // Build the base parameters (shared across all attempts)
+    Map<String, String> buildBody({String? overrideCardNumber}) {
+      final body = <String, String>{
+        'clientId': ApiConfig.clientId,
+        'accessToken': _accessToken!,
+        'lockId': lockId,
+        'cardNumber': overrideCardNumber ?? cardNumber,
+        'startDate': effectiveStartDate.toString(),
+        'endDate': effectiveEndDate.toString(),
+        'addType': '2',
+        'date': _getApiTime(),
+      };
+      if (cardName != null && cardName.isNotEmpty) {
+        body['cardName'] = cardName;
+      }
+      if (cyclicConfig != null) {
+        body['cyclicConfig'] = jsonEncode(cyclicConfig);
+      }
+      return body;
     }
 
-    if (cyclicConfig != null) {
-      body['cyclicConfig'] = jsonEncode(cyclicConfig);
+    // Helper to call a single endpoint
+    Future<Map<String, dynamic>?> tryEndpoint(String fullUrl, Map<String, String> body) async {
+      debugPrint('📡 Trying: $fullUrl');
+      debugPrint('📝 Body: $body');
+      try {
+        final response = await http.post(
+          Uri.parse(fullUrl),
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: body,
+        );
+        debugPrint('📨 Response: ${response.statusCode} - ${response.body}');
+
+        // HTML response = endpoint doesn't exist
+        if (response.body.trimLeft().startsWith('<')) {
+          debugPrint('⚠️ HTML response (endpoint yok), skipping...');
+          return null;
+        }
+
+        final data = json.decode(response.body);
+        if (data is Map<String, dynamic>) {
+          if (data['errcode'] == 0 || data['errcode'] == null || data.containsKey('cardId')) {
+            return data; // Success!
+          }
+          debugPrint('⚠️ API error: ${data['errcode']} - ${data['errmsg']}');
+          return data; // Return error data for inspection
+        }
+        return null;
+      } catch (e) {
+        debugPrint('❌ Request failed: $e');
+        return null;
+      }
     }
 
-    debugPrint('📡 IC Card API: $url');
-    debugPrint('📝 Body: $body');
+    Map<String, dynamic>? lastError;
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: body,
-    );
-
-    debugPrint('📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
-
-    // Guard against non-JSON responses (e.g. Tomcat HTML error pages)
-    if (response.body.trimLeft().startsWith('<')) {
-      throw Exception('Sunucu HTML yanıt döndürdü (endpoint mevcut değil). Status: ${response.statusCode}');
+    // Attempt 1: EU server - /v3/identityCard/add
+    debugPrint('🔵 Attempt 1: EU identityCard/add');
+    var result = await tryEndpoint('$_baseUrl/v3/identityCard/add', buildBody());
+    if (result != null && (result['errcode'] == 0 || result['errcode'] == null || result.containsKey('cardId'))) {
+      debugPrint('✅ IC Kart eklendi (identityCard/add)');
+      return result;
     }
+    if (result != null) lastError = result;
 
-    final responseData = json.decode(response.body);
-    if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
-      debugPrint('✅ IC Kart gateway üzerinden eklendi');
-      return responseData;
-    } else {
-      final errCode = responseData['errcode'];
-      final errMsg = responseData['errmsg'] ?? 'Unknown error';
-      debugPrint('❌ IC Kart eklenemedi: $errCode - $errMsg');
-      throw Exception('Hata ($errCode): $errMsg\nKart: $cardNumber');
+    // Attempt 2: Global server - /v3/lock/addICCard
+    debugPrint('🔵 Attempt 2: Global lock/addICCard');
+    result = await tryEndpoint('https://api.ttlock.com/v3/lock/addICCard', buildBody());
+    if (result != null && (result['errcode'] == 0 || result['errcode'] == null || result.containsKey('cardId'))) {
+      debugPrint('✅ IC Kart eklendi (lock/addICCard global)');
+      return result;
     }
+    if (result != null && result.containsKey('errcode')) lastError = result;
+
+    // Attempt 3: EU server - /v3/identityCard/addForReversedCardNumber
+    debugPrint('🔵 Attempt 3: EU identityCard/addForReversedCardNumber');
+    result = await tryEndpoint('$_baseUrl/v3/identityCard/addForReversedCardNumber', buildBody());
+    if (result != null && (result['errcode'] == 0 || result['errcode'] == null || result.containsKey('cardId'))) {
+      debugPrint('✅ IC Kart eklendi (addForReversedCardNumber)');
+      return result;
+    }
+    if (result != null && result.containsKey('errcode')) lastError = result;
+
+    // All attempts failed
+    final errCode = lastError?['errcode'] ?? 'unknown';
+    final errMsg = lastError?['errmsg'] ?? 'Tüm endpointler başarısız oldu';
+    debugPrint('❌ IC Kart eklenemedi: $errCode - $errMsg');
+    throw Exception('Hata ($errCode): $errMsg\nKart: $cardNumber');
   }
 
   /// Add an Identity Card (IC Card) to a lock via the cloud API.
