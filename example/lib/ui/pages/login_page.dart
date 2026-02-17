@@ -276,36 +276,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _showWebPortalDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
-          title: Text(l10n.ttlockAccount, style: const TextStyle(color: Colors.white)),
-          content: Text(
-            l10n.ttlockWebSyncMsg,
-            style: const TextStyle(color: Colors.white70),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
-            ),
-            TextButton(
-              onPressed: () {
-                _launchUrl('https://lock2.ttlock.com/');
-                Navigator.of(dialogContext).pop();
-              },
-              child: Text(l10n.openPortal, style: const TextStyle(color: Color(0xFF1E90FF))),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
 
 
@@ -318,17 +289,17 @@ class _LoginPageState extends State<LoginPage> {
           // Background gradient (Aynı)
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF1E90FF).withValues(alpha: 0.8),
-                    Color(0xFF4169E1).withValues(alpha: 0.6),
-                    Color(0xFF000428).withValues(alpha: 0.9),
-                    Color(0xFF004e92).withValues(alpha: 0.8),
+                    Color(0xCC1E90FF),
+                    Color(0x994169E1),
+                    Color(0xE6000428),
+                    Color(0xCC004e92),
                   ],
-                  stops: const [0.0, 0.3, 0.7, 1.0],
+                  stops: [0.0, 0.3, 0.7, 1.0],
                 ),
               ),
             ),

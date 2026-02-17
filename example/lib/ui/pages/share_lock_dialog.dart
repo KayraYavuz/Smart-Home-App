@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../api_service.dart';
@@ -141,7 +142,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 // Permission Selection
                 Column(
                   children: [
-                    // ignore: deprecated_member_use
+
                     RadioListTile<int>(
                       title: Text(
                         permissionOptions[1]!,
@@ -157,7 +158,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                       dense: true,
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
-                    // ignore: deprecated_member_use
+
                     RadioListTile<int>(
                       title: Text(
                         permissionOptions[2]!,
@@ -173,7 +174,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                       dense: true,
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
-                    // ignore: deprecated_member_use
+
                     RadioListTile<int>(
                       title: Text(
                         permissionOptions[3]!,

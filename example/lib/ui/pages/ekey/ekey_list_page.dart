@@ -306,9 +306,9 @@ class _EKeyListPageState extends State<EKeyListPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.2),
+                          color: Colors.orange.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                          border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
                         ),
                         child: Text(
                           _l10n!.roleAdmin,

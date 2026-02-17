@@ -580,8 +580,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Flexible(
-            child: const Text(
+          const Flexible(
+            child: Text(
               'Yavuz Lock',
               style: TextStyle(
                 color: Colors.white,

@@ -40,7 +40,7 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.customerService,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20,

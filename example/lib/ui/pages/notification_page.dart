@@ -95,14 +95,14 @@ class _NotificationPageState extends State<NotificationPage> {
                         decoration: BoxDecoration(
                           color: const Color(0xFF1E1E1E),
                           borderRadius: BorderRadius.circular(12),
-                          border: isRead ? null : Border.all(color: Colors.blue.withOpacity(0.3)),
+                          border: isRead ? null : Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           leading: Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Colors.blue.withOpacity(0.1),
+                              color: Colors.blue.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.notifications, color: Colors.blue),

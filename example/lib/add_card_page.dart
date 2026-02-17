@@ -67,10 +67,11 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         );
       },
     );
-    if (pickedDate == null || !mounted) return;
+    if (pickedDate == null) return;
+    if (!mounted) return;
 
     final TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
+      context: context, // ignore: use_build_context_synchronously
       initialTime: TimeOfDay.fromDateTime(isStart ? _startDate : _endDate),
       builder: (context, child) {
         return Theme(
