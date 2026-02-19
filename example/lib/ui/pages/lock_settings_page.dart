@@ -803,11 +803,6 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         pageSize: 100,
       );
       
-      // Add lock name to each record
-      for (var r in records) {
-        r['lockName'] = lockName;
-      }
-
       if (records.isEmpty) {
         if (!mounted) return;
         scaffoldMessenger.showSnackBar(
@@ -816,12 +811,48 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         return;
       }
 
+      // Generate CSV Content
+      final buffer = StringBuffer();
+      // CSV Header
+      buffer.writeln('Lock Name,User,Action,Date,Status');
+
+      for (var r in records) {
+        final userName = r['keyName'] ?? r['username'] ?? '';
+        final recordType = r['recordTypeFromLock'] ?? r['recordType'] ?? 0;
+        final timestamp = r['lockDate'] ?? 0;
+        final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+        final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+        final success = r['success'] == 1 ? 'Success' : 'Failed';
+        
+        // Simple mapping for action type (can be improved with l10n if needed)
+        String action = 'Unknown ($recordType)';
+        switch (recordType) {
+          case 1: action = 'Passcode'; break;
+          case 2: action = 'Card'; break;
+          case 3: action = 'Fingerprint'; break;
+          case 4: action = 'App Unlock'; break;
+          case 5: action = 'Remote Unlock'; break;
+          case 6: action = 'Locked'; break;
+          case 7: action = 'Mechanical Key'; break;
+          case 8: action = 'Wristband'; break;
+          case 10: action = 'Remote Control'; break;
+          case 11: action = 'App Remote'; break; 
+          case 12: action = 'Gateway Unlock'; break;
+          case 28: action = 'App Remote'; break;
+          case 48: action = 'Gateway Unlock'; break;
+        }
+
+        // Escape fields if necessary (simple approach)
+        final line = '"$lockName","$userName","$action","$dateStr","$success"';
+        buffer.writeln(line);
+      }
+
       final directory = await getTemporaryDirectory();
       final sanitizedLockName = lockName.replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(' ', '_');
-      final file = File('${directory.path}/${sanitizedLockName}_records.json');
-      await file.writeAsString(jsonEncode(records));
+      final file = File('${directory.path}/${sanitizedLockName}_records.csv');
+      await file.writeAsString(buffer.toString());
 
-      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: '$lockName - Records Export'));
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: '$lockName - Records Export (CSV)'));
     } catch (e) {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(
