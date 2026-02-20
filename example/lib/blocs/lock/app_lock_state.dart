@@ -13,11 +13,12 @@ class LockLoading extends AppLockState {}
 
 class LockLoaded extends AppLockState {
   final List<Map<String, dynamic>> locks;
+  final List<Map<String, dynamic>> gateways;
 
-  const LockLoaded(this.locks);
+  const LockLoaded(this.locks, {this.gateways = const []});
 
   @override
-  List<Object> get props => [locks];
+  List<Object> get props => [locks, gateways];
 }
 
 class LockFailure extends AppLockState {

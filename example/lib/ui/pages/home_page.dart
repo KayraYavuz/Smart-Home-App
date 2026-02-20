@@ -10,6 +10,7 @@ import 'package:yavuz_lock/blocs/lock/lock_event.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/pages/add_device_page.dart';
 import 'package:yavuz_lock/ui/pages/lock_detail_page.dart';
+import 'package:yavuz_lock/ui/pages/gateway_detail_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -47,15 +48,42 @@ class HomePage extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
             if (state is LockLoaded) {
+              final items = [...state.gateways, ...state.locks];
+              
+              if (items.isEmpty) {
+                return const Center(child: Text('No devices found.'));
+              }
+              
               return ListView.builder(
                 padding: const EdgeInsets.all(8.0),
-                itemCount: state.locks.length,
+                itemCount: items.length,
                 itemBuilder: (context, index) {
-                  final lock = state.locks[index];
+                  final item = items[index];
+                  final isGateway = item.containsKey('gatewayId');
+
+                  if (isGateway) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(item['gatewayName'] ?? 'Gateway'),
+                        subtitle: Text(item['isOnline'] == 1 ? 'Online' : 'Offline'),
+                        leading: const Icon(Icons.router),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => GatewayDetailPage(gateway: item),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }
+
+                  final lock = item;
                   return Card(
                     child: ListTile(
-                      title: Text(lock['name']),
-                      subtitle: Text(lock['status']),
+                      title: Text(lock['name'] ?? lock['lockAlias'] ?? 'Unknown Lock'),
+                      subtitle: Text(lock['status'] ?? ''),
                       leading: const Icon(Icons.lock),
                       trailing: FittedBox(
                         fit: BoxFit.scaleDown,
@@ -66,7 +94,7 @@ class HomePage extends StatelessWidget {
                             const SizedBox(width: 4),
                             const Icon(Icons.wifi),
                             const SizedBox(width: 4),
-                            Text('${lock['battery']}%'),
+                            Text('${lock['battery'] ?? 0}%'),
                           ],
                         ),
                       ),
@@ -84,9 +112,9 @@ class HomePage extends StatelessWidget {
               );
             }
             if (state is LockFailure) {
-              return Center(child: Text('Failed to load locks: ${state.error}'));
+              return Center(child: Text('Failed to load devices: ${state.error}'));
             }
-            return const Center(child: Text('No locks found.'));
+            return const Center(child: Text('No devices found.'));
           },
         ),
         floatingActionButton: FloatingActionButton(

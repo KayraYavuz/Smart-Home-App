@@ -18,7 +18,17 @@ class LockBloc extends Bloc<LockEvent, AppLockState> {
         _apiService.setAccessToken(_accessToken);
       }
       final locks = await _apiService.getLockList();
-      emit(LockLoaded(locks));
+      
+      List<Map<String, dynamic>> gateways = [];
+      try {
+        final gatewayResponse = await _apiService.getGatewayList();
+        gateways = List<Map<String, dynamic>>.from(gatewayResponse['list'] ?? []);
+      } catch (e) {
+        // Log the error but don't fail the whole fetch
+        print('Error fetching gateways: $e');
+      }
+
+      emit(LockLoaded(locks, gateways: gateways));
     } catch (e) {
       emit(LockFailure(e.toString()));
     }
