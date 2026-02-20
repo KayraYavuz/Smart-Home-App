@@ -9,12 +9,14 @@ class PasscodePage extends StatelessWidget {
   final int lockId;
   final String clientId;
   final String accessToken;
+  final Map<String, dynamic> lock; // Added lock object
 
   const PasscodePage({
     super.key,
     required this.lockId,
     required this.clientId,
     required this.accessToken,
+    required this.lock, // Added lock object
   });
 
   String _getPasscodeType(int type) {
@@ -87,10 +89,9 @@ class PasscodePage extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // TODO: Ensure CreatePasscodePage can get lockId and credentials
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const CreatePasscodePage()),
+              MaterialPageRoute(builder: (context) => CreatePasscodePage(lock: lock)),
             );
           },
           backgroundColor: const Color(0xFF1E90FF),

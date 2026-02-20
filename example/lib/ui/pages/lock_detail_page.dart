@@ -658,6 +658,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
             lockId: lockId,
             clientId: ApiConfig.clientId,
             accessToken: authState.accessToken,
+            lock: widget.lock,
           ),
         ),
       );
