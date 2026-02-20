@@ -3,6 +3,7 @@ import 'package:ttlock_flutter/ttlock.dart';
 import 'gateway_page.dart';
 import 'package:ttlock_flutter/ttgateway.dart';
 import 'package:bmprogresshud/progresshud.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class WifiPage extends StatefulWidget {
   const WifiPage({super.key, required this.mac});
@@ -18,7 +19,24 @@ class _WifiPageState extends State<WifiPage> {
   @override
   void initState() {
     super.initState();
-    _getNearbyWifi();
+    _checkLocationAndScan();
+  }
+
+  Future<void> _checkLocationAndScan() async {
+    final status = await Permission.locationWhenInUse.request();
+    if (status.isGranted) {
+      _getNearbyWifi();
+    } else {
+      debugPrint('Location permission denied, cannot scan wifi.');
+      // Wait for build to finish before showing snackbar
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Wi-Fi taraması için konum izni gereklidir.')),
+          );
+        }
+      });
+    }
   }
 
   void _getNearbyWifi() {

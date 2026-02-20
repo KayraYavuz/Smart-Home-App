@@ -263,7 +263,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: Text(l10n.addFingerprint ?? 'Parmak İzi Ekle', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        title: const Text('Parmak İzi Ekle', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),

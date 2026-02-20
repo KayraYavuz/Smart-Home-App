@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:intl/intl.dart';
+import 'package:ttlock_flutter/ttlock.dart';
+import 'dart:async';
 
 class CreatePasscodePage extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -99,6 +101,35 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
     });
   }
 
+  Future<void> _createCustomPasscodeNative(String passcode, int startDateMs, int endDateMs, String lockId, String name, ApiService apiService) async {
+    final completer = Completer<void>();
+    
+    // Natively set it to the lock via Bluetooth
+    TTLock.createCustomPasscode(
+      passcode, 
+      startDateMs, 
+      endDateMs, 
+      widget.lock['lockData'], 
+      () {
+        completer.complete();
+      }, 
+      (errorCode, errorMsg) {
+        completer.completeError('Kilide ulaşılamadı. Bluetooth açık ve yakında olduğunuzdan emin olun. Hata: $errorMsg');
+      }
+    );
+    
+    await completer.future;
+    
+    // Now upload to Cloud
+    await apiService.addPasscode(
+      lockId: lockId,
+      passcodeName: name,
+      passcode: passcode,
+      startDate: startDateMs,
+      endDate: endDateMs,
+    );
+  }
+
   Future<void> _onNext() async {
     final name = _nameController.text.trim();
     final customPasscode = _passcodeController.text.trim();
@@ -132,13 +163,8 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
       if (_currentTabIndex == 0) {
         // Kalıcı (Permanent)
         if (customPasscode.isNotEmpty) {
-           result = await apiService.addPasscode(
-             lockId: lockId,
-             passcodeName: name,
-             passcode: customPasscode,
-             startDate: 0,
-             endDate: 0,
-           );
+           await _createCustomPasscodeNative(customPasscode, 0, 0, lockId, name, apiService);
+           result = {'keyboardPwd': customPasscode};
         } else {
            result = await apiService.getRandomPasscode(
              lockId: lockId,
@@ -150,13 +176,15 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
       } else if (_currentTabIndex == 1) {
         // Zamanlı (Timed)
         if (customPasscode.isNotEmpty) {
-           result = await apiService.addPasscode(
-             lockId: lockId,
-             passcodeName: name,
-             passcode: customPasscode,
-             startDate: _startDate.millisecondsSinceEpoch,
-             endDate: _endDate.millisecondsSinceEpoch,
+           await _createCustomPasscodeNative(
+             customPasscode, 
+             _startDate.millisecondsSinceEpoch, 
+             _endDate.millisecondsSinceEpoch, 
+             lockId, 
+             name, 
+             apiService
            );
+           result = {'keyboardPwd': customPasscode};
         } else {
            result = await apiService.getRandomPasscode(
              lockId: lockId,
@@ -211,7 +239,7 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
               ),
               const SizedBox(height: 16),
               const Text(
-                'Lütfen bu şifreyi kilidin tuş takımına girerek etkinleştirin. (# veya kilit tuşuna basarak onaylayın)',
+                'Bu şifre kullanıma hazırdır. Kapıyı açmak için şifreyi tuşlayıp sonuna # (veya kilit simgesi) eklemeniz yeterlidir.',
                 style: TextStyle(color: Colors.grey, fontSize: 13),
                 textAlign: TextAlign.center,
               ),

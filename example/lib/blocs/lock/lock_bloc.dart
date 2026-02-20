@@ -22,7 +22,7 @@ class LockBloc extends Bloc<LockEvent, AppLockState> {
       List<Map<String, dynamic>> gateways = [];
       try {
         final gatewayResponse = await _apiService.getGatewayList();
-        gateways = List<Map<String, dynamic>>.from(gatewayResponse['list'] ?? []);
+        gateways = gatewayResponse;
       } catch (e) {
         // Log the error but don't fail the whole fetch
         print('Error fetching gateways: $e');
