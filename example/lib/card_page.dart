@@ -366,6 +366,79 @@ class _CardPageState extends State<CardPage> {
     if (result == true) await _fetchCards();
   }
 
+  Future<void> _addCardViaBluetooth() async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: const Text('Kilit Üzerinden Kart Ekle', style: TextStyle(color: Colors.white)),
+          content: const Text(
+            'Lütfen kilide bağlanıp kartınızı kilidin tuş takımına okutun. Devam etmek istiyor musunuz?',
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Başla', style: TextStyle(color: Color(0xFF4A90FF))),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      if (!mounted) return;
+      setState(() => _isLoading = true);
+      
+      try {
+        DateTime startDate = DateTime.now();
+        DateTime endDate = DateTime.now().add(const Duration(days: 365));
+
+        TTLock.addCard(null, startDate.millisecondsSinceEpoch, endDate.millisecondsSinceEpoch, widget.lockData, () {
+          // Progress
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen kartı kilide okutun...')));
+          }
+        }, (cardNumber) async {
+          // Success Callback
+          try {
+            final apiService = Provider.of<ApiService>(context, listen: false);
+            // Kilit üzerinden kart eklendiğinde API_v3 addICCard çağrılabilir, veya addICCardViaGateway de çalışır.
+            await apiService.addICCardViaGateway(
+              lockId: widget.lockId,
+              cardNumber: cardNumber,
+              startDate: startDate.millisecondsSinceEpoch,
+              endDate: endDate.millisecondsSinceEpoch,
+              cardName: 'Yeni Kart',
+              cyclicConfig: null,
+            );
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kart başarıyla eklendi ve sunucuya kaydedildi.'), backgroundColor: Colors.green));
+            await _fetchCards();
+          } catch (e) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart eklendi ancak sunucuya kaydedilemedi: $e'), backgroundColor: Colors.orange));
+            setState(() => _isLoading = false);
+          }
+        }, (errorCode, errorMsg) {
+          // Failed Callback
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart ekleme başarısız: $errorMsg'), backgroundColor: Colors.red));
+          setState(() => _isLoading = false);
+        });
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   String _formatDate(int timestamp) => DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(timestamp));
 
   @override
@@ -386,6 +459,9 @@ class _CardPageState extends State<CardPage> {
                   break;
                 case 'remote_add':
                   _navigateToRemoteAddCard();
+                  break;
+                case 'bluetooth_add':
+                  _addCardViaBluetooth();
                   break;
                 case 'clear_all':
                   _clearAllCards();
@@ -410,6 +486,16 @@ class _CardPageState extends State<CardPage> {
                     Icon(Icons.nfc, color: Colors.white, size: 20),
                     SizedBox(width: 12),
                     Text('Uzaktan Kart Oluşturma', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'bluetooth_add',
+                child: Row(
+                  children: [
+                    Icon(Icons.bluetooth, color: Colors.blueAccent, size: 20),
+                    SizedBox(width: 12),
+                    Text('Kilit Üzerinden Kart Ekle', style: TextStyle(color: Colors.blueAccent)),
                   ],
                 ),
               ),

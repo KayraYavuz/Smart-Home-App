@@ -225,6 +225,36 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                           ),
                         ),
                       ),
+                      
+                    // Gateway durumu
+                    if (widget.lock['hasGateway'] == 1)
+                      Container(
+                        margin: const EdgeInsets.only(left: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.router,
+                              color: Colors.blue,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 2),
+                            const Text(
+                              'Gateway',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),

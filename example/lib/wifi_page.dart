@@ -22,13 +22,18 @@ class _WifiPageState extends State<WifiPage> {
   }
 
   void _getNearbyWifi() {
-    // ProgressHud.of(_context).showLoading();
-    TTGateway.getNearbyWifi((finished, wifiList) {
-      // ProgressHud.of(_context).dismiss();
-      setState(() {
-        _wifiList = wifiList;
-      });
-    }, (errorCode, errorMsg) {});
+    TTGateway.connect(widget.mac, (status) {
+      if (status == TTGatewayConnectStatus.success) {
+        TTGateway.getNearbyWifi((finished, wifiList) {
+          setState(() {
+            _wifiList = wifiList;
+          });
+        }, (errorCode, errorMsg) {});
+      } else {
+        // Handle connection failure if needed
+        debugPrint('Gateway connection failed: $status');
+      }
+    });
   }
 
   void _pushGatewayPage(String wifi) {
