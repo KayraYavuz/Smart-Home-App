@@ -65,7 +65,7 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
       },
     );
     if (pickedDate == null) return;
-    if (!mounted) return;
+    if (!context.mounted) return;
 
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
@@ -163,7 +163,16 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
       if (_currentTabIndex == 0) {
         // Kalıcı (Permanent)
         if (customPasscode.isNotEmpty) {
-           await _createCustomPasscodeNative(customPasscode, 0, 0, lockId, name, apiService);
+           final now = DateTime.now();
+           final tenYearsLater = now.add(const Duration(days: 3650));
+           await _createCustomPasscodeNative(
+             customPasscode, 
+             now.millisecondsSinceEpoch, 
+             tenYearsLater.millisecondsSinceEpoch, 
+             lockId, 
+             name, 
+             apiService
+           );
            result = {'keyboardPwd': customPasscode};
         } else {
            result = await apiService.getRandomPasscode(

@@ -7,6 +7,7 @@ import 'package:bmprogresshud/progresshud.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
+import 'package:yavuz_lock/ui/pages/gateway_detail_page.dart';
 import 'ui/pages/lock_detail_page.dart';
 import 'ui/pages/add_device_page.dart';
 import 'ui/pages/notification_page.dart';
@@ -368,6 +369,30 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         });
       }
 
+      // Fetch Gateways
+      try {
+        final gateways = await apiService.getGatewayList();
+        for (final gw in gateways) {
+          allLocks.add({
+            'name': gw['gatewayName'] ?? l10n.unknownGateway,
+            'status': gw['isOnline'] == 1 ? 'Çevrimiçi' : 'Çevrimdışı',
+            'isLocked': false, // Not applicable for gateways
+            'battery': 100, // Not applicable for gateways
+            'lockData': '',
+            'lockMac': gw['gatewayMac'] ?? '',
+            'lockId': gw['gatewayId']?.toString() ?? '',
+            'deviceType': 'gateway',
+            'source': 'ttlock_gateway',
+            'shared': false,
+            'hasGateway': 0,
+            'isOnline': gw['isOnline'] == 1,
+            'gatewayDetails': gw, // Keep reference for detail page
+          });
+        }
+      } catch (e) {
+        debugPrint('📡 Gateway fetch error: $e');
+      }
+
       if (!mounted) return;
       setState(() {
         _locks = allLocks;
@@ -656,6 +681,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Widget _buildLockCard(Map<String, dynamic> lock, BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    
+    final bool isGateway = lock['deviceType'] == 'gateway';
 
     // Calculate remaining days and role for shared locks
     String? remainingDaysText;
@@ -710,6 +737,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             color: Colors.transparent,
             child: InkWell(
               onTap: () async {
+                if (isGateway) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GatewayDetailPage(gateway: lock['gatewayDetails']),
+                    ),
+                  ).then((_) => _fetchAndSetLocks()); // Refresh when we come back
+                  return;
+                }
+
                 final scaffoldMessenger = ScaffoldMessenger.of(context);
                 final result = await Navigator.push(
                   context,
@@ -750,6 +787,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 }
               },
               onLongPress: () async {
+                if (isGateway) {
+                   // Gateway delete handling from main screen? Handled in detail page typically, but could implement shortcut here.
+                   return;
+                }
                 if (lock['shared'] == true) {
                   final action = await _showSharedLockOptionsDialog(context, lock);
                   if (action == 'cancel_share') {
@@ -774,47 +815,66 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
-                          lock['isLocked'] ? Icons.lock : Icons.lock_open,
+                          isGateway
+                              ? Icons.router
+                              : (lock['isLocked'] ? Icons.lock : Icons.lock_open),
                           color: const Color(0xFF3B9EFF),
                           size: 32,
                         ),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (hasGateway)
+                            if (!isGateway && hasGateway)
                               const Icon(
                                 Icons.wifi,
                                 color: Colors.white70,
                                 size: 18,
                               ),
-                            if (hasGateway)
+                            if (!isGateway && hasGateway)
                               const SizedBox(width: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: _getBatteryColor(lock['battery'] ?? 0),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    _getBatteryIcon(lock['battery'] ?? 0),
+                            if (isGateway)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: lock['isOnline'] == true ? const Color(0xFF34C759) : const Color(0xFFFF3B30),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  lock['isOnline'] == true ? 'Çevrimiçi' : 'Çevrimdışı',
+                                  style: const TextStyle(
                                     color: Colors.white,
-                                    size: 13,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const SizedBox(width: 2),
-                                  Text(
-                                    '${lock['battery'] ?? 0}%',
-                                    style: const TextStyle(
+                                ),
+                              )
+                            else
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: _getBatteryColor(lock['battery'] ?? 0),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      _getBatteryIcon(lock['battery'] ?? 0),
                                       color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
+                                      size: 13,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      '${lock['battery'] ?? 0}%',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ],
@@ -834,7 +894,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     ),
                     const SizedBox(height: 6),
                     // Shared label
-                    if (isShared)
+                    if (!isGateway && isShared)
                       Row(
                         children: [
                           const Icon(Icons.people, color: Colors.white60, size: 13),
@@ -850,7 +910,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       ),
                     const Spacer(),
                     // Status button and Days badge - only show admin role and days
-                    if (roleText == l10n.roleAdmin || (isShared && remainingDaysText != null))
+                    if (!isGateway && (roleText == l10n.roleAdmin || (isShared && remainingDaysText != null)))
                       Row(
                         children: [
                           if (roleText == l10n.roleAdmin)

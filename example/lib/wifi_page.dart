@@ -14,6 +14,7 @@ class WifiPage extends StatefulWidget {
 
 class _WifiPageState extends State<WifiPage> {
   List _wifiList = [];
+  bool _isScanning = true;
   // BuildContext _context;
 
   @override
@@ -40,16 +41,28 @@ class _WifiPageState extends State<WifiPage> {
   }
 
   void _getNearbyWifi() {
+    setState(() => _isScanning = true);
     TTGateway.connect(widget.mac, (status) {
       if (status == TTGatewayConnectStatus.success) {
         TTGateway.getNearbyWifi((finished, wifiList) {
-          setState(() {
-            _wifiList = wifiList;
-          });
-        }, (errorCode, errorMsg) {});
+          if (mounted) {
+            setState(() {
+              _wifiList = wifiList;
+              _isScanning = !finished;
+            });
+          }
+        }, (errorCode, errorMsg) {
+          if (mounted) {
+            setState(() => _isScanning = false);
+            debugPrint('Wi-Fi scan failed: $errorMsg');
+          }
+        });
       } else {
         // Handle connection failure if needed
         debugPrint('Gateway connection failed: $status');
+        if (mounted) {
+          setState(() => _isScanning = false);
+        }
       }
     });
   }
@@ -57,7 +70,7 @@ class _WifiPageState extends State<WifiPage> {
   void _pushGatewayPage(String wifi) {
     Navigator.push(context,
         MaterialPageRoute(builder: (BuildContext context) {
-      return GatewayPage(type: TTGatewayType.g2, wifi: wifi);
+      return GatewayPage(type: TTGatewayType.g2, wifi: wifi, mac: widget.mac);
     }));
   }
 
@@ -76,6 +89,14 @@ class _WifiPageState extends State<WifiPage> {
   }
 
   Widget getList() {
+    if (_isScanning && _wifiList.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    if (!_isScanning && _wifiList.isEmpty) {
+      return const Center(child: Text('Bulunan Wi-Fi ağı yok.'));
+    }
+
     return ListView.builder(
         itemCount: _wifiList.length,
         padding: const EdgeInsets.all(5.0),

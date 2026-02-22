@@ -3530,6 +3530,9 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
+    ).timeout(
+      const Duration(seconds: 20),
+      onTimeout: () => throw Exception('Sunucuya bağlanılırken zaman aşımı oluştu. Lütfen internet bağlantınızı kontrol edin.'),
     );
 
     final responseData = json.decode(response.body);

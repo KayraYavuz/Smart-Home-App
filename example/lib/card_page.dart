@@ -374,7 +374,7 @@ class _CardPageState extends State<CardPage> {
           backgroundColor: Colors.grey[900],
           title: const Text('Kilit Üzerinden Kart Ekle', style: TextStyle(color: Colors.white)),
           content: const Text(
-            'Lütfen kilide bağlanıp kartınızı kilidin tuş takımına okutun. Devam etmek istiyor musunuz?',
+            'Telefonunuz kilide bağlanarak işlemi başlatacaktır. Bağlantı sağlandığında kartınızı okutmanız istenecektir.',
             style: TextStyle(color: Colors.white),
           ),
           actions: <Widget>[
@@ -399,40 +399,58 @@ class _CardPageState extends State<CardPage> {
         DateTime startDate = DateTime.now();
         DateTime endDate = DateTime.now().add(const Duration(days: 365));
 
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kilide bağlanılıyor (Kilit uyku durumundan çıkılıyor olabilir), lütfen bekleyin...')));
+        }
         TTLock.addCard(null, startDate.millisecondsSinceEpoch, endDate.millisecondsSinceEpoch, widget.lockData, () {
-          // Progress
+          // Progress Callback: Triggered when lock enters ADD_CARD mode
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Lütfen kartı kilide okutun...')));
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 10),
+            ));
           }
         }, (cardNumber) async {
           // Success Callback
           try {
             final apiService = Provider.of<ApiService>(context, listen: false);
-            // Kilit üzerinden kart eklendiğinde API_v3 addICCard çağrılabilir, veya addICCardViaGateway de çalışır.
-            await apiService.addICCardViaGateway(
+            // Kilit üzerinden kart eklendiğinde API_v3 addICCard çağrılmalıdır.
+            await apiService.addIdentityCard(
               lockId: widget.lockId,
               cardNumber: cardNumber,
               startDate: startDate.millisecondsSinceEpoch,
               endDate: endDate.millisecondsSinceEpoch,
               cardName: 'Yeni Kart',
+              addType: 1, // 1-APP Bluetooth
               cyclicConfig: null,
             );
             if (!mounted) return;
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kart başarıyla eklendi ve sunucuya kaydedildi.'), backgroundColor: Colors.green));
+            setState(() => _isLoading = false);
             await _fetchCards();
           } catch (e) {
             if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart eklendi ancak sunucuya kaydedilemedi: $e'), backgroundColor: Colors.orange));
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart eklendi ancak sunucuya kaydedilemedi: $e'), backgroundColor: Colors.red));
             setState(() => _isLoading = false);
           }
         }, (errorCode, errorMsg) {
           // Failed Callback
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart ekleme başarısız: $errorMsg'), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          if (errorCode == TTLockError.lockIsBusy || errorCode == TTLockError.bluetoothConnectTimeout || errorCode == TTLockError.bluetoothDisconnection) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Bağlanılamadı. Kilit uyku modundaysa lütfen önce bir tuşa basarak uyandırın. ($errorMsg)'), backgroundColor: Colors.red));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart ekleme başarısız: $errorMsg'), backgroundColor: Colors.red));
+          }
           setState(() => _isLoading = false);
         });
       } catch (e) {
         if (!mounted) return;
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
         setState(() => _isLoading = false);
       }
