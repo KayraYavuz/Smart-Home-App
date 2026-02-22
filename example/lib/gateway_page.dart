@@ -33,7 +33,7 @@ class _GatewayPageState extends State<GatewayPage> {
     ));
   }
 
-  void _initGateway_2(String? wifi, String? wifiPassword) {
+  Future<void> _initGateway_2(String? wifi, String? wifiPassword) async {
     if (widget.wifi == null || wifiPassword == null || wifiPassword.isEmpty) {
       _showSnackBar('Wi-Fi ağı veya şifre boş olamaz', isError: true);
       return;
@@ -43,20 +43,38 @@ class _GatewayPageState extends State<GatewayPage> {
       return;
     }
 
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    final uid = await apiService.getUid();
+    final pw = await apiService.getMd5Password();
+
+    if (uid == null || pw == null) {
+      _showSnackBar('Kullanıcı bilgileri bulunamadı. Lütfen tekrar giriş yapın.', isError: true);
+      return;
+    }
+
     Map paramMap = {};
     paramMap["mac"] = widget.mac;
     paramMap["wifi"] = wifi;
     paramMap["wifiPassword"] = wifiPassword;
     paramMap["type"] = widget.type.index;
     paramMap["gatewayName"] = _gatewayName;
-    paramMap["uid"] = GatewayConfig.uid;
-    paramMap["ttlockLoginPassword"] = GatewayConfig.ttlockLoginPassword;
+    paramMap["uid"] = uid;
+    paramMap["ttlockLoginPassword"] = pw;
     _initGateway(paramMap);
   }
 
-  void _initGateway_3_4() {
+  Future<void> _initGateway_3_4() async {
     if (_gatewayName.isEmpty) {
       _showSnackBar('Lütfen bir ağ geçidi adı girin', isError: true);
+      return;
+    }
+
+    final apiService = Provider.of<ApiService>(context, listen: false);
+    final uid = await apiService.getUid();
+    final pw = await apiService.getMd5Password();
+
+    if (uid == null || pw == null) {
+      _showSnackBar('Kullanıcı bilgileri bulunamadı. Lütfen tekrar giriş yapın.', isError: true);
       return;
     }
 
@@ -64,8 +82,8 @@ class _GatewayPageState extends State<GatewayPage> {
     paramMap["mac"] = widget.mac;
     paramMap["type"] = widget.type.index;
     paramMap["gatewayName"] = _gatewayName;
-    paramMap["uid"] = GatewayConfig.uid;
-    paramMap["ttlockLoginPassword"] = GatewayConfig.ttlockLoginPassword;
+    paramMap["uid"] = uid;
+    paramMap["ttlockLoginPassword"] = pw;
     _initGateway(paramMap);
   }
 

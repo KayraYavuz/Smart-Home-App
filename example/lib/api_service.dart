@@ -4130,12 +4130,17 @@ class ApiService {
 
             if (_accessToken != null && _refreshToken != null) {
               _baseUrl = regionBaseUrl;
+              int? uid = responseData['uid'] as int?;
+              String md5Password = _generateMd5(password);
+              
               if (_authRepository != null) {
                 await _authRepository!.saveTokens(
                   accessToken: _accessToken!,
                   refreshToken: _refreshToken!,
                   expiry: _tokenExpiry!,
                   baseUrl: _baseUrl,
+                  uid: uid,
+                  md5Password: md5Password,
                 );
               }
               debugPrint('✅ Giriş BAŞARILI! (Format: $userFormat)');
@@ -4213,6 +4218,16 @@ class ApiService {
     _tokenExpiry = null;
     await _authRepository?.deleteTokens();
     return false;
+  }
+
+  /// Get cached UID
+  Future<int?> getUid() async {
+    return _authRepository?.getUid();
+  }
+
+  /// Get cached MD5 password
+  Future<String?> getMd5Password() async {
+    return _authRepository?.getMd5Password();
   }
 
 
