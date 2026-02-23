@@ -23,6 +23,8 @@ const recordTypes = {
   46: "Otomatik Kilit Açıldı (Auto Unlock)"
 };
 
+const batteryWarnings = {}; // lockId -> timestamp
+
 exports.ttlockCallback = onRequest(async (req, res) => {
   // Not: Acil freni kaldırdık, artık kod normal çalışacak.
 
@@ -70,13 +72,24 @@ exports.ttlockCallback = onRequest(async (req, res) => {
             body: actionText
           });
 
-          // PİL KONTROLÜ (GÜVENLİ HALE GETİRİLDİ)
-          // Sadece battery gerçekten bir sayıysa ve 0 ile 20 arasındaysa çalışır
-          if (!isNaN(battery) && battery !== null && battery > 0 && battery <= 20) {
-            messagesToSend.push({
-              title: "⚠️ Düşük Pil Uyarısı!",
-              body: `Kilit pili kritik seviyede: %${battery}. Lütfen pilleri değiştirin.`
-            });
+          // PİL KONTROLÜ (GÜVENLİ HALE GETİRİLDİ VE BİR SEFERLİK YAPILDI)
+          // Sadece battery < 15 ise ve son 24 saat içinde uyarı verilmediyse çalışır
+          if (!isNaN(battery) && battery !== null && battery > 0 && battery < 15) {
+            const now = Date.now();
+            const lastWarnTime = batteryWarnings[lockId];
+            const ONE_DAY = 24 * 60 * 60 * 1000;
+
+            // Eğer daha önce uyarı verilmemişse veya üzerinden 24 saat geçmişse
+            if (!lastWarnTime || (now - lastWarnTime) > ONE_DAY) {
+              batteryWarnings[lockId] = now; // Uyarı zamanını kaydet
+              messagesToSend.push({
+                title: "⚠️ Düşük Pil Uyarısı!",
+                body: `Kilit pili kritik seviyede: %${battery}. Lütfen pilleri değiştirin.`
+              });
+            }
+          } else if (!isNaN(battery) && battery >= 15) {
+            // Pil %15 ve üzerine çıkmışsa uyarı engelini sıfırla
+            delete batteryWarnings[lockId];
           }
         }
       } catch (e) {
