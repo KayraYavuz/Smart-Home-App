@@ -24,7 +24,7 @@ class HybridUnlockService {
   }) async {
     // First, try Bluetooth unlock
     debugPrint('Attempting Bluetooth unlock for lock: $lockMac');
-    final bluetoothResult = await _tryBluetoothUnlock(lockData, lockMac);
+    final bluetoothResult = await _tryBluetoothUnlock(lockData, lockMac, lockId);
 
     if (bluetoothResult.success) {
       debugPrint('Bluetooth unlock successful');
@@ -67,7 +67,7 @@ class HybridUnlockService {
     bool onlyBluetooth = false,
   }) async {
     debugPrint('Attempting Bluetooth lock for lock: $lockMac');
-    final bluetoothResult = await _tryBluetoothLock(lockData, lockMac);
+    final bluetoothResult = await _tryBluetoothLock(lockData, lockMac, lockId);
 
     if (bluetoothResult.success) {
       return bluetoothResult;
@@ -98,7 +98,7 @@ class HybridUnlockService {
 
 
   /// Try to unlock via Bluetooth
-  Future<UnlockResult> _tryBluetoothUnlock(String lockData, String lockMac) async {
+  Future<UnlockResult> _tryBluetoothUnlock(String lockData, String lockMac, String? lockId) async {
     // 1. Bluetooth durum kontrolü
     final Completer<bool> btCheckCompleter = Completer();
     TTLock.getBluetoothState((state) {
@@ -125,6 +125,32 @@ class HybridUnlockService {
         TTControlAction.unlock,
         (lockTime, electricQuantity, uniqueId, updatedLockData) {
           if (!completer.isCompleted) {
+            // Unlocked successfully, now immediately fetch the operation log from the lock
+            // and upload it to the TTLock cloud so webhooks can fire.
+            TTLock.getLockOperateRecord(
+              TTOperateRecordType.latest, 
+              lockData, 
+              (records) async {
+                try {
+                  if (lockId != null && lockId.isNotEmpty) {
+                      debugPrint('📡 Bluetooth kilit açma başarılı. Kayıtlar TTLock bulutuna yükleniyor...');
+                      await _apiService.uploadOperationLog(
+                        lockId: lockId,
+                        records: records,
+                      );
+                      debugPrint('✅ Kayıtlar başarıyla yüklendi, webhook tetiklenecek.');
+                  } else {
+                      debugPrint('⚠️ lockId eksik olduğu için kayıtlar buluta yüklenemedi.');
+                  }
+                } catch (e) {
+                  debugPrint('⚠️ Error uploading operation log: $e');
+                }
+              }, 
+              (errorCode, errorMsg) {
+                debugPrint('⚠️ Could not fetch operation record: $errorMsg');
+              }
+            );
+
             completer.complete(UnlockResult(
               success: true,
               method: 'bluetooth',
@@ -170,7 +196,7 @@ class HybridUnlockService {
   }
 
   /// Try to lock via Bluetooth
-  Future<UnlockResult> _tryBluetoothLock(String lockData, String lockMac) async {
+  Future<UnlockResult> _tryBluetoothLock(String lockData, String lockMac, String? lockId) async {
     // 1. Bluetooth durum kontrolü
     final Completer<bool> btCheckCompleter = Completer();
     TTLock.getBluetoothState((state) {
@@ -197,6 +223,32 @@ class HybridUnlockService {
         TTControlAction.lock,
         (lockTime, electricQuantity, uniqueId, updatedLockData) {
           if (!completer.isCompleted) {
+            // Locked successfully, now immediately fetch the operation log from the lock
+            // and upload it to the TTLock cloud so webhooks can fire.
+            TTLock.getLockOperateRecord(
+              TTOperateRecordType.latest, 
+              lockData, 
+              (records) async {
+                try {
+                  if (lockId != null && lockId.isNotEmpty) {
+                      debugPrint('📡 Bluetooth kilitleme başarılı. Kayıtlar TTLock bulutuna yükleniyor...');
+                      await _apiService.uploadOperationLog(
+                        lockId: lockId,
+                        records: records,
+                      );
+                      debugPrint('✅ Kayıtlar başarıyla yüklendi, webhook tetiklenecek.');
+                  } else {
+                      debugPrint('⚠️ lockId eksik olduğu için kayıtlar buluta yüklenemedi.');
+                  }
+                } catch (e) {
+                  debugPrint('⚠️ Error uploading operation log: $e');
+                }
+              }, 
+              (errorCode, errorMsg) {
+                debugPrint('⚠️ Could not fetch operation record: $errorMsg');
+              }
+            );
+
             completer.complete(UnlockResult(
               success: true,
               method: 'bluetooth',

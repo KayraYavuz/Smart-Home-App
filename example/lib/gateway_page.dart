@@ -58,7 +58,7 @@ class _GatewayPageState extends State<GatewayPage> {
     paramMap["wifiPassword"] = wifiPassword;
     paramMap["type"] = widget.type.index;
     paramMap["gatewayName"] = _gatewayName;
-    paramMap["uid"] = uid;
+    paramMap["ttlockUid"] = uid;
     paramMap["ttlockLoginPassword"] = pw;
     _initGateway(paramMap);
   }
@@ -82,7 +82,7 @@ class _GatewayPageState extends State<GatewayPage> {
     paramMap["mac"] = widget.mac;
     paramMap["type"] = widget.type.index;
     paramMap["gatewayName"] = _gatewayName;
-    paramMap["uid"] = uid;
+    paramMap["ttlockUid"] = uid;
     paramMap["ttlockLoginPassword"] = pw;
     _initGateway(paramMap);
   }
