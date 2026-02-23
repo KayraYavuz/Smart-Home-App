@@ -166,7 +166,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             break;
           case '7': // lowBattery
             // Düşük pil uyarısı - pil seviyesini güncelle
-            if (event.batteryLevel != null) {
+            // %1 gelen bildirimler genellikle hatalı webhook verisi (48) ile geldiği için yok sayıyoruz
+            if (event.batteryLevel != null && event.batteryLevel! > 1) {
               _locks[deviceIndex]['battery'] = event.batteryLevel!;
             }
             break;
@@ -174,6 +175,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             // Kilit manipülasyon uyarısı
             _locks[deviceIndex]['status'] = l10n.statusSecurityWarning;
             break;
+          case '48': // Ignored errant webhook
+            debugPrint("⚠️ Yoksayılan webhook olayı: 48");
+            return; // Direkt çık, snackbar/bildirim gösterme
           default:
             break;
         }

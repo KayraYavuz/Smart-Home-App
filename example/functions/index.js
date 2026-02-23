@@ -24,40 +24,43 @@ const recordTypes = {
 };
 
 exports.ttlockCallback = onRequest(async (req, res) => {
+  // Not: Acil freni kaldırdık, artık kod normal çalışacak.
+
   try {
     console.log("📥 Webhook Verisi Alındı:", JSON.stringify(req.body));
-    
+
     const data = req.body || req.query;
     const lockId = data.lockId;
-    
-    // Eğer kilit ID yoksa işlem yapma
+
+    // Eğer kilit ID yoksa TTLock'a başarılı dönüp işlemi sonlandırıyoruz (tekrar denemesin diye)
     if (!lockId) return res.status(200).send("No LockID");
 
     let eventType = 0;
     let username = "";
-    let battery = -1;
+    let battery = null; // Başlangıç değerini null yaptık
     let success = 1;
     let messagesToSend = [];
 
-    // 1. Gelen "records" verisini işle (Kilit Açma/Kapama Olayları)
+    // 1. Gelen "records" verisini işle
     if (data.records) {
       try {
         const records = JSON.parse(data.records);
         if (records && records.length > 0) {
           const lastRecord = records[0];
-          
+
           eventType = lastRecord.recordType;
           username = lastRecord.username || lastRecord.keyName || "";
-          battery = lastRecord.electricQuantity;
+          // Bataryayı güvenli bir şekilde Number'a çevirmeye çalışıyoruz
+          battery = parseInt(lastRecord.electricQuantity);
           success = lastRecord.success;
 
           // Ana Mesajı Oluştur
           let actionText = recordTypes[eventType] || `Kilit İşlemi (${eventType})`;
-          
+
           if (success !== 1) {
             actionText += " (Başarısız)";
           }
-          
+
           if (username) {
             actionText += ` - ${username}`;
           }
@@ -67,8 +70,9 @@ exports.ttlockCallback = onRequest(async (req, res) => {
             body: actionText
           });
 
-          // PİL KONTROLÜ (%20 Altı)
-          if (battery > -1 && battery < 20) {
+          // PİL KONTROLÜ (GÜVENLİ HALE GETİRİLDİ)
+          // Sadece battery gerçekten bir sayıysa ve 0 ile 20 arasındaysa çalışır
+          if (!isNaN(battery) && battery !== null && battery > 0 && battery <= 20) {
             messagesToSend.push({
               title: "⚠️ Düşük Pil Uyarısı!",
               body: `Kilit pili kritik seviyede: %${battery}. Lütfen pilleri değiştirin.`
@@ -78,49 +82,58 @@ exports.ttlockCallback = onRequest(async (req, res) => {
       } catch (e) {
         console.error("JSON parse hatası:", e);
       }
-    } 
-    
-    // Mesajları Gönder
-    for (const msg of messagesToSend) {
-      const payload = {
-        notification: {
-          title: msg.title,
-          body: msg.body,
-        },
-        data: {
-          lockId: lockId.toString(),
-          eventType: eventType.toString(),
-          click_action: "FLUTTER_NOTIFICATION_CLICK",
-        },
-        apns: {
-          payload: {
-            aps: {
-              alert: { title: msg.title, body: msg.body },
-              sound: "default",
-              badge: 1,
-              "content-available": 1,
-            },
-          },
-          headers: { "apns-priority": "10" },
-        },
-        android: {
-          priority: "high",
-          notification: {
-            channelId: "high_importance_channel",
-            sound: "default",
-          },
-        },
-        topic: `lock_${lockId}`,
-      };
-
-      console.log(`🚀 Gönderiliyor: ${msg.body}`);
-      await admin.messaging().send(payload);
     }
 
+    // Mesajları Gönder
+    for (const msg of messagesToSend) {
+      try {
+        const payload = {
+          notification: {
+            title: msg.title,
+            body: msg.body,
+          },
+          data: {
+            lockId: lockId.toString(),
+            eventType: eventType.toString(),
+            click_action: "FLUTTER_NOTIFICATION_CLICK",
+          },
+          apns: {
+            payload: {
+              aps: {
+                alert: { title: msg.title, body: msg.body },
+                sound: "default",
+                badge: 1,
+                "content-available": 1,
+              },
+            },
+            headers: { "apns-priority": "10" },
+          },
+          android: {
+            priority: "high",
+            notification: {
+              channelId: "high_importance_channel",
+              sound: "default",
+            },
+          },
+          topic: `lock_${lockId}`,
+        };
+
+        console.log(`🚀 Gönderiliyor: ${msg.body}`);
+        await admin.messaging().send(payload);
+      } catch (fcmError) {
+        // BİLDİRİM GİTMESE BİLE BURADA YAKALIYORUZ
+        // Böylece ana fonksiyon çökmüyor ve TTLock'a hata dönmüyoruz.
+        console.error("Bildirim gönderme hatası (Önemli Değil, Döngü Engellendi):", fcmError);
+      }
+    }
+
+    // HER DURUMDA TTLock'a 200 BAŞARILI dönüyoruz ki TEKRAR DENEMESİN!
     return res.status(200).send("Success");
+
   } catch (error) {
-    console.error("❌ Hata:", error);
-    return res.status(500).send("Error");
+    console.error("❌ Kritik Hata:", error);
+    // Eskiden 500 dönüyorduk, artık hata olsa bile 200 dönüyoruz ki TTLock sus-sun.
+    return res.status(200).send("Handled with internal error");
   }
 });
 

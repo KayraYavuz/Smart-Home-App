@@ -32,6 +32,8 @@ class NotificationService {
   Future<void> initialize() async {
     debugPrint("🚀 NotificationService: initialize() başladı...");
     if (_isInitialized) return;
+    
+
 
     try {
       await _firebaseMessaging.setAutoInitEnabled(true);

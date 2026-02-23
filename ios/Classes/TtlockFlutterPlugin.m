@@ -505,6 +505,7 @@ typedef NS_ENUM(NSInteger, ErrorDevice) {
         [TTGateway initializeGatewayWithInfoDic:paramDict block:^(TTSystemInfoModel *systemInfoModel, TTGatewayStatus status) {
              if (status == TTGatewaySuccess) {
                  NSMutableDictionary *resultDict = @{}.mutableCopy;
+                 resultDict[@"mac"] = lockModel.mac;
                  resultDict[@"modelNum"] = systemInfoModel.modelNum;
                  resultDict[@"hardwareRevision"] = systemInfoModel.hardwareRevision;
                  resultDict[@"firmwareRevision"] = systemInfoModel.firmwareRevision;
