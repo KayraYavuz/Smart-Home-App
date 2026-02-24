@@ -67,8 +67,9 @@ exports.ttlockCallback = onRequest(async (req, res) => {
             actionText += ` - ${username}`;
           }
 
+          const lockTitle = data.lockAlias || data.lockName || "Yavuz Lock";
           messagesToSend.push({
-            title: "Yavuz Lock",
+            title: lockTitle,
             body: actionText
           });
 

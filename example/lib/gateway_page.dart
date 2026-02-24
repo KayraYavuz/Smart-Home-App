@@ -128,6 +128,27 @@ class _GatewayPageState extends State<GatewayPage> {
       } catch (e) {
         if (mounted) {
           debugPrint("Gateway Server Upload Error: $e");
+          
+          try {
+            final apiService = Provider.of<ApiService>(context, listen: false);
+            final gatewayList = await apiService.getGatewayList();
+            final isRegistered = gatewayList.any((g) => 
+                g['gatewayMac'] == map['mac'] || g['mac'] == map['mac']);
+                
+            if (isRegistered) {
+              _showSnackBar('Ağ geçidi başarıyla eklendi (Zaman aşımına rağmen sunucuya ulaştı)!');
+              setState(() => _isLoading = false);
+              Future.delayed(const Duration(seconds: 1), () {
+                if (mounted) {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                }
+              });
+              return;
+            }
+          } catch (fallbackError) {
+            debugPrint("Fallback gateway check failed: $fallbackError");
+          }
+
           _showSnackBar('Ağ geçidi cihaza eklendi ancak sunucuya kaydedilemedi: $e', isError: true);
           setState(() => _isLoading = false);
         }

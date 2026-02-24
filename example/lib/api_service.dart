@@ -3540,8 +3540,8 @@ class ApiService {
       debugPrint('✅ Gateway cloud\'a kaydedildi: ${responseData['gatewayId']}');
       return responseData;
     } else {
-      debugPrint('❌ Gateway kaydedilemedi: ${responseData['errmsg']}');
-      throw Exception('Gateway kaydedilemedi: ${responseData['errmsg']}');
+      debugPrint('❌ Gateway kaydedilemedi Full YANIT: ${response.body}');
+      throw Exception('Gateway kaydedilemedi: ${responseData['errmsg']} (Detay: ${response.body})');
     }
   }
 
