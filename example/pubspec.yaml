@@ -1,6 +1,6 @@
 name: yavuz_lock
 description: Yavuz Lock
-version: 1.0.44+196
+version: 1.0.45+197
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
