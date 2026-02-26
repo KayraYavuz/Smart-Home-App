@@ -5,11 +5,13 @@ import 'package:yavuz_lock/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:ttlock_flutter/ttlock.dart';
 
 class AddCardPage extends StatefulWidget {
   final String lockId;
   final String lockData;
-  const AddCardPage({super.key, required this.lockId, required this.lockData});
+  final bool isBluetooth;
+  const AddCardPage({super.key, required this.lockId, required this.lockData, this.isBluetooth = false});
 
   @override
   State<AddCardPage> createState() => _AddCardPageState();
@@ -132,15 +134,77 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
       return;
     }
 
+    final l10n = AppLocalizations.of(context);
+
     setState(() {
       _isLoading = true;
-      _statusMessage = AppLocalizations.of(context)?.scanCardWithPhone ?? 'Hold the card to your phone...';
+      _statusMessage = widget.isBluetooth
+          ? (l10n?.bluetoothAddInstructions ?? 'Connecting to lock...')
+          : (l10n?.scanCardWithPhone ?? 'Hold the card to your phone...');
     });
 
     try {
       final completer = Completer<String>();
 
-      NfcManager.instance.startSession(
+      // Get date params
+      int startDateMs;
+      int endDateMs;
+      List<Map<String, dynamic>>? cyclicConfig;
+      List<TTCycleModel>? ttCycleList;
+
+      if (_currentTabIndex == 1) {
+        // Permanent
+        startDateMs = 0;
+        endDateMs = 0;
+      } else if (_currentTabIndex == 0) {
+        // Timed
+        startDateMs = _startDate.millisecondsSinceEpoch;
+        endDateMs = _endDate.millisecondsSinceEpoch;
+      } else {
+        // Recurring
+        startDateMs = _recurringStartDate.millisecondsSinceEpoch;
+        endDateMs = _recurringEndDate.millisecondsSinceEpoch;
+        final startMinutes = _recurringStartTime.hour * 60 + _recurringStartTime.minute;
+        final endMinutes = _recurringEndTime.hour * 60 + _recurringEndTime.minute;
+        cyclicConfig = _selectedDays.map((day) => {
+          "weekDay": day,
+          "startTime": startMinutes,
+          "endTime": endMinutes,
+        }).toList();
+        
+        ttCycleList = _selectedDays.map((day) {
+          final model = TTCycleModel();
+          model.weekDay = day;
+          model.startTime = startMinutes;
+          model.endTime = endMinutes;
+          return model;
+        }).toList();
+      }
+
+      if (widget.isBluetooth) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n?.bluetoothAddInstructions ?? 'Connecting to lock...')));
+        
+        TTLock.addCard(ttCycleList, startDateMs, endDateMs, widget.lockData, () {
+          // Progress Callback
+          if (mounted) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            setState(() {
+              _statusMessage = 'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.';
+            });
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 10),
+            ));
+          }
+        }, (cardNumber) {
+          if (!completer.isCompleted) completer.complete(cardNumber);
+        }, (errorCode, errorMsg) {
+          if (!completer.isCompleted) completer.completeError(Exception('$errorCode: $errorMsg'));
+        });
+      } else {
+        NfcManager.instance.startSession(
         alertMessage: 'Hold your IC card near the phone',
         onDiscovered: (NfcTag tag) async {
           try {
@@ -205,42 +269,28 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         _statusMessage = 'Card: $cardNumber\nSaving...';
       });
 
-      // Get date params
-      int startDateMs;
-      int endDateMs;
-      List<Map<String, dynamic>>? cyclicConfig;
-
-      if (_currentTabIndex == 1) {
-        // Permanent
-        startDateMs = 0;
-        endDateMs = 0;
-      } else if (_currentTabIndex == 0) {
-        // Timed
-        startDateMs = _startDate.millisecondsSinceEpoch;
-        endDateMs = _endDate.millisecondsSinceEpoch;
-      } else {
-        // Recurring
-        startDateMs = _recurringStartDate.millisecondsSinceEpoch;
-        endDateMs = _recurringEndDate.millisecondsSinceEpoch;
-        final startMinutes = _recurringStartTime.hour * 60 + _recurringStartTime.minute;
-        final endMinutes = _recurringEndTime.hour * 60 + _recurringEndTime.minute;
-        cyclicConfig = _selectedDays.map((day) => {
-          "weekDay": day,
-          "startTime": startMinutes,
-          "endTime": endMinutes,
-        }).toList();
-      }
-
-      // Register card on lock via Gateway using /v3/lock/addICCard
       final apiService = Provider.of<ApiService>(context, listen: false);
-      await apiService.addICCardViaGateway(
-        lockId: widget.lockId,
-        cardNumber: cardNumber,
-        startDate: startDateMs,
-        endDate: endDateMs,
-        cardName: cardName,
-        cyclicConfig: cyclicConfig,
-      );
+      
+      if (widget.isBluetooth) {
+        await apiService.addIdentityCard(
+          lockId: widget.lockId,
+          cardNumber: cardNumber,
+          startDate: startDateMs,
+          endDate: endDateMs,
+          cardName: cardName,
+          addType: 1, // APP Bluetooth
+          cyclicConfig: cyclicConfig,
+        );
+      } else {
+        await apiService.addICCardViaGateway(
+          lockId: widget.lockId,
+          cardNumber: cardNumber,
+          startDate: startDateMs,
+          endDate: endDateMs,
+          cardName: cardName,
+          cyclicConfig: cyclicConfig,
+        );
+      }
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -248,7 +298,9 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
       );
       Navigator.pop(context, true);
     } catch (e) {
-      try { await NfcManager.instance.stopSession(); } catch (_) {}
+      if (!widget.isBluetooth) {
+        try { await NfcManager.instance.stopSession(); } catch (_) {}
+      }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
@@ -355,7 +407,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
                 color: const Color(0xFF4A90FF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.nfc, color: Color(0xFF4A90FF), size: 56),
+              child: Icon(widget.isBluetooth ? Icons.bluetooth : Icons.nfc, color: const Color(0xFF4A90FF), size: 56),
             ),
             const SizedBox(height: 24),
             const CircularProgressIndicator(color: Color(0xFF4A90FF)),
@@ -368,7 +420,9 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
             const SizedBox(height: 32),
             TextButton(
               onPressed: () async {
-                try { await NfcManager.instance.stopSession(); } catch (_) {}
+                if (!widget.isBluetooth) {
+                  try { await NfcManager.instance.stopSession(); } catch (_) {}
+                }
                 setState(() {
                   _isLoading = false;
                   _statusMessage = null;

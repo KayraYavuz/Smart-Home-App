@@ -366,95 +366,59 @@ class _CardPageState extends State<CardPage> {
     if (result == true) await _fetchCards();
   }
 
-  Future<void> _addCardViaBluetooth() async {
-    final bool? confirm = await showDialog<bool>(
+  void _showAddCardOptions() {
+    showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.grey[900],
-          title: const Text('Kilit Üzerinden Kart Ekle', style: TextStyle(color: Colors.white)),
-          content: const Text(
-            'Telefonunuz kilide bağlanarak işlemi başlatacaktır. Bağlantı sağlandığında kartınızı okutmanız istenecektir.',
-            style: TextStyle(color: Colors.white),
+      backgroundColor: Colors.grey[900],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('Nasıl eklemek istersiniz?', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                leading: const Icon(Icons.bluetooth, color: Colors.blueAccent),
+                title: const Text('Kilit Üzerinden Ekle (Bluetooth)', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _addCardViaBluetooth();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.nfc, color: Colors.white),
+                title: const Text('Telefon Üzerinden Ekle (NFC)', style: TextStyle(color: Colors.white)),
+                subtitle: const Text('Gateway üzerinden kaydedilir', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _navigateToRemoteAddCard();
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('İptal', style: TextStyle(color: Colors.grey)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Başla', style: TextStyle(color: Color(0xFF4A90FF))),
-            ),
-          ],
         );
       },
     );
+  }
 
-    if (confirm == true) {
-      if (!mounted) return;
-      setState(() => _isLoading = true);
-      
-      try {
-        DateTime startDate = DateTime.now();
-        DateTime endDate = DateTime.now().add(const Duration(days: 365));
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kilide bağlanılıyor (Kilit uyku durumundan çıkılıyor olabilir), lütfen bekleyin...')));
-        }
-        TTLock.addCard(null, startDate.millisecondsSinceEpoch, endDate.millisecondsSinceEpoch, widget.lockData, () {
-          // Progress Callback: Triggered when lock enters ADD_CARD mode
-          if (mounted) {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              backgroundColor: Colors.orange,
-              duration: Duration(seconds: 10),
-            ));
-          }
-        }, (cardNumber) async {
-          // Success Callback
-          try {
-            final apiService = Provider.of<ApiService>(context, listen: false);
-            // Kilit üzerinden kart eklendiğinde API_v3 addICCard çağrılmalıdır.
-            await apiService.addIdentityCard(
-              lockId: widget.lockId,
-              cardNumber: cardNumber,
-              startDate: startDate.millisecondsSinceEpoch,
-              endDate: endDate.millisecondsSinceEpoch,
-              cardName: 'Yeni Kart',
-              addType: 1, // 1-APP Bluetooth
-              cyclicConfig: null,
-            );
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kart başarıyla eklendi ve sunucuya kaydedildi.'), backgroundColor: Colors.green));
-            setState(() => _isLoading = false);
-            await _fetchCards();
-          } catch (e) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart eklendi ancak sunucuya kaydedilemedi: $e'), backgroundColor: Colors.red));
-            setState(() => _isLoading = false);
-          }
-        }, (errorCode, errorMsg) {
-          // Failed Callback
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          if (errorCode == TTLockError.lockIsBusy || errorCode == TTLockError.bluetoothConnectTimeout || errorCode == TTLockError.bluetoothDisconnection) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Bağlanılamadı. Kilit uyku modundaysa lütfen önce bir tuşa basarak uyandırın. ($errorMsg)'), backgroundColor: Colors.red));
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart ekleme başarısız: $errorMsg'), backgroundColor: Colors.red));
-          }
-          setState(() => _isLoading = false);
-        });
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
-        setState(() => _isLoading = false);
-      }
-    }
+  Future<void> _addCardViaBluetooth() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddCardPage(
+          lockId: widget.lockId,
+          lockData: widget.lockData,
+          isBluetooth: true,
+        ),
+      ),
+    );
+    if (result == true) await _fetchCards();
   }
 
   String _formatDate(int timestamp) => DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(timestamp));
@@ -580,18 +544,7 @@ class _CardPageState extends State<CardPage> {
                   ),
                 ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-            builder: (context) => AddCardPage(
-              lockId: widget.lockId,
-              lockData: widget.lockData,
-            ),
-          ),
-          );
-          if (result == true) await _fetchCards();
-        },
+        onPressed: _showAddCardOptions,
         backgroundColor: const Color(0xFF1E90FF),
         child: const Icon(Icons.add),
       ),
