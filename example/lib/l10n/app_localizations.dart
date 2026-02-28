@@ -4935,6 +4935,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password reset failed'**
   String get apiResetPasswordFailed;
+
+  /// No description provided for @iosNfcWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.'**
+  String get iosNfcWarning;
 }
 
 class _AppLocalizationsDelegate

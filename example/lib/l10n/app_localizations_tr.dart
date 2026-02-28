@@ -2698,4 +2698,8 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get apiResetPasswordFailed => 'Şifre sıfırlama başarısız';
+
+  @override
+  String get iosNfcWarning =>
+      'Apple cihazlar standart (Mifare Classic) IC kartlarını okumayı desteklemez. Kart telefonunuzda okunmuyorsa lütfen Bluetooth seçeneğini kullanın.';
 }

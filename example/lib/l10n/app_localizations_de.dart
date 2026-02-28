@@ -2709,4 +2709,8 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get apiResetPasswordFailed => 'Password reset failed';
+
+  @override
+  String get iosNfcWarning =>
+      'Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.';
 }

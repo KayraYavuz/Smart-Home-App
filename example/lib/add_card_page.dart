@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yavuz_lock/api_service.dart';
@@ -200,7 +201,23 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
           if (!completer.isCompleted) completer.completeError(Exception('$errorCode: $errorMsg'));
         });
       } else {
+        if (Platform.isIOS) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n?.iosNfcWarning ?? 'Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.'),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+
         NfcManager.instance.startSession(
+        pollingOptions: {
+          NfcPollingOption.iso14443,
+          NfcPollingOption.iso15693,
+          NfcPollingOption.iso18092,
+        },
         alertMessage: l10n?.holdCardNearPhoneNfc ?? 'Hold your IC card near the phone',
         onDiscovered: (NfcTag tag) async {
           try {

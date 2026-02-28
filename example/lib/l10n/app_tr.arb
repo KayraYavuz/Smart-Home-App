@@ -944,5 +944,6 @@
   "apiUsernameAlreadyTaken": "Bu kullanıcı adı zaten alınmış.",
   "registrationFailed": "Kayıt başarısız",
   "apiRegistrationUnexpectedResponse": "Kayıt başarısız: Beklenmeyen yanıt formatı",
-  "apiResetPasswordFailed": "Şifre sıfırlama başarısız"
+  "apiResetPasswordFailed": "Şifre sıfırlama başarısız",
+  "iosNfcWarning": "Apple cihazlar standart (Mifare Classic) IC kartlarını okumayı desteklemez. Kart telefonunuzda okunmuyorsa lütfen Bluetooth seçeneğini kullanın."
 }

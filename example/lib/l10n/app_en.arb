@@ -1153,5 +1153,6 @@
   "apiUsernameAlreadyTaken": "This username is already taken.",
   "registrationFailed": "Registration failed",
   "apiRegistrationUnexpectedResponse": "Registration failed: Unexpected response format",
-  "apiResetPasswordFailed": "Password reset failed"
+  "apiResetPasswordFailed": "Password reset failed",
+  "iosNfcWarning": "Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth."
 }
