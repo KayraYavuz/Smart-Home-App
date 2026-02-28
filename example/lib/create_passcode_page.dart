@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'dart:async';

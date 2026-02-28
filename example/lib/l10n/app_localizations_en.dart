@@ -860,7 +860,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String editingGroup(String groupName) {
-    return 'Editing group $groupName';
+    return 'Editing group \'$groupName\'';
   }
 
   @override
@@ -1782,10 +1782,147 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passcodeLengthError => 'Passcode must be between 4 and 9 digits';
 
   @override
-  String get validityStart => 'Validity Start';
+  String get wifiOrPasswordEmpty => 'Wi-Fi network or password cannot be empty';
 
   @override
-  String get validityEnd => 'Validity End';
+  String get enterGatewayNameAlt => 'Please enter a gateway name';
+
+  @override
+  String get userInfoNotFoundReLogin =>
+      'User information not found. Please log in again.';
+
+  @override
+  String get gatewayConnectionTimeout =>
+      'Connection timed out. Please reset the gateway and check the network.';
+
+  @override
+  String get gatewayAddedSuccessServer =>
+      'Gateway successfully added and saved to the server!';
+
+  @override
+  String get gatewayAddedSuccessTimeoutServer =>
+      'Gateway successfully added (Reached the server despite the timeout)!';
+
+  @override
+  String gatewayAddedSuccessServerFail(String error) {
+    return 'Gateway added to device but could not be saved to server: $error';
+  }
+
+  @override
+  String gatewayError(String errorCode, String errorMsg) {
+    return 'Error: $errorCode - $errorMsg';
+  }
+
+  @override
+  String get gatewayRestartAndReconnect =>
+      'Please restart the gateway and connect again.';
+
+  @override
+  String get gatewayCheckWifiAndPermissions =>
+      'Please check Wi-Fi and location/bluetooth permissions.';
+
+  @override
+  String get addGatewayTitleAlt => 'Add Gateway';
+
+  @override
+  String get gatewayInitializingWait => 'Initializing gateway, please wait...';
+
+  @override
+  String get gatewayNameHintAlt => 'Gateway Name (e.g., Home)';
+
+  @override
+  String get selectedWifiNetwork => 'Selected Wi-Fi Network';
+
+  @override
+  String get enterWifiPasswordHint => 'Enter Wi-Fi Password';
+
+  @override
+  String get connectAndAdd => 'Connect and Add';
+
+  @override
+  String get nameRequired => 'Please enter a name.';
+
+  @override
+  String get invalidPasscodeLengthAlt =>
+      'Enter a valid passcode (4-9 digits). Or leave it blank for a randomly generated one.';
+
+  @override
+  String cannotReachLockBluetooth(String error) {
+    return 'Cannot reach the lock. Make sure Bluetooth is on and you are nearby. Error: $error';
+  }
+
+  @override
+  String get passcodeCreatedTitleAlt => 'Passcode Created!';
+
+  @override
+  String get yourLockPasscode => 'Your lock passcode:';
+
+  @override
+  String get passcodeReadyToUse =>
+      'This passcode is ready to use. To open the door, simply type the passcode and add # (or lock icon) at the end.';
+
+  @override
+  String errorGeneric(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get infoPermanent =>
+      'Permanent passcodes are valid indefinitely until deleted from the lock. If left blank, the system will generate one automatically.';
+
+  @override
+  String get infoTimed =>
+      'Timed passcodes are valid within the specified date range. If left blank, the system will generate one automatically.';
+
+  @override
+  String get infoOneTime =>
+      'One-time passcodes are valid for 6 hours from the start time and are deleted after use. They are generated automatically by the system.';
+
+  @override
+  String get infoRecurring =>
+      'Recurring passcodes are only active on the specified days. They are generated automatically by the system.';
+
+  @override
+  String get recurringMode => 'Recurring Mode';
+
+  @override
+  String get everyDay => 'Every Day';
+
+  @override
+  String get workdays => 'Workdays (Mon-Fri)';
+
+  @override
+  String get onlyMonday => 'Only Monday';
+
+  @override
+  String get onlyTuesday => 'Only Tuesday';
+
+  @override
+  String get onlyWednesday => 'Only Wednesday';
+
+  @override
+  String get onlyThursday => 'Only Thursday';
+
+  @override
+  String get onlyFriday => 'Only Friday';
+
+  @override
+  String get onlySaturday => 'Only Saturday';
+
+  @override
+  String get onlySunday => 'Only Sunday';
+
+  @override
+  String get passcodeNameHint => 'Enter passcode name...';
+
+  @override
+  String get passcodeOptional => 'Passcode (Optional)';
+
+  @override
+  String get passcodeLengthHint => '4-9 digits or blank';
+
+  @override
+  String get createButtonAlt => 'Create';
 
   @override
   String get lockReadyScanCard =>
@@ -2058,7 +2195,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleObserver => 'Observer';
 
   @override
-  String get accessTokenNotFound => 'Access token not found';
+  String get accessTokenNotFound => 'Access token could not be retrieved';
 
   @override
   String get lockIdNotFound => 'Lock ID not found.';
@@ -2175,4 +2312,380 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanCardWithPhone => 'Scan with Phone';
+
+  @override
+  String get automatic => 'Automatic';
+
+  @override
+  String cardsLoadError(Object error) {
+    return 'Cards could not be loaded: $error';
+  }
+
+  @override
+  String get deleteCardTitle => 'Delete Card';
+
+  @override
+  String deleteCardConfirm(Object cardNumber) {
+    return 'Are you sure you want to delete card \'$cardNumber\'?';
+  }
+
+  @override
+  String cardDeletedSuccess(Object cardNumber, Object method) {
+    return 'Card \'$cardNumber\' successfully deleted ($method)';
+  }
+
+  @override
+  String cardDeleteError(Object error) {
+    return 'Card could not be deleted: $error';
+  }
+
+  @override
+  String get editCardTitle => 'Edit Card';
+
+  @override
+  String get cardNameLabel => 'Card Name';
+
+  @override
+  String get startDatePrefix => 'Start: ';
+
+  @override
+  String get endDatePrefix => 'End: ';
+
+  @override
+  String get cardUpdatedSuccess => 'Card updated successfully.';
+
+  @override
+  String cardUpdateError(Object error) {
+    return 'Card could not be updated: $error';
+  }
+
+  @override
+  String get clearAllCardsTitle => 'Clear All Cards';
+
+  @override
+  String get clearAllCardsConfirm =>
+      'Are you sure you want to delete all cards from the server?\\n\\nWarning: This action cannot be undone and per API documentation, the lock memory should be cleared via SDK first.';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get allCardsClearedSuccess =>
+      'All cards successfully cleared from server.';
+
+  @override
+  String cardsClearError(Object error) {
+    return 'Cards could not be cleared: $error';
+  }
+
+  @override
+  String get recoverCardTitle => 'Recover Card';
+
+  @override
+  String get recoverCardInstruction =>
+      'A Bluetooth connection to the lock is required to recover a previously deleted card.';
+
+  @override
+  String get cardNumberLabel => 'Card Number';
+
+  @override
+  String get recover => 'Recover';
+
+  @override
+  String get cardRecoveredSuccess => '✅ Card successfully recovered.';
+
+  @override
+  String cardRecoverError(Object error) {
+    return 'Card could not be recovered: $error';
+  }
+
+  @override
+  String get howToAddCard => 'How would you like to add?';
+
+  @override
+  String get addViaBluetooth => 'Add via Lock (Bluetooth)';
+
+  @override
+  String get addViaNfc => 'Add via Phone (NFC)';
+
+  @override
+  String get savedViaGateway => 'Saved via Gateway';
+
+  @override
+  String get icCardsTitle => 'IC Cards';
+
+  @override
+  String get remoteCardCreation => 'Remote Card Creation';
+
+  @override
+  String get addCardViaLockMenu => 'Add Card via Lock';
+
+  @override
+  String get noCardsFound => 'No IC cards found.';
+
+  @override
+  String get unnamedCard => 'Unnamed Card';
+
+  @override
+  String cardNumberPrefix(Object cardNumber) {
+    return 'No: $cardNumber';
+  }
+
+  @override
+  String validityPrefix(Object endDate, Object startDate) {
+    return 'Validity: $startDate - $endDate';
+  }
+
+  @override
+  String get passcodesTitle => 'Passcodes';
+
+  @override
+  String get noPasscodesFound => 'No passcodes found.';
+
+  @override
+  String get typePrefix => 'Type';
+
+  @override
+  String get unknownType => 'Unknown Type';
+
+  @override
+  String get startingMessage => 'Starting...';
+
+  @override
+  String get recordPasscode => 'Passcode';
+
+  @override
+  String get recordCard => 'Card';
+
+  @override
+  String get recordFingerprint => 'Fingerprint';
+
+  @override
+  String get recordAppBt => 'App (BT)';
+
+  @override
+  String get recordRemoteUnlock => 'Remote Unlock';
+
+  @override
+  String get recordLocked => 'Locked';
+
+  @override
+  String get recordMechanicalKey => 'Mechanical Key';
+
+  @override
+  String get recordWristband => 'Wristband';
+
+  @override
+  String get recordRemoteControl => 'Remote Control';
+
+  @override
+  String get recordAppRemote => 'App (Remote)';
+
+  @override
+  String get recordGatewayUnlock => 'Unlocked via Gateway';
+
+  @override
+  String get recordAutoLock => 'Auto Lock';
+
+  @override
+  String get recordUnlocked => 'Unlocked';
+
+  @override
+  String recordOtherOperation(Object type) {
+    return 'Other Operation ($type)';
+  }
+
+  @override
+  String get clearAllRecordsConfirmWarning => '(This action cannot be undone)';
+
+  @override
+  String get ungrouped => 'Ungrouped';
+
+  @override
+  String get unassignedLocksAndUsers => 'Unassigned locks and users';
+
+  @override
+  String get manageLockAccessAndBlockUsers =>
+      'Manage lock access and block users';
+
+  @override
+  String get transferLockOwnership =>
+      'Transfer lock ownership to another account';
+
+  @override
+  String get transferGatewayOwnership =>
+      'Transfer gateway ownership to another account';
+
+  @override
+  String get exportDataDesc => 'Export data or backup';
+
+  @override
+  String membersAndLocksCount(Object locks, Object members) {
+    return '$members members, $locks locks';
+  }
+
+  @override
+  String get searchGateway => 'Search gateway...';
+
+  @override
+  String get noGatewayFound => 'No gateway found yet';
+
+  @override
+  String actionsFor(Object name) {
+    return 'Actions for $name';
+  }
+
+  @override
+  String get gatewayConnectedSuccess => 'Successfully connected to gateway';
+
+  @override
+  String gatewayConnectError(Object error) {
+    return 'Gateway connection error: $error';
+  }
+
+  @override
+  String get gatewayDisconnectedSuccess => 'Gateway disconnected';
+
+  @override
+  String gatewayDisconnectError(Object error) {
+    return 'Gateway disconnect error: $error';
+  }
+
+  @override
+  String get gatewayDetails => 'Gateway Details';
+
+  @override
+  String get networkLabel => 'Network';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get connectedLocks => 'Connected Locks';
+
+  @override
+  String gatewayDetailError(Object error) {
+    return 'Gateway detail error: $error';
+  }
+
+  @override
+  String get gatewayManagementDesc =>
+      'Manage your TTLock Gateways and connect for remote control.';
+
+  @override
+  String get noConnectedGatewaysDesc =>
+      'No Gateways found.\\nAdd a Gateway from your TTLock app.';
+
+  @override
+  String get unnamedGateway => 'Unnamed Gateway';
+
+  @override
+  String get detailsButton => 'Details';
+
+  @override
+  String get connectButton => 'Connect';
+
+  @override
+  String get closeButton => 'Close';
+
+  @override
+  String get shareFailed => 'Share failed';
+
+  @override
+  String get passwordUpdatedButLoginFailed =>
+      'Password updated but login failed.';
+
+  @override
+  String get loginSuccessButNoToken =>
+      'Login successful but no token received.';
+
+  @override
+  String get loginFailedCheckCredentials =>
+      'Login failed. Please check your credentials.';
+
+  @override
+  String get bluetoothDisabledError =>
+      'Bluetooth is disabled or unauthorized. Please turn on Bluetooth.';
+
+  @override
+  String get lockNotInSettingMode =>
+      'Lock is not in setting mode. Please touch the keypad to wake it up and try again.';
+
+  @override
+  String get lockAlreadyRegistered =>
+      'This lock is already registered to another account or this account. You must reset the lock first.';
+
+  @override
+  String get bluetoothConnectionRejected =>
+      'Bluetooth connection was rejected by the lock or timed out.';
+
+  @override
+  String get bluetoothConnectionFailed =>
+      'Bluetooth connection failed. The lock might be connected to another account, cache might be full, or it is in protection mode.';
+
+  @override
+  String get lockNotResponding =>
+      'The lock is not responding. Please get closer and wake up the lock.';
+
+  @override
+  String cloudRegistrationError(Object error) {
+    return 'Cloud Registration Error: $error';
+  }
+
+  @override
+  String btErrorPrefix(Object code, Object details) {
+    return 'BT Error (Code: $code): $details';
+  }
+
+  @override
+  String get apiLockRegisteredToAnother =>
+      'This lock is already registered to another user. Please delete it from the previous account first.';
+
+  @override
+  String get apiNotAuthorized =>
+      'You are not authorized for this operation (Not an Admin).';
+
+  @override
+  String get apiSessionExpired =>
+      'Your session has expired. Please log out and log in again.';
+
+  @override
+  String get apiLockFrozen => 'Lock is frozen. Operations cannot be performed.';
+
+  @override
+  String get apiTimestampError =>
+      'Timestamp error. Please check your phone\'s time and date settings.';
+
+  @override
+  String get apiDeletePreviousLocks =>
+      'Please delete this lock or your other locks from your account first.';
+
+  @override
+  String get apiClientAuthError =>
+      'App authentication error (Invalid Client ID/Secret).';
+
+  @override
+  String get apiServerError =>
+      'A server error occurred. Please try again later.';
+
+  @override
+  String get apiOperationRejected => 'Operation rejected by the server.';
+
+  @override
+  String unexpectedErrorPrefix(Object error) {
+    return 'Unexpected error: $error';
+  }
+
+  @override
+  String get apiUsernameAlreadyTaken => 'This username is already taken.';
+
+  @override
+  String get registrationFailed => 'Registration failed';
+
+  @override
+  String get apiRegistrationUnexpectedResponse =>
+      'Registration failed: Unexpected response format';
+
+  @override
+  String get apiResetPasswordFailed => 'Password reset failed';
 }

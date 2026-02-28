@@ -379,7 +379,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         for (final gw in gateways) {
           allLocks.add({
             'name': gw['gatewayName'] ?? l10n.unknownGateway,
-            'status': gw['isOnline'] == 1 ? 'Çevrimiçi' : 'Çevrimdışı',
+            'status': gw['isOnline'] == 1 ? l10n.online : l10n.offline,
             'isLocked': false, // Not applicable for gateways
             'battery': 100, // Not applicable for gateways
             'lockData': '',
@@ -844,7 +844,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  lock['isOnline'] == true ? 'Çevrimiçi' : 'Çevrimdışı',
+                                  lock['isOnline'] == true ? l10n.online : l10n.offline,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 10,

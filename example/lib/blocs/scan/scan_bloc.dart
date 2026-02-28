@@ -37,7 +37,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     if (emit.isDone) return;
 
     if (btState != TTBluetoothState.turnOn) {
-      emit(const ScanFailure('Bluetooth kapalı veya yetkisiz. Lütfen Bluetooth\'u açın.'));
+      emit(const ScanFailure('bluetoothDisabledError'));
       return;
     }
 
@@ -139,18 +139,17 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
 
           // TTLock spesifik hata kodlarını anlamlandır
           if (errorCode.toString().contains('4')) {
-            detailedError = 'Kilit ayar modunda değil. Lütfen tuş takımına dokunup ışıkları yaktıktan sonra tekrar deneyin.';
+            detailedError = 'lockNotInSettingMode';
           } else if (errorCode.toString().contains('5')) {
-            detailedError = 'Bu kilit zaten başka bir hesaba veya bu hesaba kayıtlı. Önce kilidi sıfırlamanız gerekir.';
+            detailedError = 'lockAlreadyRegistered';
           } else if (errorCode.toString().contains('1')) {
-            detailedError = 'Bluetooth bağlantısı kilit tarafından reddedildi veya zaman aşımına uğradı.';
+            detailedError = 'bluetoothConnectionRejected';
           } else {
             // Bilinmeyen veya 'fail' durumları için daha açıklayıcı olalım
-            detailedError = 'Bluetooth bağlantısı kurulamadı ($errorMsg). Kilit başka bir hesaba bağlı olabilir, Bluetooth önbelleği dolmuş olabilir veya kilit koruma modunda olabilir.';
+            detailedError = 'bluetoothConnectionFailed';
           }
 
-          debugPrint('❌ Bluetooth Handshake Hatası: $errorCode - $detailedError');
-          initCompleter.completeError('BT_ERROR (Kod: $errorCode): $detailedError');
+          initCompleter.completeError('btErrorPrefix:$errorCode:$detailedError');
         }
       });
 
@@ -161,7 +160,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
           const Duration(seconds: 20),
           onTimeout: () {
             debugPrint('⏳ Bluetooth Başlatma Zaman Aşımı!');
-            throw TimeoutException('Kilit yanıt vermedi. Lütfen daha yakın olun ve kilidi uyandırın.');
+            throw TimeoutException('lockNotResponding');
           },
         );
       } catch (e) {
@@ -211,35 +210,35 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         });
 
         if (emit.isDone) return;
-        emit(ScanFailure('Bulut Kayıt Hatası: $userFriendlyApiError'));
+        emit(ScanFailure('cloudRegistrationError:$userFriendlyApiError'));
       }
     } catch (e) {
       if (emit.isDone) return;
       debugPrint('Unexpected exception during lock addition: $e');
-      emit(ScanFailure('Beklenmeyen hata: $e'));
+      emit(ScanFailure('unexpectedErrorPrefix:$e'));
     }
   }
 
   String _parseApiErrorMessage(String errorMsg) {
     // API hata kodlarını yakala ve Türkçeleştir
     if (errorMsg.contains('errcode: 30003') || errorMsg.contains('errcode: -1027')) {
-      return 'Bu kilit zaten başka bir kullanıcıya kayıtlı. Lütfen önce önceki hesaptan silin.';
+      return 'apiLockRegisteredToAnother';
     } else if (errorMsg.contains('errcode: 20002') || errorMsg.contains('errcode: -2018')) {
-      return 'Bu işlem için yetkiniz yok (Yönetici değilsiniz).';
+      return 'apiNotAuthorized';
     } else if (errorMsg.contains('errcode: 10003') || errorMsg.contains('errcode: 10004')) {
-      return 'Oturum süreniz dolmuş. Lütfen çıkış yapıp tekrar girin.';
+      return 'apiSessionExpired';
     } else if (errorMsg.contains('errcode: -2025')) {
-      return 'Kilit dondurulmuş (Frozen). İşlem yapılamaz.';
+      return 'apiLockFrozen';
     } else if (errorMsg.contains('errcode: 80000')) {
-      return 'Zaman damgası hatası. Lütfen telefonunuzun saat ve tarih ayarlarını kontrol edin.';
+      return 'apiTimestampError';
     } else if (errorMsg.contains('errcode: -4063')) {
-      return 'Lütfen önce bu kilidi veya diğer kilitlerinizi hesabınızdan silin.';
+      return 'apiDeletePreviousLocks';
     } else if (errorMsg.contains('errcode: 10000') || errorMsg.contains('errcode: 10001')) {
-      return 'Uygulama kimlik doğrulama hatası (Client ID/Secret geçersiz).';
+      return 'apiClientAuthError';
     } else if (errorMsg.contains('errcode: 90000')) {
-      return 'Sunucu tarafında bir hata oluştu. Lütfen daha sonra tekrar deneyin.';
+      return 'apiServerError';
     } else if (errorMsg.contains('errcode: 1')) {
-      return 'İşlem sunucu tarafından reddedildi.';
+      return 'apiOperationRejected';
     }
     
     return errorMsg; // Eşleşme yoksa orijinal hatayı dön

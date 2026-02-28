@@ -258,12 +258,12 @@ class ApiService {
       final responseData = json.decode(response.body);
       debugPrint('🔍 resetPassword response: $responseData');
       if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-        throw Exception('Şifre sıfırlama başarısız: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('apiResetPasswordFailed:${responseData['errmsg']}');
       }
       debugPrint('✅ Şifre başarıyla sıfırlandı');
     } else {
       debugPrint('❌ resetPassword HTTP Error: ${response.statusCode} - ${response.body}');
-      throw Exception('Şifre sıfırlama başarısız: HTTP ${response.statusCode}');
+      throw Exception('apiResetPasswordFailed:HTTP ${response.statusCode}');
     }
   }
 
@@ -308,20 +308,20 @@ class ApiService {
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         // Eğer kullanıcı zaten varsa (errcode: 10003 - User already exists)
         if (responseData['errcode'] == 10003) {
-           throw Exception('Bu kullanıcı adı zaten alınmış.');
+           throw Exception('apiUsernameAlreadyTaken');
         }
-        throw Exception('Kayıt başarısız: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('apiRegistrationFailed:${responseData['errmsg']}');
       }
 
       if (responseData.containsKey('username')) {
         debugPrint('✅ Kullanıcı başarıyla oluşturuldu: ${responseData['username']}');
         return responseData;
       } else {
-        throw Exception('Kayıt başarısız: Beklenmeyen yanıt formatı');
+        throw Exception('apiRegistrationUnexpectedResponse');
       }
     } else {
       debugPrint('❌ registerUser HTTP Error: ${response.statusCode} - ${response.body}');
-      throw Exception('Kayıt başarısız: HTTP ${response.statusCode}');
+      throw Exception('apiRegistrationHttpError:${response.statusCode}');
     }
   }
 

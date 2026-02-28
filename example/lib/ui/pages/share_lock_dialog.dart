@@ -434,13 +434,13 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
   }
 
   Future<void> _shareLock() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     // Only require dates for Timed type
     if (_shareType == 0 && (_startDate == null || _endDate == null)) {
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.selectStartEndDate),
@@ -460,7 +460,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
 
       final accessToken = apiService.accessToken;
       if (accessToken == null) {
-        throw Exception('Access token alınamadı');
+        throw Exception(l10n.accessTokenNotFound);
       }
 
       final originalReceiver = _emailController.text.trim();
@@ -508,14 +508,13 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
       }
 
       if (!shareSuccess) {
-        throw Exception(lastError ?? 'Paylaşım başarısız');
+        throw Exception(lastError ?? l10n.shareFailed);
       }
 
       if (!mounted) return;
 
       Navigator.of(context).pop();
 
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.lockSharedSuccess(widget.lock['name'])),

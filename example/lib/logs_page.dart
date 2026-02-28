@@ -94,7 +94,7 @@ class _LogsPageState extends State<LogsPage> {
         backgroundColor: const Color(0xFF1E1E1E),
         title: Text(l10n.clearAllRecords, style: const TextStyle(color: Colors.white)),
         content: Text(
-          '${l10n.clearAllRecords}?\n\n(This action cannot be undone/Geri alınamaz)', // Fallback mixed or reuse
+          '${l10n.clearAllRecords}?\\n\\n${l10n.clearAllRecordsConfirmWarning}',
           style: const TextStyle(color: Colors.grey),
         ),
         actions: [
@@ -144,46 +144,42 @@ class _LogsPageState extends State<LogsPage> {
     }
   }
 
-  Map<String, dynamic> _getRecordInfo(Map<String, dynamic> record) {
-    // Localization for record types would require more keys.
-    // Keeping existing Turkish labels for now or could switch to simple icons only if requested.
-    // User requested Multi-language support. Ideally these should be localized.
-    // Ill use hardcoded Turkish as fallback/current state since keys weren't prepared for all methods.
+  Map<String, dynamic> _getRecordInfo(Map<String, dynamic> record, AppLocalizations l10n) {
     
     final int typeFromLock = record['recordTypeFromLock'] ?? 0;
     final int recordType = record['recordType'] ?? 0;
     
     switch (typeFromLock) {
       case 1:
-        return {'label': 'Şifre', 'icon': Icons.keyboard, 'color': AppColors.primary};
+        return {'label': l10n.recordPasscode, 'icon': Icons.keyboard, 'color': AppColors.primary};
       case 2:
-        return {'label': 'Kart', 'icon': Icons.credit_card, 'color': Colors.green};
+        return {'label': l10n.recordCard, 'icon': Icons.credit_card, 'color': Colors.green};
       case 3:
-        return {'label': 'Parmak İzi', 'icon': Icons.fingerprint, 'color': Colors.purple};
+        return {'label': l10n.recordFingerprint, 'icon': Icons.fingerprint, 'color': Colors.purple};
       case 4:
-        return {'label': 'Uygulama (BT)', 'icon': Icons.phone_android, 'color': Colors.orange};
+        return {'label': l10n.recordAppBt, 'icon': Icons.phone_android, 'color': Colors.orange};
       case 5:
-        return {'label': 'Uzaktan Açma', 'icon': Icons.wifi, 'color': Colors.teal};
+        return {'label': l10n.recordRemoteUnlock, 'icon': Icons.wifi, 'color': Colors.teal};
       case 6:
-        return {'label': 'Kilitlendi', 'icon': Icons.lock, 'color': AppColors.error};
+        return {'label': l10n.recordLocked, 'icon': Icons.lock, 'color': AppColors.error};
       case 7:
-        return {'label': 'Mekanik Anahtar', 'icon': Icons.vpn_key, 'color': Colors.grey};
+        return {'label': l10n.recordMechanicalKey, 'icon': Icons.vpn_key, 'color': Colors.grey};
       case 8:
-        return {'label': 'Bileklik', 'icon': Icons.watch, 'color': Colors.indigo};
+        return {'label': l10n.recordWristband, 'icon': Icons.watch, 'color': Colors.indigo};
       case 10:
-        return {'label': 'Uzaktan Kumanda', 'icon': Icons.settings_remote, 'color': Colors.blueGrey};
+        return {'label': l10n.recordRemoteControl, 'icon': Icons.settings_remote, 'color': Colors.blueGrey};
       case 11:
       case 28:
-        return {'label': 'Uygulama (Uzaktan)', 'icon': Icons.cloud_done, 'color': Colors.blue};
+        return {'label': l10n.recordAppRemote, 'icon': Icons.cloud_done, 'color': Colors.blue};
       case 12:
-        return {'label': 'Gateway ile açıldı', 'icon': Icons.router, 'color': Colors.cyan};
+        return {'label': l10n.recordGatewayUnlock, 'icon': Icons.router, 'color': Colors.cyan};
       case 17:
       case 26:
-        return {'label': 'Otomatik Kilitleme', 'icon': Icons.lock_clock, 'color': Colors.redAccent};
+        return {'label': l10n.recordAutoLock, 'icon': Icons.lock_clock, 'color': Colors.redAccent};
       default:
-        if (recordType == 11) return {'label': 'Kilitlendi', 'icon': Icons.lock, 'color': Colors.redAccent};
-        if (recordType == 12) return {'label': 'Açıldı', 'icon': Icons.lock_open, 'color': Colors.greenAccent};
-        return {'label': 'Diğer İşlem ($typeFromLock)', 'icon': Icons.history, 'color': Colors.white54};
+        if (recordType == 11) return {'label': l10n.recordLocked, 'icon': Icons.lock, 'color': Colors.redAccent};
+        if (recordType == 12) return {'label': l10n.recordUnlocked, 'icon': Icons.lock_open, 'color': Colors.greenAccent};
+        return {'label': l10n.recordOtherOperation(typeFromLock.toString()), 'icon': Icons.history, 'color': Colors.white54};
     }
   }
 
@@ -322,7 +318,7 @@ class _LogsPageState extends State<LogsPage> {
       separatorBuilder: (context, index) => Divider(color: Colors.white.withValues(alpha: 0.1)),
       itemBuilder: (context, index) {
         final record = _records[index];
-        final typeInfo = _getRecordInfo(record);
+        final typeInfo = _getRecordInfo(record, l10n);
         
         final timestamp = record['lockDate'] ?? DateTime.now().millisecondsSinceEpoch;
         final date = DateTime.fromMillisecondsSinceEpoch(timestamp);

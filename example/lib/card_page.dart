@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'add_card_page.dart';
@@ -26,6 +27,7 @@ class _CardPageState extends State<CardPage> {
   }
 
   Future<void> _fetchCards() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = true);
     try {
       final apiService = Provider.of<ApiService>(context, listen: false);
@@ -36,7 +38,7 @@ class _CardPageState extends State<CardPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Kartlar yüklenemedi: $e')),
+          SnackBar(content: Text(l10n.cardsLoadError(e.toString()))),
         );
       }
     } finally {
@@ -49,20 +51,21 @@ class _CardPageState extends State<CardPage> {
   }
 
   Future<void> _deleteCard(int cardId, String cardNumber) async {
+    final l10n = AppLocalizations.of(context)!;
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Kartı Sil'),
-          content: Text('"$cardNumber" numaralı kartı silmek istediğinize emin misiniz?'),
+          title: Text(l10n.deleteCardTitle),
+          content: Text(l10n.deleteCardConfirm(cardNumber)),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(false), 
-              child: const Text('İptal')
+              child: Text(l10n.cancel)
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true), 
-              child: const Text('Sil', style: TextStyle(color: Colors.red))
+              child: Text(l10n.delete, style: const TextStyle(color: Colors.red))
             ),
           ],
         );
@@ -115,18 +118,19 @@ class _CardPageState extends State<CardPage> {
         
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Kart "$cardNumber" başarıyla silindi (${bluetoothSuccess ? "Bluetooth" : "Gateway"}).'))
+          SnackBar(content: Text(l10n.cardDeletedSuccess(cardNumber, bluetoothSuccess ? "Bluetooth" : "Gateway")))
         );
         await _fetchCards();
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart silinemedi: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeleteError(e.toString()))));
         setState(() => _isLoading = false);
       }
     }
   }
 
   Future<void> _showEditCardDialog(Map<String, dynamic> card) async {
+    final l10n = AppLocalizations.of(context)!;
     final cardId = card['cardId'] as int;
     final TextEditingController nameController = TextEditingController(text: card['cardName'] ?? '');
     DateTime startDate = DateTime.fromMillisecondsSinceEpoch(card['startDate']);
@@ -137,15 +141,15 @@ class _CardPageState extends State<CardPage> {
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setDialogState) {
           return AlertDialog(
-            title: const Text('Kartı Düzenle'),
+            title: Text(l10n.editCardTitle),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Kart Adı')),
+                  TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.cardNameLabel)),
                   const SizedBox(height: 20),
                   ListTile(
-                    title: Text('Başlangıç: ${DateFormat('dd/MM/yyyy').format(startDate)}'),
+                    title: Text('${l10n.startDatePrefix}${DateFormat('dd/MM/yyyy').format(startDate)}'),
                     trailing: const Icon(Icons.calendar_today),
                     onTap: () async {
                       final picked = await showDatePicker(context: context, initialDate: startDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
@@ -153,7 +157,7 @@ class _CardPageState extends State<CardPage> {
                     },
                   ),
                   ListTile(
-                    title: Text('Bitiş: ${DateFormat('dd/MM/yyyy').format(endDate)}'),
+                    title: Text('${l10n.endDatePrefix}${DateFormat('dd/MM/yyyy').format(endDate)}'),
                     trailing: const Icon(Icons.calendar_today),
                     onTap: () async {
                       final picked = await showDatePicker(context: context, initialDate: endDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
@@ -164,8 +168,8 @@ class _CardPageState extends State<CardPage> {
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('İptal')),
-              TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Kaydet')),
+              TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancel)),
+              TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.save)),
             ],
           );
         });
@@ -193,27 +197,28 @@ class _CardPageState extends State<CardPage> {
 
         if (needsRefresh) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kart başarıyla güncellendi.')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardUpdatedSuccess)));
           await _fetchCards();
         }
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kart güncellenemedi: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardUpdateError(e.toString()))));
         setState(() => _isLoading = false);
       }
     }
   }
   
   Future<void> _clearAllCards() async {
+     final l10n = AppLocalizations.of(context)!;
      final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Tüm Kartları Temizle'),
-          content: const Text('Bu kilitteki tüm kartları sunucudan silmek istediğinizden emin misiniz?\n\nUyarı: Bu işlem geri alınamaz ve API dokümantasyonuna göre önce SDK üzerinden kilit hafızasının temizlenmesi gerekir.'),
+          title: Text(l10n.clearAllCardsTitle),
+          content: Text(l10n.clearAllCardsConfirm),
           actions: <Widget>[
-            TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('İptal')),
-            TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Temizle')),
+            TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancel)),
+            TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.clear)),
           ],
         );
       },
@@ -226,17 +231,18 @@ class _CardPageState extends State<CardPage> {
         final apiService = Provider.of<ApiService>(context, listen: false);
         await apiService.clearIdentityCards(lockId: widget.lockId);
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tüm kartlar sunucudan başarıyla temizlendi.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.allCardsClearedSuccess)));
         await _fetchCards();
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Kartlar temizlenemedi: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardsClearError(e.toString()))));
          setState(() => _isLoading = false);
       }
     }
   }
 
   Future<void> _recoverCards() async {
+    final l10n = AppLocalizations.of(context)!;
     final TextEditingController cardNumberController = TextEditingController();
     DateTime startDate = DateTime.now();
     DateTime endDate = DateTime.now().add(const Duration(days: 365));
@@ -247,21 +253,21 @@ class _CardPageState extends State<CardPage> {
         return StatefulBuilder(builder: (context, setDialogState) {
           return AlertDialog(
             backgroundColor: Colors.grey[900],
-            title: const Text('Kartı Geri Al', style: TextStyle(color: Colors.white)),
+            title: Text(l10n.recoverCardTitle, style: const TextStyle(color: Colors.white)),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Daha önce silinen bir kartı geri almak için kilit ile Bluetooth bağlantısı gerekir.',
-                    style: TextStyle(color: Colors.grey, fontSize: 13),
+                  Text(
+                    l10n.recoverCardInstruction,
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: cardNumberController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      labelText: 'Kart Numarası',
+                      labelText: l10n.cardNumberLabel,
                       labelStyle: TextStyle(color: Colors.grey[400]),
                       enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                       focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF4A90FF))),
@@ -270,7 +276,7 @@ class _CardPageState extends State<CardPage> {
                   const SizedBox(height: 16),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text('Başlangıç: ${DateFormat('dd/MM/yyyy').format(startDate)}', style: const TextStyle(color: Colors.white)),
+                    title: Text('${l10n.startDatePrefix}${DateFormat('dd/MM/yyyy').format(startDate)}', style: const TextStyle(color: Colors.white)),
                     trailing: const Icon(Icons.calendar_today, color: Colors.grey),
                     onTap: () async {
                       final picked = await showDatePicker(
@@ -284,7 +290,7 @@ class _CardPageState extends State<CardPage> {
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text('Bitiş: ${DateFormat('dd/MM/yyyy').format(endDate)}', style: const TextStyle(color: Colors.white)),
+                    title: Text('${l10n.endDatePrefix}${DateFormat('dd/MM/yyyy').format(endDate)}', style: const TextStyle(color: Colors.white)),
                     trailing: const Icon(Icons.calendar_today, color: Colors.grey),
                     onTap: () async {
                       final picked = await showDatePicker(
@@ -302,11 +308,11 @@ class _CardPageState extends State<CardPage> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+                child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Geri Al', style: TextStyle(color: Color(0xFF4A90FF))),
+                child: Text(l10n.recover, style: const TextStyle(color: Color(0xFF4A90FF))),
               ),
             ],
           );
@@ -340,13 +346,13 @@ class _CardPageState extends State<CardPage> {
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Kart başarıyla geri alındı.'), backgroundColor: Colors.green),
+          SnackBar(content: Text(l10n.cardRecoveredSuccess), backgroundColor: Colors.green),
         );
         await _fetchCards();
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Kart geri alınamadı: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(l10n.cardRecoverError(e.toString())), backgroundColor: Colors.red),
         );
         setState(() => _isLoading = false);
       }
@@ -367,6 +373,7 @@ class _CardPageState extends State<CardPage> {
   }
 
   void _showAddCardOptions() {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.grey[900],
@@ -378,13 +385,13 @@ class _CardPageState extends State<CardPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text('Nasıl eklemek istersiniz?', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(l10n.howToAddCard, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
               ),
               ListTile(
                 leading: const Icon(Icons.bluetooth, color: Colors.blueAccent),
-                title: const Text('Kilit Üzerinden Ekle (Bluetooth)', style: TextStyle(color: Colors.white)),
+                title: Text(l10n.addViaBluetooth, style: const TextStyle(color: Colors.white)),
                 onTap: () {
                   Navigator.pop(context);
                   _addCardViaBluetooth();
@@ -392,8 +399,8 @@ class _CardPageState extends State<CardPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.nfc, color: Colors.white),
-                title: const Text('Telefon Üzerinden Ekle (NFC)', style: TextStyle(color: Colors.white)),
-                subtitle: const Text('Gateway üzerinden kaydedilir', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                title: Text(l10n.addViaNfc, style: const TextStyle(color: Colors.white)),
+                subtitle: Text(l10n.savedViaGateway, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                 onTap: () {
                   Navigator.pop(context);
                   _navigateToRemoteAddCard();
@@ -425,11 +432,12 @@ class _CardPageState extends State<CardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        title: const Text('IC Kartlar'),
+        title: Text(l10n.icCardsTitle),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.white),
@@ -451,44 +459,44 @@ class _CardPageState extends State<CardPage> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'recover',
                 child: Row(
                   children: [
-                    Icon(Icons.restore, color: Colors.white, size: 20),
-                    SizedBox(width: 12),
-                    Text('Geri Alma', style: TextStyle(color: Colors.white)),
+                    const Icon(Icons.restore, color: Colors.white, size: 20),
+                    const SizedBox(width: 12),
+                    Text(l10n.recoverCardTitle, style: const TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'remote_add',
                 child: Row(
                   children: [
-                    Icon(Icons.nfc, color: Colors.white, size: 20),
-                    SizedBox(width: 12),
-                    Text('Uzaktan Kart Oluşturma', style: TextStyle(color: Colors.white)),
+                    const Icon(Icons.nfc, color: Colors.white, size: 20),
+                    const SizedBox(width: 12),
+                    Text(l10n.remoteCardCreation, style: const TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'bluetooth_add',
                 child: Row(
                   children: [
-                    Icon(Icons.bluetooth, color: Colors.blueAccent, size: 20),
-                    SizedBox(width: 12),
-                    Text('Kilit Üzerinden Kart Ekle', style: TextStyle(color: Colors.blueAccent)),
+                    const Icon(Icons.bluetooth, color: Colors.blueAccent, size: 20),
+                    const SizedBox(width: 12),
+                    Text(l10n.addCardViaLockMenu, style: const TextStyle(color: Colors.blueAccent)),
                   ],
                 ),
               ),
               const PopupMenuDivider(),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'clear_all',
                 child: Row(
                   children: [
-                    Icon(Icons.delete_sweep, color: Colors.redAccent, size: 20),
-                    SizedBox(width: 12),
-                    Text('Tüm Kartları Temizle', style: TextStyle(color: Colors.redAccent)),
+                    const Icon(Icons.delete_sweep, color: Colors.redAccent, size: 20),
+                    const SizedBox(width: 12),
+                    Text(l10n.clearAllCardsTitle, style: const TextStyle(color: Colors.redAccent)),
                   ],
                 ),
               ),
@@ -499,7 +507,7 @@ class _CardPageState extends State<CardPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _cards.isEmpty
-              ? const Center(child: Text('Hiç IC Kart bulunamadı.', style: TextStyle(color: Colors.white)))
+              ? Center(child: Text(l10n.noCardsFound, style: const TextStyle(color: Colors.white)))
               : RefreshIndicator(
                   onRefresh: _fetchCards,
                   child: ListView.builder(
@@ -507,7 +515,7 @@ class _CardPageState extends State<CardPage> {
                     itemBuilder: (context, index) {
                       final card = _cards[index];
                       final int cardId = card['cardId'] as int;
-                      final String cardName = card['cardName'] ?? 'İsimsiz Kart';
+                      final String cardName = card['cardName'] ?? l10n.unnamedCard;
                       final String cardNumber = card['cardNumber'] ?? 'N/A';
                       final String startDate = card['startDate'] != null ? _formatDate(card['startDate']) : 'N/A';
                       final String endDate = card['endDate'] != null ? _formatDate(card['endDate']) : 'N/A';
@@ -521,8 +529,8 @@ class _CardPageState extends State<CardPage> {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('No: $cardNumber', style: TextStyle(color: Colors.grey[400])),
-                              Text('Geçerlilik: $startDate - $endDate', style: TextStyle(color: Colors.grey[400])),
+                              Text(l10n.cardNumberPrefix(cardNumber), style: TextStyle(color: Colors.grey[400])),
+                              Text(l10n.validityPrefix(startDate, endDate), style: TextStyle(color: Colors.grey[400])),
                             ],
                           ),
                           trailing: Row(

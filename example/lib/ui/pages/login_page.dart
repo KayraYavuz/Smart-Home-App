@@ -333,7 +333,7 @@ class _LoginPageState extends State<LoginPage> {
                 if (state is LoginFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(state.error), // Error mesajları dinamik olduğu için l10n zor olabilir
+                      content: Text(_getLocalizedErrorMessage(state.error, l10n)),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -479,7 +479,7 @@ class _LoginPageState extends State<LoginPage> {
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          state.error,
+                                          _getLocalizedErrorMessage(state.error, l10n),
                                           style: TextStyle(color: Colors.red[100], fontSize: 13),
                                         ),
                                       ),
@@ -515,6 +515,23 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  String _getLocalizedErrorMessage(String error, AppLocalizations l10n) {
+    if (error == 'passwordUpdatedButLoginFailed') {
+      return l10n.passwordUpdatedButLoginFailed;
+    } else if (error == 'loginSuccessButNoToken') {
+      return l10n.loginSuccessButNoToken;
+    } else if (error == 'loginFailedCheckCredentials') {
+      return l10n.loginFailedCheckCredentials;
+    } else if (error.startsWith('VERIFICATION_FAILED:')) {
+      final details = error.replaceFirst('VERIFICATION_FAILED:', '');
+      if (details.startsWith('apiResetPasswordFailed:')) {
+        return '${l10n.apiResetPasswordFailed}: ${details.replaceFirst('apiResetPasswordFailed:', '')}';
+      }
+      return '${l10n.errorLabel}: $details';
+    }
+    return error; // Fallback
   }
 
   InputDecoration _buildInputDecoration(String label, {IconData? prefixIcon, Widget? suffixIcon}) {

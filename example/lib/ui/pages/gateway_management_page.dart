@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class GatewayManagementPage extends StatefulWidget {
   const GatewayManagementPage({super.key});
@@ -41,14 +41,15 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Koyu tema
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: const Text(
-          'Aktarım Ağ Geçidi',
-          style: TextStyle(
+        title: Text(
+          l10n.transferGateway,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -73,12 +74,12 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
               child: TextField(
                 controller: _searchController,
                 style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: 'Ağ geçidi ara...',
-                  hintStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
+                decoration: InputDecoration(
+                  hintText: l10n.searchGateway,
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
                 onChanged: (value) {
                   // Arama filtresi uygulanabilir
@@ -96,8 +97,8 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
                       ),
                     )
                   : _gateways.isEmpty
-                      ? _buildEmptyState()
-                      : _buildGatewayList(),
+                      ? _buildEmptyState(l10n)
+                      : _buildGatewayList(l10n),
             ),
           ],
         ),
@@ -105,7 +106,7 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -116,9 +117,9 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
             size: 64,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Veri yok',
-            style: TextStyle(
+          Text(
+            l10n.noData,
+            style: const TextStyle(
               color: Colors.grey,
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -126,7 +127,7 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Henüz hiç ağ geçidi bulunmuyor',
+            l10n.noGatewayFound,
             style: TextStyle(
               color: Colors.grey[600],
               fontSize: 14,
@@ -137,7 +138,7 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
     );
   }
 
-  Widget _buildGatewayList() {
+  Widget _buildGatewayList(AppLocalizations l10n) {
     final filteredGateways = _gateways.where((gateway) {
       final searchTerm = _searchController.text.toLowerCase();
       final name = gateway['name'].toString().toLowerCase();
@@ -189,7 +190,7 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
                   ),
                 ),
                 Text(
-                  gateway['status'] == 'online' ? 'Çevrimiçi' : 'Çevrimdışı',
+                  gateway['status'] == 'online' ? l10n.online : l10n.offline,
                   style: TextStyle(
                     color: gateway['status'] == 'online' ? Colors.green : Colors.red,
                     fontSize: 12,
@@ -202,7 +203,7 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
               onPressed: () {
                 // Ağ geçidi menüsü
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${gateway['name']} için işlemler')),
+                  SnackBar(content: Text(l10n.actionsFor(gateway['name']))),
                 );
               },
             ),

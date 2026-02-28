@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class SystemManagementPage extends StatefulWidget {
   const SystemManagementPage({super.key});
@@ -17,16 +18,18 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
   }
 
   Future<void> _loadGroups() async {
+    final l10n = AppLocalizations.of(context)!;
     // Mock data - gerçek uygulamada API'den gelecek
     await Future.delayed(const Duration(seconds: 1));
 
+    if (!mounted) return;
     setState(() {
       _groups = [
         {
-          'name': 'Gruplanmamış (1)',
+          'name': '${l10n.ungrouped} (1)',
           'members': 1,
           'locks': 0,
-          'description': 'Atanmamış kilitler ve kullanıcılar',
+          'description': l10n.unassignedLocksAndUsers,
         },
       ];
     });
@@ -34,14 +37,15 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Koyu tema
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: const Text(
-          'Sistem Yönetimi',
-          style: TextStyle(
+        title: Text(
+          l10n.systemManagement,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -58,60 +62,60 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           children: [
             // Grup Yönetimi Bölümü
-            _buildSectionHeader('Grup Yönetimi'),
-            ..._groups.map((group) => _buildGroupTile(group)),
+            _buildSectionHeader(l10n.groupManagement),
+            ..._groups.map((group) => _buildGroupTile(group, l10n)),
 
             // Yetkili Yönetici Bölümü
             const SizedBox(height: 24),
-            _buildSectionHeader('Yetkili Yönetici'),
-            _buildAdminManagementSection(),
+            _buildSectionHeader(l10n.authorizedAdmin),
+            _buildAdminManagementSection(l10n),
 
             // Diğer Sistem Yönetimi Öğeleri
             const SizedBox(height: 24),
-            _buildSectionHeader('Kullanıcı Yönetimi'),
+            _buildSectionHeader(l10n.userManagement),
             _buildManagementTile(
               icon: Icons.lock_person,
-              title: 'Kullanıcıları kilitle',
-              subtitle: 'Kilit erişimini yönet ve kullanıcıları engelle',
+              title: l10n.lockUsers,
+              subtitle: l10n.manageLockAccessAndBlockUsers,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kullanıcı kilitleme özelliği yakında eklenecek')),
+                  SnackBar(content: Text(l10n.featureComingSoon)),
                 );
               },
             ),
 
             const SizedBox(height: 24),
-            _buildSectionHeader('Ağ Geçidi Yönetimi'),
+            _buildSectionHeader(l10n.gatewayManagement),
             _buildManagementTile(
               icon: Icons.swap_horiz,
-              title: 'Transfer Kilidi',
-              subtitle: 'Kilit sahipliğini başka bir hesaba aktar',
+              title: l10n.transferLock,
+              subtitle: l10n.transferLockOwnership,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Kilit transfer özelliği yakında eklenecek')),
+                  SnackBar(content: Text(l10n.featureComingSoon)),
                 );
               },
             ),
             _buildManagementTile(
               icon: Icons.wifi_tethering,
-              title: 'Aktarım Ağ Geçidi',
-              subtitle: 'Ağ geçidi sahipliğini başka bir hesaba aktar',
+              title: l10n.transferGateway,
+              subtitle: l10n.transferGatewayOwnership,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Ağ geçidi transfer özelliği yakında eklenecek')),
+                  SnackBar(content: Text(l10n.featureComingSoon)),
                 );
               },
             ),
 
             const SizedBox(height: 24),
-            _buildSectionHeader('Veri Yönetimi'),
+            _buildSectionHeader(l10n.dataManagement),
             _buildManagementTile(
               icon: Icons.file_download,
-              title: 'Dışa Aktar',
-              subtitle: 'Verileri dışa aktar veya yedekle',
+              title: l10n.exportData,
+              subtitle: l10n.exportDataDesc,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Dışa aktarma özelliği yakında eklenecek')),
+                  SnackBar(content: Text(l10n.featureComingSoon)),
                 );
               },
             ),
@@ -121,7 +125,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Yeni grup oluşturma yakında eklenecek')),
+            SnackBar(content: Text(l10n.featureComingSoon)),
           );
         },
         backgroundColor: Colors.blue,
@@ -144,7 +148,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
     );
   }
 
-  Widget _buildGroupTile(Map<String, dynamic> group) {
+  Widget _buildGroupTile(Map<String, dynamic> group, AppLocalizations l10n) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
@@ -174,7 +178,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           ),
         ),
         subtitle: Text(
-          '${group['members']} üye, ${group['locks']} kilit',
+          l10n.membersAndLocksCount(group['members'], group['locks']),
           style: TextStyle(
             color: Colors.grey[400],
             fontSize: 14,
@@ -187,7 +191,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
         ),
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${group['name']} grubu düzenleniyor')),
+            SnackBar(content: Text(l10n.editingGroup(group['name']))),
           );
         },
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -195,7 +199,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
     );
   }
 
-  Widget _buildAdminManagementSection() {
+  Widget _buildAdminManagementSection(AppLocalizations l10n) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(24),
@@ -212,9 +216,9 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
             size: 48,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Veri yok',
-            style: TextStyle(
+          Text(
+            l10n.noData,
+            style: const TextStyle(
               color: Colors.grey,
               fontSize: 16,
             ),
@@ -225,7 +229,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           ElevatedButton(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Yönetici oluşturma yakında eklenecek')),
+                SnackBar(content: Text(l10n.featureComingSoon)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -235,9 +239,9 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text(
-              'Yönetici oluştur',
-              style: TextStyle(
+            child: Text(
+              l10n.createAdmin,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

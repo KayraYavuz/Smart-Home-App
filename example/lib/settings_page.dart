@@ -123,19 +123,19 @@ class _SettingsPageState extends State<SettingsPage> {
             _buildSectionHeader(l10n.preferences),
             _buildSelectionTile(
               title: l10n.languages,
-              currentValue: _selectedLanguage,
+              currentValue: (_selectedLanguage == 'Otomatik' || _selectedLanguage == 'Automatic') ? l10n.automatic : _selectedLanguage,
               onTap: () => _showLanguageSelection(),
             ),
             _buildSelectionTile(
               title: l10n.screenLock,
-              currentValue: _selectedScreenLock,
+              currentValue: (_selectedScreenLock == 'Kapalı' || _selectedScreenLock == 'Off') ? l10n.off : _selectedScreenLock,
               onTap: () => _showScreenLockSelection(),
             ),
-                    _buildSelectionTile(
-                      title: l10n.hideInvalidAccess,
-                      currentValue: _selectedHideInvalidAccess,
-                      onTap: () => _showHideInvalidAccessSelection(),
-                    ),
+            _buildSelectionTile(
+              title: l10n.hideInvalidAccess,
+              currentValue: (_selectedHideInvalidAccess == 'Kapalı' || _selectedHideInvalidAccess == 'Off') ? l10n.off : _selectedHideInvalidAccess,
+              onTap: () => _showHideInvalidAccessSelection(),
+            ),
 
                     const SizedBox(height: 48),
 

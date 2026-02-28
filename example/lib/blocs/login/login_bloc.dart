@@ -43,11 +43,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         
         emit(LoginSuccess());
       } else {
-        emit(const LoginFailure('Şifre güncellendi ancak giriş yapılamadı.'));
+        emit(const LoginFailure('passwordUpdatedButLoginFailed'));
       }
     } catch (e) {
       debugPrint('❌ [LoginBloc] SyncPassword Hatası: $e');
-      emit(LoginFailure('Doğrulama başarısız: ${e.toString().replaceAll('Exception: ', '')}'));
+      emit(LoginFailure('VERIFICATION_FAILED:${e.toString().replaceAll('Exception: ', '')}'));
     }
   }
 
@@ -124,7 +124,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           debugPrint('🎉 [LoginBloc] LoginSuccess emit ediliyor');
           emit(LoginSuccess());
         } else {
-          emit(const LoginFailure('Giriş başarılı ancak anahtar alınamadı.'));
+          emit(const LoginFailure('loginSuccessButNoToken'));
         }
                 } else if (firebaseSuccess && !ttlockSuccess) {
                     // Şifre uyuşmazlığı durumunda karmaşık süreçler yerine doğrudan Web Portalına yönlendir.
@@ -132,7 +132,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
                     emit(LoginTTLockWebRedirect());
                 } else {
                     debugPrint('❌ [LoginBloc] Tüm giriş yöntemleri başarısız');
-                    emit(LoginFailure(loginErrorMsg.isNotEmpty ? loginErrorMsg : 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.'));
+                    emit(LoginFailure(loginErrorMsg.isNotEmpty ? loginErrorMsg : 'loginFailedCheckCredentials'));
                 }
               }
             }

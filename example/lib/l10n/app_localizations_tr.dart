@@ -806,7 +806,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get userManagement => 'Kullanıcı Yönetimi';
 
   @override
-  String get lockUsers => 'Kullanıcıları Kilitle';
+  String get lockUsers => 'Kullanıcıları kilitle';
 
   @override
   String get lockUsersSubtitle =>
@@ -866,7 +866,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String editingGroup(String groupName) {
-    return '$groupName grubu düzenleniyor';
+    return '\'$groupName\' grubu düzenleniyor';
   }
 
   @override
@@ -1790,10 +1790,148 @@ class AppLocalizationsTr extends AppLocalizations {
   String get passcodeLengthError => 'Şifre 4 ile 9 haneli olmalıdır';
 
   @override
-  String get validityStart => 'Geçerlilik Başlangıcı';
+  String get wifiOrPasswordEmpty => 'Wi-Fi ağı veya şifre boş olamaz';
 
   @override
-  String get validityEnd => 'Geçerlilik Bitişi';
+  String get enterGatewayNameAlt => 'Lütfen bir ağ geçidi adı girin';
+
+  @override
+  String get userInfoNotFoundReLogin =>
+      'Kullanıcı bilgileri bulunamadı. Lütfen tekrar giriş yapın.';
+
+  @override
+  String get gatewayConnectionTimeout =>
+      'Bağlantı zaman aşımına uğradı. Lütfen ağ geçidini sıfırlayıp ağı kontrol edin.';
+
+  @override
+  String get gatewayAddedSuccessServer =>
+      'Ağ geçidi başarıyla eklendi ve sunucuya kaydedildi!';
+
+  @override
+  String get gatewayAddedSuccessTimeoutServer =>
+      'Ağ geçidi başarıyla eklendi (Zaman aşımına rağmen sunucuya ulaştı)!';
+
+  @override
+  String gatewayAddedSuccessServerFail(String error) {
+    return 'Ağ geçidi cihaza eklendi ancak sunucuya kaydedilemedi: $error';
+  }
+
+  @override
+  String gatewayError(String errorCode, String errorMsg) {
+    return 'Hata: $errorCode - $errorMsg';
+  }
+
+  @override
+  String get gatewayRestartAndReconnect =>
+      'Lütfen ağ geçidini yeniden başlatıp tekrar bağlanın.';
+
+  @override
+  String get gatewayCheckWifiAndPermissions =>
+      'Lütfen Wi-Fi ve konum/bluetooth izinlerini kontrol edin.';
+
+  @override
+  String get addGatewayTitleAlt => 'Ağ Geçidi Ekle';
+
+  @override
+  String get gatewayInitializingWait =>
+      'Ağ geçidi başlatılıyor, lütfen bekleyin...';
+
+  @override
+  String get gatewayNameHintAlt => 'Ağ Geçidi Adı (örn: Ev)';
+
+  @override
+  String get selectedWifiNetwork => 'Seçili Wi-Fi Ağı';
+
+  @override
+  String get enterWifiPasswordHint => 'Wi-Fi Şifresini Girin';
+
+  @override
+  String get connectAndAdd => 'Bağlan ve Ekle';
+
+  @override
+  String get nameRequired => 'Lütfen bir isim giriniz.';
+
+  @override
+  String get invalidPasscodeLengthAlt =>
+      'Geçerli bir şifre giriniz (4-9 haneli). Veya boş bırakıp sistemi rasgele ürettirin.';
+
+  @override
+  String cannotReachLockBluetooth(String error) {
+    return 'Kilide ulaşılamadı. Bluetooth açık ve yakında olduğunuzdan emin olun. Hata: $error';
+  }
+
+  @override
+  String get passcodeCreatedTitleAlt => 'Şifre Oluşturuldu!';
+
+  @override
+  String get yourLockPasscode => 'Kilit şifreniz:';
+
+  @override
+  String get passcodeReadyToUse =>
+      'Bu şifre kullanıma hazırdır. Kapıyı açmak için şifreyi tuşlayıp sonuna # (veya kilit simgesi) eklemeniz yeterlidir.';
+
+  @override
+  String errorGeneric(String error) {
+    return 'Hata: $error';
+  }
+
+  @override
+  String get infoPermanent =>
+      'Kalıcı şifreler süresiz geçerlidir. Kilit üzerinden silinene kadar çalışır. Şifreyi boş bırakırsanız sistem otomatik üretir.';
+
+  @override
+  String get infoTimed =>
+      'Zamanlı şifreler belirtilen tarih aralığında geçerlidir. Şifreyi boş bırakırsanız sistem otomatik üretir.';
+
+  @override
+  String get infoOneTime =>
+      'Tek seferlik şifreler, başlangıç saatinden itibaren 6 saat boyunca kullanılabilir ve kullanıldıktan sonra silinir. Sistem tarafından otomatik olarak üretilir.';
+
+  @override
+  String get infoRecurring =>
+      'Yinelenen şifreler yalnızca belirtilen günlerde aktiftir. Sistem tarafından otomatik olarak üretilir.';
+
+  @override
+  String get recurringMode => 'Tekrar Modu';
+
+  @override
+  String get everyDay => 'Her Gün';
+
+  @override
+  String get workdays => 'Hafta İçi (Pzt-Cum)';
+
+  @override
+  String get onlyMonday => 'Sadece Pazartesi';
+
+  @override
+  String get onlyTuesday => 'Sadece Salı';
+
+  @override
+  String get onlyWednesday => 'Sadece Çarşamba';
+
+  @override
+  String get onlyThursday => 'Sadece Perşembe';
+
+  @override
+  String get onlyFriday => 'Sadece Cuma';
+
+  @override
+  String get onlySaturday => 'Sadece Cumartesi';
+
+  @override
+  String get onlySunday => 'Sadece Pazar';
+
+  @override
+  String get passcodeNameHint => 'Şifre adı girin...';
+
+  @override
+  String get passcodeOptional => 'Şifre (Opsiyonel)';
+
+  @override
+  String get passcodeLengthHint => '4-9 hane veya boş';
+
+  @override
+  String get createButtonAlt => 'Oluştur';
 
   @override
   String get lockReadyScanCard =>
@@ -2067,7 +2205,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get roleObserver => 'Gözetmen';
 
   @override
-  String get accessTokenNotFound => 'Erişim anahtarı alınamadı';
+  String get accessTokenNotFound => 'Access token alınamadı';
 
   @override
   String get lockIdNotFound => 'Kilit ID bulunamadı.';
@@ -2184,4 +2322,380 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get scanCardWithPhone => 'Telefon ile Tara';
+
+  @override
+  String get automatic => 'Otomatik';
+
+  @override
+  String cardsLoadError(Object error) {
+    return 'Kartlar yüklenemedi: $error';
+  }
+
+  @override
+  String get deleteCardTitle => 'Kartı Sil';
+
+  @override
+  String deleteCardConfirm(Object cardNumber) {
+    return '\\\"$cardNumber\\\" numaralı kartı silmek istediğinize emin misiniz?';
+  }
+
+  @override
+  String cardDeletedSuccess(Object cardNumber, Object method) {
+    return 'Kart \\\"$cardNumber\\\" başarıyla silindi ($method).';
+  }
+
+  @override
+  String cardDeleteError(Object error) {
+    return 'Kart silinemedi: $error';
+  }
+
+  @override
+  String get editCardTitle => 'Kartı Düzenle';
+
+  @override
+  String get cardNameLabel => 'Kart Adı';
+
+  @override
+  String get startDatePrefix => 'Başlangıç: ';
+
+  @override
+  String get endDatePrefix => 'Bitiş: ';
+
+  @override
+  String get cardUpdatedSuccess => 'Kart başarıyla güncellendi.';
+
+  @override
+  String cardUpdateError(Object error) {
+    return 'Kart güncellenemedi: $error';
+  }
+
+  @override
+  String get clearAllCardsTitle => 'Tüm Kartları Temizle';
+
+  @override
+  String get clearAllCardsConfirm =>
+      'Bu kilitteki tüm kartları sunucudan silmek istediğinizden emin misiniz?\\n\\nUyarı: Bu işlem geri alınamaz ve API dokümantasyonuna göre önce SDK üzerinden kilit hafızasının temizlenmesi gerekir.';
+
+  @override
+  String get clear => 'Temizle';
+
+  @override
+  String get allCardsClearedSuccess =>
+      'Tüm kartlar sunucudan başarıyla temizlendi.';
+
+  @override
+  String cardsClearError(Object error) {
+    return 'Kartlar temizlenemedi: $error';
+  }
+
+  @override
+  String get recoverCardTitle => 'Kartı Geri Al';
+
+  @override
+  String get recoverCardInstruction =>
+      'Daha önce silinen bir kartı geri almak için kilit ile Bluetooth bağlantısı gerekir.';
+
+  @override
+  String get cardNumberLabel => 'Kart Numarası';
+
+  @override
+  String get recover => 'Geri Al';
+
+  @override
+  String get cardRecoveredSuccess => '✅ Kart başarıyla geri alındı.';
+
+  @override
+  String cardRecoverError(Object error) {
+    return 'Kart geri alınamadı: $error';
+  }
+
+  @override
+  String get howToAddCard => 'Nasıl eklemek istersiniz?';
+
+  @override
+  String get addViaBluetooth => 'Kilit Üzerinden Ekle (Bluetooth)';
+
+  @override
+  String get addViaNfc => 'Telefon Üzerinden Ekle (NFC)';
+
+  @override
+  String get savedViaGateway => 'Gateway üzerinden kaydedilir';
+
+  @override
+  String get icCardsTitle => 'IC Kartlar';
+
+  @override
+  String get remoteCardCreation => 'Uzaktan Kart Oluşturma';
+
+  @override
+  String get addCardViaLockMenu => 'Kilit Üzerinden Kart Ekle';
+
+  @override
+  String get noCardsFound => 'Hiç IC Kart bulunamadı.';
+
+  @override
+  String get unnamedCard => 'İsimsiz Kart';
+
+  @override
+  String cardNumberPrefix(Object cardNumber) {
+    return 'No: $cardNumber';
+  }
+
+  @override
+  String validityPrefix(Object endDate, Object startDate) {
+    return 'Geçerlilik: $startDate - $endDate';
+  }
+
+  @override
+  String get passcodesTitle => 'Şifreler';
+
+  @override
+  String get noPasscodesFound => 'Hiç şifre bulunamadı.';
+
+  @override
+  String get typePrefix => 'Tip';
+
+  @override
+  String get unknownType => 'Bilinmeyen Tip';
+
+  @override
+  String get startingMessage => 'Başlarken...';
+
+  @override
+  String get recordPasscode => 'Şifre';
+
+  @override
+  String get recordCard => 'Kart';
+
+  @override
+  String get recordFingerprint => 'Parmak İzi';
+
+  @override
+  String get recordAppBt => 'Uygulama (BT)';
+
+  @override
+  String get recordRemoteUnlock => 'Uzaktan Açma';
+
+  @override
+  String get recordLocked => 'Kilitlendi';
+
+  @override
+  String get recordMechanicalKey => 'Mekanik Anahtar';
+
+  @override
+  String get recordWristband => 'Bileklik';
+
+  @override
+  String get recordRemoteControl => 'Uzaktan Kumanda';
+
+  @override
+  String get recordAppRemote => 'Uygulama (Uzaktan)';
+
+  @override
+  String get recordGatewayUnlock => 'Gateway ile açıldı';
+
+  @override
+  String get recordAutoLock => 'Otomatik Kilitleme';
+
+  @override
+  String get recordUnlocked => 'Açıldı';
+
+  @override
+  String recordOtherOperation(Object type) {
+    return 'Diğer İşlem ($type)';
+  }
+
+  @override
+  String get clearAllRecordsConfirmWarning => '(Bu işlem geri alınamaz)';
+
+  @override
+  String get ungrouped => 'Gruplanmamış';
+
+  @override
+  String get unassignedLocksAndUsers => 'Atanmamış kilitler ve kullanıcılar';
+
+  @override
+  String get manageLockAccessAndBlockUsers =>
+      'Kilit erişimini yönet ve kullanıcıları engelle';
+
+  @override
+  String get transferLockOwnership =>
+      'Kilit sahipliğini başka bir hesaba aktar';
+
+  @override
+  String get transferGatewayOwnership =>
+      'Ağ geçidi sahipliğini başka bir hesaba aktar';
+
+  @override
+  String get exportDataDesc => 'Verileri dışa aktar veya yedekle';
+
+  @override
+  String membersAndLocksCount(Object locks, Object members) {
+    return '$members üye, $locks kilit';
+  }
+
+  @override
+  String get searchGateway => 'Ağ geçidi ara...';
+
+  @override
+  String get noGatewayFound => 'Henüz hiç ağ geçidi bulunmuyor';
+
+  @override
+  String actionsFor(Object name) {
+    return '$name için işlemler';
+  }
+
+  @override
+  String get gatewayConnectedSuccess => 'Gateway\'e başarıyla bağlanıldı';
+
+  @override
+  String gatewayConnectError(Object error) {
+    return 'Gateway bağlantı hatası: $error';
+  }
+
+  @override
+  String get gatewayDisconnectedSuccess => 'Gateway bağlantısı kesildi';
+
+  @override
+  String gatewayDisconnectError(Object error) {
+    return 'Gateway bağlantı kesme hatası: $error';
+  }
+
+  @override
+  String get gatewayDetails => 'Gateway Detayları';
+
+  @override
+  String get networkLabel => 'Ağ';
+
+  @override
+  String get statusLabel => 'Durum';
+
+  @override
+  String get connectedLocks => 'Bağlı Kilitler';
+
+  @override
+  String gatewayDetailError(Object error) {
+    return 'Gateway detay hatası: $error';
+  }
+
+  @override
+  String get gatewayManagementDesc =>
+      'TTLock Gateway\'lerinizi yönetin ve uzaktan kontrol için bağlanın.';
+
+  @override
+  String get noConnectedGatewaysDesc =>
+      'Hiç Gateway bulunamadı.\\nTTLock uygulamanızdan Gateway ekleyin.';
+
+  @override
+  String get unnamedGateway => 'İsimsiz Gateway';
+
+  @override
+  String get detailsButton => 'Detaylar';
+
+  @override
+  String get connectButton => 'Bağlan';
+
+  @override
+  String get closeButton => 'Kapat';
+
+  @override
+  String get shareFailed => 'Paylaşım başarısız';
+
+  @override
+  String get passwordUpdatedButLoginFailed =>
+      'Şifre güncellendi ancak giriş yapılamadı.';
+
+  @override
+  String get loginSuccessButNoToken =>
+      'Giriş başarılı ancak anahtar alınamadı.';
+
+  @override
+  String get loginFailedCheckCredentials =>
+      'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.';
+
+  @override
+  String get bluetoothDisabledError =>
+      'Bluetooth kapalı veya yetkisiz. Lütfen Bluetooth\'u açın.';
+
+  @override
+  String get lockNotInSettingMode =>
+      'Kilit ayar modunda değil. Lütfen tuş takımına dokunup ışıkları yaktıktan sonra tekrar deneyin.';
+
+  @override
+  String get lockAlreadyRegistered =>
+      'Bu kilit zaten başka bir hesaba veya bu hesaba kayıtlı. Önce kilidi sıfırlamanız gerekir.';
+
+  @override
+  String get bluetoothConnectionRejected =>
+      'Bluetooth bağlantısı kilit tarafından reddedildi veya zaman aşımına uğradı.';
+
+  @override
+  String get bluetoothConnectionFailed =>
+      'Bluetooth bağlantısı kurulamadı. Kilit başka bir hesaba bağlı olabilir, Bluetooth önbelleği dolmuş olabilir veya kilit koruma modunda olabilir.';
+
+  @override
+  String get lockNotResponding =>
+      'Kilit yanıt vermedi. Lütfen daha yakın olun ve kilidi uyandırın.';
+
+  @override
+  String cloudRegistrationError(Object error) {
+    return 'Bulut Kayıt Hatası: $error';
+  }
+
+  @override
+  String btErrorPrefix(Object code, Object details) {
+    return 'BT Hatası (Kod: $code): $details';
+  }
+
+  @override
+  String get apiLockRegisteredToAnother =>
+      'Bu kilit zaten başka bir kullanıcıya kayıtlı. Lütfen önce önceki hesaptan silin.';
+
+  @override
+  String get apiNotAuthorized =>
+      'Bu işlem için yetkiniz yok (Yönetici değilsiniz).';
+
+  @override
+  String get apiSessionExpired =>
+      'Oturum süreniz dolmuş. Lütfen çıkış yapıp tekrar girin.';
+
+  @override
+  String get apiLockFrozen => 'Kilit dondurulmuş (Frozen). İşlem yapılamaz.';
+
+  @override
+  String get apiTimestampError =>
+      'Zaman damgası hatası. Lütfen telefonunuzun saat ve tarih ayarlarını kontrol edin.';
+
+  @override
+  String get apiDeletePreviousLocks =>
+      'Lütfen önce bu kilidi veya diğer kilitlerinizi hesabınızdan silin.';
+
+  @override
+  String get apiClientAuthError =>
+      'Uygulama kimlik doğrulama hatası (Client ID/Secret geçersiz).';
+
+  @override
+  String get apiServerError =>
+      'Sunucu tarafında bir hata oluştu. Lütfen daha sonra tekrar deneyin.';
+
+  @override
+  String get apiOperationRejected => 'İşlem sunucu tarafından reddedildi.';
+
+  @override
+  String unexpectedErrorPrefix(Object error) {
+    return 'Beklenmeyen hata: $error';
+  }
+
+  @override
+  String get apiUsernameAlreadyTaken => 'Bu kullanıcı adı zaten alınmış.';
+
+  @override
+  String get registrationFailed => 'Kayıt başarısız';
+
+  @override
+  String get apiRegistrationUnexpectedResponse =>
+      'Kayıt başarısız: Beklenmeyen yanıt formatı';
+
+  @override
+  String get apiResetPasswordFailed => 'Şifre sıfırlama başarısız';
 }

@@ -1711,7 +1711,7 @@ abstract class AppLocalizations {
   /// No description provided for @editingGroup.
   ///
   /// In en, this message translates to:
-  /// **'Editing group {groupName}'**
+  /// **'Editing group \'{groupName}\''**
   String editingGroup(String groupName);
 
   /// No description provided for @preparingRecords.
@@ -3364,17 +3364,251 @@ abstract class AppLocalizations {
   /// **'Passcode must be between 4 and 9 digits'**
   String get passcodeLengthError;
 
-  /// No description provided for @validityStart.
+  /// No description provided for @wifiOrPasswordEmpty.
   ///
   /// In en, this message translates to:
-  /// **'Validity Start'**
-  String get validityStart;
+  /// **'Wi-Fi network or password cannot be empty'**
+  String get wifiOrPasswordEmpty;
 
-  /// No description provided for @validityEnd.
+  /// No description provided for @enterGatewayNameAlt.
   ///
   /// In en, this message translates to:
-  /// **'Validity End'**
-  String get validityEnd;
+  /// **'Please enter a gateway name'**
+  String get enterGatewayNameAlt;
+
+  /// No description provided for @userInfoNotFoundReLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'User information not found. Please log in again.'**
+  String get userInfoNotFoundReLogin;
+
+  /// No description provided for @gatewayConnectionTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timed out. Please reset the gateway and check the network.'**
+  String get gatewayConnectionTimeout;
+
+  /// No description provided for @gatewayAddedSuccessServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway successfully added and saved to the server!'**
+  String get gatewayAddedSuccessServer;
+
+  /// No description provided for @gatewayAddedSuccessTimeoutServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway successfully added (Reached the server despite the timeout)!'**
+  String get gatewayAddedSuccessTimeoutServer;
+
+  /// No description provided for @gatewayAddedSuccessServerFail.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway added to device but could not be saved to server: {error}'**
+  String gatewayAddedSuccessServerFail(String error);
+
+  /// No description provided for @gatewayError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {errorCode} - {errorMsg}'**
+  String gatewayError(String errorCode, String errorMsg);
+
+  /// No description provided for @gatewayRestartAndReconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Please restart the gateway and connect again.'**
+  String get gatewayRestartAndReconnect;
+
+  /// No description provided for @gatewayCheckWifiAndPermissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check Wi-Fi and location/bluetooth permissions.'**
+  String get gatewayCheckWifiAndPermissions;
+
+  /// No description provided for @addGatewayTitleAlt.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Gateway'**
+  String get addGatewayTitleAlt;
+
+  /// No description provided for @gatewayInitializingWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Initializing gateway, please wait...'**
+  String get gatewayInitializingWait;
+
+  /// No description provided for @gatewayNameHintAlt.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway Name (e.g., Home)'**
+  String get gatewayNameHintAlt;
+
+  /// No description provided for @selectedWifiNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected Wi-Fi Network'**
+  String get selectedWifiNetwork;
+
+  /// No description provided for @enterWifiPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Wi-Fi Password'**
+  String get enterWifiPasswordHint;
+
+  /// No description provided for @connectAndAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect and Add'**
+  String get connectAndAdd;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name.'**
+  String get nameRequired;
+
+  /// No description provided for @invalidPasscodeLengthAlt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid passcode (4-9 digits). Or leave it blank for a randomly generated one.'**
+  String get invalidPasscodeLengthAlt;
+
+  /// No description provided for @cannotReachLockBluetooth.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot reach the lock. Make sure Bluetooth is on and you are nearby. Error: {error}'**
+  String cannotReachLockBluetooth(String error);
+
+  /// No description provided for @passcodeCreatedTitleAlt.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode Created!'**
+  String get passcodeCreatedTitleAlt;
+
+  /// No description provided for @yourLockPasscode.
+  ///
+  /// In en, this message translates to:
+  /// **'Your lock passcode:'**
+  String get yourLockPasscode;
+
+  /// No description provided for @passcodeReadyToUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This passcode is ready to use. To open the door, simply type the passcode and add # (or lock icon) at the end.'**
+  String get passcodeReadyToUse;
+
+  /// No description provided for @errorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String errorGeneric(String error);
+
+  /// No description provided for @infoPermanent.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanent passcodes are valid indefinitely until deleted from the lock. If left blank, the system will generate one automatically.'**
+  String get infoPermanent;
+
+  /// No description provided for @infoTimed.
+  ///
+  /// In en, this message translates to:
+  /// **'Timed passcodes are valid within the specified date range. If left blank, the system will generate one automatically.'**
+  String get infoTimed;
+
+  /// No description provided for @infoOneTime.
+  ///
+  /// In en, this message translates to:
+  /// **'One-time passcodes are valid for 6 hours from the start time and are deleted after use. They are generated automatically by the system.'**
+  String get infoOneTime;
+
+  /// No description provided for @infoRecurring.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring passcodes are only active on the specified days. They are generated automatically by the system.'**
+  String get infoRecurring;
+
+  /// No description provided for @recurringMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring Mode'**
+  String get recurringMode;
+
+  /// No description provided for @everyDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Every Day'**
+  String get everyDay;
+
+  /// No description provided for @workdays.
+  ///
+  /// In en, this message translates to:
+  /// **'Workdays (Mon-Fri)'**
+  String get workdays;
+
+  /// No description provided for @onlyMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Monday'**
+  String get onlyMonday;
+
+  /// No description provided for @onlyTuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Tuesday'**
+  String get onlyTuesday;
+
+  /// No description provided for @onlyWednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Wednesday'**
+  String get onlyWednesday;
+
+  /// No description provided for @onlyThursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Thursday'**
+  String get onlyThursday;
+
+  /// No description provided for @onlyFriday.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Friday'**
+  String get onlyFriday;
+
+  /// No description provided for @onlySaturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Saturday'**
+  String get onlySaturday;
+
+  /// No description provided for @onlySunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Only Sunday'**
+  String get onlySunday;
+
+  /// No description provided for @passcodeNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter passcode name...'**
+  String get passcodeNameHint;
+
+  /// No description provided for @passcodeOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode (Optional)'**
+  String get passcodeOptional;
+
+  /// No description provided for @passcodeLengthHint.
+  ///
+  /// In en, this message translates to:
+  /// **'4-9 digits or blank'**
+  String get passcodeLengthHint;
+
+  /// No description provided for @createButtonAlt.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get createButtonAlt;
 
   /// No description provided for @lockReadyScanCard.
   ///
@@ -3847,7 +4081,7 @@ abstract class AppLocalizations {
   /// No description provided for @accessTokenNotFound.
   ///
   /// In en, this message translates to:
-  /// **'Access token not found'**
+  /// **'Access token could not be retrieved'**
   String get accessTokenNotFound;
 
   /// No description provided for @lockIdNotFound.
@@ -4071,6 +4305,636 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan with Phone'**
   String get scanCardWithPhone;
+
+  /// No description provided for @automatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get automatic;
+
+  /// No description provided for @cardsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards could not be loaded: {error}'**
+  String cardsLoadError(Object error);
+
+  /// No description provided for @deleteCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Card'**
+  String get deleteCardTitle;
+
+  /// No description provided for @deleteCardConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete card \'{cardNumber}\'?'**
+  String deleteCardConfirm(Object cardNumber);
+
+  /// No description provided for @cardDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Card \'{cardNumber}\' successfully deleted ({method})'**
+  String cardDeletedSuccess(Object cardNumber, Object method);
+
+  /// No description provided for @cardDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Card could not be deleted: {error}'**
+  String cardDeleteError(Object error);
+
+  /// No description provided for @editCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Card'**
+  String get editCardTitle;
+
+  /// No description provided for @cardNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Name'**
+  String get cardNameLabel;
+
+  /// No description provided for @startDatePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Start: '**
+  String get startDatePrefix;
+
+  /// No description provided for @endDatePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'End: '**
+  String get endDatePrefix;
+
+  /// No description provided for @cardUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Card updated successfully.'**
+  String get cardUpdatedSuccess;
+
+  /// No description provided for @cardUpdateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Card could not be updated: {error}'**
+  String cardUpdateError(Object error);
+
+  /// No description provided for @clearAllCardsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All Cards'**
+  String get clearAllCardsTitle;
+
+  /// No description provided for @clearAllCardsConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete all cards from the server?\\n\\nWarning: This action cannot be undone and per API documentation, the lock memory should be cleared via SDK first.'**
+  String get clearAllCardsConfirm;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @allCardsClearedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'All cards successfully cleared from server.'**
+  String get allCardsClearedSuccess;
+
+  /// No description provided for @cardsClearError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards could not be cleared: {error}'**
+  String cardsClearError(Object error);
+
+  /// No description provided for @recoverCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover Card'**
+  String get recoverCardTitle;
+
+  /// No description provided for @recoverCardInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'A Bluetooth connection to the lock is required to recover a previously deleted card.'**
+  String get recoverCardInstruction;
+
+  /// No description provided for @cardNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Card Number'**
+  String get cardNumberLabel;
+
+  /// No description provided for @recover.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover'**
+  String get recover;
+
+  /// No description provided for @cardRecoveredSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Card successfully recovered.'**
+  String get cardRecoveredSuccess;
+
+  /// No description provided for @cardRecoverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Card could not be recovered: {error}'**
+  String cardRecoverError(Object error);
+
+  /// No description provided for @howToAddCard.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you like to add?'**
+  String get howToAddCard;
+
+  /// No description provided for @addViaBluetooth.
+  ///
+  /// In en, this message translates to:
+  /// **'Add via Lock (Bluetooth)'**
+  String get addViaBluetooth;
+
+  /// No description provided for @addViaNfc.
+  ///
+  /// In en, this message translates to:
+  /// **'Add via Phone (NFC)'**
+  String get addViaNfc;
+
+  /// No description provided for @savedViaGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved via Gateway'**
+  String get savedViaGateway;
+
+  /// No description provided for @icCardsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'IC Cards'**
+  String get icCardsTitle;
+
+  /// No description provided for @remoteCardCreation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote Card Creation'**
+  String get remoteCardCreation;
+
+  /// No description provided for @addCardViaLockMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Card via Lock'**
+  String get addCardViaLockMenu;
+
+  /// No description provided for @noCardsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No IC cards found.'**
+  String get noCardsFound;
+
+  /// No description provided for @unnamedCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed Card'**
+  String get unnamedCard;
+
+  /// No description provided for @cardNumberPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'No: {cardNumber}'**
+  String cardNumberPrefix(Object cardNumber);
+
+  /// No description provided for @validityPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Validity: {startDate} - {endDate}'**
+  String validityPrefix(Object endDate, Object startDate);
+
+  /// No description provided for @passcodesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcodes'**
+  String get passcodesTitle;
+
+  /// No description provided for @noPasscodesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No passcodes found.'**
+  String get noPasscodesFound;
+
+  /// No description provided for @typePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get typePrefix;
+
+  /// No description provided for @unknownType.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Type'**
+  String get unknownType;
+
+  /// No description provided for @startingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting...'**
+  String get startingMessage;
+
+  /// No description provided for @recordPasscode.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode'**
+  String get recordPasscode;
+
+  /// No description provided for @recordCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get recordCard;
+
+  /// No description provided for @recordFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprint'**
+  String get recordFingerprint;
+
+  /// No description provided for @recordAppBt.
+  ///
+  /// In en, this message translates to:
+  /// **'App (BT)'**
+  String get recordAppBt;
+
+  /// No description provided for @recordRemoteUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote Unlock'**
+  String get recordRemoteUnlock;
+
+  /// No description provided for @recordLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get recordLocked;
+
+  /// No description provided for @recordMechanicalKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Mechanical Key'**
+  String get recordMechanicalKey;
+
+  /// No description provided for @recordWristband.
+  ///
+  /// In en, this message translates to:
+  /// **'Wristband'**
+  String get recordWristband;
+
+  /// No description provided for @recordRemoteControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote Control'**
+  String get recordRemoteControl;
+
+  /// No description provided for @recordAppRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'App (Remote)'**
+  String get recordAppRemote;
+
+  /// No description provided for @recordGatewayUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked via Gateway'**
+  String get recordGatewayUnlock;
+
+  /// No description provided for @recordAutoLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Lock'**
+  String get recordAutoLock;
+
+  /// No description provided for @recordUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked'**
+  String get recordUnlocked;
+
+  /// No description provided for @recordOtherOperation.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Operation ({type})'**
+  String recordOtherOperation(Object type);
+
+  /// No description provided for @clearAllRecordsConfirmWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'(This action cannot be undone)'**
+  String get clearAllRecordsConfirmWarning;
+
+  /// No description provided for @ungrouped.
+  ///
+  /// In en, this message translates to:
+  /// **'Ungrouped'**
+  String get ungrouped;
+
+  /// No description provided for @unassignedLocksAndUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned locks and users'**
+  String get unassignedLocksAndUsers;
+
+  /// No description provided for @manageLockAccessAndBlockUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage lock access and block users'**
+  String get manageLockAccessAndBlockUsers;
+
+  /// No description provided for @transferLockOwnership.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer lock ownership to another account'**
+  String get transferLockOwnership;
+
+  /// No description provided for @transferGatewayOwnership.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer gateway ownership to another account'**
+  String get transferGatewayOwnership;
+
+  /// No description provided for @exportDataDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Export data or backup'**
+  String get exportDataDesc;
+
+  /// No description provided for @membersAndLocksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{members} members, {locks} locks'**
+  String membersAndLocksCount(Object locks, Object members);
+
+  /// No description provided for @searchGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Search gateway...'**
+  String get searchGateway;
+
+  /// No description provided for @noGatewayFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No gateway found yet'**
+  String get noGatewayFound;
+
+  /// No description provided for @actionsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions for {name}'**
+  String actionsFor(Object name);
+
+  /// No description provided for @gatewayConnectedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully connected to gateway'**
+  String get gatewayConnectedSuccess;
+
+  /// No description provided for @gatewayConnectError.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway connection error: {error}'**
+  String gatewayConnectError(Object error);
+
+  /// No description provided for @gatewayDisconnectedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway disconnected'**
+  String get gatewayDisconnectedSuccess;
+
+  /// No description provided for @gatewayDisconnectError.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway disconnect error: {error}'**
+  String gatewayDisconnectError(Object error);
+
+  /// No description provided for @gatewayDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway Details'**
+  String get gatewayDetails;
+
+  /// No description provided for @networkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Network'**
+  String get networkLabel;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusLabel;
+
+  /// No description provided for @connectedLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected Locks'**
+  String get connectedLocks;
+
+  /// No description provided for @gatewayDetailError.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway detail error: {error}'**
+  String gatewayDetailError(Object error);
+
+  /// No description provided for @gatewayManagementDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your TTLock Gateways and connect for remote control.'**
+  String get gatewayManagementDesc;
+
+  /// No description provided for @noConnectedGatewaysDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No Gateways found.\\nAdd a Gateway from your TTLock app.'**
+  String get noConnectedGatewaysDesc;
+
+  /// No description provided for @unnamedGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed Gateway'**
+  String get unnamedGateway;
+
+  /// No description provided for @detailsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get detailsButton;
+
+  /// No description provided for @connectButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get connectButton;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeButton;
+
+  /// No description provided for @shareFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Share failed'**
+  String get shareFailed;
+
+  /// No description provided for @passwordUpdatedButLoginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated but login failed.'**
+  String get passwordUpdatedButLoginFailed;
+
+  /// No description provided for @loginSuccessButNoToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful but no token received.'**
+  String get loginSuccessButNoToken;
+
+  /// No description provided for @loginFailedCheckCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed. Please check your credentials.'**
+  String get loginFailedCheckCredentials;
+
+  /// No description provided for @bluetoothDisabledError.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth is disabled or unauthorized. Please turn on Bluetooth.'**
+  String get bluetoothDisabledError;
+
+  /// No description provided for @lockNotInSettingMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock is not in setting mode. Please touch the keypad to wake it up and try again.'**
+  String get lockNotInSettingMode;
+
+  /// No description provided for @lockAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This lock is already registered to another account or this account. You must reset the lock first.'**
+  String get lockAlreadyRegistered;
+
+  /// No description provided for @bluetoothConnectionRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth connection was rejected by the lock or timed out.'**
+  String get bluetoothConnectionRejected;
+
+  /// No description provided for @bluetoothConnectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth connection failed. The lock might be connected to another account, cache might be full, or it is in protection mode.'**
+  String get bluetoothConnectionFailed;
+
+  /// No description provided for @lockNotResponding.
+  ///
+  /// In en, this message translates to:
+  /// **'The lock is not responding. Please get closer and wake up the lock.'**
+  String get lockNotResponding;
+
+  /// No description provided for @cloudRegistrationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Registration Error: {error}'**
+  String cloudRegistrationError(Object error);
+
+  /// No description provided for @btErrorPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'BT Error (Code: {code}): {details}'**
+  String btErrorPrefix(Object code, Object details);
+
+  /// No description provided for @apiLockRegisteredToAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'This lock is already registered to another user. Please delete it from the previous account first.'**
+  String get apiLockRegisteredToAnother;
+
+  /// No description provided for @apiNotAuthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authorized for this operation (Not an Admin).'**
+  String get apiNotAuthorized;
+
+  /// No description provided for @apiSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please log out and log in again.'**
+  String get apiSessionExpired;
+
+  /// No description provided for @apiLockFrozen.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock is frozen. Operations cannot be performed.'**
+  String get apiLockFrozen;
+
+  /// No description provided for @apiTimestampError.
+  ///
+  /// In en, this message translates to:
+  /// **'Timestamp error. Please check your phone\'s time and date settings.'**
+  String get apiTimestampError;
+
+  /// No description provided for @apiDeletePreviousLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Please delete this lock or your other locks from your account first.'**
+  String get apiDeletePreviousLocks;
+
+  /// No description provided for @apiClientAuthError.
+  ///
+  /// In en, this message translates to:
+  /// **'App authentication error (Invalid Client ID/Secret).'**
+  String get apiClientAuthError;
+
+  /// No description provided for @apiServerError.
+  ///
+  /// In en, this message translates to:
+  /// **'A server error occurred. Please try again later.'**
+  String get apiServerError;
+
+  /// No description provided for @apiOperationRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation rejected by the server.'**
+  String get apiOperationRejected;
+
+  /// No description provided for @unexpectedErrorPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error: {error}'**
+  String unexpectedErrorPrefix(Object error);
+
+  /// No description provided for @apiUsernameAlreadyTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'This username is already taken.'**
+  String get apiUsernameAlreadyTaken;
+
+  /// No description provided for @registrationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed'**
+  String get registrationFailed;
+
+  /// No description provided for @apiRegistrationUnexpectedResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed: Unexpected response format'**
+  String get apiRegistrationUnexpectedResponse;
+
+  /// No description provided for @apiResetPasswordFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset failed'**
+  String get apiResetPasswordFailed;
 }
 
 class _AppLocalizationsDelegate

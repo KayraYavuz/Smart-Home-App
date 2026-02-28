@@ -4,6 +4,7 @@ import 'package:yavuz_lock/blocs/passcode/passcode_cubit.dart';
 import 'package:yavuz_lock/repositories/ttlock_repository.dart';
 import 'package:yavuz_lock/create_passcode_page.dart';
 import 'package:yavuz_lock/services/passcode_model.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class PasscodePage extends StatelessWidget {
   final int lockId;
@@ -19,21 +20,24 @@ class PasscodePage extends StatelessWidget {
     required this.lock, // Added lock object
   });
 
-  String _getPasscodeType(int type) {
+  String _getPasscodeType(int type, AppLocalizations l10n) {
     switch (type) {
       case 1:
-        return 'Tek Seferlik';
+        return l10n.tabOneTime;
       case 2:
-        return 'Sürekli';
+        return l10n.tabPermanent;
       case 3:
-        return 'Zamanlı';
+        return l10n.tabTimed;
+      case 4:
+        return l10n.tabRecurring;
       default:
-        return 'Bilinmeyen Tip';
+        return l10n.unknownType;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocProvider(
       create: (context) => PasscodeCubit(context.read<TTLockRepository>())
         ..fetchPasscodes(lockId, clientId, accessToken),
@@ -41,7 +45,7 @@ class PasscodePage extends StatelessWidget {
         backgroundColor: const Color(0xFF121212),
         appBar: AppBar(
           backgroundColor: Colors.grey[900],
-          title: const Text('Şifreler'),
+          title: Text(l10n.passcodesTitle),
         ),
         body: BlocBuilder<PasscodeCubit, PasscodeState>(
           builder: (context, state) {
@@ -55,9 +59,9 @@ class PasscodePage extends StatelessWidget {
             }
             if (state is PasscodeLoadSuccess) {
               if (state.passcodes.isEmpty) {
-                return const Center(
-                    child: Text('Hiç şifre bulunamadı.',
-                        style: TextStyle(color: Colors.white)));
+                return Center(
+                    child: Text(l10n.noPasscodesFound,
+                        style: const TextStyle(color: Colors.white)));
               }
               return ListView.builder(
                 itemCount: state.passcodes.length,
@@ -71,7 +75,7 @@ class PasscodePage extends StatelessWidget {
                             fontSize: 18,
                             fontWeight: FontWeight.bold)),
                     subtitle: Text(
-                        '${passcode.keyboardPwdName} | Tip: ${_getPasscodeType(passcode.keyboardPwdType)}',
+                        '${passcode.keyboardPwdName} | ${l10n.typePrefix}: ${_getPasscodeType(passcode.keyboardPwdType, l10n)}',
                         style: TextStyle(color: Colors.grey[400])),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
@@ -84,7 +88,7 @@ class PasscodePage extends StatelessWidget {
                 },
               );
             }
-            return const Center(child: Text('Başlarken...'));
+            return Center(child: Text(l10n.startingMessage));
           },
         ),
         floatingActionButton: FloatingActionButton(

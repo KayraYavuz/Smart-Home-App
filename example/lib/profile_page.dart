@@ -19,8 +19,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String _username = 'Kullanıcı';
-  String _email = 'email@ornek.com';
+  String _username = 'User';
+  String _email = 'email@example.com';
   String _version = '';
 
   @override
@@ -50,15 +50,15 @@ class _ProfilePageState extends State<ProfilePage> {
         _version = 'v1.0.9 (148)'; 
       });
 
-      String loadedEmail = prefs.getString('saved_email') ?? 'kullanici@ornek.com';
+      String loadedEmail = prefs.getString('saved_email') ?? 'user@example.com';
       String loadedUsername = prefs.getString('saved_username') ?? '';
 
       // Eğer kullanıcı adı kayıtlı değilse veya varsayılan ise, e-postadan üret
-      if (loadedUsername.isEmpty || loadedUsername == 'Kullanıcı') {
+      if (loadedUsername.isEmpty || loadedUsername == 'Kullanıcı' || loadedUsername == 'User') {
         if (loadedEmail.contains('@')) {
           loadedUsername = loadedEmail.split('@')[0];
         } else {
-          loadedUsername = 'Kullanıcı';
+          loadedUsername = 'User';
         }
       }
 

@@ -182,8 +182,20 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     } catch (e) {
       if (!mounted) return;
+      String errorMsg = e.toString().replaceAll('Exception: ', '');
+      
+      if (errorMsg == 'apiUsernameAlreadyTaken') {
+        errorMsg = l10n.apiUsernameAlreadyTaken;
+      } else if (errorMsg.startsWith('apiRegistrationFailed:')) {
+        errorMsg = '${l10n.registrationFailed}: ${errorMsg.substring('apiRegistrationFailed:'.length)}';
+      } else if (errorMsg.startsWith('apiRegistrationHttpError:')) {
+        errorMsg = '${l10n.registrationFailed}: HTTP ${errorMsg.substring('apiRegistrationHttpError:'.length)}';
+      } else if (errorMsg == 'apiRegistrationUnexpectedResponse') {
+        errorMsg = l10n.apiRegistrationUnexpectedResponse;
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l10n.errorLabel}: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('${l10n.errorLabel}: $errorMsg'), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class GatewayManagementDialog extends StatefulWidget {
   const GatewayManagementDialog({super.key});
@@ -74,18 +75,20 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
       await _loadGateways();
 
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Gateway\'e başarıyla bağlanıldı'),
+        SnackBar(
+          content: Text(l10n.gatewayConnectedSuccess),
           backgroundColor: Colors.green,
         ),
       );
 
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Gateway bağlantı hatası: $e'),
+          content: Text(l10n.gatewayConnectError(e.toString())),
           backgroundColor: Colors.red,
         ),
       );
@@ -111,18 +114,20 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
       await _loadGateways();
 
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Gateway bağlantısı kesildi'),
+        SnackBar(
+          content: Text(l10n.gatewayDisconnectedSuccess),
           backgroundColor: Colors.orange,
         ),
       );
 
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Gateway bağlantı kesme hatası: $e'),
+          content: Text(l10n.gatewayDisconnectError(e.toString())),
           backgroundColor: Colors.red,
         ),
       );
@@ -148,12 +153,13 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
       );
 
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
 
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF1E1E1E),
-          title: const Text('Gateway Detayları', style: TextStyle(color: Colors.white)),
+          title: Text(l10n.gatewayDetails, style: const TextStyle(color: Colors.white)),
           content: SizedBox(
             width: double.maxFinite,
             height: 300,
@@ -163,22 +169,22 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                 children: [
                   Text('Gateway ID: $gatewayId', style: const TextStyle(color: Colors.white)),
                   const SizedBox(height: 8),
-                  Text('İsim: ${detail['gatewayName'] ?? 'Bilinmiyor'}', style: const TextStyle(color: Colors.white)),
+                  Text('${l10n.nameLabel}: ${detail['gatewayName'] ?? l10n.unknown}', style: const TextStyle(color: Colors.white)),
                   const SizedBox(height: 8),
-                  Text('MAC: ${detail['gatewayMac'] ?? 'Bilinmiyor'}', style: const TextStyle(color: Colors.white)),
+                  Text('MAC: ${detail['gatewayMac'] ?? l10n.unknown}', style: const TextStyle(color: Colors.white)),
                   const SizedBox(height: 8),
-                  Text('Ağ: ${detail['networkName'] ?? 'Bilinmiyor'}', style: const TextStyle(color: Colors.white)),
+                  Text('${l10n.networkLabel}: ${detail['networkName'] ?? l10n.unknown}', style: const TextStyle(color: Colors.white)),
                   const SizedBox(height: 8),
-                  Text('Durum: ${detail['isOnline'] == true ? 'Çevrimiçi' : 'Çevrimdışı'}',
+                  Text('${l10n.statusLabel}: ${detail['isOnline'] == true ? l10n.online : l10n.offline}',
                       style: TextStyle(
                         color: detail['isOnline'] == true ? Colors.green : Colors.red,
                       )),
                   const SizedBox(height: 16),
-                  Text('Bağlı Kilitler (${locks.length}):', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  Text('${l10n.connectedLocks} (${locks.length}):', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   ...locks.map((lock) => Padding(
                     padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('• ${lock['lockAlias'] ?? lock['lockName'] ?? 'İsimsiz Kilit'}',
+                    child: Text('• ${lock['lockAlias'] ?? lock['lockName'] ?? l10n.unnamedLock}',
                         style: const TextStyle(color: Colors.grey)),
                   )),
                 ],
@@ -188,16 +194,18 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Kapat', style: TextStyle(color: Colors.blue)),
+              child: Text(l10n.closeButton, style: const TextStyle(color: Colors.blue)),
             ),
           ],
         ),
       );
 
     } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Gateway detay hatası: $e'),
+          content: Text(l10n.gatewayDetailError(e.toString())),
           backgroundColor: Colors.red,
         ),
       );
@@ -206,6 +214,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       backgroundColor: const Color(0xFF1E1E1E),
       shape: RoundedRectangleBorder(
@@ -223,10 +232,10 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
               children: [
                 const Icon(Icons.router, color: Colors.blue, size: 28),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Gateway Yönetimi',
-                    style: TextStyle(
+                    l10n.gatewayManagement,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -236,14 +245,14 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                 IconButton(
                   icon: const Icon(Icons.refresh, color: Colors.white),
                   onPressed: _loadGateways,
-                  tooltip: 'Yenile',
+                  tooltip: l10n.refresh,
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            const Text(
-              'TTLock Gateway\'lerinizi yönetin ve uzaktan kontrol için bağlanın.',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+            Text(
+              l10n.gatewayManagementDesc,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
             ),
             const SizedBox(height: 24),
 
@@ -259,23 +268,23 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                               const Icon(Icons.error_outline, color: Colors.red, size: 48),
                               const SizedBox(height: 16),
                               Text(
-                                'Hata: $_errorMessage',
+                                '${l10n.errorLabel}: $_errorMessage',
                                 style: const TextStyle(color: Colors.red),
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: _loadGateways,
-                                child: const Text('Tekrar Dene'),
+                                child: Text(l10n.retry),
                               ),
                             ],
                           ),
                         )
                       : _gateways.isEmpty
-                          ? const Center(
+                          ? Center(
                               child: Text(
-                                'Hiç Gateway bulunamadı.\nTTLock uygulamanızdan Gateway ekleyin.',
-                                style: TextStyle(color: Colors.grey),
+                                l10n.noConnectedGatewaysDesc,
+                                style: const TextStyle(color: Colors.grey),
                                 textAlign: TextAlign.center,
                               ),
                             )
@@ -309,7 +318,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    gateway['gatewayName'] ?? 'İsimsiz Gateway',
+                                                    gateway['gatewayName'] ?? l10n.unnamedGateway,
                                                     style: const TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 16,
@@ -333,7 +342,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                                                 borderRadius: BorderRadius.circular(12),
                                               ),
                                               child: Text(
-                                                isOnline ? 'Çevrimiçi' : 'Çevrimdışı',
+                                                isOnline ? l10n.online : l10n.offline,
                                                 style: TextStyle(
                                                   color: isOnline ? Colors.green : Colors.red,
                                                   fontSize: 12,
@@ -345,7 +354,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                                         ),
                                         const SizedBox(height: 12),
                                         Text(
-                                          'MAC: ${gateway['gatewayMac'] ?? 'Bilinmiyor'}',
+                                          'MAC: ${gateway['gatewayMac'] ?? l10n.unknown}',
                                           style: const TextStyle(color: Colors.grey, fontSize: 14),
                                         ),
                                         const SizedBox(height: 16),
@@ -355,7 +364,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                                               child: ElevatedButton.icon(
                                                 onPressed: () => _showGatewayDetail(gateway['gatewayId'].toString()),
                                                 icon: const Icon(Icons.info_outline, size: 16),
-                                                label: const Text('Detaylar'),
+                                                label: Text(l10n.detailsButton),
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: Colors.blue.withValues(alpha: 0.2),
                                                   foregroundColor: Colors.blue,
@@ -369,7 +378,7 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                                                     ? () => _disconnectGateway(gateway['gatewayId'].toString())
                                                     : () => _connectGateway(gateway['gatewayId'].toString()),
                                                 icon: Icon(isOnline ? Icons.link_off : Icons.link, size: 16),
-                                                label: Text(isOnline ? 'Bağlantıyı Kes' : 'Bağlan'),
+                                                label: Text(isOnline ? l10n.disconnect : l10n.connectButton),
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: isOnline ? Colors.red.withValues(alpha: 0.2) : Colors.green.withValues(alpha: 0.2),
                                                   foregroundColor: isOnline ? Colors.red : Colors.green,
@@ -397,9 +406,9 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text(
-                      'Kapat',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    child: Text(
+                      l10n.closeButton,
+                      style: const TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                   ),
                 ),

@@ -12,6 +12,43 @@ class ScanPage extends StatelessWidget {
   final bool isGateway;
   const ScanPage({super.key, this.isGateway = false});
 
+  String _getLocalizedErrorMessage(String error, AppLocalizations l10n) {
+    if (error == 'bluetoothDisabledError') return l10n.bluetoothDisabledError;
+    if (error == 'lockNotInSettingMode') return l10n.lockNotInSettingMode;
+    if (error == 'lockAlreadyRegistered') return l10n.lockAlreadyRegistered;
+    if (error == 'bluetoothConnectionRejected') return l10n.bluetoothConnectionRejected;
+    if (error == 'bluetoothConnectionFailed') return l10n.bluetoothConnectionFailed;
+    if (error == 'lockNotResponding') return l10n.lockNotResponding;
+    if (error == 'apiLockRegisteredToAnother') return l10n.apiLockRegisteredToAnother;
+    if (error == 'apiNotAuthorized') return l10n.apiNotAuthorized;
+    if (error == 'apiSessionExpired') return l10n.apiSessionExpired;
+    if (error == 'apiLockFrozen') return l10n.apiLockFrozen;
+    if (error == 'apiTimestampError') return l10n.apiTimestampError;
+    if (error == 'apiDeletePreviousLocks') return l10n.apiDeletePreviousLocks;
+    if (error == 'apiClientAuthError') return l10n.apiClientAuthError;
+    if (error == 'apiServerError') return l10n.apiServerError;
+    if (error == 'apiOperationRejected') return l10n.apiOperationRejected;
+
+    if (error.startsWith('btErrorPrefix:')) {
+      final parts = error.split(':');
+      if (parts.length >= 3) {
+        final code = parts[1];
+        final detailsKey = parts[2];
+        final details = _getLocalizedErrorMessage(detailsKey, l10n);
+        return l10n.btErrorPrefix(code, details);
+      }
+    }
+    if (error.startsWith('cloudRegistrationError:')) {
+      final detailsKey = error.substring('cloudRegistrationError:'.length);
+      return l10n.cloudRegistrationError(_getLocalizedErrorMessage(detailsKey, l10n));
+    }
+    if (error.startsWith('unexpectedErrorPrefix:')) {
+      return l10n.unexpectedErrorPrefix(error.substring('unexpectedErrorPrefix:'.length));
+    }
+
+    return error;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -74,7 +111,7 @@ class ScanPage extends StatelessWidget {
             if (state is ScanFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(l10n.errorWithMsg(state.error)),
+                  content: Text(_getLocalizedErrorMessage(state.error, l10n)),
                   backgroundColor: Colors.red,
                 ),
               );
