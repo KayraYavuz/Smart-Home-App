@@ -1808,6 +1808,76 @@ class AppLocalizationsDe extends AppLocalizations {
   String get validityEnd => 'Ende der Gültigkeit';
 
   @override
+  String get lockReadyScanCard =>
+      'Lock is ready! Please SCAN your IC card on the lock\'s keypad.';
+
+  @override
+  String get nfcNotAvailable => 'NFC is not available on this device';
+
+  @override
+  String get cardAddedSuccessfully => '✅ Card added successfully!';
+
+  @override
+  String failedToAddCard(String error) {
+    return 'Failed: $error';
+  }
+
+  @override
+  String cardSaving(String cardNumber) {
+    return 'Card: $cardNumber\nSaving...';
+  }
+
+  @override
+  String get cycleOn => 'Cycle on';
+
+  @override
+  String get holdCardNearPhoneNfc => 'Hold your IC card near the phone';
+
+  @override
+  String get locationPermissionRequiredForWifi =>
+      'Location permission is required for Wi-Fi scanning.';
+
+  @override
+  String get selectWifi => 'Select Wi-Fi';
+
+  @override
+  String get noWifiNetworksFound => 'No Wi-Fi networks found.';
+
+  @override
+  String get fingerprintInstruction4Times =>
+      'Please press your finger on the lock 4 times.';
+
+  @override
+  String fingerprintInstructionCount(int current, int total) {
+    return 'Please press your finger on the lock ($current/$total).';
+  }
+
+  @override
+  String get fingerprintReadSaving => 'Fingerprint read! Saving to server...';
+
+  @override
+  String get fingerprintAddedSuccessfully =>
+      '✅ Fingerprint added successfully!';
+
+  @override
+  String fingerprintSaveFailed(String error) {
+    return 'Error saving to server: $error';
+  }
+
+  @override
+  String fingerprintAddFailed(String error) {
+    return 'Failed: $error';
+  }
+
+  @override
+  String fingerprintError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get addFingerprintTitle => 'Add Fingerprint';
+
+  @override
   String get create => 'Erstellen';
 
   @override

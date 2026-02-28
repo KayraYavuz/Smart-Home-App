@@ -798,6 +798,55 @@
   "passcodeLengthError": "Passcode must be between 4 and 9 digits",
   "validityStart": "Validity Start",
   "validityEnd": "Validity End",
+  "lockReadyScanCard": "Lock is ready! Please SCAN your IC card on the lock's keypad.",
+  "nfcNotAvailable": "NFC is not available on this device",
+  "cardAddedSuccessfully": "✅ Card added successfully!",
+  "failedToAddCard": "Failed: {error}",
+  "@failedToAddCard": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "cardSaving": "Card: {cardNumber}\nSaving...",
+  "@cardSaving": {
+    "placeholders": {
+      "cardNumber": { "type": "String" }
+    }
+  },
+  "cycleOn": "Cycle on",
+  "holdCardNearPhoneNfc": "Hold your IC card near the phone",
+  "locationPermissionRequiredForWifi": "Location permission is required for Wi-Fi scanning.",
+  "selectWifi": "Select Wi-Fi",
+  "noWifiNetworksFound": "No Wi-Fi networks found.",
+  "fingerprintInstruction4Times": "Please press your finger on the lock 4 times.",
+  "fingerprintInstructionCount": "Please press your finger on the lock ({current}/{total}).",
+  "@fingerprintInstructionCount": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "fingerprintReadSaving": "Fingerprint read! Saving to server...",
+  "fingerprintAddedSuccessfully": "✅ Fingerprint added successfully!",
+  "fingerprintSaveFailed": "Error saving to server: {error}",
+  "@fingerprintSaveFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "fingerprintAddFailed": "Failed: {error}",
+  "@fingerprintAddFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "fingerprintError": "Error: {error}",
+  "@fingerprintError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "addFingerprintTitle": "Add Fingerprint",
   "create": "Create",
   "passive": "Passive",
   "gatewayRequired": "Gateway required",

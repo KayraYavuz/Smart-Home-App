@@ -129,7 +129,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
     if (!isAvailable) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('NFC is not available on this device'), backgroundColor: Colors.red),
+        SnackBar(content: Text(AppLocalizations.of(context)?.nfcNotAvailable ?? 'NFC is not available on this device'), backgroundColor: Colors.red),
       );
       return;
     }
@@ -186,12 +186,12 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
           if (mounted) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             setState(() {
-              _statusMessage = 'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.';
+              _statusMessage = l10n?.lockReadyScanCard ?? 'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.';
             });
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(l10n?.lockReadyScanCard ?? 'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               backgroundColor: Colors.orange,
-              duration: Duration(seconds: 10),
+              duration: const Duration(seconds: 10),
             ));
           }
         }, (cardNumber) {
@@ -201,7 +201,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         });
       } else {
         NfcManager.instance.startSession(
-        alertMessage: 'Hold your IC card near the phone',
+        alertMessage: l10n?.holdCardNearPhoneNfc ?? 'Hold your IC card near the phone',
         onDiscovered: (NfcTag tag) async {
           try {
             // Read card UID from NFC tag — cross-platform
@@ -270,7 +270,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
       if (!mounted) return;
 
       setState(() {
-        _statusMessage = 'Card: $cardNumber\nSaving...';
+        _statusMessage = l10n?.cardSaving(cardNumber) ?? 'Card: $cardNumber\nSaving...';
       });
 
       final apiService = Provider.of<ApiService>(context, listen: false);
@@ -299,7 +299,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('✅ Card added successfully!'), backgroundColor: Colors.green),
+        SnackBar(content: Text(l10n?.cardAddedSuccessfully ?? '✅ Card added successfully!'), backgroundColor: Colors.green),
       );
       Navigator.pop(context, true);
     } catch (e) {
@@ -308,7 +308,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text(l10n?.failedToAddCard(e.toString()) ?? 'Failed: $e'), backgroundColor: Colors.red),
       );
       
       setState(() {
@@ -681,7 +681,7 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
 
                   Container(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-                    child: const Text('Cycle on', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Text(l10n?.cycleOn ?? 'Cycle on', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),

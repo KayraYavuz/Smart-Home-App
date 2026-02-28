@@ -125,7 +125,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
 
     setState(() {
       _isLoading = true;
-      _statusMessage = 'Lütfen parmağınızı kilide 4 kere okutun.'; // 4 times press instruction
+      _statusMessage = l10n?.fingerprintInstruction4Times ?? 'Lütfen parmağınızı kilide 4 kere okutun.'; // 4 times press instruction
     });
 
     try {
@@ -159,7 +159,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
         (currentCount, totalCount) {
           if (mounted) {
             setState(() {
-               _statusMessage = 'Lütfen parmağınızı kilide okutun. ($currentCount/$totalCount)';
+               _statusMessage = l10n?.fingerprintInstructionCount(currentCount, totalCount) ?? 'Lütfen parmağınızı kilide okutun. ($currentCount/$totalCount)';
             });
           }
         }, 
@@ -168,7 +168,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
           if (!mounted) return;
           
           setState(() {
-            _statusMessage = 'Parmak izi okundu! Sunucuya kaydediliyor...';
+            _statusMessage = l10n?.fingerprintReadSaving ?? 'Parmak izi okundu! Sunucuya kaydediliyor...';
           });
           
           try {
@@ -187,13 +187,13 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
             
             if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('✅ Parmak izi başarıyla eklendi!'), backgroundColor: Colors.green),
+              SnackBar(content: Text(l10n?.fingerprintAddedSuccessfully ?? '✅ Parmak izi başarıyla eklendi!'), backgroundColor: Colors.green),
             );
             Navigator.pop(context, true);
           } catch (e) {
             if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Sunucuya kaydedilirken hata oluştu: $e'), backgroundColor: Colors.orange),
+              SnackBar(content: Text(l10n?.fingerprintSaveFailed(e.toString()) ?? 'Sunucuya kaydedilirken hata oluştu: $e'), backgroundColor: Colors.orange),
             );
             setState(() {
               _isLoading = false;
@@ -205,7 +205,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
           // Failure Callback
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Başarısız: $errorMsg'), backgroundColor: Colors.red),
+            SnackBar(content: Text(l10n?.fingerprintAddFailed(errorMsg) ?? 'Başarısız: $errorMsg'), backgroundColor: Colors.red),
           );
           setState(() {
             _isLoading = false;
@@ -217,7 +217,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text(l10n?.fingerprintError(e.toString()) ?? 'Hata: $e'), backgroundColor: Colors.red),
       );
       
       setState(() {
@@ -263,7 +263,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: const Text('Parmak İzi Ekle', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        title: Text(l10n.addFingerprintTitle, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),

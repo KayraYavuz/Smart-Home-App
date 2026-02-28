@@ -4,6 +4,7 @@ import 'gateway_page.dart';
 import 'package:ttlock_flutter/ttgateway.dart';
 import 'package:bmprogresshud/progresshud.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class WifiPage extends StatefulWidget {
   const WifiPage({super.key, required this.mac});
@@ -33,7 +34,7 @@ class _WifiPageState extends State<WifiPage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Wi-Fi taraması için konum izni gereklidir.')),
+            SnackBar(content: Text(AppLocalizations.of(context)?.locationPermissionRequiredForWifi ?? 'Wi-Fi taraması için konum izni gereklidir.')),
           );
         }
       });
@@ -78,7 +79,7 @@ class _WifiPageState extends State<WifiPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Select Wifi'),
+          title: Text(AppLocalizations.of(context)?.selectWifi ?? 'Select Wifi'),
         ),
         body: Material(child: ProgressHud(
           child: Builder(builder: (context) {
@@ -94,7 +95,7 @@ class _WifiPageState extends State<WifiPage> {
     }
     
     if (!_isScanning && _wifiList.isEmpty) {
-      return const Center(child: Text('Bulunan Wi-Fi ağı yok.'));
+      return Center(child: Text(AppLocalizations.of(context)?.noWifiNetworksFound ?? 'Bulunan Wi-Fi ağı yok.'));
     }
 
     return ListView.builder(

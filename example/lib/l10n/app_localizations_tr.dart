@@ -1796,6 +1796,76 @@ class AppLocalizationsTr extends AppLocalizations {
   String get validityEnd => 'Geçerlilik Bitişi';
 
   @override
+  String get lockReadyScanCard =>
+      'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.';
+
+  @override
+  String get nfcNotAvailable => 'Bu cihazda NFC özelliği bulunmuyor';
+
+  @override
+  String get cardAddedSuccessfully => '✅ Kart başarıyla eklendi!';
+
+  @override
+  String failedToAddCard(String error) {
+    return 'Başarısız: $error';
+  }
+
+  @override
+  String cardSaving(String cardNumber) {
+    return 'Kart: $cardNumber\nKaydediliyor...';
+  }
+
+  @override
+  String get cycleOn => 'Döngü Günleri';
+
+  @override
+  String get holdCardNearPhoneNfc => 'IC kartınızı telefonunuza yaklaştırın';
+
+  @override
+  String get locationPermissionRequiredForWifi =>
+      'Wi-Fi taraması için konum izni gereklidir.';
+
+  @override
+  String get selectWifi => 'Wi-Fi Seçin';
+
+  @override
+  String get noWifiNetworksFound => 'Bulunan Wi-Fi ağı yok.';
+
+  @override
+  String get fingerprintInstruction4Times =>
+      'Lütfen parmağınızı kilide 4 kere okutun.';
+
+  @override
+  String fingerprintInstructionCount(int current, int total) {
+    return 'Lütfen parmağınızı kilide okutun ($current/$total).';
+  }
+
+  @override
+  String get fingerprintReadSaving =>
+      'Parmak izi okundu! Sunucuya kaydediliyor...';
+
+  @override
+  String get fingerprintAddedSuccessfully => '✅ Parmak izi başarıyla eklendi!';
+
+  @override
+  String fingerprintSaveFailed(String error) {
+    return 'Sunucuya kaydedilirken hata oluştu: $error';
+  }
+
+  @override
+  String fingerprintAddFailed(String error) {
+    return 'Başarısız: $error';
+  }
+
+  @override
+  String fingerprintError(String error) {
+    return 'Hata: $error';
+  }
+
+  @override
+  String get addFingerprintTitle => 'Parmak İzi Ekle';
+
+  @override
   String get create => 'Oluştur';
 
   @override

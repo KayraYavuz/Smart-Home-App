@@ -3376,6 +3376,114 @@ abstract class AppLocalizations {
   /// **'Validity End'**
   String get validityEnd;
 
+  /// No description provided for @lockReadyScanCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock is ready! Please SCAN your IC card on the lock\'s keypad.'**
+  String get lockReadyScanCard;
+
+  /// No description provided for @nfcNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'NFC is not available on this device'**
+  String get nfcNotAvailable;
+
+  /// No description provided for @cardAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Card added successfully!'**
+  String get cardAddedSuccessfully;
+
+  /// No description provided for @failedToAddCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed: {error}'**
+  String failedToAddCard(String error);
+
+  /// No description provided for @cardSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Card: {cardNumber}\nSaving...'**
+  String cardSaving(String cardNumber);
+
+  /// No description provided for @cycleOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle on'**
+  String get cycleOn;
+
+  /// No description provided for @holdCardNearPhoneNfc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your IC card near the phone'**
+  String get holdCardNearPhoneNfc;
+
+  /// No description provided for @locationPermissionRequiredForWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is required for Wi-Fi scanning.'**
+  String get locationPermissionRequiredForWifi;
+
+  /// No description provided for @selectWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Wi-Fi'**
+  String get selectWifi;
+
+  /// No description provided for @noWifiNetworksFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Wi-Fi networks found.'**
+  String get noWifiNetworksFound;
+
+  /// No description provided for @fingerprintInstruction4Times.
+  ///
+  /// In en, this message translates to:
+  /// **'Please press your finger on the lock 4 times.'**
+  String get fingerprintInstruction4Times;
+
+  /// No description provided for @fingerprintInstructionCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please press your finger on the lock ({current}/{total}).'**
+  String fingerprintInstructionCount(int current, int total);
+
+  /// No description provided for @fingerprintReadSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprint read! Saving to server...'**
+  String get fingerprintReadSaving;
+
+  /// No description provided for @fingerprintAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Fingerprint added successfully!'**
+  String get fingerprintAddedSuccessfully;
+
+  /// No description provided for @fingerprintSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving to server: {error}'**
+  String fingerprintSaveFailed(String error);
+
+  /// No description provided for @fingerprintAddFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed: {error}'**
+  String fingerprintAddFailed(String error);
+
+  /// No description provided for @fingerprintError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String fingerprintError(String error);
+
+  /// No description provided for @addFingerprintTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Fingerprint'**
+  String get addFingerprintTitle;
+
   /// No description provided for @create.
   ///
   /// In en, this message translates to:
