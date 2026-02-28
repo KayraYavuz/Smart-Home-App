@@ -172,12 +172,8 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
           "endTime": endMinutes,
         }).toList();
         
-        ttCycleList = _selectedDays.map((day) {
-          final model = TTCycleModel();
-          model.weekDay = day;
-          model.startTime = startMinutes;
-          model.endTime = endMinutes;
-          return model;
+        ttCycleList = _selectedDays.map<TTCycleModel>((day) {
+          return TTCycleModel(day, startMinutes, endMinutes);
         }).toList();
       }
 
@@ -261,6 +257,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
           if (!completer.isCompleted) completer.completeError(error);
         },
       );
+      }
 
       final cardNumber = await completer.future;
       if (!mounted) return;
