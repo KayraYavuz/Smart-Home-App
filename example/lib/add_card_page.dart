@@ -201,6 +201,11 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         });
       } else {
         NfcManager.instance.startSession(
+        pollingOptions: {
+          NfcPollingOption.iso14443,
+          NfcPollingOption.iso15693,
+          NfcPollingOption.iso18092,
+        },
         alertMessage: 'Hold your IC card near the phone',
         onDiscovered: (NfcTag tag) async {
           try {
@@ -235,8 +240,6 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
               }
             }
 
-            await NfcManager.instance.stopSession();
-
             if (identifier != null && identifier.isNotEmpty) {
               final cardNumber = identifier
                   .map((b) => b.toRadixString(16).padLeft(2, '0'))
@@ -248,13 +251,22 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
                 completer.completeError(Exception('Could not read card number'));
               }
             }
+            
+            await NfcManager.instance.stopSession();
           } catch (e) {
             await NfcManager.instance.stopSession(errorMessage: e.toString());
             if (!completer.isCompleted) completer.completeError(e);
           }
         },
         onError: (error) async {
-          if (!completer.isCompleted) completer.completeError(error);
+          if (!completer.isCompleted) {
+            String msg = error.toString();
+            try {
+              dynamic err = error;
+              msg = '${err.type}: ${err.message}';
+            } catch (_) {}
+            completer.completeError(Exception(msg));
+          }
         },
       );
       }
