@@ -796,8 +796,68 @@
   "passcodeHint": "Passcode (4-9 digits)",
   "enterPasscode": "Please enter a passcode",
   "passcodeLengthError": "Passcode must be between 4 and 9 digits",
-  "validityStart": "Validity Start",
-  "validityEnd": "Validity End",
+  "wifiOrPasswordEmpty": "Wi-Fi network or password cannot be empty",
+  "enterGatewayNameAlt": "Please enter a gateway name",
+  "userInfoNotFoundReLogin": "User information not found. Please log in again.",
+  "gatewayConnectionTimeout": "Connection timed out. Please reset the gateway and check the network.",
+  "gatewayAddedSuccessServer": "Gateway successfully added and saved to the server!",
+  "gatewayAddedSuccessTimeoutServer": "Gateway successfully added (Reached the server despite the timeout)!",
+  "gatewayAddedSuccessServerFail": "Gateway added to device but could not be saved to server: {error}",
+  "@gatewayAddedSuccessServerFail": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "gatewayError": "Error: {errorCode} - {errorMsg}",
+  "@gatewayError": {
+    "placeholders": {
+      "errorCode": { "type": "String" },
+      "errorMsg": { "type": "String" }
+    }
+  },
+  "gatewayRestartAndReconnect": "Please restart the gateway and connect again.",
+  "gatewayCheckWifiAndPermissions": "Please check Wi-Fi and location/bluetooth permissions.",
+  "addGatewayTitleAlt": "Add Gateway",
+  "gatewayInitializingWait": "Initializing gateway, please wait...",
+  "gatewayNameHintAlt": "Gateway Name (e.g., Home)",
+  "selectedWifiNetwork": "Selected Wi-Fi Network",
+  "enterWifiPasswordHint": "Enter Wi-Fi Password",
+  "connectAndAdd": "Connect and Add",
+  "nameRequired": "Please enter a name.",
+  "invalidPasscodeLengthAlt": "Enter a valid passcode (4-9 digits). Or leave it blank for a randomly generated one.",
+  "cannotReachLockBluetooth": "Cannot reach the lock. Make sure Bluetooth is on and you are nearby. Error: {error}",
+  "@cannotReachLockBluetooth": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "passcodeCreatedTitleAlt": "Passcode Created!",
+  "yourLockPasscode": "Your lock passcode:",
+  "passcodeReadyToUse": "This passcode is ready to use. To open the door, simply type the passcode and add # (or lock icon) at the end.",
+  "errorGeneric": "Error: {error}",
+  "@errorGeneric": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "infoPermanent": "Permanent passcodes are valid indefinitely until deleted from the lock. If left blank, the system will generate one automatically.",
+  "infoTimed": "Timed passcodes are valid within the specified date range. If left blank, the system will generate one automatically.",
+  "infoOneTime": "One-time passcodes are valid for 6 hours from the start time and are deleted after use. They are generated automatically by the system.",
+  "infoRecurring": "Recurring passcodes are only active on the specified days. They are generated automatically by the system.",
+  "recurringMode": "Recurring Mode",
+  "everyDay": "Every Day",
+  "workdays": "Workdays (Mon-Fri)",
+  "onlyMonday": "Only Monday",
+  "onlyTuesday": "Only Tuesday",
+  "onlyWednesday": "Only Wednesday",
+  "onlyThursday": "Only Thursday",
+  "onlyFriday": "Only Friday",
+  "onlySaturday": "Only Saturday",
+  "onlySunday": "Only Sunday",
+  "passcodeNameHint": "Enter passcode name...",
+  "passcodeOptional": "Passcode (Optional)",
+  "passcodeLengthHint": "4-9 digits or blank",
+  "createButtonAlt": "Create",
   "lockReadyScanCard": "Lock is ready! Please SCAN your IC card on the lock's keypad.",
   "nfcNotAvailable": "NFC is not available on this device",
   "cardAddedSuccessfully": "✅ Card added successfully!",
