@@ -201,11 +201,6 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         });
       } else {
         NfcManager.instance.startSession(
-        pollingOptions: {
-          NfcPollingOption.iso14443,
-          NfcPollingOption.iso15693,
-          NfcPollingOption.iso18092,
-        },
         alertMessage: 'Hold your IC card near the phone',
         onDiscovered: (NfcTag tag) async {
           try {
@@ -248,7 +243,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
               if (!completer.isCompleted) completer.complete(cardNumber);
             } else {
               if (!completer.isCompleted) {
-                completer.completeError(Exception('Could not read card number'));
+                completer.completeError(Exception('Could not read card number: ${tag.data}'));
               }
             }
             
@@ -291,12 +286,13 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
           cyclicConfig: cyclicConfig,
         );
       } else {
-        await apiService.addICCardViaGateway(
+        await apiService.addIdentityCard(
           lockId: widget.lockId,
           cardNumber: cardNumber,
           startDate: startDateMs,
           endDate: endDateMs,
           cardName: cardName,
+          addType: 2, // APP Gateway
           cyclicConfig: cyclicConfig,
         );
       }
@@ -404,7 +400,7 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
 
   Widget _buildScanningState(AppLocalizations l10n) {
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -671,71 +667,78 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildRow(l10n?.startDate ?? 'Start Date', DateFormat('yyyy-MM-dd').format(_startDate),
-              onTap: () => _pickDate(true)),
-          _buildDivider(),
-          _buildRow(l10n?.endDate ?? 'End Date', DateFormat('yyyy-MM-dd').format(_endDate),
-              onTap: () => _pickDate(false)),
-          _buildDivider(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildRow(l10n?.startDate ?? 'Start Date', DateFormat('yyyy-MM-dd').format(_startDate),
+                      onTap: () => _pickDate(true)),
+                  _buildDivider(),
+                  _buildRow(l10n?.endDate ?? 'End Date', DateFormat('yyyy-MM-dd').format(_endDate),
+                      onTap: () => _pickDate(false)),
+                  _buildDivider(),
 
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-            child: const Text('Cycle on', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(7, (index) {
-                final dayValue = _dayValues[index];
-                final isSelected = _selectedDays.contains(dayValue);
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (isSelected) {
-                        _selectedDays.remove(dayValue);
-                      } else {
-                        _selectedDays.add(dayValue);
-                      }
-                    });
-                  },
-                  child: Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isSelected ? const Color(0xFF4A90FF) : Colors.transparent,
-                      border: Border.all(
-                        color: isSelected ? const Color(0xFF4A90FF) : Colors.grey[600]!,
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        _dayLabels[index],
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.grey[400],
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+                    child: const Text('Cycle on', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: List.generate(7, (index) {
+                        final dayValue = _dayValues[index];
+                        final isSelected = _selectedDays.contains(dayValue);
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (isSelected) {
+                                _selectedDays.remove(dayValue);
+                              } else {
+                                _selectedDays.add(dayValue);
+                              }
+                            });
+                          },
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isSelected ? const Color(0xFF4A90FF) : Colors.transparent,
+                              border: Border.all(
+                                color: isSelected ? const Color(0xFF4A90FF) : Colors.grey[600]!,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                _dayLabels[index],
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : Colors.grey[400],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
                     ),
                   ),
-                );
-              }),
+
+                  const SizedBox(height: 20),
+                  _buildDivider(),
+                  _buildRow(l10n?.startTime ?? 'Start Time', _startTime.format(context),
+                      onTap: () => _pickTime(true)),
+                  _buildDivider(),
+                  _buildRow(l10n?.endTime ?? 'End Time', _endTime.format(context),
+                      onTap: () => _pickTime(false)),
+                  _buildDivider(),
+                ],
+              ),
             ),
           ),
-
-          const SizedBox(height: 20),
-          _buildDivider(),
-          _buildRow(l10n?.startTime ?? 'Start Time', _startTime.format(context),
-              onTap: () => _pickTime(true)),
-          _buildDivider(),
-          _buildRow(l10n?.endTime ?? 'End Time', _endTime.format(context),
-              onTap: () => _pickTime(false)),
-          _buildDivider(),
-
-          const Spacer(),
 
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),

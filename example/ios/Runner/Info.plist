@@ -51,6 +51,15 @@
 	<string>Bluetooth taraması için konum izni gereklidir.</string>
 	<key>NFCReaderUsageDescription</key>
 	<string>IC kart numarasını okumak için NFC gereklidir.</string>
+	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+	<array>
+		<string>D2760000850100</string>
+		<string>D2760000850101</string>
+	</array>
+	<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
+	<array>
+		<string>12FC</string>
+	</array>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_dartobservatory._tcp</string>

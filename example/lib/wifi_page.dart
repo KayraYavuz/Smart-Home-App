@@ -24,6 +24,11 @@ class _WifiPageState extends State<WifiPage> {
   }
 
   Future<void> _checkLocationAndScan() async {
+    if (Theme.of(context).platform == TargetPlatform.iOS) {
+      _getNearbyWifi();
+      return;
+    }
+
     final status = await Permission.locationWhenInUse.request();
     if (status.isGranted) {
       _getNearbyWifi();

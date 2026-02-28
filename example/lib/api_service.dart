@@ -2981,11 +2981,18 @@ class ApiService {
         'accessToken': _accessToken!,
         'lockId': lockId,
         'cardNumber': cn,
-        'startDate': effectiveStartDate.toString(),
-        'endDate': effectiveEndDate.toString(),
-        'addType': '2',
-        'date': _getApiTime(),
       };
+
+      if (effectiveStartDate > 0) {
+        body['startDate'] = effectiveStartDate.toString();
+      }
+      if (effectiveEndDate > 0) {
+        body['endDate'] = effectiveEndDate.toString();
+      }
+
+      body['addType'] = '2'; // Gateway = 2
+      body['date'] = _getApiTime();
+
       if (cardName != null && cardName.isNotEmpty) {
         body['cardName'] = cardName;
       }
@@ -3003,13 +3010,17 @@ class ApiService {
 
     // Helper to call a single endpoint
     Future<Map<String, dynamic>?> tryEndpoint(String fullUrl, Map<String, String> body) async {
+      debugPrint('📡 Trying endpoint: $fullUrl');
+      debugPrint('📝 Body: $body');
       try {
         final response = await http.post(
           Uri.parse(fullUrl),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: body,
         );
-        if (response.body.trimLeft().startsWith('<')) return null; // HTML error
+        debugPrint('📨 Response [${response.statusCode}]: ${response.body}');
+        
+        if (response.statusCode != 200 || response.body.trimLeft().startsWith('<')) return null; // HTML error
 
         final data = json.decode(response.body);
         if (data is Map<String, dynamic>) {
@@ -3017,7 +3028,7 @@ class ApiService {
         }
         return null;
       } catch (e) {
-        debugPrint('Error trying endpoint $fullUrl: $e');
+        debugPrint('❌ Error trying endpoint $fullUrl: $e');
         return null;
       }
     }
