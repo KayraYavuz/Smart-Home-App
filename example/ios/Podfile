@@ -51,6 +51,12 @@ post_install do |installer|
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
       config.build_settings['DEVELOPMENT_TEAM'] = 'U8CD5WMJ8J'
       
+      # Permission Handler for Location
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'PERMISSION_LOCATION=1',
+      ]
+
       # RecaptchaInterop imza sorunu için
       if target.name == 'RecaptchaInterop'
         config.build_settings['CODE_SIGNING_REQUIRED'] = 'YES'
