@@ -127,8 +127,8 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
 
     // Check NFC availability
     final isAvailable = await NfcManager.instance.isAvailable();
+    if (!mounted) return;
     if (!isAvailable) {
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)?.nfcNotAvailable ?? 'NFC is not available on this device'), backgroundColor: Colors.red),
       );

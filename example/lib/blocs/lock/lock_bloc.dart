@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/blocs/lock/lock_event.dart';
@@ -25,7 +26,7 @@ class LockBloc extends Bloc<LockEvent, AppLockState> {
         gateways = gatewayResponse;
       } catch (e) {
         // Log the error but don't fail the whole fetch
-        print('Error fetching gateways: $e');
+        debugPrint('Error fetching gateways: $e');
       }
 
       emit(LockLoaded(locks, gateways: gateways));

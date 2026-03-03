@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 import 'api_service.dart';
-import 'config.dart';
 
 class GatewayPage extends StatefulWidget {
   const GatewayPage({super.key, required this.type, this.wifi, required this.mac});
@@ -96,19 +95,19 @@ class _GatewayPageState extends State<GatewayPage> {
     debugPrint("Gateway INIT START: paramMap=$paramMap");
     
     // Güvenlik amaçlı 60 saniyelik zaman aşımı (Native SDK takılırsa diye)
-    bool _isCallbackFired = false;
+    bool isCallbackFired = false;
     Future.delayed(const Duration(seconds: 60), () {
-      if (mounted && _isLoading && !_isCallbackFired) {
+      if (mounted && _isLoading && !isCallbackFired) {
         debugPrint("Gateway INIT TIMEOUT");
-        _isCallbackFired = true;
+        isCallbackFired = true;
         setState(() => _isLoading = false);
         _showSnackBar(l10n?.gatewayConnectionTimeout ?? 'Bağlantı zaman aşımına uğradı. Lütfen ağ geçidini sıfırlayıp ağı kontrol edin.', isError: true);
       }
     });
 
     TTGateway.init(paramMap, (map) async {
-      if (_isCallbackFired) return;
-      _isCallbackFired = true;
+      if (isCallbackFired) return;
+      isCallbackFired = true;
       debugPrint("Gateway add SDK result: $map");
       
       try {
@@ -158,8 +157,8 @@ class _GatewayPageState extends State<GatewayPage> {
         }
       }
     }, (errorCode, errorMsg) {
-      if (_isCallbackFired) return;
-      _isCallbackFired = true;
+      if (isCallbackFired) return;
+      isCallbackFired = true;
       if (mounted) {
         debugPrint("Gateway INIT ERROR: errorCode=$errorCode, msg=$errorMsg");
         setState(() => _isLoading = false);

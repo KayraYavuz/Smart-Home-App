@@ -235,16 +235,16 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                           color: Colors.blue.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Row(
+                        child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.router,
                               color: Colors.blue,
                               size: 14,
                             ),
-                            const SizedBox(width: 2),
-                            const Text(
+                            SizedBox(width: 2),
+                            Text(
                               'Gateway',
                               style: TextStyle(
                                 color: Colors.blue,

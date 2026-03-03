@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:yavuz_lock/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:ttlock_flutter/ttlock.dart';
@@ -73,7 +72,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
     if (!mounted) return;
 
     final TimeOfDay? pickedTime = await showTimePicker(
-      context: context, 
+      context: context, // ignore: use_build_context_synchronously
       initialTime: TimeOfDay.fromDateTime(isStart ? _startDate : _endDate),
       builder: (context, child) {
         return Theme(
@@ -132,7 +131,6 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
       // Get date params
       int startDateMs;
       int endDateMs;
-      List<Map<String, dynamic>>? cyclicConfig;
 
       if (_currentTabIndex == 1) {
         // Permanent
@@ -146,13 +144,6 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
         // Recurring
         startDateMs = _recurringStartDate.millisecondsSinceEpoch;
         endDateMs = _recurringEndDate.millisecondsSinceEpoch;
-        final startMinutes = _recurringStartTime.hour * 60 + _recurringStartTime.minute;
-        final endMinutes = _recurringEndTime.hour * 60 + _recurringEndTime.minute;
-        cyclicConfig = _selectedDays.map((day) => {
-          "weekDay": day,
-          "startTime": startMinutes,
-          "endTime": endMinutes,
-        }).toList();
       }
 
       TTLock.addFingerprint(null, startDateMs, endDateMs, widget.lockData,
@@ -172,8 +163,6 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
           });
           
           try {
-            final apiService = Provider.of<ApiService>(context, listen: false);
-            
             // Add fingerprint via Gateway/Cloud logic if available, or just push to BLoC
             context.read<FingerprintBloc>().add(
               AddFingerprint(
@@ -454,7 +443,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
             elevation: 0,
           ),
           child: Text(
-            l10n.next ?? 'Next',
+            l10n.next,
             style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ),
