@@ -782,6 +782,18 @@ class AppLocalizationsTr extends AppLocalizations {
   String get deviceCameraSurveillance => 'Gözetleme Kamerası';
 
   @override
+  String get lockCylinder => 'Kilit Silindiri';
+
+  @override
+  String get parkingLock => 'Park Kilidi';
+
+  @override
+  String get cabinetLock => 'Dolap Kilidi';
+
+  @override
+  String get bicycleLock => 'Bisiklet Kilidi';
+
+  @override
   String get scanBluetoothLock => 'Bluetooth Kilitlerini Tara';
 
   @override

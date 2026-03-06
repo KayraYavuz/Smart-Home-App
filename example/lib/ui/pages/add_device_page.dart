@@ -198,19 +198,19 @@ class _AddDevicePageState extends State<AddDevicePage> {
       _buildDeviceButton(context, l10n.deviceSafe, Icons.security, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Kilit silindiri', Icons.vpn_key, () { // TODO: Add l10n
+      _buildDeviceButton(context, l10n.lockCylinder, Icons.vpn_key, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Park kilidi', Icons.local_parking, () { // TODO: Add l10n
+      _buildDeviceButton(context, l10n.parkingLock, Icons.local_parking, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Dolap Kilidi', Icons.inventory_2, () { // TODO: Add l10n
+      _buildDeviceButton(context, l10n.cabinetLock, Icons.inventory_2, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Bisiklet kilidi', Icons.pedal_bike, () { // TODO: Add l10n
+      _buildDeviceButton(context, l10n.bicycleLock, Icons.pedal_bike, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, 'Uzaktan kumanda', Icons.settings_remote, () { // TODO: Add l10n
+      _buildDeviceButton(context, l10n.remoteControl, Icons.settings_remote, () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
     ];

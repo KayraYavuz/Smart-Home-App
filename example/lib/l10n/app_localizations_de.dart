@@ -785,6 +785,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deviceCameraSurveillance => 'Überwachungskamera';
 
   @override
+  String get lockCylinder => 'Lock Cylinder';
+
+  @override
+  String get parkingLock => 'Parking Lock';
+
+  @override
+  String get cabinetLock => 'Cabinet Lock';
+
+  @override
+  String get bicycleLock => 'Bicycle Lock';
+
+  @override
   String get scanBluetoothLock => 'Bluetooth-Schlösser scannen';
 
   @override

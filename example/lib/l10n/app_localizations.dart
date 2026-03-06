@@ -1558,6 +1558,30 @@ abstract class AppLocalizations {
   /// **'Surveillance Camera'**
   String get deviceCameraSurveillance;
 
+  /// No description provided for @lockCylinder.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Cylinder'**
+  String get lockCylinder;
+
+  /// No description provided for @parkingLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Parking Lock'**
+  String get parkingLock;
+
+  /// No description provided for @cabinetLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Cabinet Lock'**
+  String get cabinetLock;
+
+  /// No description provided for @bicycleLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Bicycle Lock'**
+  String get bicycleLock;
+
   /// No description provided for @scanBluetoothLock.
   ///
   /// In en, this message translates to:
