@@ -3159,11 +3159,35 @@ class ApiService {
     List<Map<String, dynamic>>? cyclicConfig,
   }) async {
     final url = Uri.parse('$_baseUrl$endpoint');
+
+    // TTLock API requires cardNumber as a decimal integer string (e.g. "1784433321").
+    // Phone NFC reads card UID bytes as a hex string (e.g. "6A536AA9").
+    // Convert hex → decimal so the server accepts the card number.
+    String normalizedCardNumber = cardNumber.trim().toUpperCase().replaceAll(' ', '');
+    try {
+      final parsed = int.parse(normalizedCardNumber, radix: 16);
+      normalizedCardNumber = parsed.toString();
+      debugPrint('🔄 Kart numarası dönüştürüldü: $cardNumber → $normalizedCardNumber');
+    } catch (_) {
+      // Not valid hex (e.g. already decimal or SDK-provided), use as-is
+      debugPrint('ℹ️ Kart numarası hex değil, olduğu gibi kullanılıyor: $cardNumber');
+    }
+
+    // For permanent cards (startDate=0, endDate=0), substitute real timestamps.
+    // The TTLock API rejects 0/0 dates with an internal server error.
+    int effectiveStartDate = startDate;
+    int effectiveEndDate = endDate;
+    if (startDate == 0 && endDate == 0) {
+      effectiveStartDate = DateTime.now().millisecondsSinceEpoch;
+      effectiveEndDate = DateTime(2099, 12, 31).millisecondsSinceEpoch;
+      debugPrint('📅 Kalıcı kart: tarihler ayarlandı $effectiveStartDate → $effectiveEndDate');
+    }
+
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
-      'cardNumber': cardNumber,
+      'cardNumber': normalizedCardNumber,
       'addType': addType.toString(),
       'date': _getApiTime(),
     };
@@ -3172,13 +3196,8 @@ class ApiService {
       body['cardName'] = cardName;
     }
 
-    // Only include startDate/endDate if non-zero (omit for permanent cards)
-    if (startDate > 0) {
-      body['startDate'] = startDate.toString();
-    }
-    if (endDate > 0) {
-      body['endDate'] = endDate.toString();
-    }
+    body['startDate'] = effectiveStartDate.toString();
+    body['endDate'] = effectiveEndDate.toString();
 
     if (cyclicConfig != null) {
       body['cyclicConfig'] = jsonEncode(cyclicConfig);
