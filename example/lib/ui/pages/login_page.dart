@@ -394,7 +394,7 @@ class _LoginPageState extends State<LoginPage> {
                                 obscureText: _obscurePassword,
                                 style: const TextStyle(color: Colors.white),
                                 validator: (value) =>
-                                    value!.isEmpty ? l10n.codeRequired : null, // codeRequired yerine passwordRequired olmalı ama idare eder
+                                    value!.isEmpty ? l10n.passwordRequired : null,
                               ),
                               const SizedBox(height: 12),
                               // Remember Me checkbox and Forgot Password

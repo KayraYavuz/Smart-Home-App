@@ -153,6 +153,7 @@
   "passwordResetSuccess": "Şifreniz başarıyla sıfırlandı!",
   "createAccountTitle": "Hesap Oluştur",
   "usernameRequired": "Kullanıcı adı gerekli",
+  "passwordRequired": "Şifre gerekli",
   "codeRequired": "Kodu girin",
   "passwordMismatch": "Şifreler eşleşmiyor",
   "registerBtn": "Kayıt Ol",

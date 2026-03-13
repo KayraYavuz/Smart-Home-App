@@ -480,6 +480,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get usernameRequired => 'Kullanıcı adı gerekli';
 
   @override
+  String get passwordRequired => 'Şifre gerekli';
+
+  @override
   String get codeRequired => 'Kodu girin';
 
   @override

@@ -47,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
       // but the user wants "transparency". 
       // Plan: I'll hardcode it here to match pubspec for simplicity and speed, as I am controlling the version bump.
       setState(() {
-        _version = 'v1.0.51 (204)'; 
+        _version = 'v1.0.54 (207)'; 
       });
 
       String loadedEmail = prefs.getString('saved_email') ?? 'user@example.com';

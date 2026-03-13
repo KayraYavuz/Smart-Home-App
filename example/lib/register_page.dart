@@ -22,7 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
   
   bool _isLoading = false;
   bool _obscurePassword = true;
-  final bool _obscureConfirmPassword = true;
+  bool _obscureConfirmPassword = true;
   bool _verificationEmailSent = false;
   bool _isAgreed = false;
   
@@ -291,17 +291,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscurePassword,
                         validator: (value) {
-                          if (value == null || value.isEmpty) return l10n.newPassword; // Reusing 'New Password' as 'Password required' label isn't explicit, but commonly used or could add a specific required key. Better to use a generic or existing empty check if available, or just keep it simple. Actually l10n.usernameRequired is for username. Let's look at existing keys. 'passwordMinLength' etc are new.
-                          // Wait, looking at previous code it was "Şifre gerekli". I don't have a 'passwordRequired' key. 
-                          // I'll stick to logic: if empty, show something standard or reuse a key?
-                          // Let's check if there is a 'required' key. There is 'usernameRequired'.
-                          // I will use 'l10n.newPassword' as a placeholder or better: 
-                          // actually, let's just check length directly. If empty, length is 0 < 8, so it hits min length error.
-                          // But nicer to have "required". 
-                          // I'll just use "En az 8 karakter" logic for empty too or create a new key? 
-                          // I'll leave the first check as "En az 8 karakter" (l10n.passwordMinLength) effectively cover empty? 
-                          // No, typically field required is separate. 
-                          // I will use l10n.passwordMinLength for empty case too for now as it's technically true (0 < 8).
+                          if (value == null || value.isEmpty) return l10n.passwordRequired;
                           
                           if (value.length < 8) return l10n.passwordMinLength;
                           if (!RegExp(r'[0-9]').hasMatch(value)) return l10n.passwordDigitRequired;
@@ -314,7 +304,14 @@ class _RegisterPageState extends State<RegisterPage> {
                       TextFormField(
                         controller: _confirmPasswordController,
                         enabled: !_verificationEmailSent,
-                        decoration: _buildInputDecoration(l10n.confirmPassword, prefixIcon: Icons.lock_clock),
+                        decoration: _buildInputDecoration(
+                          l10n.confirmPassword,
+                          prefixIcon: Icons.lock_clock,
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey[400]),
+                            onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                          ),
+                        ),
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscureConfirmPassword,
                         validator: (value) {

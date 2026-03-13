@@ -482,6 +482,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get usernameRequired => 'Benutzername erforderlich';
 
   @override
+  String get passwordRequired => 'Password required';
+
+  @override
   String get codeRequired => 'Code eingeben';
 
   @override

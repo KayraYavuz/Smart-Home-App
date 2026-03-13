@@ -478,6 +478,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usernameRequired => 'Username required';
 
   @override
+  String get passwordRequired => 'Password required';
+
+  @override
   String get codeRequired => 'Enter code';
 
   @override

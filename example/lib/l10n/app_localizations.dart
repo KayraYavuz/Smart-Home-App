@@ -1018,6 +1018,12 @@ abstract class AppLocalizations {
   /// **'Username required'**
   String get usernameRequired;
 
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password required'**
+  String get passwordRequired;
+
   /// No description provided for @codeRequired.
   ///
   /// In en, this message translates to:

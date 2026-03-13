@@ -207,6 +207,7 @@
   "passwordResetSuccess": "Password reset successfully!",
   "createAccountTitle": "Create Account",
   "usernameRequired": "Username required",
+  "passwordRequired": "Password required",
   "codeRequired": "Enter code",
   "passwordMismatch": "Passwords do not match",
   "registerBtn": "Register",
