@@ -125,7 +125,7 @@
   "developerPortalInfo": "Daha fazla teknik bilgi ve yetkilendirme anahtarları için Geliştirici Portalını ziyaret edin.",
   "visitPortal": "Geliştirici Portalını Ziyaret Et",
   "viewDocumentation": "Dökümantasyonu Görüntüle",
-  "noLocksFound": "API'den kilit bulunamadı.",
+  "noLocksFound": "Hiç kilit bulunamadı",
   "allLocks": "Yavuz Lock",
   "refreshLocks": "Kilitleri Yenile",
   "gateways": "Gatewayler",
@@ -212,7 +212,7 @@
   "rememberMe": "Beni Hatırla",
   "password": "Şifre",
   "userAgreement": "Kullanıcı Sözleşmesi",
-  "privacyPolicy": "Gizlilik Politikası",
+  "privacyPolicy": "Gizlilik politikası",
   "readAndApprove": "Okudum ve onaylıyorum",
   "and": "ve",
   "acceptAndLogin": "Onayla ve Giriş Yap",
@@ -262,10 +262,10 @@
   },
   "adminManagement": "Yetkili Yönetici",
   "userManagement": "Kullanıcı Yönetimi",
-  "lockUsers": "Kullanıcıları Kilitle",
+  "lockUsers": "Kullanıcıları kilitle",
   "lockUsersSubtitle": "Kilit erişimini yönet ve kullanıcıları engelle",
   "transferLock": "Transfer Kilidi",
-  "transferLockSubtitle": "Kilit sahipliğini başka bir hesaba aktar",
+  "transferLockSubtitle": "Başka bir kullanıcıya devret",
   "transferGateway": "Aktarım Ağ Geçidi",
   "transferGatewaySubtitle": "Ağ geçidi sahipliğini başka bir hesaba aktar",
   "dataManagement": "Veri Yönetimi",
@@ -287,7 +287,7 @@
       }
     }
   },
-  "editingGroup": "{groupName} grubu düzenleniyor",
+  "editingGroup": "'{groupName}' grubu düzenleniyor",
   "@editingGroup": {
     "placeholders": {
       "groupName": {
@@ -312,8 +312,12 @@
   "lockRecordsTitle": "Kilit Kayıtları ({start} - {end})",
   "@lockRecordsTitle": {
     "placeholders": {
-      "start": { "type": "String" },
-      "end": { "type": "String" }
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
     }
   },
   "userAccessManagement": "Kullanıcı & Erişim Yönetimi",
@@ -331,13 +335,17 @@
   "errorWithMsg": "Hata: {error}",
   "@errorWithMsg": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "lockRecordsWithName": "{lockName} Kayıtları",
   "@lockRecordsWithName": {
     "placeholders": {
-      "lockName": { "type": "String" }
+      "lockName": {
+        "type": "String"
+      }
     }
   },
   "lockRecords": "Kilit Kayıtları",
@@ -351,19 +359,25 @@
   "uploadError": "Yükleme hatası: {error}",
   "@uploadError": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "readError": "Kilit okuma hatası: {error}",
   "@readError": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "unexpectedError": "Beklenmeyen hata: {error}",
   "@unexpectedError": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "shareLockTitle": "{lockName} Kilidini Paylaş",
@@ -383,44 +397,44 @@
   "selectStartEndDate": "Lütfen başlangıç ve bitiş tarihlerini seçin",
   "lockSharedSuccess": "{lockName} kilidi başarıyla paylaşıldı",
   "sharingError": "Paylaşım hatası",
-  "tabTimed": "Zamanlanmış",
-  "tabOneTime": "Bir kere",
+  "tabTimed": "Süreli",
+  "tabOneTime": "Tek Seferlik",
   "tabPermanent": "Kalıcı",
   "tabRecurring": "Yinelenen",
   "enterReceiver": "Lütfen alıcı giriniz",
-  "keySentToReceiver": "Elektronik anahtar alıcıya iletildi.",
+  "keySentToReceiver": "Anahtar alıcıya gönderildi.",
   "sentSuccessfully": "Başarıyla Gönderildi",
-  "shareableLink": "Paylaşılabilir Link:",
+  "shareableLink": "Paylaşılabilir Link",
   "copy": "Kopyala",
-  "linkCopied": "Link kopyalandı",
-  "sendViaEmail": "E-posta ile gönder",
-  "sendViaSMS": "SMS ile gönder",
+  "linkCopied": "Link panoya kopyalandı",
+  "sendViaEmail": "E-posta ile Gönder",
+  "sendViaSMS": "SMS ile Gönder",
   "sendAppDownloadLink": "Uygulama İndirme Linki Gönder",
   "receiver": "Alıcı",
-  "receiverHint": "Telefon numarası / E-posta",
+  "receiverHint": "E-posta veya Telefon",
   "nameLabel": "İsim",
-  "enterHere": "Lütfen buraya giriniz",
+  "enterHere": "Buraya girin",
   "validityPeriod": "Geçerlilik süresi",
   "configured": "Ayarlı",
   "set": "Ayarla",
-  "allowRemoteUnlock": "Uzaktan kilit açmaya izin ver",
-  "permanentKeyNote": "Alıcılar bu uygulama ile kilidi süresiz olarak açabilir.",
-  "timedKeyNote": "Davet edilenler, geçerlilik süresi içinde Bluetooth üzerinden veya uzaktan (Gateway varsa) kilidi açabilirler.",
+  "allowRemoteUnlock": "Uzaktan Açmaya İzin Ver",
+  "permanentKeyNote": "Kalıcı anahtarlar silinmediği sürece geçerli kalır.",
+  "timedKeyNote": "Süreli anahtarlar sadece belirtilen tarih aralığında geçerlidir.",
   "send": "Gönder",
   "cycle": "Döngü",
   "remoteControls": "Uzaktan Kumandalar",
-  "remoteControl": "Kumanda",
+  "remoteControl": "Uzaktan Kumanda",
   "wirelessKeypads": "Kablosuz Tuş Takımları",
-  "wirelessKeypad": "Tuş Takımı",
+  "wirelessKeypad": "Kablosuz Tuş Takımı",
   "doorSensor": "Kapı Sensörü",
   "sensorNotFound": "Sensör bulunamadı",
-  "qrCodes": "QR Kodları",
+  "qrCodes": "QR Kodlar",
   "qrCode": "QR Kod",
   "qrContent": "QR İçeriği",
   "empty": "Boş",
   "qrCodeCreated": "QR Kod oluşturuldu",
   "wifiLockDetails": "Wi-Fi Kilit Detayları",
-  "isOnline": "Online Durumu",
+  "isOnline": "Çevrimiçi mi",
   "networkName": "Ağ Adı",
   "rssiGrade": "Sinyal Gücü",
   "detailNotFound": "Detay bulunamadı",
@@ -458,7 +472,6 @@
   "autoLockTime": "Otomatik Kilitlenme Süresi",
   "enterTimeInSeconds": "Saniye cinsinden süre girin (0 kapatır)",
   "secondsShortcut": "sn",
-  "set": "Ayarla",
   "workingMode": "Çalışma Modu",
   "continuouslyWorking": "Sürekli Çalışır (Default)",
   "freezingMode": "Donma Modu (Kilitli Kalır)",
@@ -512,12 +525,8 @@
   "urlOpenError": "URL açılamadı: {url}",
   "timePeriod": "Zaman dilimi",
   "add": "Ekle",
-  "save": "Kaydet",
   "transferAction": "Transfer Et",
   "timeSet": "Süre ayarlandı",
-  "delete": "Sil",
-  "transferLockSubtitle": "Başka bir kullanıcıya devret",
-  "off": "Kapalı",
   "tokenNotFound": "Token bulunamadı",
   "adminOnlyLinkWarning": "Not: Link oluşturma yetkisi sadece Kilit Sahibindedir.",
   "sendKeySuccessNoLink": "Anahtar başarıyla gönderildi, ancak yetki kısıtlaması nedeniyle web linki oluşturulamadı.\nAlıcı uygulamayı indirerek anahtarı kullanabilir.",
@@ -526,51 +535,11 @@
   "keyAccessSubject": "Kilit Erişim Anahtarı",
   "emailAppNotFound": "E-posta uygulaması bulunamadı",
   "smsAppNotFound": "SMS uygulaması bulunamadı",
-  "validityPeriod": "Geçerlilik süresi",
-  "configured": "Ayarlı",
   "deleteErrorWithMsg": "Silme hatası: {error}",
   "newQrWithName": "Yeni QR ({name})",
-  "qrCodeCreated": "QR Kod oluşturuldu",
-  "errorLabel": "Hata",
-  "remoteControls": "Uzaktan Kumandalar",
-  "remoteControl": "Uzaktan Kumanda",
-  "wirelessKeypads": "Kablosuz Tuş Takımları",
-  "wirelessKeypad": "Kablosuz Tuş Takımı",
-  "doorSensor": "Kapı Sensörü",
-  "sensorNotFound": "Sensör bulunamadı",
-  "qrCodes": "QR Kodlar",
-  "qrCode": "QR Kod",
-  "qrContent": "QR İçeriği",
-  "empty": "Boş",
-  "ok": "Tamam",
-  "wifiLockDetails": "Wi-Fi Kilit Detayları",
-  "isOnline": "Çevrimiçi mi",
-  "sendKey": "Anahtar Gönder",
-  "tabTimed": "Süreli",
-  "tabOneTime": "Tek Seferlik",
-  "tabPermanent": "Kalıcı",
-  "tabRecurring": "Yinelenen",
-  "receiver": "Alıcı",
-  "receiverHint": "E-posta veya Telefon",
-  "nameLabel": "İsim",
-  "enterHere": "Buraya girin",
-  "startDate": "Başlangıç Tarihi",
-  "endDate": "Bitiş Tarihi",
-  "allowRemoteUnlock": "Uzaktan Açmaya İzin Ver",
   "oneTimeKeyNote": "Tek seferlik anahtarlar ilk kullanımdan veya 1 saatten sonra geçerliliğini yitirir.",
-  "permanentKeyNote": "Kalıcı anahtarlar silinmediği sürece geçerli kalır.",
-  "timedKeyNote": "Süreli anahtarlar sadece belirtilen tarih aralığında geçerlidir.",
-  "send": "Gönder",
   "sendMultipleKeys": "Çoklu Anahtar Gönder",
   "sendMultipleKeysComingSoon": "Çoklu anahtar gönderme özelliği yakında eklenecek",
-  "sentSuccessfully": "Başarıyla Gönderildi",
-  "keySentToReceiver": "Anahtar alıcıya gönderildi.",
-  "shareableLink": "Paylaşılabilir Link",
-  "linkCopied": "Link panoya kopyalandı",
-  "copy": "Kopyala",
-  "sendViaEmail": "E-posta ile Gönder",
-  "sendViaSMS": "SMS ile Gönder",
-  "sendAppDownloadLink": "Uygulama İndirme Linki Gönder",
   "groupListLoadError": "Grup listesi yüklenemedi: {error}",
   "addNewGroup": "Yeni Grup Ekle",
   "groupName": "Grup Adı",
@@ -579,16 +548,11 @@
   "editGroup": "Grubu Düzenle",
   "newGroupName": "Yeni Grup Adı",
   "groupUpdated": "Grup güncellendi",
-  "groupManagement": "Grup Yönetimi",
   "noGroupsCreatedYet": "Henüz grup oluşturulmamış",
   "createGroup": "Grup Oluştur",
-  "unnamedGroup": "İsimsiz Grup",
   "rename": "Adını Değiştir",
   "deleteGroupConfirmation": "{name} grubunu silmek istediğinizden emin misiniz?",
   "groupDeleted": "Grup silindi",
-  "key": "Anahtar",
-  "frozen": "Dondurulmuş",
-  "active": "Aktif",
   "authorizationStatus": "Yetki Durumu",
   "authorizedAdmin": "Yetkili Yönetici (Admin)",
   "normalUser": "Normal Kullanıcı",
@@ -598,7 +562,6 @@
   "revokeAuthority": "Yetkiyi Al",
   "authorize": "Yetkilendir",
   "changePeriod": "Süreyi Değiştir",
-  "edit": "Düzenle",
   "unlockLink": "Kilit Açma Linki",
   "unfreezeSuccess": "Dondurma kaldırıldı",
   "freezeSuccess": "Anahtar donduruldu",
@@ -616,7 +579,6 @@
   "groupManagementTitle": "Grup Yönetimi",
   "groupLocksLoadError": "Grup kilitleri yüklenemedi: {error}",
   "groupLocksTitle": "{groupName} Kilitleri",
-  "noLocksFound": "Hiç kilit bulunamadı",
   "lock": "Kilit",
   "lockListRetrievalError": "Kilit listesi alınamadı: {error}",
   "operationCompletedWithCounts": "İşlem tamamlandı. {success} eklendi, {fail} hata.",
@@ -636,9 +598,6 @@
   "securityQuestionSoon": "Güvenlik sorusu ayarı yakında eklenecek",
   "countryRegion": "Ülke/Bölge",
   "userTerms": "Kullanıcı koşulları",
-  "privacyPolicy": "Gizlilik politikası",
-  "add": "Ekle",
-  "urlOpenError": "URL açılamadı: {url}",
   "editField": "{field} Düzenle",
   "enterNewField": "Yeni {field} girin",
   "fieldUpdatedSuccess": "{field} başarıyla güncellendi",
@@ -676,7 +635,6 @@
   "expired": "Süresi doldu",
   "deleteGroup": "Grubu Sil",
   "updateErrorWithMsg": "Güncelleme hatası: {error}",
-  "errorWithMsg": "Hata: {error}",
   "scanGatewayTitle": "Ağ Geçidi Tara",
   "scanLockTitle": "Kilidi Tara",
   "stopScan": "Taramayı Durdur",
@@ -698,7 +656,6 @@
   "gatewayDetailTitle": "Gateway Detayı",
   "gatewayName": "Gateway Adı",
   "gatewayMac": "Gateway MAC",
-  "networkName": "Ağ Adı",
   "yes": "Evet",
   "no": "Hayır",
   "lockCountLabel": "Kilit Sayısı",
@@ -727,7 +684,7 @@
   "roleAdmin": "Admin",
   "roleNormal": "Normal",
   "roleObserver": "Gözetmen",
-  "accessTokenNotFound": "Erişim anahtarı alınamadı",
+  "accessTokenNotFound": "Access token alınamadı",
   "lockIdNotFound": "Kilit ID bulunamadı.",
   "invalidLockIdFormat": "Geçersiz Kilit ID formatı.",
   "loginToSeePasscodes": "Şifreleri görmek için giriş yapmalısınız.",
@@ -894,16 +851,11 @@
   "clearAllRecordsConfirmWarning": "(Bu işlem geri alınamaz)",
   "ungrouped": "Gruplanmamış",
   "unassignedLocksAndUsers": "Atanmamış kilitler ve kullanıcılar",
-  "lockUsers": "Kullanıcıları kilitle",
   "manageLockAccessAndBlockUsers": "Kilit erişimini yönet ve kullanıcıları engelle",
-  "transferLock": "Transfer Kilidi",
   "transferLockOwnership": "Kilit sahipliğini başka bir hesaba aktar",
-  "transferGateway": "Aktarım Ağ Geçidi",
   "transferGatewayOwnership": "Ağ geçidi sahipliğini başka bir hesaba aktar",
-  "exportData": "Dışa Aktar",
   "exportDataDesc": "Verileri dışa aktar veya yedekle",
   "membersAndLocksCount": "{members} üye, {locks} kilit",
-  "editingGroup": "'{groupName}' grubu düzenleniyor",
   "searchGateway": "Ağ geçidi ara...",
   "noGatewayFound": "Henüz hiç ağ geçidi bulunmuyor",
   "actionsFor": "{name} için işlemler",
@@ -915,7 +867,6 @@
   "networkLabel": "Ağ",
   "statusLabel": "Durum",
   "connectedLocks": "Bağlı Kilitler",
-  "unnamedLock": "İsimsiz Kilit",
   "gatewayDetailError": "Gateway detay hatası: {error}",
   "gatewayManagementDesc": "TTLock Gateway'lerinizi yönetin ve uzaktan kontrol için bağlanın.",
   "noConnectedGatewaysDesc": "Hiç Gateway bulunamadı.\\nTTLock uygulamanızdan Gateway ekleyin.",
@@ -924,7 +875,6 @@
   "connectButton": "Bağlan",
   "closeButton": "Kapat",
   "shareFailed": "Paylaşım başarısız",
-  "accessTokenNotFound": "Access token alınamadı",
   "passwordUpdatedButLoginFailed": "Şifre güncellendi ancak giriş yapılamadı.",
   "loginSuccessButNoToken": "Giriş başarılı ancak anahtar alınamadı.",
   "loginFailedCheckCredentials": "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.",
@@ -950,5 +900,240 @@
   "registrationFailed": "Kayıt başarısız",
   "apiRegistrationUnexpectedResponse": "Kayıt başarısız: Beklenmeyen yanıt formatı",
   "apiResetPasswordFailed": "Şifre sıfırlama başarısız",
-  "iosNfcWarning": "Apple cihazlar standart (Mifare Classic) IC kartlarını okumayı desteklemez. Kart telefonunuzda okunmuyorsa lütfen Bluetooth seçeneğini kullanın."
+  "iosNfcWarning": "Apple cihazlar standart (Mifare Classic) IC kartlarını okumayı desteklemez. Kart telefonunuzda okunmuyorsa lütfen Bluetooth seçeneğini kullanın.",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "@settings": {
+    "description": "Settings menu item"
+  },
+  "@changeLanguage": {
+    "description": "Option to change the app language"
+  },
+  "@unlockDoor": {
+    "description": "Button to unlock the door"
+  },
+  "@lockDoor": {
+    "description": "Button to lock the door"
+  },
+  "@home": {
+    "description": "Home navigation item"
+  },
+  "@devices": {
+    "description": "Devices section"
+  },
+  "@myLocks": {
+    "description": "My locks section title"
+  },
+  "@addDevice": {
+    "description": "Add device button"
+  },
+  "@profile": {
+    "description": "Profile section"
+  },
+  "@logout": {
+    "description": "Logout button"
+  },
+  "@language": {
+    "description": "Language setting label"
+  },
+  "@english": {
+    "description": "English language option"
+  },
+  "@german": {
+    "description": "German language option"
+  },
+  "@turkish": {
+    "description": "Turkish language option"
+  },
+  "@selectLanguage": {
+    "description": "Dialog title for language selection"
+  },
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "@save": {
+    "description": "Save button"
+  },
+  "@lockOpened": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "@lockClosed": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "@lockOpenedApp": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "@lockOpenedKeypad": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "@lockOpenedFingerprint": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "@lockOpenedCard": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "@lowBatteryWarning": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "@lockTamperedWarning": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "@lockStatusUpdated": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "@seamDevicesAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@deviceTypeLabel": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "@shareCancelError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@gatewayAddedSuccessServerFail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@gatewayError": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      },
+      "errorMsg": {
+        "type": "String"
+      }
+    }
+  },
+  "@cannotReachLockBluetooth": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@errorGeneric": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@failedToAddCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@cardSaving": {
+    "placeholders": {
+      "cardNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "@fingerprintInstructionCount": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@fingerprintSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@fingerprintAddFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@fingerprintError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@keyFor": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "@foundDevices": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@connectingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -125,7 +125,7 @@
   "developerPortalInfo": "Besuchen Sie das Entwicklerportal für weitere technische Informationen und Anmeldeinformationen.",
   "visitPortal": "Entwicklerportal besuchen",
   "viewDocumentation": "Dokumentation ansehen",
-  "noLocksFound": "Keine Schlösser von der API gefunden.",
+  "noLocksFound": "Keine Schlösser gefunden",
   "allLocks": "Yavuz Lock",
   "refreshLocks": "Schlösser aktualisieren",
   "gateways": "Gateways",
@@ -187,7 +187,7 @@
   "rememberMe": "Erinnere dich an mich",
   "password": "Passwort",
   "userAgreement": "Nutzungsbedingungen",
-  "privacyPolicy": "Datenschutzrichtlinie",
+  "privacyPolicy": "Datenschutzbestimmungen",
   "readAndApprove": "Ich habe gelesen und zugestimmt",
   "and": "und",
   "acceptAndLogin": "Zustimmen und Anmelden",
@@ -239,7 +239,7 @@
   "lockUsers": "Benutzer sperren",
   "lockUsersSubtitle": "Sperrzugriff verwalten und Benutzer blockieren",
   "transferLock": "Schloss übertragen",
-  "transferLockSubtitle": "Schlossbesitz auf ein anderes Konto übertragen",
+  "transferLockSubtitle": "An einen anderen Benutzer übertragen",
   "transferGateway": "Gateway übertragen",
   "transferGatewaySubtitle": "Gateway-Besitz auf ein anderes Konto übertragen",
   "dataManagement": "Datenverwaltung",
@@ -286,8 +286,12 @@
   "lockRecordsTitle": "Schlossaufzeichnungen ({start} - {end})",
   "@lockRecordsTitle": {
     "placeholders": {
-      "start": { "type": "String" },
-      "end": { "type": "String" }
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
     }
   },
   "userAccessManagement": "Benutzer- & Zugriffsverwaltung",
@@ -305,13 +309,17 @@
   "errorWithMsg": "Fehler: {error}",
   "@errorWithMsg": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "lockRecordsWithName": "{lockName} Aufzeichnungen",
   "@lockRecordsWithName": {
     "placeholders": {
-      "lockName": { "type": "String" }
+      "lockName": {
+        "type": "String"
+      }
     }
   },
   "lockRecords": "Schlossaufzeichnungen",
@@ -325,19 +333,25 @@
   "uploadError": "Upload-Fehler: {error}",
   "@uploadError": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "readError": "Lesefehler: {error}",
   "@readError": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "unexpectedError": "Unerwarteter Fehler: {error}",
   "@unexpectedError": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "shareLockTitle": "{lockName} Schloss teilen",
@@ -357,35 +371,35 @@
   "selectStartEndDate": "Bitte wählen Sie Start- und Enddatum aus",
   "lockSharedSuccess": "{lockName} Schloss erfolgreich geteilt",
   "sharingError": "Fehler beim Teilen",
-  "tabTimed": "Geplant",
+  "tabTimed": "Zeitlich begrenzt",
   "tabOneTime": "Einmalig",
   "tabPermanent": "Dauerhaft",
   "tabRecurring": "Wiederkehrend",
   "enterReceiver": "Bitte Empfänger eingeben",
-  "keySentToReceiver": "Elektronischer Schlüssel an Empfänger gesendet.",
+  "keySentToReceiver": "Der Schlüssel wurde an den Empfänger gesendet.",
   "sentSuccessfully": "Erfolgreich gesendet",
-  "shareableLink": "Teilbarer Link:",
+  "shareableLink": "Teilbarer Link",
   "copy": "Kopieren",
-  "linkCopied": "Link kopiert",
+  "linkCopied": "Link in die Zwischenablage kopiert",
   "sendViaEmail": "Per E-Mail senden",
   "sendViaSMS": "Per SMS senden",
   "sendAppDownloadLink": "App-Download-Link senden",
   "receiver": "Empfänger",
-  "receiverHint": "Telefonnummer / E-Mail",
+  "receiverHint": "E-Mail oder Telefon",
   "nameLabel": "Name",
-  "enterHere": "Bitte hier eingeben",
+  "enterHere": "Hier eingeben",
   "validityPeriod": "Gültigkeitszeitraum",
   "configured": "Konfiguriert",
   "set": "Einstellen",
-  "allowRemoteUnlock": "Fernentriegelung zulassen",
-  "permanentKeyNote": "Empfänger können das Schloss mit dieser App unbegrenzt entriegeln.",
-  "timedKeyNote": "Eingeladene Personen können innerhalb des Gültigkeitszeitraums über Bluetooth oder aus der Ferne (falls Gateway vorhanden) entriegeln.",
+  "allowRemoteUnlock": "Fernentsperrung zulassen",
+  "permanentKeyNote": "Dauerhafte Schlüssel bleiben gültig, bis sie gelöscht werden.",
+  "timedKeyNote": "Zeitlich begrenzte Schlüssel sind nur während des angegebenen Zeitraums gültig.",
   "send": "Senden",
   "cycle": "Zyklus",
   "remoteControls": "Fernbedienungen",
   "remoteControl": "Fernbedienung",
-  "wirelessKeypads": "Kablose Tastaturen",
-  "wirelessKeypad": "Tastatur",
+  "wirelessKeypads": "Kabellose Tastaturen",
+  "wirelessKeypad": "Kabellose Tastatur",
   "doorSensor": "Türsensor",
   "sensorNotFound": "Sensor nicht gefunden",
   "qrCodes": "QR-Codes",
@@ -393,8 +407,8 @@
   "qrContent": "QR-Inhalt",
   "empty": "Leer",
   "qrCodeCreated": "QR-Code erstellt",
-  "wifiLockDetails": "Wi-Fi-Schloss-Details",
-  "isOnline": "Online-Status",
+  "wifiLockDetails": "WLAN-Schlossdetails",
+  "isOnline": "Ist online",
   "networkName": "Netzwerkname",
   "rssiGrade": "Signalstärke",
   "detailNotFound": "Detail nicht gefunden",
@@ -432,7 +446,6 @@
   "autoLockTime": "Automatische Sperrzeit",
   "enterTimeInSeconds": "Zeit in Sekunden eingeben (0 zum Ausschalten)",
   "secondsShortcut": "Sek.",
-  "set": "Einstellen",
   "workingMode": "Arbeitsmodus",
   "continuouslyWorking": "Kontinuierliches Arbeiten (Standard)",
   "freezingMode": "Gefriermodus (Bleibt gesperrt)",
@@ -486,12 +499,8 @@
   "urlOpenError": "URL konnte nicht geöffnet werden: {url}",
   "timePeriod": "Zeitraum",
   "add": "Hinzufügen",
-  "save": "Speichern",
   "transferAction": "Übertragen",
   "timeSet": "Zeit eingestellt",
-  "delete": "Löschen",
-  "transferLockSubtitle": "An einen anderen Benutzer übertragen",
-  "off": "Aus",
   "tokenNotFound": "Token nicht gefunden",
   "adminOnlyLinkWarning": "Hinweis: Nur der Schloss-Admin kann Entsperrlinks generieren.",
   "sendKeySuccessNoLink": "Schlüssel erfolgreich gesendet, aber ein Weblink konnte aufgrund von Berechtigungsbeschränkungen nicht generiert werden.\nDer Empfänger kann den Schlüssel verwenden, indem er die App herunterlädt.",
@@ -500,51 +509,11 @@
   "keyAccessSubject": "Schloss-Zugangsschlüssel",
   "emailAppNotFound": "E-Mail-App nicht gefunden",
   "smsAppNotFound": "SMS-App nicht gefunden",
-  "validityPeriod": "Gültigkeitszeitraum",
-  "configured": "Konfiguriert",
   "deleteErrorWithMsg": "Löschfehler: {error}",
   "newQrWithName": "Neues QR ({name})",
-  "qrCodeCreated": "QR-Code erstellt",
-  "errorLabel": "Fehler",
-  "remoteControls": "Fernbedienungen",
-  "remoteControl": "Fernbedienung",
-  "wirelessKeypads": "Kabellose Tastaturen",
-  "wirelessKeypad": "Kabellose Tastatur",
-  "doorSensor": "Türsensor",
-  "sensorNotFound": "Sensor nicht gefunden",
-  "qrCodes": "QR-Codes",
-  "qrCode": "QR-Code",
-  "qrContent": "QR-Inhalt",
-  "empty": "Leer",
-  "ok": "OK",
-  "wifiLockDetails": "WLAN-Schlossdetails",
-  "isOnline": "Ist online",
-  "sendKey": "Schlüssel senden",
-  "tabTimed": "Zeitlich begrenzt",
-  "tabOneTime": "Einmalig",
-  "tabPermanent": "Dauerhaft",
-  "tabRecurring": "Wiederkehrend",
-  "receiver": "Empfänger",
-  "receiverHint": "E-Mail oder Telefon",
-  "nameLabel": "Name",
-  "enterHere": "Hier eingeben",
-  "startDate": "Startdatum",
-  "endDate": "Enddatum",
-  "allowRemoteUnlock": "Fernentsperrung zulassen",
   "oneTimeKeyNote": "Einmalige Schlüssel laufen nach der ersten Verwendung oder 1 Stunde ab.",
-  "permanentKeyNote": "Dauerhafte Schlüssel bleiben gültig, bis sie gelöscht werden.",
-  "timedKeyNote": "Zeitlich begrenzte Schlüssel sind nur während des angegebenen Zeitraums gültig.",
-  "send": "Senden",
   "sendMultipleKeys": "Mehrere Schlüssel senden",
   "sendMultipleKeysComingSoon": "Funktion zum Senden mehrerer Schlüssel folgt in Kürze",
-  "sentSuccessfully": "Erfolgreich gesendet",
-  "keySentToReceiver": "Der Schlüssel wurde an den Empfänger gesendet.",
-  "shareableLink": "Teilbarer Link",
-  "linkCopied": "Link in die Zwischenablage kopiert",
-  "copy": "Kopieren",
-  "sendViaEmail": "Per E-Mail senden",
-  "sendViaSMS": "Per SMS senden",
-  "sendAppDownloadLink": "App-Download-Link senden",
   "groupListLoadError": "Gruppenliste konnte nicht geladen werden: {error}",
   "addNewGroup": "Neue Gruppe hinzufügen",
   "groupName": "Gruppenname",
@@ -553,16 +522,11 @@
   "editGroup": "Gruppe bearbeiten",
   "newGroupName": "Neuer Gruppenname",
   "groupUpdated": "Gruppe aktualisiert",
-  "groupManagement": "Gruppenverwaltung",
   "noGroupsCreatedYet": "Noch keine Gruppen erstellt",
   "createGroup": "Gruppe erstellen",
-  "unnamedGroup": "Unbenannte Gruppe",
   "rename": "Umbenennen",
   "deleteGroupConfirmation": "Sind Sie sicher, dass Sie die Gruppe {name} löschen möchten?",
   "groupDeleted": "Gruppe gelöscht",
-  "key": "Schlüssel",
-  "frozen": "Eingefroren",
-  "active": "Aktiv",
   "authorizationStatus": "Berechtigungsstatus",
   "authorizedAdmin": "Bevollmächtigter Administrator (Admin)",
   "normalUser": "Normaler Benutzer",
@@ -572,7 +536,6 @@
   "revokeAuthority": "Berechtigung entziehen",
   "authorize": "Bevollmächtigen",
   "changePeriod": "Zeitraum ändern",
-  "edit": "Bearbeiten",
   "unlockLink": "Entsperr-Link",
   "unfreezeSuccess": "Einfrierung aufgehoben",
   "freezeSuccess": "Schlüssel eingefroren",
@@ -590,7 +553,6 @@
   "groupManagementTitle": "Gruppenverwaltung",
   "groupLocksLoadError": "Gruppenschlösser konnten nicht geladen werden: {error}",
   "groupLocksTitle": "{groupName} Schlösser",
-  "noLocksFound": "Keine Schlösser gefunden",
   "lock": "Schloss",
   "lockListRetrievalError": "Schlossliste konnte nicht abgerufen werden: {error}",
   "operationCompletedWithCounts": "Vorgang abgeschlossen. {success} hinzugefügt, {fail} Fehler.",
@@ -610,9 +572,6 @@
   "securityQuestionSoon": "Die Einstellung der Sicherheitsfrage wird in Kürze hinzugefügt",
   "countryRegion": "Land/Region",
   "userTerms": "Nutzungsbedingungen",
-  "privacyPolicy": "Datenschutzbestimmungen",
-  "add": "Hinzufügen",
-  "urlOpenError": "URL konnte nicht geöffnet werden: {url}",
   "editField": "{field} bearbeiten",
   "enterNewField": "Neues {field} eingeben",
   "fieldUpdatedSuccess": "{field} erfolgreich aktualisiert",
@@ -654,7 +613,6 @@
   "gatewayDetailTitle": "Gateway-Details",
   "gatewayName": "Gateway-Name",
   "gatewayMac": "Gateway-MAC",
-  "networkName": "Netzwerkname",
   "yes": "Ja",
   "no": "Nein",
   "lockCountLabel": "Anzahl der Schlösser",
@@ -715,5 +673,467 @@
   "next": "Weiter",
   "cardNumber": "Kartennummer",
   "enterCardNumberOrScan": "Eingeben oder mit NFC scannen",
-  "scanCardWithPhone": "Mit Telefon scannen"
+  "scanCardWithPhone": "Mit Telefon scannen",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "@settings": {
+    "description": "Settings menu item"
+  },
+  "@changeLanguage": {
+    "description": "Option to change the app language"
+  },
+  "@unlockDoor": {
+    "description": "Button to unlock the door"
+  },
+  "@lockDoor": {
+    "description": "Button to lock the door"
+  },
+  "@home": {
+    "description": "Home navigation item"
+  },
+  "@devices": {
+    "description": "Devices section"
+  },
+  "@myLocks": {
+    "description": "My locks section title"
+  },
+  "@addDevice": {
+    "description": "Add device button"
+  },
+  "@profile": {
+    "description": "Profile section"
+  },
+  "@logout": {
+    "description": "Logout button"
+  },
+  "@language": {
+    "description": "Language setting label"
+  },
+  "@english": {
+    "description": "English language option"
+  },
+  "@german": {
+    "description": "German language option"
+  },
+  "@turkish": {
+    "description": "Turkish language option"
+  },
+  "@selectLanguage": {
+    "description": "Dialog title for language selection"
+  },
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "@save": {
+    "description": "Save button"
+  },
+  "passwordRequired": "Password required",
+  "lockOpened": "{lockName} opened",
+  "@lockOpened": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockClosed": "{lockName} locked",
+  "@lockClosed": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockOpenedApp": "{lockName} opened from app",
+  "@lockOpenedApp": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockOpenedKeypad": "{lockName} opened with keypad",
+  "@lockOpenedKeypad": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockOpenedFingerprint": "{lockName} opened with fingerprint",
+  "@lockOpenedFingerprint": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockOpenedCard": "{lockName} opened with card",
+  "@lockOpenedCard": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lowBatteryWarning": "{lockName} low battery",
+  "@lowBatteryWarning": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockTamperedWarning": "{lockName} security warning!",
+  "@lockTamperedWarning": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "lockStatusUpdated": "{lockName} status updated",
+  "@lockStatusUpdated": {
+    "placeholders": {
+      "lockName": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownLock": "Unknown Lock",
+  "defaultLockName": "Yavuz Lock",
+  "defaultSharedLockName": "Shared Yavuz Lock",
+  "seamLockDefaultName": "Seam Lock",
+  "seamDevicesAdded": "{count} Seam devices added",
+  "@seamDevicesAdded": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lockAddedSuccess": "Yavuz Lock successfully added",
+  "deviceTypeLabel": "Type: {type}",
+  "@deviceTypeLabel": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCancelError": "Share cancellation error: {error}",
+  "@shareCancelError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDevicesLoading": "Error loading devices",
+  "errorInternetConnection": "Check your internet connection",
+  "errorServerTimeout": "Server timeout, please try again",
+  "retry": "Retry",
+  "lockCylinder": "Lock Cylinder",
+  "parkingLock": "Parking Lock",
+  "cabinetLock": "Cabinet Lock",
+  "bicycleLock": "Bicycle Lock",
+  "wifiOrPasswordEmpty": "Wi-Fi network or password cannot be empty",
+  "enterGatewayNameAlt": "Please enter a gateway name",
+  "userInfoNotFoundReLogin": "User information not found. Please log in again.",
+  "gatewayConnectionTimeout": "Connection timed out. Please reset the gateway and check the network.",
+  "gatewayAddedSuccessServer": "Gateway successfully added and saved to the server!",
+  "gatewayAddedSuccessTimeoutServer": "Gateway successfully added (Reached the server despite the timeout)!",
+  "gatewayAddedSuccessServerFail": "Gateway added to device but could not be saved to server: {error}",
+  "@gatewayAddedSuccessServerFail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "gatewayError": "Error: {errorCode} - {errorMsg}",
+  "@gatewayError": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      },
+      "errorMsg": {
+        "type": "String"
+      }
+    }
+  },
+  "gatewayRestartAndReconnect": "Please restart the gateway and connect again.",
+  "gatewayCheckWifiAndPermissions": "Please check Wi-Fi and location/bluetooth permissions.",
+  "addGatewayTitleAlt": "Add Gateway",
+  "gatewayInitializingWait": "Initializing gateway, please wait...",
+  "gatewayNameHintAlt": "Gateway Name (e.g., Home)",
+  "selectedWifiNetwork": "Selected Wi-Fi Network",
+  "enterWifiPasswordHint": "Enter Wi-Fi Password",
+  "connectAndAdd": "Connect and Add",
+  "nameRequired": "Please enter a name.",
+  "invalidPasscodeLengthAlt": "Enter a valid passcode (4-9 digits). Or leave it blank for a randomly generated one.",
+  "cannotReachLockBluetooth": "Cannot reach the lock. Make sure Bluetooth is on and you are nearby. Error: {error}",
+  "@cannotReachLockBluetooth": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "passcodeCreatedTitleAlt": "Passcode Created!",
+  "yourLockPasscode": "Your lock passcode:",
+  "passcodeReadyToUse": "This passcode is ready to use. To open the door, simply type the passcode and add # (or lock icon) at the end.",
+  "errorGeneric": "Error: {error}",
+  "@errorGeneric": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "infoPermanent": "Permanent passcodes are valid indefinitely until deleted from the lock. If left blank, the system will generate one automatically.",
+  "infoTimed": "Timed passcodes are valid within the specified date range. If left blank, the system will generate one automatically.",
+  "infoOneTime": "One-time passcodes are valid for 6 hours from the start time and are deleted after use. They are generated automatically by the system.",
+  "infoRecurring": "Recurring passcodes are only active on the specified days. They are generated automatically by the system.",
+  "recurringMode": "Recurring Mode",
+  "everyDay": "Every Day",
+  "workdays": "Workdays (Mon-Fri)",
+  "onlyMonday": "Only Monday",
+  "onlyTuesday": "Only Tuesday",
+  "onlyWednesday": "Only Wednesday",
+  "onlyThursday": "Only Thursday",
+  "onlyFriday": "Only Friday",
+  "onlySaturday": "Only Saturday",
+  "onlySunday": "Only Sunday",
+  "passcodeNameHint": "Enter passcode name...",
+  "passcodeOptional": "Passcode (Optional)",
+  "passcodeLengthHint": "4-9 digits or blank",
+  "createButtonAlt": "Create",
+  "lockReadyScanCard": "Lock is ready! Please SCAN your IC card on the lock's keypad.",
+  "nfcNotAvailable": "NFC is not available on this device",
+  "cardAddedSuccessfully": "✅ Card added successfully!",
+  "failedToAddCard": "Failed: {error}",
+  "@failedToAddCard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cardSaving": "Card: {cardNumber}\nSaving...",
+  "@cardSaving": {
+    "placeholders": {
+      "cardNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleOn": "Cycle on",
+  "holdCardNearPhoneNfc": "Hold your IC card near the phone",
+  "locationPermissionRequiredForWifi": "Location permission is required for Wi-Fi scanning.",
+  "selectWifi": "Select Wi-Fi",
+  "noWifiNetworksFound": "No Wi-Fi networks found.",
+  "fingerprintInstruction4Times": "Please press your finger on the lock 4 times.",
+  "fingerprintInstructionCount": "Please press your finger on the lock ({current}/{total}).",
+  "@fingerprintInstructionCount": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "fingerprintReadSaving": "Fingerprint read! Saving to server...",
+  "fingerprintAddedSuccessfully": "✅ Fingerprint added successfully!",
+  "fingerprintSaveFailed": "Error saving to server: {error}",
+  "@fingerprintSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "fingerprintAddFailed": "Failed: {error}",
+  "@fingerprintAddFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "fingerprintError": "Error: {error}",
+  "@fingerprintError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addFingerprintTitle": "Add Fingerprint",
+  "@keyFor": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "scanGatewayTitle": "Scan Gateway",
+  "scanLockTitle": "Scan Lock",
+  "stopScan": "Stop Scan",
+  "reScan": "Re-Scan",
+  "deviceAddedSuccess": "Device successfully added",
+  "scanningGatewayStatus": "Connecting to gateway...",
+  "scanningLockStatus": "Please stay close to the lock...",
+  "scanningGateways": "Scanning for gateways...",
+  "scanningLocks": "Scanning for locks...",
+  "ensureBluetooth": "Please ensure Bluetooth is on",
+  "gatewayNotFound": "Gateway not found",
+  "lockNotFound": "Lock not found",
+  "scanNotFoundMessage": "Scanned surrounding devices but nothing found.",
+  "gatewaySetupNotAdded": "Gateway setup not added yet",
+  "foundDevices": "{count} devices found",
+  "@foundDevices": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unnamedLock": "Unnamed Lock",
+  "roleAdmin": "Admin",
+  "roleNormal": "Normal",
+  "roleObserver": "Observer",
+  "admins": "Admins",
+  "all": "All",
+  "validityType": "Validity Type",
+  "scanCard": "Scan Card",
+  "connectAndScan": "Connect to lock and scan card",
+  "cardNameRequired": "Card name is required",
+  "bluetoothRequired": "Bluetooth connection required",
+  "selectDays": "Select Days",
+  "startTime": "Start Time",
+  "endTime": "End Time",
+  "weekend": "Weekend",
+  "daily": "Daily",
+  "workday": "Workday",
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday",
+  "notificationsTitle": "Notifications",
+  "noNotifications": "No notifications yet",
+  "clearAll": "Clear All",
+  "markAsRead": "Mark as Read",
+  "automatic": "Automatic",
+  "cardsLoadError": "Cards could not be loaded: {error}",
+  "deleteCardTitle": "Delete Card",
+  "deleteCardConfirm": "Are you sure you want to delete card '{cardNumber}'?",
+  "cardDeletedSuccess": "Card '{cardNumber}' successfully deleted ({method})",
+  "cardDeleteError": "Card could not be deleted: {error}",
+  "editCardTitle": "Edit Card",
+  "cardNameLabel": "Card Name",
+  "startDatePrefix": "Start: ",
+  "endDatePrefix": "End: ",
+  "cardUpdatedSuccess": "Card updated successfully.",
+  "cardUpdateError": "Card could not be updated: {error}",
+  "clearAllCardsTitle": "Clear All Cards",
+  "clearAllCardsConfirm": "Are you sure you want to delete all cards from the server?\\n\\nWarning: This action cannot be undone and per API documentation, the lock memory should be cleared via SDK first.",
+  "clear": "Clear",
+  "allCardsClearedSuccess": "All cards successfully cleared from server.",
+  "cardsClearError": "Cards could not be cleared: {error}",
+  "recoverCardTitle": "Recover Card",
+  "recoverCardInstruction": "A Bluetooth connection to the lock is required to recover a previously deleted card.",
+  "cardNumberLabel": "Card Number",
+  "recover": "Recover",
+  "cardRecoveredSuccess": "✅ Card successfully recovered.",
+  "cardRecoverError": "Card could not be recovered: {error}",
+  "howToAddCard": "How would you like to add?",
+  "addViaBluetooth": "Add via Lock (Bluetooth)",
+  "addViaNfc": "Add via Phone (NFC)",
+  "savedViaGateway": "Saved via Gateway",
+  "icCardsTitle": "IC Cards",
+  "remoteCardCreation": "Remote Card Creation",
+  "addCardViaLockMenu": "Add Card via Lock",
+  "noCardsFound": "No IC cards found.",
+  "unnamedCard": "Unnamed Card",
+  "cardNumberPrefix": "No: {cardNumber}",
+  "validityPrefix": "Validity: {startDate} - {endDate}",
+  "passcodesTitle": "Passcodes",
+  "noPasscodesFound": "No passcodes found.",
+  "typePrefix": "Type",
+  "unknownType": "Unknown Type",
+  "startingMessage": "Starting...",
+  "recordPasscode": "Passcode",
+  "recordCard": "Card",
+  "recordFingerprint": "Fingerprint",
+  "recordAppBt": "App (BT)",
+  "recordRemoteUnlock": "Remote Unlock",
+  "recordLocked": "Locked",
+  "recordMechanicalKey": "Mechanical Key",
+  "recordWristband": "Wristband",
+  "recordRemoteControl": "Remote Control",
+  "recordAppRemote": "App (Remote)",
+  "recordGatewayUnlock": "Unlocked via Gateway",
+  "recordAutoLock": "Auto Lock",
+  "recordUnlocked": "Unlocked",
+  "recordOtherOperation": "Other Operation ({type})",
+  "clearAllRecordsConfirmWarning": "(This action cannot be undone)",
+  "ungrouped": "Ungrouped",
+  "unassignedLocksAndUsers": "Unassigned locks and users",
+  "manageLockAccessAndBlockUsers": "Manage lock access and block users",
+  "transferLockOwnership": "Transfer lock ownership to another account",
+  "transferGatewayOwnership": "Transfer gateway ownership to another account",
+  "exportDataDesc": "Export data or backup",
+  "membersAndLocksCount": "{members} members, {locks} locks",
+  "searchGateway": "Search gateway...",
+  "noGatewayFound": "No gateway found yet",
+  "actionsFor": "Actions for {name}",
+  "gatewayConnectedSuccess": "Successfully connected to gateway",
+  "gatewayConnectError": "Gateway connection error: {error}",
+  "gatewayDisconnectedSuccess": "Gateway disconnected",
+  "gatewayDisconnectError": "Gateway disconnect error: {error}",
+  "gatewayDetails": "Gateway Details",
+  "networkLabel": "Network",
+  "statusLabel": "Status",
+  "connectedLocks": "Connected Locks",
+  "gatewayDetailError": "Gateway detail error: {error}",
+  "gatewayManagementDesc": "Manage your TTLock Gateways and connect for remote control.",
+  "noConnectedGatewaysDesc": "No Gateways found.\\nAdd a Gateway from your TTLock app.",
+  "unnamedGateway": "Unnamed Gateway",
+  "detailsButton": "Details",
+  "connectButton": "Connect",
+  "closeButton": "Close",
+  "shareFailed": "Share failed",
+  "passwordUpdatedButLoginFailed": "Password updated but login failed.",
+  "loginSuccessButNoToken": "Login successful but no token received.",
+  "loginFailedCheckCredentials": "Login failed. Please check your credentials.",
+  "bluetoothDisabledError": "Bluetooth is disabled or unauthorized. Please turn on Bluetooth.",
+  "lockNotInSettingMode": "Lock is not in setting mode. Please touch the keypad to wake it up and try again.",
+  "lockAlreadyRegistered": "This lock is already registered to another account or this account. You must reset the lock first.",
+  "bluetoothConnectionRejected": "Bluetooth connection was rejected by the lock or timed out.",
+  "bluetoothConnectionFailed": "Bluetooth connection failed. The lock might be connected to another account, cache might be full, or it is in protection mode.",
+  "lockNotResponding": "The lock is not responding. Please get closer and wake up the lock.",
+  "cloudRegistrationError": "Cloud Registration Error: {error}",
+  "btErrorPrefix": "BT Error (Code: {code}): {details}",
+  "apiLockRegisteredToAnother": "This lock is already registered to another user. Please delete it from the previous account first.",
+  "apiNotAuthorized": "You are not authorized for this operation (Not an Admin).",
+  "apiSessionExpired": "Your session has expired. Please log out and log in again.",
+  "apiLockFrozen": "Lock is frozen. Operations cannot be performed.",
+  "apiTimestampError": "Timestamp error. Please check your phone's time and date settings.",
+  "apiDeletePreviousLocks": "Please delete this lock or your other locks from your account first.",
+  "apiClientAuthError": "App authentication error (Invalid Client ID/Secret).",
+  "apiServerError": "A server error occurred. Please try again later.",
+  "apiOperationRejected": "Operation rejected by the server.",
+  "unexpectedErrorPrefix": "Unexpected error: {error}",
+  "apiUsernameAlreadyTaken": "This username is already taken.",
+  "registrationFailed": "Registration failed",
+  "apiRegistrationUnexpectedResponse": "Registration failed: Unexpected response format",
+  "apiResetPasswordFailed": "Password reset failed",
+  "iosNfcWarning": "Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth."
 }
