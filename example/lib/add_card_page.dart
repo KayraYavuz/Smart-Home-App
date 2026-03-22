@@ -6,6 +6,8 @@ import 'package:yavuz_lock/api_service.dart';
 import 'package:intl/intl.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:nfc_manager/nfc_manager_android.dart';
+import 'package:nfc_manager/nfc_manager_ios.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 
 class AddCardPage extends StatefulWidget {
@@ -126,7 +128,8 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
     }
 
     // Check NFC availability
-    final isAvailable = await NfcManager.instance.isAvailable();
+    final availability = await NfcManager.instance.checkAvailability();
+    final isAvailable = availability == NfcAvailability.enabled;
     if (!mounted) return;
     if (!isAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -218,37 +221,52 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
           NfcPollingOption.iso15693,
           NfcPollingOption.iso18092,
         },
-        alertMessage: l10n?.holdCardNearPhoneNfc ?? 'Hold your IC card near the phone',
+        alertMessageIos: l10n?.holdCardNearPhoneNfc ?? 'Hold your IC card near the phone',
         onDiscovered: (NfcTag tag) async {
           try {
             // Read card UID from NFC tag — cross-platform
-            // Android keys: nfca, nfcb, nfcf, nfcv, isodep, mifareclassic, mifareultralight
-            // iOS keys: mifare, iso7816, felica, iso15693
             List<int>? identifier;
 
-            // Try all known tag types for identifier
-            final keysToCheck = [
-              // Android
-              'nfca', 'nfcb', 'nfcf', 'nfcv',
-              'isodep', 'mifareclassic', 'mifareultralight',
-              'ndefformatable',
-              // iOS
-              'mifare', 'iso7816', 'iso15693',
-            ];
+            // Android
+            final techA = NfcAAndroid.from(tag);
+            final techB = NfcBAndroid.from(tag);
+            final techF = NfcFAndroid.from(tag);
+            final techV = NfcVAndroid.from(tag);
+            final techIsoDep = IsoDepAndroid.from(tag);
+            final techMifareClassic = MifareClassicAndroid.from(tag);
+            final techMifareUltralight = MifareUltralightAndroid.from(tag);
 
-            for (final key in keysToCheck) {
-              final tagData = tag.data[key];
-              if (tagData != null && tagData['identifier'] != null) {
-                identifier = List<int>.from(tagData['identifier']);
-                break;
-              }
+            if (techA != null) {
+              identifier = techA.tag.id;
+            } else if (techB != null) {
+              identifier = techB.tag.id;
+            } else if (techF != null) {
+              identifier = techF.tag.id;
+            } else if (techV != null) {
+              identifier = techV.tag.id;
+            } else if (techIsoDep != null) {
+              identifier = techIsoDep.tag.id;
+            } else if (techMifareClassic != null) {
+              identifier = techMifareClassic.tag.id;
+            } else if (techMifareUltralight != null) {
+              identifier = techMifareUltralight.tag.id;
             }
+            
+            // iOS
+            final techMifareIos = MiFareIos.from(tag);
+            final techIso7816Ios = Iso7816Ios.from(tag);
+            final techIso15693Ios = Iso15693Ios.from(tag);
+            final techFelicaIos = FeliCaIos.from(tag);
 
-            // iOS FeliCa uses 'currentIDm' instead of 'identifier'
             if (identifier == null) {
-              final felica = tag.data['felica'];
-              if (felica != null && felica['currentIDm'] != null) {
-                identifier = List<int>.from(felica['currentIDm']);
+              if (techMifareIos != null) {
+                identifier = techMifareIos.identifier;
+              } else if (techIso7816Ios != null) {
+                identifier = techIso7816Ios.identifier;
+              } else if (techIso15693Ios != null) {
+                identifier = techIso15693Ios.identifier;
+              } else if (techFelicaIos != null) {
+                identifier = techFelicaIos.currentIDm;
               }
             }
 
@@ -260,24 +278,19 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
               if (!completer.isCompleted) completer.complete(cardNumber);
             } else {
               if (!completer.isCompleted) {
-                completer.completeError(Exception('Could not read card number: ${tag.data}'));
+                completer.completeError(Exception('Could not read card number'));
               }
             }
             
             await NfcManager.instance.stopSession();
           } catch (e) {
-            await NfcManager.instance.stopSession(errorMessage: e.toString());
+            await NfcManager.instance.stopSession(errorMessageIos: e.toString());
             if (!completer.isCompleted) completer.completeError(e);
           }
         },
-        onError: (error) async {
+        onSessionErrorIos: (error) async {
           if (!completer.isCompleted) {
-            String msg = error.toString();
-            try {
-              dynamic err = error;
-              msg = '${err.type}: ${err.message}';
-            } catch (_) {}
-            completer.completeError(Exception(msg));
+            completer.completeError(Exception(error.toString()));
           }
         },
       );

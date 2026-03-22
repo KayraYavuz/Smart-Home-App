@@ -1,6 +1,6 @@
 name: yavuz_lock
 description: Yavuz Lock
-version: 1.0.57+211
+version: 1.0.58+212
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 
   bmprogresshud: ^1.0.3
-  flutter_dotenv: ^5.1.0
+  flutter_dotenv: ^6.0.0
 
   
   ttlock_flutter:
@@ -36,26 +36,26 @@ dependencies:
   shared_preferences: ^2.2.2
   url_launcher: ^6.2.5
   provider: ^6.0.5
-  web_socket_channel: ^2.4.0
+  web_socket_channel: ^3.0.3
   path: ^1.9.0
   image_picker: ^1.0.4
   flutter_localizations:
     sdk: flutter
   firebase_core: ^4.4.0
   firebase_messaging: ^16.1.1
-  flutter_local_notifications: ^19.5.0
-  permission_handler: ^11.3.0
-  mailer: ^6.6.0
+  flutter_local_notifications: ^21.0.0
+  permission_handler: ^12.0.1
+  mailer: ^7.1.0
   firebase_auth: ^6.1.4
   share_plus: ^12.0.1
   path_provider: ^2.1.5
-  nfc_manager: ^3.5.0
+  nfc_manager: ^4.1.1
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the

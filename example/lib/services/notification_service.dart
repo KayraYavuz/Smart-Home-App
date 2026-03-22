@@ -110,7 +110,7 @@ class NotificationService {
       iOS: initializationSettingsDarwin,
     );
 
-    await _localNotificationsPlugin.initialize(initializationSettings);
+    await _localNotificationsPlugin.initialize(settings: initializationSettings);
     
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel',
@@ -182,10 +182,10 @@ class NotificationService {
     }
 
     await _localNotificationsPlugin.show(
-      notification?.hashCode ?? DateTime.now().millisecondsSinceEpoch,
-      title,
-      body,
-      const NotificationDetails(
+      id: notification?.hashCode ?? DateTime.now().millisecondsSinceEpoch,
+      title: title,
+      body: body,
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'high_importance_channel',
           'Kilit Bildirimleri',
