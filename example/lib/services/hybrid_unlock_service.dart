@@ -9,7 +9,7 @@ import 'package:yavuz_lock/config.dart';
 /// Service that handles hybrid unlocking: tries Bluetooth first, falls back to Gateway API
 class HybridUnlockService {
   final ApiService _apiService;
-  static const String _baseUrl = 'https://euapi.ttlock.com';
+  static const String _baseUrl = ApiConfig.baseUrl;
   static const int _bluetoothTimeoutSeconds = 10;
 
   HybridUnlockService(this._apiService);

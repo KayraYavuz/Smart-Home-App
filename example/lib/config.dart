@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiConfig {
+  static const String baseUrl = 'https://euapi.ttlock.com';
   static String clientId = (dotenv.env['TTLOCK_CLIENT_ID'] ?? '').trim();
   static String clientSecret = (dotenv.env['TTLOCK_CLIENT_SECRET'] ?? '').trim();
   static String redirectUri = ''; 

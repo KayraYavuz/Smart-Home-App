@@ -18,7 +18,7 @@ class TTLockService {
 
   TTLockService._internal();
 
-  static const String _baseUrl = "https://euapi.ttlock.com/v3";
+  static const String _baseUrl = "${ApiConfig.baseUrl}/v3";
   static const _headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
   };

@@ -78,7 +78,7 @@ class TTLockWebhookEvent {
 class ApiService {
 
 
-  String _baseUrl = 'https://euapi.ttlock.com';
+  String _baseUrl = ApiConfig.baseUrl;
   final AuthRepository? _authRepository;
   String? _accessToken;
   String? _refreshToken;
@@ -344,7 +344,7 @@ class ApiService {
     _accessToken = null;
     _refreshToken = null;
     _tokenExpiry = null;
-    _baseUrl = 'https://euapi.ttlock.com'; // Reset to default
+    _baseUrl = ApiConfig.baseUrl; // Reset to default
     debugPrint('🧹 ApiService in-memory tokens cleared.');
   }
 
@@ -4067,7 +4067,7 @@ class ApiService {
     required String username,
     required String password,
   }) async {
-    final regions = ['https://euapi.ttlock.com', 'https://api.ttlock.com'];
+    final regions = [ApiConfig.baseUrl, 'https://api.ttlock.com'];
     
     // Denenecek kullanıcı adı formatlarını belirle
     Set<String> usernamesToTry = {};
@@ -4194,7 +4194,7 @@ class ApiService {
     if (_refreshToken == null) return false;
 
     debugPrint('Refreshing access token...');
-    final regions = [_baseUrl, 'https://euapi.ttlock.com', 'https://api.ttlock.com'];
+    final regions = [_baseUrl, ApiConfig.baseUrl, 'https://api.ttlock.com'];
     
     for (var regionBaseUrl in Set.from(regions)) { // Set to avoid duplicate checks
       final url = Uri.parse('$regionBaseUrl/oauth2/token');
