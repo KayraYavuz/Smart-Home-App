@@ -54,7 +54,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(l10n.addNewGroup, style: const TextStyle(color: Colors.white)),
+        title:
+            Text(l10n.addNewGroup, style: const TextStyle(color: Colors.white)),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -62,13 +63,15 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
           decoration: InputDecoration(
             hintText: l10n.groupName,
             hintStyle: const TextStyle(color: Colors.grey),
-            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+            enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white30)),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => navigator.pop(),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
@@ -92,7 +95,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                 }
               }
             },
-            child: Text(l10n.add, style: const TextStyle(color: AppColors.primary)),
+            child: Text(l10n.add,
+                style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -108,7 +112,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(l10n.editGroup, style: const TextStyle(color: Colors.white)),
+        title:
+            Text(l10n.editGroup, style: const TextStyle(color: Colors.white)),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -116,13 +121,15 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
           decoration: InputDecoration(
             hintText: l10n.newGroupName,
             hintStyle: const TextStyle(color: Colors.grey),
-            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+            enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white30)),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => navigator.pop(),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
@@ -143,13 +150,15 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                 } catch (e) {
                   if (mounted) {
                     scaffoldMessenger.showSnackBar(
-                      SnackBar(content: Text(l10n.updateErrorWithMsg(e.toString()))),
+                      SnackBar(
+                          content: Text(l10n.updateErrorWithMsg(e.toString()))),
                     );
                   }
                 }
               }
             },
-            child: Text(l10n.save, style: const TextStyle(color: AppColors.primary)),
+            child: Text(l10n.save,
+                style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -164,7 +173,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(l10n.deleteGroup, style: const TextStyle(color: Colors.white)),
+        title:
+            Text(l10n.deleteGroup, style: const TextStyle(color: Colors.white)),
         content: Text(
           l10n.deleteGroupConfirmation(group['name'] ?? ''),
           style: const TextStyle(color: Colors.grey),
@@ -172,11 +182,13 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         actions: [
           TextButton(
             onPressed: () => navigator.pop(false),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => navigator.pop(true),
-            child: Text(l10n.delete, style: const TextStyle(color: Colors.redAccent)),
+            child: Text(l10n.delete,
+                style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -212,7 +224,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         elevation: 0,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary))
           : _groups.isEmpty
               ? Center(
                   child: Column(
@@ -222,7 +235,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                       const SizedBox(height: 16),
                       Text(
                         l10n.noGroupsCreatedYet,
-                        style: const TextStyle(color: Colors.grey, fontSize: 16),
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton.icon(
@@ -231,7 +245,8 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                         label: Text(l10n.createGroup),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
                         ),
                       ),
                     ],
@@ -269,63 +284,75 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                           ],
                         ),
                         child: Column(
-                           crossAxisAlignment: CrossAxisAlignment.start,
-                           children: [
-                             Row(
-                               children: [
-                                 Container(
-                                   padding: const EdgeInsets.all(12),
-                                   decoration: BoxDecoration(
-                                     color: AppColors.primary.withValues(alpha: 0.1),
-                                     shape: BoxShape.circle,
-                                   ),
-                                   child: const Icon(Icons.folder, color: AppColors.primary, size: 28),
-                                 ),
-                                 const SizedBox(width: 16),
-                                 Expanded(
-                                   child: Column(
-                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                     children: [
-                                       Text(
-                                         group['name'] ?? l10n.unnamedGroup,
-                                         style: const TextStyle(
-                                           color: Colors.white, 
-                                           fontWeight: FontWeight.bold,
-                                           fontSize: 18,
-                                         ),
-                                         overflow: TextOverflow.ellipsis,
-                                       ),
-                                       const SizedBox(height: 4),
-                                       Text(
-                                         'Grup ID: ${group['groupId']}',
-                                         style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                                       ),
-                                     ],
-                                   ),
-                                 ),
-                                 const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
-                               ],
-                             ),
-                             const SizedBox(height: 16),
-                             const Divider(color: Colors.white10),
-                             const SizedBox(height: 8),
-                             Row(
-                                   mainAxisAlignment: MainAxisAlignment.end,
-                                   children: [
-                                     TextButton.icon(
-                                       onPressed: () => _editGroup(group),
-                                       icon: const Icon(Icons.edit, size: 18, color: Colors.blue),
-                                       label: Text(l10n.rename, style: const TextStyle(color: Colors.blue)),
-                                     ),
-                                     const SizedBox(width: 8),
-                                     TextButton.icon(
-                                       onPressed: () => _deleteGroup(group),
-                                       icon: const Icon(Icons.delete, size: 18, color: Colors.redAccent),
-                                       label: Text(l10n.delete, style: const TextStyle(color: Colors.redAccent)),
-                                     ),
-                                   ],
-                                 )
-                           ],
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary
+                                        .withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.folder,
+                                      color: AppColors.primary, size: 28),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        group['name'] ?? l10n.unnamedGroup,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Grup ID: ${group['groupId']}',
+                                        style: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(Icons.arrow_forward_ios,
+                                    color: Colors.grey, size: 16),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            const Divider(color: Colors.white10),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () => _editGroup(group),
+                                  icon: const Icon(Icons.edit,
+                                      size: 18, color: Colors.blue),
+                                  label: Text(l10n.rename,
+                                      style:
+                                          const TextStyle(color: Colors.blue)),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton.icon(
+                                  onPressed: () => _deleteGroup(group),
+                                  icon: const Icon(Icons.delete,
+                                      size: 18, color: Colors.redAccent),
+                                  label: Text(l10n.delete,
+                                      style: const TextStyle(
+                                          color: Colors.redAccent)),
+                                ),
+                              ],
+                            )
+                          ],
                         ),
                       ),
                     );
@@ -340,5 +367,4 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
           : null,
     );
   }
-
 }

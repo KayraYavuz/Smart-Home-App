@@ -5,7 +5,6 @@ import 'package:ttlock_flutter/ttlock.dart';
 import 'package:bmprogresshud/progresshud.dart';
 import 'package:yavuz_lock/services/ttlock_webhook_service.dart';
 
-
 class LockPage extends StatefulWidget {
   const LockPage(
       {super.key,
@@ -214,7 +213,7 @@ class _LockPageState extends State<LockPage> {
   @override
   void dispose() {
     //You need to reset lock, otherwise the lock will can't be initialized again
-   // TTLock.resetLock(lockData, () {}, (errorCode, errorMsg) {});
+    // TTLock.resetLock(lockData, () {}, (errorCode, errorMsg) {});
     super.dispose();
   }
 
@@ -317,7 +316,8 @@ class _LockPageState extends State<LockPage> {
 
           TTLock.createCustomPasscode("6666", startDate, endDate, lockData, () {
             _showSuccessAndDismiss("Success");
-            TTLockWebhookService().sendEvent(eventType: 'passcodeCreated', data: {
+            TTLockWebhookService()
+                .sendEvent(eventType: 'passcodeCreated', data: {
               'lockMac': widget.lockMac,
               'passcode': '6666',
               'startDate': startDate,
@@ -343,7 +343,8 @@ class _LockPageState extends State<LockPage> {
           TTLock.modifyPasscode("6666", "7777", startDate, endDate, lockData,
               () {
             _showSuccessAndDismiss("Success");
-            TTLockWebhookService().sendEvent(eventType: 'passcodeModified', data: {
+            TTLockWebhookService()
+                .sendEvent(eventType: 'passcodeModified', data: {
               'lockMac': widget.lockMac,
               'oldPasscode': '6666',
               'newPasscode': '7777',
@@ -361,11 +362,13 @@ class _LockPageState extends State<LockPage> {
           if (isSupport) {
             TTLock.deletePasscode("7777", lockData, () {
               _showSuccessAndDismiss("Success");
-              TTLockWebhookService().sendEvent(eventType: 'passcodeDeleted', data: {
-                'lockMac': widget.lockMac,
-                'passcode': '7777',
-                'description': 'Şifre Silindi'
-              });
+              TTLockWebhookService().sendEvent(
+                  eventType: 'passcodeDeleted',
+                  data: {
+                    'lockMac': widget.lockMac,
+                    'passcode': '7777',
+                    'description': 'Şifre Silindi'
+                  });
             }, (errorCode, errorMsg) {
               _showErrorAndDismiss(errorCode, errorMsg);
             });
@@ -483,13 +486,14 @@ class _LockPageState extends State<LockPage> {
           _showErrorAndDismiss(errorCode, errorMsg);
         });
         break;
-      
+
       case Command.manageFingerprints:
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    FingerprintPage(lockId: int.parse(widget.title.split("-")[1]), lockData: lockData)));
+                builder: (context) => FingerprintPage(
+                    lockId: int.parse(widget.title.split("-")[1]),
+                    lockData: lockData)));
         break;
 
       case Command.manageFaces:
@@ -797,8 +801,7 @@ class _LockPageState extends State<LockPage> {
       case Command.addFace:
         TTLock.addFace(null, startDate, endDate, lockData,
             (state, faceErrorCode) {
-          _showSuccessAndDismiss(
-              "add face progress state :$state");
+          _showSuccessAndDismiss("add face progress state :$state");
         }, (faceNumber) {
           addFaceNumber = faceNumber;
           _showSuccessAndDismiss("add face success :$faceNumber");
@@ -839,9 +842,9 @@ class _LockPageState extends State<LockPage> {
         });
         break;
       case Command.setLockWorkingTime:
-        var start = DateTime(2025,8,29).millisecond;
-        var end = DateTime(2026,8,29).millisecond;
-        TTLock.setLockWorkingTime(start,end, lockData,() {
+        var start = DateTime(2025, 8, 29).millisecond;
+        var end = DateTime(2026, 8, 29).millisecond;
+        TTLock.setLockWorkingTime(start, end, lockData, () {
           _showSuccessAndDismiss("set lock working time success");
         }, (errorCode, errorMsg) {
           _showErrorAndDismiss(errorCode, errorMsg);

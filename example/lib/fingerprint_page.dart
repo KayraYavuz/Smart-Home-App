@@ -61,7 +61,9 @@ class _FingerprintPageState extends State<FingerprintPage> {
       body: BlocConsumer<FingerprintBloc, FingerprintState>(
         listener: (context, state) {
           if (state is FingerprintOperationSuccess) {
-            context.read<FingerprintBloc>().add(LoadFingerprints(widget.lockId));
+            context
+                .read<FingerprintBloc>()
+                .add(LoadFingerprints(widget.lockId));
           }
         },
         builder: (context, state) {
@@ -102,9 +104,7 @@ class _FingerprintPageState extends State<FingerprintPage> {
                         PopupMenuItem(
                           child: const Text('Change Period'),
                           onTap: () {
-                            _showChangePeriodDialog(
-                                context,
-                                widget.lockId,
+                            _showChangePeriodDialog(context, widget.lockId,
                                 fingerprint['fingerprintId']);
                           },
                         ),
@@ -137,7 +137,8 @@ class _FingerprintPageState extends State<FingerprintPage> {
     );
   }
 
-  void _showRenameDialog(BuildContext context, int lockId, int fingerprintId, String currentName) {
+  void _showRenameDialog(
+      BuildContext context, int lockId, int fingerprintId, String currentName) {
     final nameController = TextEditingController(text: currentName);
     showDialog(
       context: context,
@@ -168,7 +169,8 @@ class _FingerprintPageState extends State<FingerprintPage> {
     );
   }
 
-  void _showChangePeriodDialog(BuildContext context, int lockId, int fingerprintId) {
+  void _showChangePeriodDialog(
+      BuildContext context, int lockId, int fingerprintId) {
     final startDateController = TextEditingController();
     final endDateController = TextEditingController();
     showDialog(

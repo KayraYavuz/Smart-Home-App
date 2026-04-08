@@ -7,7 +7,8 @@ class GatewayManagementDialog extends StatefulWidget {
   const GatewayManagementDialog({super.key});
 
   @override
-  State<GatewayManagementDialog> createState() => _GatewayManagementDialogState();
+  State<GatewayManagementDialog> createState() =>
+      _GatewayManagementDialogState();
 }
 
 class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
@@ -45,7 +46,6 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
       });
 
       debugPrint('📡 ${gateways.length} gateway bulundu');
-
     } catch (e) {
       debugPrint('❌ Gateway listesi yükleme hatası: $e');
       if (!mounted) return;
@@ -82,7 +82,6 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
           backgroundColor: Colors.green,
         ),
       );
-
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
@@ -121,7 +120,6 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
           backgroundColor: Colors.orange,
         ),
       );
-
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
@@ -159,7 +157,8 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF1E1E1E),
-          title: Text(l10n.gatewayDetails, style: const TextStyle(color: Colors.white)),
+          title: Text(l10n.gatewayDetails,
+              style: const TextStyle(color: Colors.white)),
           content: SizedBox(
             width: double.maxFinite,
             height: 300,
@@ -167,26 +166,38 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Gateway ID: $gatewayId', style: const TextStyle(color: Colors.white)),
+                  Text('Gateway ID: $gatewayId',
+                      style: const TextStyle(color: Colors.white)),
                   const SizedBox(height: 8),
-                  Text('${l10n.nameLabel}: ${detail['gatewayName'] ?? l10n.unknown}', style: const TextStyle(color: Colors.white)),
+                  Text(
+                      '${l10n.nameLabel}: ${detail['gatewayName'] ?? l10n.unknown}',
+                      style: const TextStyle(color: Colors.white)),
                   const SizedBox(height: 8),
-                  Text('MAC: ${detail['gatewayMac'] ?? l10n.unknown}', style: const TextStyle(color: Colors.white)),
+                  Text('MAC: ${detail['gatewayMac'] ?? l10n.unknown}',
+                      style: const TextStyle(color: Colors.white)),
                   const SizedBox(height: 8),
-                  Text('${l10n.networkLabel}: ${detail['networkName'] ?? l10n.unknown}', style: const TextStyle(color: Colors.white)),
+                  Text(
+                      '${l10n.networkLabel}: ${detail['networkName'] ?? l10n.unknown}',
+                      style: const TextStyle(color: Colors.white)),
                   const SizedBox(height: 8),
-                  Text('${l10n.statusLabel}: ${detail['isOnline'] == true ? l10n.online : l10n.offline}',
+                  Text(
+                      '${l10n.statusLabel}: ${detail['isOnline'] == true ? l10n.online : l10n.offline}',
                       style: TextStyle(
-                        color: detail['isOnline'] == true ? Colors.green : Colors.red,
+                        color: detail['isOnline'] == true
+                            ? Colors.green
+                            : Colors.red,
                       )),
                   const SizedBox(height: 16),
-                  Text('${l10n.connectedLocks} (${locks.length}):', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  Text('${l10n.connectedLocks} (${locks.length}):',
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   ...locks.map((lock) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('• ${lock['lockAlias'] ?? lock['lockName'] ?? l10n.unnamedLock}',
-                        style: const TextStyle(color: Colors.grey)),
-                  )),
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                            '• ${lock['lockAlias'] ?? lock['lockName'] ?? l10n.unnamedLock}',
+                            style: const TextStyle(color: Colors.grey)),
+                      )),
                 ],
               ),
             ),
@@ -194,12 +205,12 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(l10n.closeButton, style: const TextStyle(color: Colors.blue)),
+              child: Text(l10n.closeButton,
+                  style: const TextStyle(color: Colors.blue)),
             ),
           ],
         ),
       );
-
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
@@ -259,13 +270,15 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
             // Content
             Expanded(
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Colors.blue))
+                  ? const Center(
+                      child: CircularProgressIndicator(color: Colors.blue))
                   : _errorMessage != null
                       ? Center(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                              const Icon(Icons.error_outline,
+                                  color: Colors.red, size: 48),
                               const SizedBox(height: 16),
                               Text(
                                 '${l10n.errorLabel}: $_errorMessage',
@@ -303,26 +316,34 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(16),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
                                             Icon(
-                                              isOnline ? Icons.wifi : Icons.wifi_off,
-                                              color: isOnline ? Colors.green : Colors.red,
+                                              isOnline
+                                                  ? Icons.wifi
+                                                  : Icons.wifi_off,
+                                              color: isOnline
+                                                  ? Colors.green
+                                                  : Colors.red,
                                               size: 24,
                                             ),
                                             const SizedBox(width: 12),
                                             Expanded(
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    gateway['gatewayName'] ?? l10n.unnamedGateway,
+                                                    gateway['gatewayName'] ??
+                                                        l10n.unnamedGateway,
                                                     style: const TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 16,
-                                                      fontWeight: FontWeight.w500,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                   Text(
@@ -336,15 +357,27 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                                               ),
                                             ),
                                             Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
                                               decoration: BoxDecoration(
-                                                color: isOnline ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2),
-                                                borderRadius: BorderRadius.circular(12),
+                                                color: isOnline
+                                                    ? Colors.green
+                                                        .withValues(alpha: 0.2)
+                                                    : Colors.red
+                                                        .withValues(alpha: 0.2),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
                                               ),
                                               child: Text(
-                                                isOnline ? l10n.online : l10n.offline,
+                                                isOnline
+                                                    ? l10n.online
+                                                    : l10n.offline,
                                                 style: TextStyle(
-                                                  color: isOnline ? Colors.green : Colors.red,
+                                                  color: isOnline
+                                                      ? Colors.green
+                                                      : Colors.red,
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w500,
                                                 ),
@@ -355,18 +388,25 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                                         const SizedBox(height: 12),
                                         Text(
                                           'MAC: ${gateway['gatewayMac'] ?? l10n.unknown}',
-                                          style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                          style: const TextStyle(
+                                              color: Colors.grey, fontSize: 14),
                                         ),
                                         const SizedBox(height: 16),
                                         Row(
                                           children: [
                                             Expanded(
                                               child: ElevatedButton.icon(
-                                                onPressed: () => _showGatewayDetail(gateway['gatewayId'].toString()),
-                                                icon: const Icon(Icons.info_outline, size: 16),
+                                                onPressed: () =>
+                                                    _showGatewayDetail(
+                                                        gateway['gatewayId']
+                                                            .toString()),
+                                                icon: const Icon(
+                                                    Icons.info_outline,
+                                                    size: 16),
                                                 label: Text(l10n.detailsButton),
                                                 style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.blue.withValues(alpha: 0.2),
+                                                  backgroundColor: Colors.blue
+                                                      .withValues(alpha: 0.2),
                                                   foregroundColor: Colors.blue,
                                                 ),
                                               ),
@@ -375,13 +415,29 @@ class _GatewayManagementDialogState extends State<GatewayManagementDialog> {
                                             Expanded(
                                               child: ElevatedButton.icon(
                                                 onPressed: isOnline
-                                                    ? () => _disconnectGateway(gateway['gatewayId'].toString())
-                                                    : () => _connectGateway(gateway['gatewayId'].toString()),
-                                                icon: Icon(isOnline ? Icons.link_off : Icons.link, size: 16),
-                                                label: Text(isOnline ? l10n.disconnect : l10n.connectButton),
+                                                    ? () => _disconnectGateway(
+                                                        gateway['gatewayId']
+                                                            .toString())
+                                                    : () => _connectGateway(
+                                                        gateway['gatewayId']
+                                                            .toString()),
+                                                icon: Icon(
+                                                    isOnline
+                                                        ? Icons.link_off
+                                                        : Icons.link,
+                                                    size: 16),
+                                                label: Text(isOnline
+                                                    ? l10n.disconnect
+                                                    : l10n.connectButton),
                                                 style: ElevatedButton.styleFrom(
-                                                  backgroundColor: isOnline ? Colors.red.withValues(alpha: 0.2) : Colors.green.withValues(alpha: 0.2),
-                                                  foregroundColor: isOnline ? Colors.red : Colors.green,
+                                                  backgroundColor: isOnline
+                                                      ? Colors.red.withValues(
+                                                          alpha: 0.2)
+                                                      : Colors.green.withValues(
+                                                          alpha: 0.2),
+                                                  foregroundColor: isOnline
+                                                      ? Colors.red
+                                                      : Colors.green,
                                                 ),
                                               ),
                                             ),

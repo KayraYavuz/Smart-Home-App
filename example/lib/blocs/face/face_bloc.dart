@@ -19,8 +19,7 @@ class FaceBloc extends Bloc<FaceEvent, FaceState> {
     on<RenameFace>(_onRenameFace);
   }
 
-  Future<void> _onLoadFaces(
-      LoadFaces event, Emitter<FaceState> emit) async {
+  Future<void> _onLoadFaces(LoadFaces event, Emitter<FaceState> emit) async {
     emit(FaceLoading());
     try {
       await _apiService.getAccessToken();
@@ -31,8 +30,7 @@ class FaceBloc extends Bloc<FaceEvent, FaceState> {
     }
   }
 
-  Future<void> _onAddFace(
-      AddFace event, Emitter<FaceState> emit) async {
+  Future<void> _onAddFace(AddFace event, Emitter<FaceState> emit) async {
     try {
       await _apiService.getAccessToken();
       await _ttlockRepository.addFace(
@@ -49,12 +47,12 @@ class FaceBloc extends Bloc<FaceEvent, FaceState> {
     }
   }
 
-  Future<void> _onDeleteFace(
-      DeleteFace event, Emitter<FaceState> emit) async {
+  Future<void> _onDeleteFace(DeleteFace event, Emitter<FaceState> emit) async {
     try {
       await _apiService.getAccessToken();
       // For remote deletion via gateway, type should be 2
-      await _ttlockRepository.deleteFace(lockId: event.lockId, faceId: event.faceId, type: 2);
+      await _ttlockRepository.deleteFace(
+          lockId: event.lockId, faceId: event.faceId, type: 2);
       emit(FaceOperationSuccess());
     } catch (e) {
       emit(FaceOperationFailure(e.toString()));
@@ -90,8 +88,7 @@ class FaceBloc extends Bloc<FaceEvent, FaceState> {
     }
   }
 
-  Future<void> _onRenameFace(
-      RenameFace event, Emitter<FaceState> emit) async {
+  Future<void> _onRenameFace(RenameFace event, Emitter<FaceState> emit) async {
     try {
       await _apiService.getAccessToken();
       await _ttlockRepository.renameFace(

@@ -10,7 +10,8 @@ class CustomerServicePage extends StatefulWidget {
   State<CustomerServicePage> createState() => _CustomerServicePageState();
 }
 
-class _CustomerServicePageState extends State<CustomerServicePage> with TickerProviderStateMixin {
+class _CustomerServicePageState extends State<CustomerServicePage>
+    with TickerProviderStateMixin {
   late AnimationController _fabController;
   late Animation<double> _fabAnimation;
 
@@ -186,7 +187,8 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
               'ttlockdoc.ttlock.com',
               Icons.menu_book,
               Icons.open_in_new,
-              onTap: () => _launchURL(context, 'https://ttlockdoc.ttlock.com/en/'),
+              onTap: () =>
+                  _launchURL(context, 'https://ttlockdoc.ttlock.com/en/'),
               delay: 600,
             ),
           ],
@@ -201,13 +203,13 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
           icon: const Icon(Icons.chat_bubble, color: Colors.white),
           label: Text(
             AppLocalizations.of(context)!.liveSupport,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
       ),
     );
   }
-
 
   Future<void> _copyToClipboard(BuildContext context, String text) async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -378,7 +380,8 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(AppLocalizations.of(context)!.ok, style: const TextStyle(color: Color(0xFF1E90FF))),
+            child: Text(AppLocalizations.of(context)!.ok,
+                style: const TextStyle(color: Color(0xFF1E90FF))),
           ),
         ],
       ),
@@ -430,11 +433,11 @@ class _CustomerServicePageState extends State<CustomerServicePage> with TickerPr
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(AppLocalizations.of(context)!.ok, style: TextStyle(color: Colors.grey[400])),
+            child: Text(AppLocalizations.of(context)!.ok,
+                style: TextStyle(color: Colors.grey[400])),
           ),
         ],
       ),
     );
   }
 }
-

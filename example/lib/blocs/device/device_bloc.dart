@@ -8,7 +8,7 @@ import 'package:yavuz_lock/repositories/auth_repository.dart';
 class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
   final HybridUnlockService _unlockService;
 
-  DeviceBloc() 
+  DeviceBloc()
       : _unlockService = HybridUnlockService(ApiService(AuthRepository())),
         super(DeviceInitial()) {
     on<UnlockDevice>(_onUnlockDevice);

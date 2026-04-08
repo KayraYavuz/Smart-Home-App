@@ -4,7 +4,6 @@ import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
-
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
 
@@ -59,39 +58,38 @@ class _UserManagementPageState extends State<UserManagementPage> {
   }
 
   Future<void> _loadKeys() async {
-     if (_isLoadingKeys) return;
-     setState(() => _isLoadingKeys = true);
-     try {
-       final locks = await _apiService.getKeyList();
-       List<Map<String, dynamic>> keys = [];
-       
-       await Future.wait(locks.map((lock) async {
-          try {
-             final lockKeys = await _apiService.getLockEKeys(
-               accessToken: _apiService.accessToken!, 
-               lockId: lock['lockId'].toString(),
-               pageNo: 1, 
-               pageSize: 100
-             );
-             for (var k in lockKeys) {
-               k['lockAlias'] = lock['lockAlias'] ?? lock['lockName'];
-             }
-             keys.addAll(lockKeys);
-          } catch (e) {
-             debugPrint('Error fetching keys for ${lock['lockId']}: $e');
+    if (_isLoadingKeys) return;
+    setState(() => _isLoadingKeys = true);
+    try {
+      final locks = await _apiService.getKeyList();
+      List<Map<String, dynamic>> keys = [];
+
+      await Future.wait(locks.map((lock) async {
+        try {
+          final lockKeys = await _apiService.getLockEKeys(
+              accessToken: _apiService.accessToken!,
+              lockId: lock['lockId'].toString(),
+              pageNo: 1,
+              pageSize: 100);
+          for (var k in lockKeys) {
+            k['lockAlias'] = lock['lockAlias'] ?? lock['lockName'];
           }
-       }));
-       
-       if (!mounted) return;
-       setState(() {
-         _allKeys = keys;
-         _isLoadingKeys = false;
-       });
-     } catch (e) {
-       if (!mounted) return;
-       setState(() => _isLoadingKeys = false);
-       debugPrint('Key load error: $e');
-     }
+          keys.addAll(lockKeys);
+        } catch (e) {
+          debugPrint('Error fetching keys for ${lock['lockId']}: $e');
+        }
+      }));
+
+      if (!mounted) return;
+      setState(() {
+        _allKeys = keys;
+        _isLoadingKeys = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoadingKeys = false);
+      debugPrint('Key load error: $e');
+    }
   }
 
   void _showAddUserDialog() {
@@ -103,7 +101,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(l10n.registerNewUser, style: const TextStyle(color: Colors.white)),
+        title: Text(l10n.registerNewUser,
+            style: const TextStyle(color: Colors.white)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -128,10 +127,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey))),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.cancel,
+                  style: const TextStyle(color: Colors.grey))),
           TextButton(
             onPressed: () async {
-              if (usernameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+              if (usernameController.text.isNotEmpty &&
+                  passwordController.text.isNotEmpty) {
                 try {
                   await _apiService.registerUser(
                     username: usernameController.text,
@@ -141,17 +144,22 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   Navigator.pop(context);
                   _loadUsers();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.saveSuccess), backgroundColor: AppColors.success),
+                    SnackBar(
+                        content: Text(l10n.saveSuccess),
+                        backgroundColor: AppColors.success),
                   );
                 } catch (e) {
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: AppColors.error),
+                    SnackBar(
+                        content: Text(l10n.errorWithMsg(e.toString())),
+                        backgroundColor: AppColors.error),
                   );
                 }
               }
             },
-            child: Text(l10n.save, style: const TextStyle(color: AppColors.primary)),
+            child: Text(l10n.save,
+                style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -164,10 +172,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(l10n.deleteAccount, style: const TextStyle(color: Colors.white)),
-        content: Text('${user['username']} - ${l10n.deleteAccountConfirmation}', style: const TextStyle(color: Colors.grey)),
+        title: Text(l10n.deleteAccount,
+            style: const TextStyle(color: Colors.white)),
+        content: Text('${user['username']} - ${l10n.deleteAccountConfirmation}',
+            style: const TextStyle(color: Colors.grey)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey))),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.cancel,
+                  style: const TextStyle(color: Colors.grey))),
           TextButton(
             onPressed: () async {
               try {
@@ -176,12 +189,16 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 Navigator.pop(context);
                 _loadUsers();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.accountDeletedMessage), backgroundColor: AppColors.success),
+                  SnackBar(
+                      content: Text(l10n.accountDeletedMessage),
+                      backgroundColor: AppColors.success),
                 );
               } catch (e) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: AppColors.error),
+                  SnackBar(
+                      content: Text(l10n.errorWithMsg(e.toString())),
+                      backgroundColor: AppColors.error),
                 );
               }
             },
@@ -192,25 +209,31 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  Future<void> _toggleFreeze(Map<String, dynamic> key, bool freeze, AppLocalizations l10n) async {
+  Future<void> _toggleFreeze(
+      Map<String, dynamic> key, bool freeze, AppLocalizations l10n) async {
     try {
       await _apiService.getAccessToken();
       if (_apiService.accessToken == null) throw Exception('Token not found');
 
       if (freeze) {
-        await _apiService.freezeEKey(accessToken: _apiService.accessToken!, keyId: key['keyId'].toString());
+        await _apiService.freezeEKey(
+            accessToken: _apiService.accessToken!,
+            keyId: key['keyId'].toString());
       } else {
-        await _apiService.unfreezeEKey(accessToken: _apiService.accessToken!, keyId: key['keyId'].toString());
+        await _apiService.unfreezeEKey(
+            accessToken: _apiService.accessToken!,
+            keyId: key['keyId'].toString());
       }
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(freeze ? l10n.keyFrozen : l10n.keyUnfrozen),
-        backgroundColor: freeze ? Colors.orange : Colors.green
-      ));
+          content: Text(freeze ? l10n.keyFrozen : l10n.keyUnfrozen),
+          backgroundColor: freeze ? Colors.orange : Colors.green));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l10n.errorWithMsg(e.toString())),
+          backgroundColor: Colors.red));
     }
   }
 
@@ -276,14 +299,16 @@ class _UserManagementPageState extends State<UserManagementPage> {
               hintStyle: const TextStyle(color: Colors.grey),
               prefixIcon: const Icon(Icons.search, color: Colors.grey),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             ),
             onChanged: (value) => setState(() {}),
           ),
         ),
         Expanded(
           child: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+              ? const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary))
               : _users.isEmpty
                   ? _buildEmptyState(l10n)
                   : _buildUserList(),
@@ -293,39 +318,47 @@ class _UserManagementPageState extends State<UserManagementPage> {
   }
 
   Widget _buildKeyFreezeTab(AppLocalizations l10n) {
-     if (_isLoadingKeys) return const Center(child: CircularProgressIndicator(color: AppColors.primary));
-     if (_allKeys.isEmpty) return Center(child: Text(l10n.noSharedKeys, style: const TextStyle(color: Colors.grey)));
+    if (_isLoadingKeys)
+      return const Center(
+          child: CircularProgressIndicator(color: AppColors.primary));
+    if (_allKeys.isEmpty)
+      return Center(
+          child: Text(l10n.noSharedKeys,
+              style: const TextStyle(color: Colors.grey)));
 
-     return RefreshIndicator(
-       onRefresh: _loadKeys,
-       child: ListView.builder(
-         padding: const EdgeInsets.all(16),
-         itemCount: _allKeys.length,
-         itemBuilder: (context, index) {
-           final key = _allKeys[index];
-           final status = key['keyStatus'].toString();
-           final bool frozen = status == '110402';
-           
-           return Card(
-             color: const Color(0xFF1E1E1E),
-             margin: const EdgeInsets.only(bottom: 8),
-             child: ListTile(
-               leading: Icon(
-                 frozen ? Icons.lock : Icons.lock_open,
-                 color: frozen ? Colors.orange : Colors.green,
-               ),
-               title: Text(key['keyName'] ?? key['username'] ?? l10n.key, style: const TextStyle(color: Colors.white)),
-               subtitle: Text('${key['lockAlias']} - ${frozen ? l10n.frozen : l10n.active}', style: TextStyle(color: Colors.grey[400])),
-               trailing: Switch(
-                 value: frozen,
-                                 activeTrackColor: Colors.orange,
-                 onChanged: (val) => _toggleFreeze(key, val, l10n),
-               ),
-             ),
-           );
-         },
-       ),
-     );
+    return RefreshIndicator(
+      onRefresh: _loadKeys,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: _allKeys.length,
+        itemBuilder: (context, index) {
+          final key = _allKeys[index];
+          final status = key['keyStatus'].toString();
+          final bool frozen = status == '110402';
+
+          return Card(
+            color: const Color(0xFF1E1E1E),
+            margin: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              leading: Icon(
+                frozen ? Icons.lock : Icons.lock_open,
+                color: frozen ? Colors.orange : Colors.green,
+              ),
+              title: Text(key['keyName'] ?? key['username'] ?? l10n.key,
+                  style: const TextStyle(color: Colors.white)),
+              subtitle: Text(
+                  '${key['lockAlias']} - ${frozen ? l10n.frozen : l10n.active}',
+                  style: TextStyle(color: Colors.grey[400])),
+              trailing: Switch(
+                value: frozen,
+                activeTrackColor: Colors.orange,
+                onChanged: (val) => _toggleFreeze(key, val, l10n),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildEmptyState(AppLocalizations l10n) {
@@ -335,7 +368,11 @@ class _UserManagementPageState extends State<UserManagementPage> {
         children: [
           const Icon(Icons.people_outline, color: Colors.grey, size: 64),
           const SizedBox(height: 16),
-          Text(l10n.noData, style: const TextStyle(color: Colors.grey, fontSize: 18, fontWeight: FontWeight.w500)),
+          Text(l10n.noData,
+              style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -365,16 +402,23 @@ class _UserManagementPageState extends State<UserManagementPage> {
               backgroundColor: Colors.blue.withValues(alpha: 0.2),
               child: Text(
                 (user['username'] ?? 'U')[0].toUpperCase(),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
-            title: Text(user['username'] ?? 'Unknown', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
-            subtitle: Text(user['email'] ?? '', style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+            title: Text(user['username'] ?? 'Unknown',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600)),
+            subtitle: Text(user['email'] ?? '',
+                style: TextStyle(color: Colors.grey[400], fontSize: 14)),
             trailing: IconButton(
               icon: const Icon(Icons.delete_outline, color: AppColors.error),
               onPressed: () => _deleteUser(user),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           ),
         );
       },

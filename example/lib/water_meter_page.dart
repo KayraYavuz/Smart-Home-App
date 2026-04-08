@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'package:ttlock_flutter/ttwaterMeter.dart';
 
-enum Command {
-  reset,
-  recharge
-}
+enum Command { reset, recharge }
 
 class WaterMeterPage extends StatefulWidget {
   final String name;
@@ -18,7 +15,6 @@ class WaterMeterPage extends StatefulWidget {
 }
 
 class _WaterMeterPageState extends State<WaterMeterPage> {
-
   final List<Map<String, Command>> _commandList = [
     {"Reset": Command.reset},
     // {"Read data": Command.readData},
@@ -37,7 +33,6 @@ class _WaterMeterPageState extends State<WaterMeterPage> {
   String get mac => widget.mac;
   String get name => widget.name;
   BuildContext? _context;
-
 
   void _showLoading(String text) {
     ProgressHud.of(_context!)!.showLoading(text: text);

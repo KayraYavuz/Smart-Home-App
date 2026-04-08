@@ -19,7 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       // Initialize ApiService tokens and region from storage
       await _apiService.initializeTokens();
-      
+
       // Check if we have a valid token in storage
       final isValid = await _authRepository.isTokenValid();
       if (isValid) {
@@ -57,5 +57,4 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(e.toString()));
     }
   }
-
 }

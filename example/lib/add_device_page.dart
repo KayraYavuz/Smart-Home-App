@@ -7,7 +7,7 @@ class AddDevicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     // Localized data for devices
     final Map<String, List<Map<String, dynamic>>> devices = {
       l10n.categoryLocks: [
@@ -18,9 +18,9 @@ class AddDevicePage extends StatelessWidget {
       ],
       l10n.categoryGateways: [
         {'name': l10n.deviceGatewayWifi, 'icon': Icons.router},
-        {'name': l10n.deviceGatewayG3, 'icon': Icons.wifi}, 
+        {'name': l10n.deviceGatewayG3, 'icon': Icons.wifi},
       ],
-       l10n.categoryCameras: [
+      l10n.categoryCameras: [
         {'name': l10n.deviceCameraSurveillance, 'icon': Icons.videocam},
       ],
     };
@@ -49,7 +49,8 @@ class AddDevicePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCategorySection(BuildContext context, String title, List<Map<String, dynamic>> items) {
+  Widget _buildCategorySection(
+      BuildContext context, String title, List<Map<String, dynamic>> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -98,7 +99,8 @@ class AddDevicePage extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Icon(device['icon'] as IconData?, color: const Color(0xFF1E90FF), size: 30),
+              child: Icon(device['icon'] as IconData?,
+                  color: const Color(0xFF1E90FF), size: 30),
             ),
             Expanded(
               child: Text(

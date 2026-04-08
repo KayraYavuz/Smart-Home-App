@@ -14,13 +14,18 @@ class AddCardPage extends StatefulWidget {
   final String lockId;
   final String lockData;
   final bool isBluetooth;
-  const AddCardPage({super.key, required this.lockId, required this.lockData, this.isBluetooth = false});
+  const AddCardPage(
+      {super.key,
+      required this.lockId,
+      required this.lockData,
+      this.isBluetooth = false});
 
   @override
   State<AddCardPage> createState() => _AddCardPageState();
 }
 
-class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStateMixin {
+class _AddCardPageState extends State<AddCardPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _cardNameController = TextEditingController();
 
@@ -92,7 +97,8 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
     );
     if (pickedTime == null) return;
 
-    final combined = DateTime(pickedDate.year, pickedDate.month, pickedDate.day, pickedTime.hour, pickedTime.minute);
+    final combined = DateTime(pickedDate.year, pickedDate.month, pickedDate.day,
+        pickedTime.hour, pickedTime.minute);
     setState(() {
       if (isStart) {
         _startDate = combined;
@@ -108,21 +114,23 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
     });
   }
 
-
-
   /// Next button: Start phone NFC scan → read card number → register via Gateway
   Future<void> _onNext() async {
     final cardName = _cardNameController.text.trim();
     if (cardName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.cardNameRequired ?? 'Card name is required')),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)?.cardNameRequired ??
+                'Card name is required')),
       );
       return;
     }
 
     if (_currentTabIndex == 2 && _selectedDays.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.selectDays ?? 'Please configure the validity period')),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)?.selectDays ??
+                'Please configure the validity period')),
       );
       return;
     }
@@ -133,7 +141,10 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
     if (!mounted) return;
     if (!isAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.nfcNotAvailable ?? 'NFC is not available on this device'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)?.nfcNotAvailable ??
+                'NFC is not available on this device'),
+            backgroundColor: Colors.red),
       );
       return;
     }
@@ -168,14 +179,18 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         // Recurring
         startDateMs = _recurringStartDate.millisecondsSinceEpoch;
         endDateMs = _recurringEndDate.millisecondsSinceEpoch;
-        final startMinutes = _recurringStartTime.hour * 60 + _recurringStartTime.minute;
-        final endMinutes = _recurringEndTime.hour * 60 + _recurringEndTime.minute;
-        cyclicConfig = _selectedDays.map((day) => {
-          "weekDay": day,
-          "startTime": startMinutes,
-          "endTime": endMinutes,
-        }).toList();
-        
+        final startMinutes =
+            _recurringStartTime.hour * 60 + _recurringStartTime.minute;
+        final endMinutes =
+            _recurringEndTime.hour * 60 + _recurringEndTime.minute;
+        cyclicConfig = _selectedDays
+            .map((day) => {
+                  "weekDay": day,
+                  "startTime": startMinutes,
+                  "endTime": endMinutes,
+                })
+            .toList();
+
         ttCycleList = _selectedDays.map<TTCycleModel>((day) {
           return TTCycleModel(day, startMinutes, endMinutes);
         }).toList();
@@ -183,17 +198,25 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
 
       if (widget.isBluetooth) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n?.bluetoothAddInstructions ?? 'Connecting to lock...')));
-        
-        TTLock.addCard(ttCycleList, startDateMs, endDateMs, widget.lockData, () {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                l10n?.bluetoothAddInstructions ?? 'Connecting to lock...')));
+
+        TTLock.addCard(ttCycleList, startDateMs, endDateMs, widget.lockData,
+            () {
           // Progress Callback
           if (mounted) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             setState(() {
-              _statusMessage = l10n?.lockReadyScanCard ?? 'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.';
+              _statusMessage = l10n?.lockReadyScanCard ??
+                  'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.';
             });
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(l10n?.lockReadyScanCard ?? 'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              content: Text(
+                  l10n?.lockReadyScanCard ??
+                      'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16)),
               backgroundColor: Colors.orange,
               duration: const Duration(seconds: 10),
             ));
@@ -201,14 +224,16 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         }, (cardNumber) {
           if (!completer.isCompleted) completer.complete(cardNumber);
         }, (errorCode, errorMsg) {
-          if (!completer.isCompleted) completer.completeError(Exception('$errorCode: $errorMsg'));
+          if (!completer.isCompleted)
+            completer.completeError(Exception('$errorCode: $errorMsg'));
         });
       } else {
         if (Platform.isIOS) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(l10n?.iosNfcWarning ?? 'Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.'),
+              content: Text(l10n?.iosNfcWarning ??
+                  'Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.'),
               backgroundColor: Colors.orange,
               duration: const Duration(seconds: 4),
             ),
@@ -216,95 +241,99 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
         }
 
         NfcManager.instance.startSession(
-        pollingOptions: {
-          NfcPollingOption.iso14443,
-          NfcPollingOption.iso15693,
-          NfcPollingOption.iso18092,
-        },
-        alertMessageIos: l10n?.holdCardNearPhoneNfc ?? 'Hold your IC card near the phone',
-        onDiscovered: (NfcTag tag) async {
-          try {
-            // Read card UID from NFC tag — cross-platform
-            List<int>? identifier;
+          pollingOptions: {
+            NfcPollingOption.iso14443,
+            NfcPollingOption.iso15693,
+            NfcPollingOption.iso18092,
+          },
+          alertMessageIos:
+              l10n?.holdCardNearPhoneNfc ?? 'Hold your IC card near the phone',
+          onDiscovered: (NfcTag tag) async {
+            try {
+              // Read card UID from NFC tag — cross-platform
+              List<int>? identifier;
 
-            // Android
-            final techA = NfcAAndroid.from(tag);
-            final techB = NfcBAndroid.from(tag);
-            final techF = NfcFAndroid.from(tag);
-            final techV = NfcVAndroid.from(tag);
-            final techIsoDep = IsoDepAndroid.from(tag);
-            final techMifareClassic = MifareClassicAndroid.from(tag);
-            final techMifareUltralight = MifareUltralightAndroid.from(tag);
+              // Android
+              final techA = NfcAAndroid.from(tag);
+              final techB = NfcBAndroid.from(tag);
+              final techF = NfcFAndroid.from(tag);
+              final techV = NfcVAndroid.from(tag);
+              final techIsoDep = IsoDepAndroid.from(tag);
+              final techMifareClassic = MifareClassicAndroid.from(tag);
+              final techMifareUltralight = MifareUltralightAndroid.from(tag);
 
-            if (techA != null) {
-              identifier = techA.tag.id;
-            } else if (techB != null) {
-              identifier = techB.tag.id;
-            } else if (techF != null) {
-              identifier = techF.tag.id;
-            } else if (techV != null) {
-              identifier = techV.tag.id;
-            } else if (techIsoDep != null) {
-              identifier = techIsoDep.tag.id;
-            } else if (techMifareClassic != null) {
-              identifier = techMifareClassic.tag.id;
-            } else if (techMifareUltralight != null) {
-              identifier = techMifareUltralight.tag.id;
-            }
-            
-            // iOS
-            final techMifareIos = MiFareIos.from(tag);
-            final techIso7816Ios = Iso7816Ios.from(tag);
-            final techIso15693Ios = Iso15693Ios.from(tag);
-            final techFelicaIos = FeliCaIos.from(tag);
-
-            if (identifier == null) {
-              if (techMifareIos != null) {
-                identifier = techMifareIos.identifier;
-              } else if (techIso7816Ios != null) {
-                identifier = techIso7816Ios.identifier;
-              } else if (techIso15693Ios != null) {
-                identifier = techIso15693Ios.identifier;
-              } else if (techFelicaIos != null) {
-                identifier = techFelicaIos.currentIDm;
+              if (techA != null) {
+                identifier = techA.tag.id;
+              } else if (techB != null) {
+                identifier = techB.tag.id;
+              } else if (techF != null) {
+                identifier = techF.tag.id;
+              } else if (techV != null) {
+                identifier = techV.tag.id;
+              } else if (techIsoDep != null) {
+                identifier = techIsoDep.tag.id;
+              } else if (techMifareClassic != null) {
+                identifier = techMifareClassic.tag.id;
+              } else if (techMifareUltralight != null) {
+                identifier = techMifareUltralight.tag.id;
               }
-            }
 
-            if (identifier != null && identifier.isNotEmpty) {
-              final cardNumber = identifier
-                  .map((b) => b.toRadixString(16).padLeft(2, '0'))
-                  .join('')
-                  .toUpperCase();
-              if (!completer.isCompleted) completer.complete(cardNumber);
-            } else {
-              if (!completer.isCompleted) {
-                completer.completeError(Exception('Could not read card number'));
+              // iOS
+              final techMifareIos = MiFareIos.from(tag);
+              final techIso7816Ios = Iso7816Ios.from(tag);
+              final techIso15693Ios = Iso15693Ios.from(tag);
+              final techFelicaIos = FeliCaIos.from(tag);
+
+              if (identifier == null) {
+                if (techMifareIos != null) {
+                  identifier = techMifareIos.identifier;
+                } else if (techIso7816Ios != null) {
+                  identifier = techIso7816Ios.identifier;
+                } else if (techIso15693Ios != null) {
+                  identifier = techIso15693Ios.identifier;
+                } else if (techFelicaIos != null) {
+                  identifier = techFelicaIos.currentIDm;
+                }
               }
+
+              if (identifier != null && identifier.isNotEmpty) {
+                final cardNumber = identifier
+                    .map((b) => b.toRadixString(16).padLeft(2, '0'))
+                    .join('')
+                    .toUpperCase();
+                if (!completer.isCompleted) completer.complete(cardNumber);
+              } else {
+                if (!completer.isCompleted) {
+                  completer
+                      .completeError(Exception('Could not read card number'));
+                }
+              }
+
+              await NfcManager.instance.stopSession();
+            } catch (e) {
+              await NfcManager.instance
+                  .stopSession(errorMessageIos: e.toString());
+              if (!completer.isCompleted) completer.completeError(e);
             }
-            
-            await NfcManager.instance.stopSession();
-          } catch (e) {
-            await NfcManager.instance.stopSession(errorMessageIos: e.toString());
-            if (!completer.isCompleted) completer.completeError(e);
-          }
-        },
-        onSessionErrorIos: (error) async {
-          if (!completer.isCompleted) {
-            completer.completeError(Exception(error.toString()));
-          }
-        },
-      );
+          },
+          onSessionErrorIos: (error) async {
+            if (!completer.isCompleted) {
+              completer.completeError(Exception(error.toString()));
+            }
+          },
+        );
       }
 
       final cardNumber = await completer.future;
       if (!mounted) return;
 
       setState(() {
-        _statusMessage = l10n?.cardSaving(cardNumber) ?? 'Card: $cardNumber\nSaving...';
+        _statusMessage =
+            l10n?.cardSaving(cardNumber) ?? 'Card: $cardNumber\nSaving...';
       });
 
       final apiService = Provider.of<ApiService>(context, listen: false);
-      
+
       if (widget.isBluetooth) {
         await apiService.addIdentityCard(
           lockId: widget.lockId,
@@ -329,18 +358,25 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n?.cardAddedSuccessfully ?? '✅ Card added successfully!'), backgroundColor: Colors.green),
+        SnackBar(
+            content: Text(
+                l10n?.cardAddedSuccessfully ?? '✅ Card added successfully!'),
+            backgroundColor: Colors.green),
       );
       Navigator.pop(context, true);
     } catch (e) {
       if (!widget.isBluetooth) {
-        try { await NfcManager.instance.stopSession(); } catch (_) {}
+        try {
+          await NfcManager.instance.stopSession();
+        } catch (_) {}
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n?.failedToAddCard(e.toString()) ?? 'Failed: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text(l10n?.failedToAddCard(e.toString()) ?? 'Failed: $e'),
+            backgroundColor: Colors.red),
       );
-      
+
       setState(() {
         _isLoading = false;
         _statusMessage = null;
@@ -384,7 +420,11 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: Text(l10n.addCard, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        title: Text(l10n.addCard,
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -396,7 +436,8 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
           unselectedLabelColor: Colors.grey,
           indicatorColor: const Color(0xFF4A90FF),
           indicatorSize: TabBarIndicatorSize.label,
-          labelStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          labelStyle:
+              const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           unselectedLabelStyle: const TextStyle(fontSize: 16),
           dividerColor: Colors.transparent,
           tabs: [
@@ -442,7 +483,8 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
                 color: const Color(0xFF4A90FF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(widget.isBluetooth ? Icons.bluetooth : Icons.nfc, color: const Color(0xFF4A90FF), size: 56),
+              child: Icon(widget.isBluetooth ? Icons.bluetooth : Icons.nfc,
+                  color: const Color(0xFF4A90FF), size: 56),
             ),
             const SizedBox(height: 24),
             const CircularProgressIndicator(color: Color(0xFF4A90FF)),
@@ -456,14 +498,17 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
             TextButton(
               onPressed: () async {
                 if (!widget.isBluetooth) {
-                  try { await NfcManager.instance.stopSession(); } catch (_) {}
+                  try {
+                    await NfcManager.instance.stopSession();
+                  } catch (_) {}
                 }
                 setState(() {
                   _isLoading = false;
                   _statusMessage = null;
                 });
               },
-              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey, fontSize: 16)),
+              child: Text(l10n.cancel,
+                  style: const TextStyle(color: Colors.grey, fontSize: 16)),
             ),
           ],
         ),
@@ -515,12 +560,14 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
   Widget _buildNameField(AppLocalizations l10n) {
     return Container(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
+        border:
+            Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
-          Text(l10n.nameLabel, style: const TextStyle(color: Colors.white, fontSize: 16)),
+          Text(l10n.nameLabel,
+              style: const TextStyle(color: Colors.white, fontSize: 16)),
           const SizedBox(width: 16),
           Expanded(
             child: TextField(
@@ -539,19 +586,23 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildSettingsRow(String label, String value, {VoidCallback? onTap, bool showArrow = false}) {
+  Widget _buildSettingsRow(String label, String value,
+      {VoidCallback? onTap, bool showArrow = false}) {
     return Container(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
+        border:
+            Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        title: Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+        title: Text(label,
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (value.isNotEmpty)
-              Text(value, style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+              Text(value,
+                  style: TextStyle(color: Colors.grey[400], fontSize: 14)),
             if (showArrow)
               const Padding(
                 padding: EdgeInsets.only(left: 8),
@@ -574,12 +625,14 @@ class _AddCardPageState extends State<AddCardPage> with SingleTickerProviderStat
           onPressed: _onNext,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF4A90FF),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
             elevation: 0,
           ),
           child: Text(
             l10n.next,
-            style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+                fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ),
       ),
@@ -615,7 +668,15 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
   late TimeOfDay _startTime;
   late TimeOfDay _endTime;
 
-  final List<String> _dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  final List<String> _dayLabels = [
+    'Sun',
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat'
+  ];
   final List<int> _dayValues = [7, 1, 2, 3, 4, 5, 6];
 
   @override
@@ -637,7 +698,8 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(primary: Color(0xFF4A90FF), surface: Color(0xFF1E1E1E)),
+            colorScheme: const ColorScheme.dark(
+                primary: Color(0xFF4A90FF), surface: Color(0xFF1E1E1E)),
           ),
           child: child!,
         );
@@ -661,7 +723,8 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(primary: Color(0xFF4A90FF), surface: Color(0xFF1E1E1E)),
+            colorScheme: const ColorScheme.dark(
+                primary: Color(0xFF4A90FF), surface: Color(0xFF1E1E1E)),
           ),
           child: child!,
         );
@@ -688,7 +751,10 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
         title: Text(l10n?.validityPeriod ?? 'Validity Period',
-            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -702,16 +768,21 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRow(l10n?.startDate ?? 'Start Date', DateFormat('yyyy-MM-dd').format(_startDate),
+                  _buildRow(l10n?.startDate ?? 'Start Date',
+                      DateFormat('yyyy-MM-dd').format(_startDate),
                       onTap: () => _pickDate(true)),
                   _buildDivider(),
-                  _buildRow(l10n?.endDate ?? 'End Date', DateFormat('yyyy-MM-dd').format(_endDate),
+                  _buildRow(l10n?.endDate ?? 'End Date',
+                      DateFormat('yyyy-MM-dd').format(_endDate),
                       onTap: () => _pickDate(false)),
                   _buildDivider(),
-
                   Container(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-                    child: Text(l10n?.cycleOn ?? 'Cycle on', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Text(l10n?.cycleOn ?? 'Cycle on',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -735,9 +806,13 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                             height: 42,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: isSelected ? const Color(0xFF4A90FF) : Colors.transparent,
+                              color: isSelected
+                                  ? const Color(0xFF4A90FF)
+                                  : Colors.transparent,
                               border: Border.all(
-                                color: isSelected ? const Color(0xFF4A90FF) : Colors.grey[600]!,
+                                color: isSelected
+                                    ? const Color(0xFF4A90FF)
+                                    : Colors.grey[600]!,
                                 width: 1.5,
                               ),
                             ),
@@ -745,7 +820,9 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                               child: Text(
                                 _dayLabels[index],
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.grey[400],
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.grey[400],
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -756,20 +833,20 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                       }),
                     ),
                   ),
-
                   const SizedBox(height: 20),
                   _buildDivider(),
-                  _buildRow(l10n?.startTime ?? 'Start Time', _startTime.format(context),
+                  _buildRow(l10n?.startTime ?? 'Start Time',
+                      _startTime.format(context),
                       onTap: () => _pickTime(true)),
                   _buildDivider(),
-                  _buildRow(l10n?.endTime ?? 'End Time', _endTime.format(context),
+                  _buildRow(
+                      l10n?.endTime ?? 'End Time', _endTime.format(context),
                       onTap: () => _pickTime(false)),
                   _buildDivider(),
                 ],
               ),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
             child: SizedBox(
@@ -787,12 +864,16 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[700],
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26)),
                   elevation: 0,
                 ),
                 child: Text(
                   l10n?.ok ?? 'OK',
-                  style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -805,12 +886,14 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
   Widget _buildRow(String label, String value, {VoidCallback? onTap}) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-      title: Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+      title: Text(label,
+          style: const TextStyle(color: Colors.white, fontSize: 16)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (value.isNotEmpty)
-            Text(value, style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+            Text(value,
+                style: TextStyle(color: Colors.grey[400], fontSize: 14)),
           const SizedBox(width: 8),
           const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
         ],
@@ -820,6 +903,7 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
   }
 
   Widget _buildDivider() {
-    return const Divider(height: 1, color: Color(0xFF2A2A2A), indent: 16, endIndent: 16);
+    return const Divider(
+        height: 1, color: Color(0xFF2A2A2A), indent: 16, endIndent: 16);
   }
 }

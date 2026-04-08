@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
     // ... (Mevcut kod aynı)
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('saved_username', _usernameController.text);
-    
+
     if (_rememberMe) {
       await prefs.setBool('remember_me', true);
       await prefs.setString('saved_password', _passwordController.text);
@@ -73,7 +73,8 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+        final languageProvider =
+            Provider.of<LanguageProvider>(context, listen: false);
         final l10n = AppLocalizations.of(context)!;
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -91,7 +92,8 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20),
               ListTile(
                 leading: const Text('🇹🇷', style: TextStyle(fontSize: 24)),
-                title: Text(l10n.turkish, style: const TextStyle(color: Colors.white)),
+                title: Text(l10n.turkish,
+                    style: const TextStyle(color: Colors.white)),
                 onTap: () {
                   languageProvider.setLocale(const Locale('tr'));
                   Navigator.pop(context);
@@ -99,7 +101,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
               ListTile(
                 leading: const Text('🇺🇸', style: TextStyle(fontSize: 24)),
-                title: Text(l10n.english, style: const TextStyle(color: Colors.white)),
+                title: Text(l10n.english,
+                    style: const TextStyle(color: Colors.white)),
                 onTap: () {
                   languageProvider.setLocale(const Locale('en'));
                   Navigator.pop(context);
@@ -107,7 +110,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
               ListTile(
                 leading: const Text('🇩🇪', style: TextStyle(fontSize: 24)),
-                title: Text(l10n.german, style: const TextStyle(color: Colors.white)),
+                title: Text(l10n.german,
+                    style: const TextStyle(color: Colors.white)),
                 onTap: () {
                   languageProvider.setLocale(const Locale('de'));
                   Navigator.pop(context);
@@ -144,11 +148,11 @@ class _LoginPageState extends State<LoginPage> {
   void _performLogin(LoginBloc loginBloc) {
     _saveCredentials();
     loginBloc.add(
-          LoginButtonPressed(
-            username: _usernameController.text,
-            password: _passwordController.text,
-          ),
-        );
+      LoginButtonPressed(
+        username: _usernameController.text,
+        password: _passwordController.text,
+      ),
+    );
   }
 
   Future<void> _handleLogin(BuildContext context) async {
@@ -158,17 +162,19 @@ class _LoginPageState extends State<LoginPage> {
       final loginBloc = context.read<LoginBloc>();
       debugPrint('🔵 Form doğrulandı, email: $email');
       final prefs = await SharedPreferences.getInstance();
-      
+
       if (!mounted) return;
 
       final accepted = prefs.getBool('terms_accepted_$email') ?? false;
 
       if (!accepted) {
-        debugPrint('🔵 Kullanıcı sözleşmesi henüz onaylanmamış, diyaloğu gösteriyor...');
+        debugPrint(
+            '🔵 Kullanıcı sözleşmesi henüz onaylanmamış, diyaloğu gösteriyor...');
         // Bloc'u parametre olarak gönder
         _showTermsDialog(email, loginBloc);
       } else {
-        debugPrint('🔵 Kullanıcı sözleşmesi zaten onaylanmış, girişi başlatıyor...');
+        debugPrint(
+            '🔵 Kullanıcı sözleşmesi zaten onaylanmış, girişi başlatıyor...');
         _performLogin(loginBloc);
       }
     } else {
@@ -187,7 +193,8 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: const Color(0xFF1E1E1E),
-              title: Text(l10n.termsDialogTitle, style: const TextStyle(color: Colors.white)),
+              title: Text(l10n.termsDialogTitle,
+                  style: const TextStyle(color: Colors.white)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -212,20 +219,27 @@ class _LoginPageState extends State<LoginPage> {
                       Expanded(
                         child: RichText(
                           text: TextSpan(
-                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            style: const TextStyle(
+                                color: Colors.white70, fontSize: 12),
                             children: [
                               TextSpan(
                                 text: l10n.userAgreement,
-                                style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                style: const TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline),
                                 recognizer: TapGestureRecognizer()
-                                  ..onTap = () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
+                                  ..onTap = () => _launchUrl(
+                                      'https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
                               ),
                               TextSpan(text: ' ${l10n.and} '),
                               TextSpan(
                                 text: l10n.privacyPolicy,
-                                style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                style: const TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline),
                                 recognizer: TapGestureRecognizer()
-                                  ..onTap = () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
+                                  ..onTap = () => _launchUrl(
+                                      'https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
                               ),
                               TextSpan(text: ' ${l10n.readAndApprove}.'),
                             ],
@@ -241,7 +255,8 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     Navigator.of(dialogContext).pop(); // Close dialog
                   },
-                  child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+                  child: Text(l10n.cancel,
+                      style: const TextStyle(color: Colors.grey)),
                 ),
                 TextButton(
                   onPressed: isAgreed
@@ -249,7 +264,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.of(dialogContext).pop(); // Close dialog
                           final prefs = await SharedPreferences.getInstance();
                           await prefs.setBool('terms_accepted_$email', true);
-                          
+
                           // Use the bloc passed as parameter
                           _saveCredentials();
                           loginBloc.add(
@@ -275,10 +290,6 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -310,7 +321,7 @@ class _LoginPageState extends State<LoginPage> {
               color: Colors.black.withValues(alpha: 0.5),
             ),
           ),
-          
+
           // Language Selector Button (New)
           Positioned(
             top: 50,
@@ -324,16 +335,16 @@ class _LoginPageState extends State<LoginPage> {
           // Content
           BlocProvider(
             create: (context) => LoginBloc(
-                context.read<ApiService>(),
-                context.read<AuthBloc>(),
-              ),
-
+              context.read<ApiService>(),
+              context.read<AuthBloc>(),
+            ),
             child: BlocListener<LoginBloc, LoginState>(
               listener: (context, state) {
                 if (state is LoginFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(_getLocalizedErrorMessage(state.error, l10n)),
+                      content:
+                          Text(_getLocalizedErrorMessage(state.error, l10n)),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -354,7 +365,8 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                              const Icon(Icons.lock, color: Color(0xFF1E90FF), size: 80),
+                              const Icon(Icons.lock,
+                                  color: Color(0xFF1E90FF), size: 80),
                               const SizedBox(height: 20),
                               const Text(
                                 'Yavuz Lock', // App Title (l10n.appTitle kullanılabilir)
@@ -368,11 +380,13 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 40),
                               TextFormField(
                                 controller: _usernameController,
-                                decoration: _buildInputDecoration(l10n.emailOrPhone),
+                                decoration:
+                                    _buildInputDecoration(l10n.emailOrPhone),
                                 keyboardType: TextInputType.emailAddress,
                                 style: const TextStyle(color: Colors.white),
-                                validator: (value) =>
-                                    value!.isEmpty ? l10n.usernameRequired : null,
+                                validator: (value) => value!.isEmpty
+                                    ? l10n.usernameRequired
+                                    : null,
                               ),
                               const SizedBox(height: 20),
                               TextFormField(
@@ -381,7 +395,9 @@ class _LoginPageState extends State<LoginPage> {
                                   l10n.password, // Localized "Password"
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                       color: Colors.grey[400],
                                     ),
                                     onPressed: () {
@@ -393,13 +409,15 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 obscureText: _obscurePassword,
                                 style: const TextStyle(color: Colors.white),
-                                validator: (value) =>
-                                    value!.isEmpty ? l10n.passwordRequired : null,
+                                validator: (value) => value!.isEmpty
+                                    ? l10n.passwordRequired
+                                    : null,
                               ),
                               const SizedBox(height: 12),
                               // Remember Me checkbox and Forgot Password
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Flexible(
                                     child: Row(
@@ -417,7 +435,9 @@ class _LoginPageState extends State<LoginPage> {
                                         Flexible(
                                           child: Text(
                                             l10n.rememberMe,
-                                            style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                            style: const TextStyle(
+                                                color: Colors.white70,
+                                                fontSize: 13),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
@@ -426,15 +446,20 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   Flexible(
                                     child: TextButton(
-                                      onPressed: () => _launchUrl('https://lock2.ttlock.com/'),
+                                      onPressed: () => _launchUrl(
+                                          'https://lock2.ttlock.com/'),
                                       style: TextButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
                                         minimumSize: Size.zero,
-                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
                                       ),
                                       child: Text(
                                         l10n.forgotPasswordTitle,
-                                        style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                        style: const TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 13),
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.end,
                                       ),
@@ -449,19 +474,22 @@ class _LoginPageState extends State<LoginPage> {
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF1E90FF),
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     elevation: 8,
-                                    shadowColor: const Color(0xFF1E90FF).withAlpha(76),
+                                    shadowColor:
+                                        const Color(0xFF1E90FF).withAlpha(76),
                                   ),
                                   onPressed: () {
                                     _handleLogin(context);
                                   },
                                   child: Text(
                                     l10n.loginBtn,
-                                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                                    style: const TextStyle(
+                                        fontSize: 16, color: Colors.white),
                                   ),
                                 ),
                               if (state is LoginFailure) ...[
@@ -471,16 +499,21 @@ class _LoginPageState extends State<LoginPage> {
                                   decoration: BoxDecoration(
                                     color: Colors.red.withAlpha(25),
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.red.withAlpha(128)),
+                                    border: Border.all(
+                                        color: Colors.red.withAlpha(128)),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.error_outline, color: Colors.red),
+                                      const Icon(Icons.error_outline,
+                                          color: Colors.red),
                                       const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          _getLocalizedErrorMessage(state.error, l10n),
-                                          style: TextStyle(color: Colors.red[100], fontSize: 13),
+                                          _getLocalizedErrorMessage(
+                                              state.error, l10n),
+                                          style: TextStyle(
+                                              color: Colors.red[100],
+                                              fontSize: 13),
                                         ),
                                       ),
                                     ],
@@ -493,13 +526,15 @@ class _LoginPageState extends State<LoginPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const RegisterPage(),
+                                      builder: (context) =>
+                                          const RegisterPage(),
                                     ),
                                   );
                                 },
                                 child: Text(
                                   l10n.noAccountRegister,
-                                  style: const TextStyle(color: Color(0xFF1E90FF)),
+                                  style:
+                                      const TextStyle(color: Color(0xFF1E90FF)),
                                 ),
                               ),
                             ],
@@ -534,11 +569,13 @@ class _LoginPageState extends State<LoginPage> {
     return error; // Fallback
   }
 
-  InputDecoration _buildInputDecoration(String label, {IconData? prefixIcon, Widget? suffixIcon}) {
+  InputDecoration _buildInputDecoration(String label,
+      {IconData? prefixIcon, Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(color: Colors.grey[400]),
-      prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: Colors.white70) : null,
+      prefixIcon:
+          prefixIcon != null ? Icon(prefixIcon, color: Colors.white70) : null,
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white.withValues(alpha: 0.1),

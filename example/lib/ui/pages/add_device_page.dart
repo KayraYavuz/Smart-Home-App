@@ -9,10 +9,7 @@ class AddDevicePage extends StatefulWidget {
   State<AddDevicePage> createState() => _AddDevicePageState();
 }
 
-
 class _AddDevicePageState extends State<AddDevicePage> {
-
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -21,7 +18,8 @@ class _AddDevicePageState extends State<AddDevicePage> {
       appBar: AppBar(
         title: Text(
           l10n.addDeviceTitle,
-          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+              color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
         ),
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
@@ -35,7 +33,6 @@ class _AddDevicePageState extends State<AddDevicePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTTLockScanSection(context),
-
             _buildSection(
               context,
               l10n.categoryLocks,
@@ -53,7 +50,8 @@ class _AddDevicePageState extends State<AddDevicePage> {
             ),
             _buildSection(
               context,
-              l10n.doorSensorMenu.replaceAll('\n', ' '), // Reuse existing if suitable
+              l10n.doorSensorMenu
+                  .replaceAll('\n', ' '), // Reuse existing if suitable
               _buildDoorSensors(context),
             ),
             _buildSection(
@@ -150,8 +148,6 @@ class _AddDevicePageState extends State<AddDevicePage> {
     );
   }
 
-
-
   Widget _buildSection(BuildContext context, String title, List<Widget> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,31 +183,42 @@ class _AddDevicePageState extends State<AddDevicePage> {
     final l10n = AppLocalizations.of(context)!;
     return [
       _buildDeviceButton(context, l10n.deviceAllLocks, Icons.lock, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, l10n.deviceDoorLock, Icons.door_front_door, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
+      _buildDeviceButton(context, l10n.deviceDoorLock, Icons.door_front_door,
+          () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, l10n.devicePadlock, Icons.lock_outline, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, l10n.deviceSafe, Icons.security, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, l10n.lockCylinder, Icons.vpn_key, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, l10n.parkingLock, Icons.local_parking, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, l10n.cabinetLock, Icons.inventory_2, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
       _buildDeviceButton(context, l10n.bicycleLock, Icons.pedal_bike, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
-      _buildDeviceButton(context, l10n.remoteControl, Icons.settings_remote, () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanPage()));
+      _buildDeviceButton(context, l10n.remoteControl, Icons.settings_remote,
+          () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const ScanPage()));
       }),
     ];
   }
@@ -222,7 +229,8 @@ class _AddDevicePageState extends State<AddDevicePage> {
       _buildDeviceButton(context, l10n.deviceGatewayWifi, Icons.router, () {
         _navigateToGatewayScan(context, 'G1');
       }),
-      _buildDeviceButton(context, 'G2 (Wi-Fi) 2.4G', Icons.router, () { // Use l10n if added
+      _buildDeviceButton(context, 'G2 (Wi-Fi) 2.4G', Icons.router, () {
+        // Use l10n if added
         _navigateToGatewayScan(context, 'G2');
       }),
       _buildDeviceButton(context, l10n.deviceGatewayG3, Icons.cable, () {
@@ -243,7 +251,8 @@ class _AddDevicePageState extends State<AddDevicePage> {
   List<Widget> _buildCameras(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return [
-      _buildDeviceButton(context, l10n.deviceCameraSurveillance, Icons.videocam, () {
+      _buildDeviceButton(context, l10n.deviceCameraSurveillance, Icons.videocam,
+          () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('TC2 scanning...')),
         );
@@ -322,7 +331,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const ScanPage(isGateway: true), 
+        builder: (context) => const ScanPage(isGateway: true),
       ),
     );
   }

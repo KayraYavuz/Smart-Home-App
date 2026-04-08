@@ -19,19 +19,19 @@ class _RegisterPageState extends State<RegisterPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _verificationEmailSent = false;
   bool _isAgreed = false;
-  
+
   final _auth = FirebaseAuth.instance;
 
   Future<void> _registerAndSendVerification() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
-    
+
     if (!_isAgreed) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -41,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       return;
     }
-    
+
     setState(() => _isLoading = true);
 
     try {
@@ -50,12 +50,12 @@ class _RegisterPageState extends State<RegisterPage> {
         email: _usernameController.text.trim(),
         password: _passwordController.text,
       );
-      
+
       final user = credential.user;
 
       // 2. Doğrulama Maili Gönder
       await user?.sendEmailVerification();
-      
+
       setState(() {
         _verificationEmailSent = true;
         _isLoading = false;
@@ -74,7 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
       String message = l10n.errorLabel;
       if (e.code == 'email-already-in-use') message = l10n.emailAlreadyInUse;
       if (e.code == 'weak-password') message = l10n.weakPassword;
-      
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: Colors.red),
@@ -83,7 +83,9 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() => _isLoading = false);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l10n.errorLabel}: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text('${l10n.errorLabel}: $e'),
+            backgroundColor: Colors.red),
       );
     }
   }
@@ -101,10 +103,12 @@ class _RegisterPageState extends State<RegisterPage> {
         // E-posta doğrulandı! Şimdi asıl TTLock kaydını yapalım.
         if (!mounted) return;
         final apiService = ApiService(context.read<AuthRepository>());
-        
+
         // TTLock API v3/user/register sadece harf ve rakam kabul eder.
         // E-postadaki @ ve . gibi karakterleri temizleyerek gönderiyoruz.
-        final sanitizedUsername = _usernameController.text.trim().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+        final sanitizedUsername = _usernameController.text
+            .trim()
+            .replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
 
         final result = await apiService.registerUser(
           username: sanitizedUsername,
@@ -112,7 +116,7 @@ class _RegisterPageState extends State<RegisterPage> {
         );
 
         final String prefixedUsername = result['username'] ?? '';
-        
+
         // TTLock tarafından verilen gerçek kullanıcı adını (prefixli) Firebase'e kaydet
         await user.updateDisplayName(prefixedUsername);
 
@@ -123,28 +127,36 @@ class _RegisterPageState extends State<RegisterPage> {
           barrierDismissible: false,
           builder: (context) => AlertDialog(
             backgroundColor: const Color(0xFF1E1E1E),
-            title: Text(l10n.registrationSuccess, style: const TextStyle(color: Colors.white)),
+            title: Text(l10n.registrationSuccess,
+                style: const TextStyle(color: Colors.white)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.registrationSuccessMsg, style: const TextStyle(color: Colors.green)),
+                Text(l10n.registrationSuccessMsg,
+                    style: const TextStyle(color: Colors.green)),
                 const SizedBox(height: 16),
-                Text(l10n.loginIdLabel, style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+                Text(l10n.loginIdLabel,
+                    style: const TextStyle(
+                        color: Colors.white70, fontWeight: FontWeight.bold)),
                 Container(
                   margin: const EdgeInsets.only(top: 8),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                    border:
+                        Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
                       Expanded(
                         child: Text(
                           _usernameController.text.trim(),
-                          style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 16),
+                          style: const TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
                         ),
                       ),
                     ],
@@ -153,7 +165,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 8),
                 Text(
                   l10n.loginIdNote,
-                  style: const TextStyle(color: Colors.orangeAccent, fontSize: 12),
+                  style:
+                      const TextStyle(color: Colors.orangeAccent, fontSize: 12),
                 ),
               ],
             ),
@@ -166,7 +179,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     'password': _passwordController.text,
                   });
                 },
-                child: Text(l10n.loginBtn, style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                child: Text(l10n.loginBtn,
+                    style: const TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -175,7 +190,8 @@ class _RegisterPageState extends State<RegisterPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.emailNotVerified}. ${l10n.checkInboxForLink}'),
+            content:
+                Text('${l10n.emailNotVerified}. ${l10n.checkInboxForLink}'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -183,19 +199,23 @@ class _RegisterPageState extends State<RegisterPage> {
     } catch (e) {
       if (!mounted) return;
       String errorMsg = e.toString().replaceAll('Exception: ', '');
-      
+
       if (errorMsg == 'apiUsernameAlreadyTaken') {
         errorMsg = l10n.apiUsernameAlreadyTaken;
       } else if (errorMsg.startsWith('apiRegistrationFailed:')) {
-        errorMsg = '${l10n.registrationFailed}: ${errorMsg.substring('apiRegistrationFailed:'.length)}';
+        errorMsg =
+            '${l10n.registrationFailed}: ${errorMsg.substring('apiRegistrationFailed:'.length)}';
       } else if (errorMsg.startsWith('apiRegistrationHttpError:')) {
-        errorMsg = '${l10n.registrationFailed}: HTTP ${errorMsg.substring('apiRegistrationHttpError:'.length)}';
+        errorMsg =
+            '${l10n.registrationFailed}: HTTP ${errorMsg.substring('apiRegistrationHttpError:'.length)}';
       } else if (errorMsg == 'apiRegistrationUnexpectedResponse') {
         errorMsg = l10n.apiRegistrationUnexpectedResponse;
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l10n.errorLabel}: $errorMsg'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text('${l10n.errorLabel}: $errorMsg'),
+            backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -241,8 +261,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-          Positioned.fill(child: Container(color: Colors.black.withValues(alpha: 0.5))),
-          
+          Positioned.fill(
+              child: Container(color: Colors.black.withValues(alpha: 0.5))),
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -256,27 +276,31 @@ class _RegisterPageState extends State<RegisterPage> {
                       Row(
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.arrow_back, color: Colors.white),
+                            icon: const Icon(Icons.arrow_back,
+                                color: Colors.white),
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                           Text(
                             l10n.createAccountTitle,
-                            style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                       const SizedBox(height: 40),
-                      
                       TextFormField(
                         controller: _usernameController,
                         enabled: !_verificationEmailSent,
-                        decoration: _buildInputDecoration(l10n.emailOrPhone, prefixIcon: Icons.email),
+                        decoration: _buildInputDecoration(l10n.emailOrPhone,
+                            prefixIcon: Icons.email),
                         style: const TextStyle(color: Colors.white),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) => value!.isEmpty ? l10n.usernameRequired : null,
+                        validator: (value) =>
+                            value!.isEmpty ? l10n.usernameRequired : null,
                       ),
                       const SizedBox(height: 20),
-
                       TextFormField(
                         controller: _passwordController,
                         enabled: !_verificationEmailSent,
@@ -284,23 +308,31 @@ class _RegisterPageState extends State<RegisterPage> {
                           l10n.newPassword,
                           prefixIcon: Icons.lock,
                           suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey[400]),
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey[400]),
+                            onPressed: () => setState(
+                                () => _obscurePassword = !_obscurePassword),
                           ),
                         ),
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscurePassword,
                         validator: (value) {
-                          if (value == null || value.isEmpty) return l10n.passwordRequired;
-                          
+                          if (value == null || value.isEmpty)
+                            return l10n.passwordRequired;
+
                           if (value.length < 8) return l10n.passwordMinLength;
-                          if (!RegExp(r'[0-9]').hasMatch(value)) return l10n.passwordDigitRequired;
-                          if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) return l10n.passwordSymbolRequired;
+                          if (!RegExp(r'[0-9]').hasMatch(value))
+                            return l10n.passwordDigitRequired;
+                          if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
+                              .hasMatch(value))
+                            return l10n.passwordSymbolRequired;
                           return null;
                         },
                       ),
                       const SizedBox(height: 20),
-
                       TextFormField(
                         controller: _confirmPasswordController,
                         enabled: !_verificationEmailSent,
@@ -308,19 +340,25 @@ class _RegisterPageState extends State<RegisterPage> {
                           l10n.confirmPassword,
                           prefixIcon: Icons.lock_clock,
                           suffixIcon: IconButton(
-                            icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey[400]),
-                            onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                            icon: Icon(
+                                _obscureConfirmPassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey[400]),
+                            onPressed: () => setState(() =>
+                                _obscureConfirmPassword =
+                                    !_obscureConfirmPassword),
                           ),
                         ),
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscureConfirmPassword,
                         validator: (value) {
-                          if (value != _passwordController.text) return l10n.passwordMismatch;
+                          if (value != _passwordController.text)
+                            return l10n.passwordMismatch;
                           return null;
                         },
                       ),
                       const SizedBox(height: 20),
-
                       if (!_verificationEmailSent)
                         Row(
                           children: [
@@ -337,20 +375,27 @@ class _RegisterPageState extends State<RegisterPage> {
                             Expanded(
                               child: RichText(
                                 text: TextSpan(
-                                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                  style: const TextStyle(
+                                      color: Colors.white70, fontSize: 12),
                                   children: [
                                     TextSpan(
                                       text: l10n.userAgreement,
-                                      style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                      style: const TextStyle(
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline),
                                       recognizer: TapGestureRecognizer()
-                                        ..onTap = () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
+                                        ..onTap = () => _launchUrl(
+                                            'https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
                                     ),
                                     TextSpan(text: ' ${l10n.and} '),
                                     TextSpan(
                                       text: l10n.privacyPolicy,
-                                      style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                      style: const TextStyle(
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline),
                                       recognizer: TapGestureRecognizer()
-                                        ..onTap = () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
+                                        ..onTap = () => _launchUrl(
+                                            'https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
                                     ),
                                     TextSpan(text: ' ${l10n.readAndApprove}.'),
                                   ],
@@ -360,37 +405,50 @@ class _RegisterPageState extends State<RegisterPage> {
                           ],
                         ),
                       const SizedBox(height: 20),
-
                       if (!_verificationEmailSent) ...[
                         ElevatedButton(
-                          onPressed: _isLoading ? null : _registerAndSendVerification,
+                          onPressed:
+                              _isLoading ? null : _registerAndSendVerification,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF1E90FF),
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
                             elevation: 8,
                           ),
                           child: _isLoading
-                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                              : Text(l10n.registerBtn, style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white, strokeWidth: 2))
+                              : Text(l10n.registerBtn,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
                         ),
                       ],
-
                       if (_verificationEmailSent) ...[
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
+                            border: Border.all(
+                                color: Colors.green.withValues(alpha: 0.5)),
                           ),
                           child: Column(
                             children: [
-                              const Icon(Icons.mark_email_read, color: Colors.green, size: 48),
+                              const Icon(Icons.mark_email_read,
+                                  color: Colors.green, size: 48),
                               const SizedBox(height: 16),
                               Text(
                                 l10n.verificationEmailSentMsg,
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18),
                               ),
                               const SizedBox(height: 8),
                               Text(
@@ -403,19 +461,32 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         const SizedBox(height: 24),
                         ElevatedButton(
-                          onPressed: _isLoading ? null : _checkVerificationAndRegisterInTTLock,
+                          onPressed: _isLoading
+                              ? null
+                              : _checkVerificationAndRegisterInTTLock,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
                           ),
                           child: _isLoading
-                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                              : Text(l10n.checkVerificationAndComplete, style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white, strokeWidth: 2))
+                              : Text(l10n.checkVerificationAndComplete,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
                         ),
                         TextButton(
-                          onPressed: () => setState(() => _verificationEmailSent = false),
-                          child: Text(l10n.changeEmailAddress, style: const TextStyle(color: Colors.white70)),
+                          onPressed: () =>
+                              setState(() => _verificationEmailSent = false),
+                          child: Text(l10n.changeEmailAddress,
+                              style: const TextStyle(color: Colors.white70)),
                         ),
                       ],
                     ],
@@ -429,17 +500,24 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String label, {IconData? prefixIcon, Widget? suffixIcon}) {
+  InputDecoration _buildInputDecoration(String label,
+      {IconData? prefixIcon, Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(color: Colors.grey[400]),
-      prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: Colors.white70) : null,
+      prefixIcon:
+          prefixIcon != null ? Icon(prefixIcon, color: Colors.white70) : null,
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white.withValues(alpha: 0.1),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF1E90FF))),
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF1E90FF))),
     );
   }
 }

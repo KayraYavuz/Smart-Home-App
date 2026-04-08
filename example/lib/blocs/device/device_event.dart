@@ -18,8 +18,8 @@ class UnlockDevice extends DeviceEvent {
 }
 
 class LockDevice extends DeviceEvent {
-    final Map<String, dynamic> lock;
-    final bool onlyBluetooth;
+  final Map<String, dynamic> lock;
+  final bool onlyBluetooth;
 
   const LockDevice(this.lock, {this.onlyBluetooth = false});
 

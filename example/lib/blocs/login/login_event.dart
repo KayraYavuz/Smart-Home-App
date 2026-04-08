@@ -22,7 +22,8 @@ class SyncPassword extends LoginEvent {
   final String password;
   final String code;
 
-  const SyncPassword({required this.username, required this.password, required this.code});
+  const SyncPassword(
+      {required this.username, required this.password, required this.code});
 
   @override
   List<Object> get props => [username, password, code];

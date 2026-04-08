@@ -27,13 +27,14 @@ class Passcode {
   factory Passcode.fromJson(Map<String, dynamic> json) {
     // API bazen tipi String olarak dönebiliyor, bu yüzden güvenli çevrim yapıyoruz.
     final keyboardPwdTypeString = json['keyboardPwdType']?.toString();
-    
+
     return Passcode(
       keyboardPwdId: json['keyboardPwdId'] as int,
       lockId: json['lockId'] as int,
       keyboardPwd: json['keyboardPwd'] as String,
       keyboardPwdName: json['keyboardPwdName'] as String,
-      keyboardPwdType: keyboardPwdTypeString != null ? int.parse(keyboardPwdTypeString) : -1,
+      keyboardPwdType:
+          keyboardPwdTypeString != null ? int.parse(keyboardPwdTypeString) : -1,
       startDate: json['startDate'] as int?,
       endDate: json['endDate'] as int?,
       senderUsername: json['senderUsername'] as String?,

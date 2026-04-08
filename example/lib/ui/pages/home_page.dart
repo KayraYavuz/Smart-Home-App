@@ -49,11 +49,11 @@ class HomePage extends StatelessWidget {
             }
             if (state is LockLoaded) {
               final items = [...state.gateways, ...state.locks];
-              
+
               if (items.isEmpty) {
                 return const Center(child: Text('No devices found.'));
               }
-              
+
               return ListView.builder(
                 padding: const EdgeInsets.all(8.0),
                 itemCount: items.length,
@@ -65,13 +65,15 @@ class HomePage extends StatelessWidget {
                     return Card(
                       child: ListTile(
                         title: Text(item['gatewayName'] ?? 'Gateway'),
-                        subtitle: Text(item['isOnline'] == 1 ? 'Online' : 'Offline'),
+                        subtitle:
+                            Text(item['isOnline'] == 1 ? 'Online' : 'Offline'),
                         leading: const Icon(Icons.router),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => GatewayDetailPage(gateway: item),
+                              builder: (context) =>
+                                  GatewayDetailPage(gateway: item),
                             ),
                           );
                         },
@@ -82,7 +84,8 @@ class HomePage extends StatelessWidget {
                   final lock = item;
                   return Card(
                     child: ListTile(
-                      title: Text(lock['name'] ?? lock['lockAlias'] ?? 'Unknown Lock'),
+                      title: Text(
+                          lock['name'] ?? lock['lockAlias'] ?? 'Unknown Lock'),
                       subtitle: Text(lock['status'] ?? ''),
                       leading: const Icon(Icons.lock),
                       trailing: FittedBox(
@@ -112,7 +115,8 @@ class HomePage extends StatelessWidget {
               );
             }
             if (state is LockFailure) {
-              return Center(child: Text('Failed to load devices: ${state.error}'));
+              return Center(
+                  child: Text('Failed to load devices: ${state.error}'));
             }
             return const Center(child: Text('No devices found.'));
           },
@@ -130,4 +134,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-

@@ -14,7 +14,8 @@ class CreatePasscodePage extends StatefulWidget {
   State<CreatePasscodePage> createState() => _CreatePasscodePageState();
 }
 
-class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTickerProviderStateMixin {
+class _CreatePasscodePageState extends State<CreatePasscodePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passcodeController = TextEditingController();
@@ -85,7 +86,8 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
     );
     if (pickedTime == null) return;
 
-    final combined = DateTime(pickedDate.year, pickedDate.month, pickedDate.day, pickedTime.hour, pickedTime.minute);
+    final combined = DateTime(pickedDate.year, pickedDate.month, pickedDate.day,
+        pickedTime.hour, pickedTime.minute);
     setState(() {
       if (isStart) {
         _startDate = combined;
@@ -102,26 +104,22 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
     });
   }
 
-  Future<void> _createCustomPasscodeNative(String passcode, int startDateMs, int endDateMs, String lockId, String name, ApiService apiService) async {
+  Future<void> _createCustomPasscodeNative(String passcode, int startDateMs,
+      int endDateMs, String lockId, String name, ApiService apiService) async {
     final completer = Completer<void>();
-    
+
     // Natively set it to the lock via Bluetooth
     TTLock.createCustomPasscode(
-      passcode, 
-      startDateMs, 
-      endDateMs, 
-      widget.lock['lockData'], 
-      () {
-        completer.complete();
-      }, 
-      (errorCode, errorMsg) {
-        final l10n = AppLocalizations.of(context);
-        completer.completeError(l10n?.cannotReachLockBluetooth(errorMsg) ?? 'Kilide ulaşılamadı. Bluetooth açık ve yakında olduğunuzdan emin olun. Hata: $errorMsg');
-      }
-    );
-    
+        passcode, startDateMs, endDateMs, widget.lock['lockData'], () {
+      completer.complete();
+    }, (errorCode, errorMsg) {
+      final l10n = AppLocalizations.of(context);
+      completer.completeError(l10n?.cannotReachLockBluetooth(errorMsg) ??
+          'Kilide ulaşılamadı. Bluetooth açık ve yakında olduğunuzdan emin olun. Hata: $errorMsg');
+    });
+
     await completer.future;
-    
+
     // Now upload to Cloud
     await apiService.addPasscode(
       lockId: lockId,
@@ -138,16 +136,23 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
 
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.nameRequired ?? 'Lütfen bir isim giriniz.')),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)?.nameRequired ??
+                'Lütfen bir isim giriniz.')),
       );
       return;
     }
 
     // Validation for Custom passcodes (Kalıcı ve Zamanlı)
     if (_currentTabIndex <= 1) {
-      if (customPasscode.isEmpty || customPasscode.length < 4 || customPasscode.length > 9) {
+      if (customPasscode.isEmpty ||
+          customPasscode.length < 4 ||
+          customPasscode.length > 9) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)?.invalidPasscodeLengthAlt ?? 'Geçerli bir şifre giriniz (4-9 haneli). Veya boş bırakıp sistemi rasgele ürettirin.')),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)
+                      ?.invalidPasscodeLengthAlt ??
+                  'Geçerli bir şifre giriniz (4-9 haneli). Veya boş bırakıp sistemi rasgele ürettirin.')),
         );
       }
     }
@@ -165,116 +170,121 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
       if (_currentTabIndex == 0) {
         // Kalıcı (Permanent)
         if (customPasscode.isNotEmpty) {
-           final now = DateTime.now();
-           final tenYearsLater = now.add(const Duration(days: 3650));
-           await _createCustomPasscodeNative(
-             customPasscode, 
-             now.millisecondsSinceEpoch, 
-             tenYearsLater.millisecondsSinceEpoch, 
-             lockId, 
-             name, 
-             apiService
-           );
-           result = {'keyboardPwd': customPasscode};
+          final now = DateTime.now();
+          final tenYearsLater = now.add(const Duration(days: 3650));
+          await _createCustomPasscodeNative(
+              customPasscode,
+              now.millisecondsSinceEpoch,
+              tenYearsLater.millisecondsSinceEpoch,
+              lockId,
+              name,
+              apiService);
+          result = {'keyboardPwd': customPasscode};
         } else {
-           result = await apiService.getRandomPasscode(
-             lockId: lockId,
-             passcodeType: PasscodeType.permanent,
-             passcodeName: name,
-             startDate: DateTime.now().millisecondsSinceEpoch,
-           );
+          result = await apiService.getRandomPasscode(
+            lockId: lockId,
+            passcodeType: PasscodeType.permanent,
+            passcodeName: name,
+            startDate: DateTime.now().millisecondsSinceEpoch,
+          );
         }
       } else if (_currentTabIndex == 1) {
         // Zamanlı (Timed)
         if (customPasscode.isNotEmpty) {
-           await _createCustomPasscodeNative(
-             customPasscode, 
-             _startDate.millisecondsSinceEpoch, 
-             _endDate.millisecondsSinceEpoch, 
-             lockId, 
-             name, 
-             apiService
-           );
-           result = {'keyboardPwd': customPasscode};
+          await _createCustomPasscodeNative(
+              customPasscode,
+              _startDate.millisecondsSinceEpoch,
+              _endDate.millisecondsSinceEpoch,
+              lockId,
+              name,
+              apiService);
+          result = {'keyboardPwd': customPasscode};
         } else {
-           result = await apiService.getRandomPasscode(
-             lockId: lockId,
-             passcodeType: PasscodeType.timed,
-             passcodeName: name,
-             startDate: _startDate.millisecondsSinceEpoch,
-             endDate: _endDate.millisecondsSinceEpoch,
-           );
+          result = await apiService.getRandomPasscode(
+            lockId: lockId,
+            passcodeType: PasscodeType.timed,
+            passcodeName: name,
+            startDate: _startDate.millisecondsSinceEpoch,
+            endDate: _endDate.millisecondsSinceEpoch,
+          );
         }
       } else if (_currentTabIndex == 2) {
         // Tek Seferlik (One-Time)
         result = await apiService.getRandomPasscode(
-             lockId: lockId,
-             passcodeType: PasscodeType.oneTime,
-             passcodeName: name,
-             startDate: _startDate.millisecondsSinceEpoch,
-           );
+          lockId: lockId,
+          passcodeType: PasscodeType.oneTime,
+          passcodeName: name,
+          startDate: _startDate.millisecondsSinceEpoch,
+        );
       } else {
         // Yinelenen (Recurring)
         result = await apiService.getRandomPasscode(
-             lockId: lockId,
-             passcodeType: _selectedCyclicType,
-             passcodeName: name,
-             startDate: _startDate.millisecondsSinceEpoch,
-             endDate: _endDate.millisecondsSinceEpoch,
-           );
+          lockId: lockId,
+          passcodeType: _selectedCyclicType,
+          passcodeName: name,
+          startDate: _startDate.millisecondsSinceEpoch,
+          endDate: _endDate.millisecondsSinceEpoch,
+        );
       }
 
       if (!mounted) return;
-      
+
       final generatedPasscode = result['keyboardPwd'] ?? customPasscode;
 
       showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          final l10n = AppLocalizations.of(context);
-          return AlertDialog(
-            backgroundColor: const Color(0xFF1E1E1E),
-            title: Text(l10n?.passcodeCreatedTitleAlt ?? 'Şifre Oluşturuldu!', style: const TextStyle(color: Colors.white)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(l10n?.yourLockPasscode ?? 'Kilit şifreniz:', style: const TextStyle(color: Colors.grey)),
-                const SizedBox(height: 16),
-                Text(
-                  generatedPasscode,
-                  style: const TextStyle(
-                    color: Color(0xFF4A90FF),
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            return AlertDialog(
+              backgroundColor: const Color(0xFF1E1E1E),
+              title: Text(l10n?.passcodeCreatedTitleAlt ?? 'Şifre Oluşturuldu!',
+                  style: const TextStyle(color: Colors.white)),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l10n?.yourLockPasscode ?? 'Kilit şifreniz:',
+                      style: const TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 16),
+                  Text(
+                    generatedPasscode,
+                    style: const TextStyle(
+                      color: Color(0xFF4A90FF),
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n?.passcodeReadyToUse ?? 'Bu şifre kullanıma hazırdır. Kapıyı açmak için şifreyi tuşlayıp sonuna # (veya kilit simgesi) eklemeniz yeterlidir.',
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
-                  textAlign: TextAlign.center,
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n?.passcodeReadyToUse ??
+                        'Bu şifre kullanıma hazırdır. Kapıyı açmak için şifreyi tuşlayıp sonuna # (veya kilit simgesi) eklemeniz yeterlidir.',
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close dialog
+                    Navigator.pop(
+                        context, true); // Close screen and return true
+                  },
+                  child: Text(l10n?.ok ?? 'Tamam',
+                      style: const TextStyle(color: Color(0xFF4A90FF))),
                 ),
               ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context); // Close dialog
-                  Navigator.pop(context, true); // Close screen and return true
-                },
-                child: Text(l10n?.ok ?? 'Tamam', style: const TextStyle(color: Color(0xFF4A90FF))),
-              ),
-            ],
-          );
-        }
-      );
-
+            );
+          });
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.errorGeneric(e.toString()) ?? 'Hata: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text(
+                AppLocalizations.of(context)?.errorGeneric(e.toString()) ??
+                    'Hata: $e'),
+            backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) {
@@ -293,7 +303,11 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: Text(l10n?.createPasscodeTitle ?? 'Parola Oluştur', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        title: Text(l10n?.createPasscodeTitle ?? 'Parola Oluştur',
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -306,7 +320,8 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
           unselectedLabelColor: Colors.grey,
           indicatorColor: const Color(0xFF4A90FF),
           indicatorSize: TabBarIndicatorSize.label,
-          labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          labelStyle:
+              const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           unselectedLabelStyle: const TextStyle(fontSize: 14),
           dividerColor: Colors.transparent,
           tabs: [
@@ -318,7 +333,8 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF4A90FF)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF4A90FF)))
           : Column(
               children: [
                 Expanded(
@@ -347,7 +363,8 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
         children: [
           _buildNameField(l10n),
           _buildCustomPasscodeField(l10n),
-          _buildInfoMessage(l10n?.infoPermanent ?? 'Kalıcı şifreler süresiz geçerlidir. Kilit üzerinden silinene kadar çalışır. Şifreyi boş bırakırsanız sistem otomatik üretir.'),
+          _buildInfoMessage(l10n?.infoPermanent ??
+              'Kalıcı şifreler süresiz geçerlidir. Kilit üzerinden silinene kadar çalışır. Şifreyi boş bırakırsanız sistem otomatik üretir.'),
         ],
       ),
     );
@@ -361,11 +378,14 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
         children: [
           _buildNameField(l10n),
           _buildCustomPasscodeField(l10n),
-          _buildSettingsRow(l10n?.startDate ?? 'Başlangıç', dateFormat.format(_startDate),
+          _buildSettingsRow(
+              l10n?.startDate ?? 'Başlangıç', dateFormat.format(_startDate),
               onTap: () => _selectDateTime(context, true)),
-          _buildSettingsRow(l10n?.endDate ?? 'Bitiş', dateFormat.format(_endDate),
+          _buildSettingsRow(
+              l10n?.endDate ?? 'Bitiş', dateFormat.format(_endDate),
               onTap: () => _selectDateTime(context, false)),
-          _buildInfoMessage(l10n?.infoTimed ?? 'Zamanlı şifreler belirtilen tarih aralığında geçerlidir. Şifreyi boş bırakırsanız sistem otomatik üretir.'),
+          _buildInfoMessage(l10n?.infoTimed ??
+              'Zamanlı şifreler belirtilen tarih aralığında geçerlidir. Şifreyi boş bırakırsanız sistem otomatik üretir.'),
         ],
       ),
     );
@@ -378,9 +398,11 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
       child: Column(
         children: [
           _buildNameField(l10n),
-          _buildSettingsRow(l10n?.startDate ?? 'Başlangıç', dateFormat.format(_startDate),
+          _buildSettingsRow(
+              l10n?.startDate ?? 'Başlangıç', dateFormat.format(_startDate),
               onTap: () => _selectDateTime(context, true)),
-          _buildInfoMessage(l10n?.infoOneTime ?? 'Tek seferlik şifreler, başlangıç saatinden itibaren 6 saat boyunca kullanılabilir ve kullanıldıktan sonra silinir. Sistem tarafından otomatik olarak üretilir.'),
+          _buildInfoMessage(l10n?.infoOneTime ??
+              'Tek seferlik şifreler, başlangıç saatinden itibaren 6 saat boyunca kullanılabilir ve kullanıldıktan sonra silinir. Sistem tarafından otomatik olarak üretilir.'),
         ],
       ),
     );
@@ -393,28 +415,51 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
       child: Column(
         children: [
           _buildNameField(l10n),
-          _buildSettingsRow(l10n?.startDate ?? 'Başlangıç', dateFormat.format(_startDate),
+          _buildSettingsRow(
+              l10n?.startDate ?? 'Başlangıç', dateFormat.format(_startDate),
               onTap: () => _selectDateTime(context, true)),
-          _buildSettingsRow(l10n?.endDate ?? 'Bitiş', dateFormat.format(_endDate),
+          _buildSettingsRow(
+              l10n?.endDate ?? 'Bitiş', dateFormat.format(_endDate),
               onTap: () => _selectDateTime(context, false)),
           ListTile(
-            title: Text(l10n?.recurringMode ?? 'Tekrar Modu', style: const TextStyle(color: Colors.white, fontSize: 16)),
+            title: Text(l10n?.recurringMode ?? 'Tekrar Modu',
+                style: const TextStyle(color: Colors.white, fontSize: 16)),
             trailing: DropdownButton<PasscodeType>(
               value: _selectedCyclicType,
               dropdownColor: const Color(0xFF1E1E1E),
               style: const TextStyle(color: Colors.white, fontSize: 14),
               underline: const SizedBox(),
               items: [
-                DropdownMenuItem(value: PasscodeType.dailyCyclic, child: Text(l10n?.everyDay ?? 'Her Gün')),
-                DropdownMenuItem(value: PasscodeType.workdayCyclic, child: Text(l10n?.workdays ?? 'Hafta İçi (Pzt-Cum)')),
-                DropdownMenuItem(value: PasscodeType.weekendCyclic, child: Text(l10n?.weekend ?? 'Hafta Sonu')),
-                DropdownMenuItem(value: PasscodeType.mondayCyclic, child: Text(l10n?.onlyMonday ?? 'Sadece Pazartesi')),
-                DropdownMenuItem(value: PasscodeType.tuesdayCyclic, child: Text(l10n?.onlyTuesday ?? 'Sadece Salı')),
-                DropdownMenuItem(value: PasscodeType.wednesdayCyclic, child: Text(l10n?.onlyWednesday ?? 'Sadece Çarşamba')),
-                DropdownMenuItem(value: PasscodeType.thursdayCyclic, child: Text(l10n?.onlyThursday ?? 'Sadece Perşembe')),
-                DropdownMenuItem(value: PasscodeType.fridayCyclic, child: Text(l10n?.onlyFriday ?? 'Sadece Cuma')),
-                DropdownMenuItem(value: PasscodeType.saturdayCyclic, child: Text(l10n?.onlySaturday ?? 'Sadece Cumartesi')),
-                DropdownMenuItem(value: PasscodeType.sundayCyclic, child: Text(l10n?.onlySunday ?? 'Sadece Pazar')),
+                DropdownMenuItem(
+                    value: PasscodeType.dailyCyclic,
+                    child: Text(l10n?.everyDay ?? 'Her Gün')),
+                DropdownMenuItem(
+                    value: PasscodeType.workdayCyclic,
+                    child: Text(l10n?.workdays ?? 'Hafta İçi (Pzt-Cum)')),
+                DropdownMenuItem(
+                    value: PasscodeType.weekendCyclic,
+                    child: Text(l10n?.weekend ?? 'Hafta Sonu')),
+                DropdownMenuItem(
+                    value: PasscodeType.mondayCyclic,
+                    child: Text(l10n?.onlyMonday ?? 'Sadece Pazartesi')),
+                DropdownMenuItem(
+                    value: PasscodeType.tuesdayCyclic,
+                    child: Text(l10n?.onlyTuesday ?? 'Sadece Salı')),
+                DropdownMenuItem(
+                    value: PasscodeType.wednesdayCyclic,
+                    child: Text(l10n?.onlyWednesday ?? 'Sadece Çarşamba')),
+                DropdownMenuItem(
+                    value: PasscodeType.thursdayCyclic,
+                    child: Text(l10n?.onlyThursday ?? 'Sadece Perşembe')),
+                DropdownMenuItem(
+                    value: PasscodeType.fridayCyclic,
+                    child: Text(l10n?.onlyFriday ?? 'Sadece Cuma')),
+                DropdownMenuItem(
+                    value: PasscodeType.saturdayCyclic,
+                    child: Text(l10n?.onlySaturday ?? 'Sadece Cumartesi')),
+                DropdownMenuItem(
+                    value: PasscodeType.sundayCyclic,
+                    child: Text(l10n?.onlySunday ?? 'Sadece Pazar')),
               ],
               onChanged: (val) {
                 if (val != null) {
@@ -423,8 +468,10 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
               },
             ),
           ),
-          const Divider(height: 1, color: Color(0xFF2A2A2A), indent: 16, endIndent: 16),
-          _buildInfoMessage(l10n?.infoRecurring ?? 'Yinelenen şifreler yalnızca belirtilen günlerde aktiftir. Sistem tarafından otomatik olarak üretilir.'),
+          const Divider(
+              height: 1, color: Color(0xFF2A2A2A), indent: 16, endIndent: 16),
+          _buildInfoMessage(l10n?.infoRecurring ??
+              'Yinelenen şifreler yalnızca belirtilen günlerde aktiftir. Sistem tarafından otomatik olarak üretilir.'),
         ],
       ),
     );
@@ -435,12 +482,14 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
   Widget _buildNameField(AppLocalizations? l10n) {
     return Container(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
+        border:
+            Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
-          Text(l10n?.nameLabel ?? 'İsim', style: const TextStyle(color: Colors.white, fontSize: 16)),
+          Text(l10n?.nameLabel ?? 'İsim',
+              style: const TextStyle(color: Colors.white, fontSize: 16)),
           const SizedBox(width: 16),
           Expanded(
             child: TextField(
@@ -462,12 +511,14 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
   Widget _buildCustomPasscodeField(AppLocalizations? l10n) {
     return Container(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
+        border:
+            Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
-          Text(l10n?.passcodeOptional ?? 'Şifre (Opsiyonel)', style: const TextStyle(color: Colors.white, fontSize: 16)),
+          Text(l10n?.passcodeOptional ?? 'Şifre (Opsiyonel)',
+              style: const TextStyle(color: Colors.white, fontSize: 16)),
           const SizedBox(width: 16),
           Expanded(
             child: TextField(
@@ -487,19 +538,23 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
     );
   }
 
-  Widget _buildSettingsRow(String label, String value, {VoidCallback? onTap, bool showArrow = false}) {
+  Widget _buildSettingsRow(String label, String value,
+      {VoidCallback? onTap, bool showArrow = false}) {
     return Container(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
+        border:
+            Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        title: Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+        title: Text(label,
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (value.isNotEmpty)
-              Text(value, style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+              Text(value,
+                  style: TextStyle(color: Colors.grey[400], fontSize: 14)),
             if (showArrow)
               const Padding(
                 padding: EdgeInsets.only(left: 8),
@@ -523,7 +578,8 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
           Expanded(
             child: Text(
               message,
-              style: TextStyle(color: Colors.grey[500], fontSize: 13, height: 1.4),
+              style:
+                  TextStyle(color: Colors.grey[500], fontSize: 13, height: 1.4),
             ),
           ),
         ],
@@ -541,12 +597,14 @@ class _CreatePasscodePageState extends State<CreatePasscodePage> with SingleTick
           onPressed: _onNext,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF4A90FF),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
             elevation: 0,
           ),
           child: Text(
             l10n?.createButtonAlt ?? 'Oluştur',
-            style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+                fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ),
       ),

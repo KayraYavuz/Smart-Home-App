@@ -9,7 +9,8 @@ class GatewayLocksPage extends StatefulWidget {
   final String gatewayId;
   final String gatewayName;
 
-  const GatewayLocksPage({super.key, required this.gatewayId, required this.gatewayName});
+  const GatewayLocksPage(
+      {super.key, required this.gatewayId, required this.gatewayName});
 
   @override
   State<GatewayLocksPage> createState() => _GatewayLocksPageState();
@@ -36,7 +37,8 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
     if (authState is Authenticated) {
       try {
         final apiService = ApiService(context.read<AuthRepository>());
-        final locks = await apiService.getGatewayLocks(gatewayId: widget.gatewayId);
+        final locks =
+            await apiService.getGatewayLocks(gatewayId: widget.gatewayId);
         setState(() {
           _locks = locks;
           _isLoading = false;
@@ -77,10 +79,11 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
         child: Text(_errorMessage, style: const TextStyle(color: Colors.red)),
       );
     }
-    
+
     if (_locks.isEmpty) {
       return const Center(
-        child: Text('No locks found for this gateway.', style: TextStyle(color: Colors.white)),
+        child: Text('No locks found for this gateway.',
+            style: TextStyle(color: Colors.white)),
       );
     }
 
@@ -90,8 +93,13 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
         final lock = _locks[index];
         return ListTile(
           leading: const Icon(Icons.lock, color: Color(0xFF1E90FF)),
-          title: Text(lock['lockAlias'] ?? 'Unknown Lock', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-          subtitle: Text(lock['lockMac'] ?? '', style: TextStyle(color: Colors.grey[400])),
+          title: Text(lock['lockAlias'] ?? 'Unknown Lock',
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
+          subtitle: Text(lock['lockMac'] ?? '',
+              style: TextStyle(color: Colors.grey[400])),
         );
       },
     );

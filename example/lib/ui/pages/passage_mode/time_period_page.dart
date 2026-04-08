@@ -23,7 +23,7 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
   @override
   void initState() {
     super.initState();
-    
+
     if (widget.existingPeriod != null) {
       final period = widget.existingPeriod!;
       _selectedDays = Set.from(period.selectedDays);
@@ -117,7 +117,8 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
     HapticFeedback.mediumImpact();
 
     final period = TimePeriod(
-      id: widget.existingPeriod?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.existingPeriod?.id ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       selectedDays: _selectedDays.toList()..sort(),
       isAllHours: _isAllHours,
       startHour: _isAllHours ? null : _startTime.hour,
@@ -162,18 +163,18 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
                   _buildSectionTitle('Bu günlerde'),
                   const SizedBox(height: 16),
                   _buildDaySelector(),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Time Settings Section
                   _buildSectionTitle('Zaman ayarları'),
                   const SizedBox(height: 16),
-                  
+
                   // All Hours Option
                   _buildAllHoursOption(),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Start Time
                   _buildTimeRow(
                     title: 'Başlangıç saati',
@@ -181,9 +182,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
                     onTap: _isAllHours ? null : _selectStartTime,
                     enabled: !_isAllHours,
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // End Time
                   _buildTimeRow(
                     title: 'Bitiş zamanı',
@@ -195,7 +196,7 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
               ),
             ),
           ),
-          
+
           // Save Button
           _buildSaveButton(),
         ],
@@ -282,7 +283,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
                     shape: BoxShape.circle,
                     color: _isAllHours ? AppColors.primary : Colors.transparent,
                     border: Border.all(
-                      color: _isAllHours ? AppColors.primary : AppColors.textSecondary,
+                      color: _isAllHours
+                          ? AppColors.primary
+                          : AppColors.textSecondary,
                       width: 2,
                     ),
                   ),
@@ -312,8 +315,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
     required VoidCallback? onTap,
     required bool enabled,
   }) {
-    final timeString = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-    
+    final timeString =
+        '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
       opacity: enabled ? 1.0 : 0.4,
@@ -345,7 +349,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
                       Text(
                         timeString,
                         style: TextStyle(
-                          color: enabled ? AppColors.primary : AppColors.textSecondary,
+                          color: enabled
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -353,7 +359,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
                       const SizedBox(width: 8),
                       Icon(
                         Icons.chevron_right,
-                        color: enabled ? AppColors.textSecondary : AppColors.border,
+                        color: enabled
+                            ? AppColors.textSecondary
+                            : AppColors.border,
                         size: 20,
                       ),
                     ],

@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -28,9 +27,12 @@ class _AddFacePageState extends State<AddFacePage> {
   @override
   void initState() {
     super.initState();
-    _startDateController.text = DateTime.now().millisecondsSinceEpoch.toString();
-    _endDateController.text =
-        DateTime.now().add(const Duration(days: 365)).millisecondsSinceEpoch.toString();
+    _startDateController.text =
+        DateTime.now().millisecondsSinceEpoch.toString();
+    _endDateController.text = DateTime.now()
+        .add(const Duration(days: 365))
+        .millisecondsSinceEpoch
+        .toString();
   }
 
   Future<void> _pickImage() async {
@@ -53,16 +55,16 @@ class _AddFacePageState extends State<AddFacePage> {
           _isProcessing = false;
         });
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Face feature data obtained successfully.')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Face feature data obtained successfully.')));
       } catch (e) {
         if (!mounted) return;
         setState(() {
           _isProcessing = false;
         });
         if (!mounted) return;
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Failed to get feature data: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to get feature data: $e')));
       }
     }
   }
@@ -89,8 +91,8 @@ class _AddFacePageState extends State<AddFacePage> {
           _isProcessing = false;
         });
         if (!mounted) return;
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Face added successfully.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Face added successfully.')));
         if (!mounted) return;
         Navigator.pop(context, true);
       } catch (e) {
@@ -104,8 +106,8 @@ class _AddFacePageState extends State<AddFacePage> {
       }
     } else {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select an image and get feature data first.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Please select an image and get feature data first.')));
     }
   }
 
@@ -142,7 +144,8 @@ class _AddFacePageState extends State<AddFacePage> {
                 ),
                 TextFormField(
                   controller: _startDateController,
-                  decoration: const InputDecoration(labelText: 'Start Date (ms)'),
+                  decoration:
+                      const InputDecoration(labelText: 'Start Date (ms)'),
                   keyboardType: TextInputType.number,
                 ),
                 TextFormField(
@@ -155,7 +158,8 @@ class _AddFacePageState extends State<AddFacePage> {
                 if (_featureData != null)
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Icon(Icons.check_circle, color: Colors.green, size: 40),
+                    child:
+                        Icon(Icons.check_circle, color: Colors.green, size: 40),
                   ),
                 const SizedBox(height: 20),
                 ElevatedButton(

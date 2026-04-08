@@ -19,7 +19,7 @@ class NotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  
+
   // Local storage key
   static const String _notificationsKey = 'local_notifications_history';
   static const String _unreadCountKey = 'unread_notification_count';
@@ -32,20 +32,19 @@ class NotificationService {
   Future<void> initialize() async {
     debugPrint("🚀 NotificationService: initialize() başladı...");
     if (_isInitialized) return;
-    
-
 
     try {
       await _firebaseMessaging.setAutoInitEnabled(true);
 
-      NotificationSettings settings = await _firebaseMessaging.requestPermission(
+      NotificationSettings settings =
+          await _firebaseMessaging.requestPermission(
         alert: true,
         badge: true,
         sound: true,
         provisional: false,
       );
 
-      if (settings.authorizationStatus == AuthorizationStatus.authorized || 
+      if (settings.authorizationStatus == AuthorizationStatus.authorized ||
           settings.authorizationStatus == AuthorizationStatus.provisional) {
         debugPrint('✅ Bildirim izni var.');
       } else {
@@ -54,7 +53,8 @@ class NotificationService {
         return;
       }
 
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      FirebaseMessaging.onBackgroundMessage(
+          _firebaseMessagingBackgroundHandler);
       await _setupLocalNotifications();
       await _loadUnreadCount(); // Load initial unread count
       _fetchTokenAsync();
@@ -95,36 +95,39 @@ class NotificationService {
   }
 
   Future<void> _setupLocalNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid = 
+    const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/launcher_icon');
 
-    const DarwinInitializationSettings initializationSettingsDarwin = 
+    const DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,
       requestAlertPermission: false,
     );
 
-    const InitializationSettings initializationSettings = InitializationSettings(
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsDarwin,
     );
 
-    await _localNotificationsPlugin.initialize(settings: initializationSettings);
-    
+    await _localNotificationsPlugin.initialize(
+        settings: initializationSettings);
+
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel',
       'Kilit Bildirimleri',
       description: 'Kapı kilit olayları ve uyarıları',
       importance: Importance.max,
     );
-    
+
     await _localNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
-        
+
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
-      alert: true, 
+      alert: true,
       badge: true,
       sound: true,
     );
@@ -132,7 +135,7 @@ class NotificationService {
 
   Future<void> _showLocalNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
-    
+
     String title = notification?.title ?? 'Kilit İşlemi';
     String body = notification?.body ?? '';
 
@@ -163,20 +166,26 @@ class NotificationService {
     // If no explicit notification, build one from data
     if (notification == null) {
       if (message.data.isNotEmpty) {
-        final name = lockName ?? message.data['lockName'] ?? message.data['lockAlias'] ?? 'Kilit';
-        final username = message.data['username'] ?? message.data['sender'] ?? 'Biri';
+        final name = lockName ??
+            message.data['lockName'] ??
+            message.data['lockAlias'] ??
+            'Kilit';
+        final username =
+            message.data['username'] ?? message.data['sender'] ?? 'Biri';
         final action = message.data['message'] ?? 'işlem yaptı';
-        
+
         title = name;
         body = '$username $action';
-        
+
         if (body.trim().isEmpty) return;
       } else {
         return;
       }
     } else {
       // If we have a notification but it's generic, try to use lockName
-      if (lockName != null && !title.contains(lockName) && !body.contains(lockName)) {
+      if (lockName != null &&
+          !title.contains(lockName) &&
+          !body.contains(lockName)) {
         title = lockName;
       }
     }
@@ -217,13 +226,14 @@ class NotificationService {
     }
   }
 
-  Future<void> saveNotification(String title, String body, Map<String, dynamic> data) async {
+  Future<void> saveNotification(
+      String title, String body, Map<String, dynamic> data) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // 1. Save to history
       final List<String> history = prefs.getStringList(_notificationsKey) ?? [];
-      
+
       final newNotification = {
         'title': title,
         'body': body,
@@ -231,15 +241,15 @@ class NotificationService {
         'timestamp': DateTime.now().millisecondsSinceEpoch,
         'read': false,
       };
-      
+
       // Add to beginning
       history.insert(0, jsonEncode(newNotification));
-      
+
       // Limit history to 50 items
       if (history.length > 50) {
         history.removeRange(50, history.length);
       }
-      
+
       await prefs.setStringList(_notificationsKey, history);
 
       // 2. Increment unread count
@@ -247,9 +257,8 @@ class NotificationService {
       currentCount++;
       await prefs.setInt(_unreadCountKey, currentCount);
       unreadCount.value = currentCount;
-      
-      debugPrint("✅ Notification saved locally. Unread count: $currentCount");
 
+      debugPrint("✅ Notification saved locally. Unread count: $currentCount");
     } catch (e) {
       debugPrint("❌ Error saving notification locally: $e");
     }
@@ -259,7 +268,7 @@ class NotificationService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final List<String> history = prefs.getStringList(_notificationsKey) ?? [];
-      
+
       return history.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
     } catch (e) {
       debugPrint("❌ Error getting notifications: $e");
@@ -270,26 +279,25 @@ class NotificationService {
   Future<void> markAllAsRead() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Reset unread count
       await prefs.setInt(_unreadCountKey, 0);
       unreadCount.value = 0;
-      
+
       // Mark all items as read
       final List<String> history = prefs.getStringList(_notificationsKey) ?? [];
       final List<String> updatedHistory = [];
-      
+
       for (var itemStr in history) {
         final item = jsonDecode(itemStr) as Map<String, dynamic>;
         item['read'] = true;
         updatedHistory.add(jsonEncode(item));
       }
-      
+
       await prefs.setStringList(_notificationsKey, updatedHistory);
-      
+
       // Clear badge
       await clearBadge();
-      
     } catch (e) {
       debugPrint("❌ Error marking notifications as read: $e");
     }
@@ -299,17 +307,20 @@ class NotificationService {
     try {
       // Clear local notifications plugin badge (supported on iOS/MacOS)
       // For Android, this usually clears the grouping or badge count if supported by launcher
-      if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
-         await _firebaseMessaging.setForegroundNotificationPresentationOptions(badge: false);
-         await _firebaseMessaging.setForegroundNotificationPresentationOptions(badge: true); // Reset setting
+      if (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS) {
+        await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+            badge: false);
+        await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+            badge: true); // Reset setting
       }
       // Note: flutter_local_notifications doesn't have a direct 'clearBadge' for all platforms
       // but cancelling all notifications usually clears the badge on Android
-      // await _localNotificationsPlugin.cancelAll(); 
+      // await _localNotificationsPlugin.cancelAll();
       // User might not want to clear active notifications from tray, just the badge/count.
-      // Modifying badge count directly is platform specific. 
-      // For iOS, the 'badge' permission handles it. 
-      
+      // Modifying badge count directly is platform specific.
+      // For iOS, the 'badge' permission handles it.
+
       debugPrint("🧹 Badge clearance attempted.");
     } catch (e) {
       debugPrint("❌ Error clearing badge: $e");

@@ -8,7 +8,8 @@ class FingerprintBloc extends Bloc<FingerprintEvent, FingerprintState> {
   final TTLockRepository _ttlockRepository;
   final ApiService _apiService;
 
-  FingerprintBloc(this._ttlockRepository, this._apiService) : super(FingerprintInitial()) {
+  FingerprintBloc(this._ttlockRepository, this._apiService)
+      : super(FingerprintInitial()) {
     on<LoadFingerprints>(_onLoadFingerprints);
     on<AddFingerprint>(_onAddFingerprint);
     on<DeleteFingerprint>(_onDeleteFingerprint);

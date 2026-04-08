@@ -10,7 +10,8 @@ class PasscodeCubit extends Cubit<PasscodeState> {
 
   PasscodeCubit(this._repository) : super(PasscodeInitial());
 
-  Future<void> fetchPasscodes(int lockId, String clientId, String accessToken) async {
+  Future<void> fetchPasscodes(
+      int lockId, String clientId, String accessToken) async {
     try {
       emit(PasscodeLoading());
       final passcodes = await _repository.getPasscodes(

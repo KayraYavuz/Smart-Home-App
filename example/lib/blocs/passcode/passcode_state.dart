@@ -7,16 +7,19 @@ abstract class PasscodeState extends Equatable {
 }
 
 class PasscodeInitial extends PasscodeState {}
+
 class PasscodeLoading extends PasscodeState {}
+
 class PasscodeLoadSuccess extends PasscodeState {
   final List<Passcode> passcodes;
   const PasscodeLoadSuccess(this.passcodes);
   @override
   List<Object> get props => [passcodes];
 }
+
 class PasscodeLoadFailure extends PasscodeState {
   final String error;
   const PasscodeLoadFailure(this.error);
-    @override
+  @override
   List<Object> get props => [error];
 }

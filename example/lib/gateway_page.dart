@@ -7,7 +7,8 @@ import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'api_service.dart';
 
 class GatewayPage extends StatefulWidget {
-  const GatewayPage({super.key, required this.type, this.wifi, required this.mac});
+  const GatewayPage(
+      {super.key, required this.type, this.wifi, required this.mac});
   final String? wifi;
   final TTGatewayType type;
   final String mac;
@@ -36,11 +37,15 @@ class _GatewayPageState extends State<GatewayPage> {
   Future<void> _initGateway_2(String? wifi, String? wifiPassword) async {
     final l10n = AppLocalizations.of(context);
     if (widget.wifi == null || wifiPassword == null || wifiPassword.isEmpty) {
-      _showSnackBar(l10n?.wifiOrPasswordEmpty ?? 'Wi-Fi ağı veya şifre boş olamaz', isError: true);
+      _showSnackBar(
+          l10n?.wifiOrPasswordEmpty ?? 'Wi-Fi ağı veya şifre boş olamaz',
+          isError: true);
       return;
     }
     if (_gatewayName.isEmpty) {
-      _showSnackBar(l10n?.enterGatewayNameAlt ?? 'Lütfen bir ağ geçidi adı girin', isError: true);
+      _showSnackBar(
+          l10n?.enterGatewayNameAlt ?? 'Lütfen bir ağ geçidi adı girin',
+          isError: true);
       return;
     }
 
@@ -49,7 +54,9 @@ class _GatewayPageState extends State<GatewayPage> {
     final pw = await apiService.getMd5Password();
 
     if (uid == null || pw == null) {
-      _showSnackBar('Kullanıcı bilgileri bulunamadı. Lütfen tekrar giriş yapın.', isError: true);
+      _showSnackBar(
+          'Kullanıcı bilgileri bulunamadı. Lütfen tekrar giriş yapın.',
+          isError: true);
       return;
     }
 
@@ -67,7 +74,9 @@ class _GatewayPageState extends State<GatewayPage> {
   Future<void> _initGateway_3_4() async {
     final l10n = AppLocalizations.of(context);
     if (_gatewayName.isEmpty) {
-      _showSnackBar(l10n?.enterGatewayNameAlt ?? 'Lütfen bir ağ geçidi adı girin', isError: true);
+      _showSnackBar(
+          l10n?.enterGatewayNameAlt ?? 'Lütfen bir ağ geçidi adı girin',
+          isError: true);
       return;
     }
 
@@ -76,7 +85,10 @@ class _GatewayPageState extends State<GatewayPage> {
     final pw = await apiService.getMd5Password();
 
     if (uid == null || pw == null) {
-      _showSnackBar(l10n?.userInfoNotFoundReLogin ?? 'Kullanıcı bilgileri bulunamadı. Lütfen tekrar giriş yapın.', isError: true);
+      _showSnackBar(
+          l10n?.userInfoNotFoundReLogin ??
+              'Kullanıcı bilgileri bulunamadı. Lütfen tekrar giriş yapın.',
+          isError: true);
       return;
     }
 
@@ -93,7 +105,7 @@ class _GatewayPageState extends State<GatewayPage> {
     final l10n = AppLocalizations.of(context);
     setState(() => _isLoading = true);
     debugPrint("Gateway INIT START: paramMap=$paramMap");
-    
+
     // Güvenlik amaçlı 60 saniyelik zaman aşımı (Native SDK takılırsa diye)
     bool isCallbackFired = false;
     Future.delayed(const Duration(seconds: 60), () {
@@ -101,7 +113,10 @@ class _GatewayPageState extends State<GatewayPage> {
         debugPrint("Gateway INIT TIMEOUT");
         isCallbackFired = true;
         setState(() => _isLoading = false);
-        _showSnackBar(l10n?.gatewayConnectionTimeout ?? 'Bağlantı zaman aşımına uğradı. Lütfen ağ geçidini sıfırlayıp ağı kontrol edin.', isError: true);
+        _showSnackBar(
+            l10n?.gatewayConnectionTimeout ??
+                'Bağlantı zaman aşımına uğradı. Lütfen ağ geçidini sıfırlayıp ağı kontrol edin.',
+            isError: true);
       }
     });
 
@@ -109,7 +124,7 @@ class _GatewayPageState extends State<GatewayPage> {
       if (isCallbackFired) return;
       isCallbackFired = true;
       debugPrint("Gateway add SDK result: $map");
-      
+
       try {
         final apiService = Provider.of<ApiService>(context, listen: false);
         await apiService.initGateway(
@@ -120,7 +135,8 @@ class _GatewayPageState extends State<GatewayPage> {
         );
 
         if (mounted) {
-          _showSnackBar(l10n?.gatewayAddedSuccessServer ?? 'Ağ geçidi başarıyla eklendi ve sunucuya kaydedildi!');
+          _showSnackBar(l10n?.gatewayAddedSuccessServer ??
+              'Ağ geçidi başarıyla eklendi ve sunucuya kaydedildi!');
           setState(() => _isLoading = false);
           Future.delayed(const Duration(seconds: 1), () {
             if (mounted) {
@@ -131,15 +147,16 @@ class _GatewayPageState extends State<GatewayPage> {
       } catch (e) {
         if (mounted) {
           debugPrint("Gateway Server Upload Error: $e");
-          
+
           try {
             final apiService = Provider.of<ApiService>(context, listen: false);
             final gatewayList = await apiService.getGatewayList();
-            final isRegistered = gatewayList.any((g) => 
-                g['gatewayMac'] == map['mac'] || g['mac'] == map['mac']);
-                
+            final isRegistered = gatewayList.any(
+                (g) => g['gatewayMac'] == map['mac'] || g['mac'] == map['mac']);
+
             if (isRegistered) {
-              _showSnackBar(l10n?.gatewayAddedSuccessTimeoutServer ?? 'Ağ geçidi başarıyla eklendi (Zaman aşımına rağmen sunucuya ulaştı)!');
+              _showSnackBar(l10n?.gatewayAddedSuccessTimeoutServer ??
+                  'Ağ geçidi başarıyla eklendi (Zaman aşımına rağmen sunucuya ulaştı)!');
               setState(() => _isLoading = false);
               Future.delayed(const Duration(seconds: 1), () {
                 if (mounted) {
@@ -152,7 +169,10 @@ class _GatewayPageState extends State<GatewayPage> {
             debugPrint("Fallback gateway check failed: $fallbackError");
           }
 
-          _showSnackBar(l10n?.gatewayAddedSuccessServerFail(e.toString()) ?? 'Ağ geçidi cihaza eklendi ancak sunucuya kaydedilemedi: $e', isError: true);
+          _showSnackBar(
+              l10n?.gatewayAddedSuccessServerFail(e.toString()) ??
+                  'Ağ geçidi cihaza eklendi ancak sunucuya kaydedilemedi: $e',
+              isError: true);
           setState(() => _isLoading = false);
         }
       }
@@ -162,12 +182,19 @@ class _GatewayPageState extends State<GatewayPage> {
       if (mounted) {
         debugPrint("Gateway INIT ERROR: errorCode=$errorCode, msg=$errorMsg");
         setState(() => _isLoading = false);
-        _showSnackBar(l10n?.gatewayError(errorCode.toString(), errorMsg) ?? 'Hata: $errorCode - $errorMsg', isError: true);
+        _showSnackBar(
+            l10n?.gatewayError(errorCode.toString(), errorMsg) ??
+                'Hata: $errorCode - $errorMsg',
+            isError: true);
         if (errorCode == TTGatewayError.notConnect ||
             errorCode == TTGatewayError.disconnect) {
-          debugPrint("Lütfen ağ geçidini yeniden başlatıp tekrar bağlanın."); // Internal debug print
+          debugPrint(
+              "Lütfen ağ geçidini yeniden başlatıp tekrar bağlanın."); // Internal debug print
         } else if (errorCode == TTGatewayError.fail) {
-           _showSnackBar(l10n?.gatewayCheckWifiAndPermissions ?? 'Lütfen Wi-Fi ve konum/bluetooth izinlerini kontrol edin.', isError: true);
+          _showSnackBar(
+              l10n?.gatewayCheckWifiAndPermissions ??
+                  'Lütfen Wi-Fi ve konum/bluetooth izinlerini kontrol edin.',
+              isError: true);
         }
       }
     });
@@ -180,26 +207,27 @@ class _GatewayPageState extends State<GatewayPage> {
         appBar: AppBar(
           title: Text(l10n?.addGatewayTitleAlt ?? "Ağ Geçidi Ekle"),
         ),
-        body: _isLoading 
+        body: _isLoading
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const CircularProgressIndicator(),
                     const SizedBox(height: 16),
-                    Text(l10n?.gatewayInitializingWait ?? "Ağ geçidi başlatılıyor, lütfen bekleyin..."),
+                    Text(l10n?.gatewayInitializingWait ??
+                        "Ağ geçidi başlatılıyor, lütfen bekleyin..."),
                   ],
                 ),
               )
-            : getChild(l10n)
-    );
+            : getChild(l10n));
   }
 
   Widget getChild(AppLocalizations? l10n) {
     TextField nameTextField = TextField(
       textAlign: TextAlign.center,
       controller: TextEditingController(text: _gatewayName),
-      decoration: InputDecoration(hintText: l10n?.gatewayNameHintAlt ?? 'Ağ Geçidi Adı (örn: Ev)'),
+      decoration: InputDecoration(
+          hintText: l10n?.gatewayNameHintAlt ?? 'Ağ Geçidi Adı (örn: Ev)'),
       onChanged: (String content) {
         _gatewayName = content;
       },
@@ -209,13 +237,15 @@ class _GatewayPageState extends State<GatewayPage> {
       textAlign: TextAlign.center,
       controller: TextEditingController(text: widget.wifi),
       enabled: false,
-      decoration: InputDecoration(labelText: l10n?.selectedWifiNetwork ?? 'Seçili Wi-Fi Ağı'),
+      decoration: InputDecoration(
+          labelText: l10n?.selectedWifiNetwork ?? 'Seçili Wi-Fi Ağı'),
     );
 
     TextField wifiPasswordTextField = TextField(
         textAlign: TextAlign.center,
         controller: TextEditingController(text: _wifiPassword),
-        decoration: InputDecoration(hintText: l10n?.enterWifiPasswordHint ?? 'Wi-Fi Şifresini Girin'),
+        decoration: InputDecoration(
+            hintText: l10n?.enterWifiPasswordHint ?? 'Wi-Fi Şifresini Girin'),
         obscureText: false,
         onChanged: (String content) {
           _wifiPassword = content;
@@ -267,4 +297,3 @@ class _GatewayPageState extends State<GatewayPage> {
     }
   }
 }
-

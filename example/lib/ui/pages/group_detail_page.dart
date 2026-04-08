@@ -36,7 +36,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context)!;
     try {
-      final locks = await _apiService.getGroupLockList(widget.group['groupId'].toString());
+      final locks = await _apiService
+          .getGroupLockList(widget.group['groupId'].toString());
       if (!mounted) return;
       setState(() {
         _groupLocks = locks;
@@ -59,16 +60,19 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(color: AppColors.primary)),
     );
 
     try {
       // 1. Get ALL locks
       final allLocks = await _apiService.getKeyList();
-      
+
       // 2. Get locks ALREADY in this group
-      final currentGroupLocks = await _apiService.getGroupLockList(widget.group['groupId'].toString());
-      final Set<String> groupLockIds = currentGroupLocks.map((l) => l['lockId'].toString()).toSet();
+      final currentGroupLocks = await _apiService
+          .getGroupLockList(widget.group['groupId'].toString());
+      final Set<String> groupLockIds =
+          currentGroupLocks.map((l) => l['lockId'].toString()).toSet();
 
       if (!mounted) return;
       navigator.pop(); // Close loading
@@ -79,26 +83,31 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       await showDialog(
         context: context,
         builder: (context) {
-          return StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                backgroundColor: const Color(0xFF1E1E1E),
-                title: Text(l10n.groupLocksTitle(widget.group['name'] ?? ''), style: const TextStyle(color: Colors.white)),
-                content: SizedBox(
-                  width: double.maxFinite,
-                  height: 400,
-                  child: allLocks.isEmpty 
-                    ? Center(child: Text(l10n.noLocksFound, style: const TextStyle(color: Colors.grey)))
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF1E1E1E),
+              title: Text(l10n.groupLocksTitle(widget.group['name'] ?? ''),
+                  style: const TextStyle(color: Colors.white)),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: 400,
+                child: allLocks.isEmpty
+                    ? Center(
+                        child: Text(l10n.noLocksFound,
+                            style: const TextStyle(color: Colors.grey)))
                     : ListView.builder(
                         itemCount: allLocks.length,
                         itemBuilder: (context, index) {
                           final lock = allLocks[index];
                           final lockId = lock['lockId'].toString();
                           final isSelected = selectedLockIds.contains(lockId);
-                          
+
                           return CheckboxListTile(
-                            title: Text(lock['name'] ?? l10n.lock, style: const TextStyle(color: Colors.white)),
-                            subtitle: Text(lockId, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                            title: Text(lock['name'] ?? l10n.lock,
+                                style: const TextStyle(color: Colors.white)),
+                            subtitle: Text(lockId,
+                                style: const TextStyle(
+                                    color: Colors.grey, fontSize: 12)),
                             value: isSelected,
                             activeColor: AppColors.primary,
                             checkColor: Colors.black,
@@ -114,43 +123,48 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                           );
                         },
                       ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => navigator.pop(),
+                  child: Text(l10n.cancel,
+                      style: const TextStyle(color: Colors.grey)),
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () => navigator.pop(),
-                    child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      navigator.pop();
-                      await _saveGroupLocks(widget.group['groupId'].toString(), groupLockIds, selectedLockIds);
-                      _fetchGroupLocks(); // Refresh list
-                    },
-                    child: Text(l10n.save, style: const TextStyle(color: AppColors.primary)),
-                  ),
-                ],
-              );
-            }
-          );
+                TextButton(
+                  onPressed: () async {
+                    navigator.pop();
+                    await _saveGroupLocks(widget.group['groupId'].toString(),
+                        groupLockIds, selectedLockIds);
+                    _fetchGroupLocks(); // Refresh list
+                  },
+                  child: Text(l10n.save,
+                      style: const TextStyle(color: AppColors.primary)),
+                ),
+              ],
+            );
+          });
         },
       );
-
     } catch (e) {
       navigator.pop(); // Close loading
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(l10n.lockListRetrievalError(e.toString())), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text(l10n.lockListRetrievalError(e.toString())),
+            backgroundColor: Colors.red),
       );
     }
   }
 
-  Future<void> _saveGroupLocks(String groupId, Set<String> oldLockIds, Set<String> newLockIds) async {
+  Future<void> _saveGroupLocks(
+      String groupId, Set<String> oldLockIds, Set<String> newLockIds) async {
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(color: AppColors.primary)),
     );
 
     int successCount = 0;
@@ -172,7 +186,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     final toRemove = oldLockIds.difference(newLockIds);
     for (var lockId in toRemove) {
       try {
-        await _apiService.setLockGroup(lockId: lockId, groupId: "0"); // 0 to ungroup
+        await _apiService.setLockGroup(
+            lockId: lockId, groupId: "0"); // 0 to ungroup
         successCount++;
       } catch (e) {
         debugPrint("Remove lock $lockId failed: $e");
@@ -185,7 +200,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
     scaffoldMessenger.showSnackBar(
       SnackBar(
-        content: Text(l10n.operationCompletedWithCounts(successCount.toString(), failCount.toString())),
+        content: Text(l10n.operationCompletedWithCounts(
+            successCount.toString(), failCount.toString())),
         backgroundColor: failCount > 0 ? Colors.orange : Colors.green,
       ),
     );
@@ -195,7 +211,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     final TextEditingController usernameController = TextEditingController();
     // Default start now, end 1 year later
     int startDate = DateTime.now().millisecondsSinceEpoch;
-    int endDate = DateTime.now().add(const Duration(days: 365)).millisecondsSinceEpoch;
+    int endDate =
+        DateTime.now().add(const Duration(days: 365)).millisecondsSinceEpoch;
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
 
@@ -203,7 +220,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(l10n.shareGroupTitle(widget.group['name'] ?? ''), style: const TextStyle(color: Colors.white)),
+        title: Text(l10n.shareGroupTitle(widget.group['name'] ?? ''),
+            style: const TextStyle(color: Colors.white)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -213,7 +231,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               decoration: InputDecoration(
                 hintText: l10n.receiverHintUserEmail,
                 hintStyle: const TextStyle(color: Colors.grey),
-                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+                enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white30)),
                 prefixIcon: const Icon(Icons.person, color: Colors.grey),
               ),
             ),
@@ -227,7 +246,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         actions: [
           TextButton(
             onPressed: () => navigator.pop(),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
@@ -241,14 +261,16 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                 );
               }
             },
-            child: Text(l10n.send, style: const TextStyle(color: AppColors.primary)),
+            child: Text(l10n.send,
+                style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _processGroupShare(String groupId, String receiverUsername, int startDateMs, int endDateMs) async {
+  Future<void> _processGroupShare(String groupId, String receiverUsername,
+      int startDateMs, int endDateMs) async {
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
@@ -256,7 +278,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+      builder: (context) => const Center(
+          child: CircularProgressIndicator(color: AppColors.primary)),
     );
 
     try {
@@ -265,11 +288,12 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       if (token == null) throw Exception(l10n.tokenNotFound);
 
       final locks = await _apiService.getGroupLockList(groupId);
-      
+
       if (locks.isEmpty) {
         if (mounted) navigator.pop();
         if (mounted) {
-          scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.noLocksInGroup)));
+          scaffoldMessenger
+              .showSnackBar(SnackBar(content: Text(l10n.noLocksInGroup)));
         }
         return;
       }
@@ -298,16 +322,17 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       if (mounted) {
         scaffoldMessenger.showSnackBar(
           SnackBar(
-            content: Text(l10n.locksSharedCounts(successCount.toString(), failCount.toString())),
+            content: Text(l10n.locksSharedCounts(
+                successCount.toString(), failCount.toString())),
             backgroundColor: failCount > 0 ? Colors.orange : Colors.green,
           ),
         );
       }
-
     } catch (e) {
       if (mounted) navigator.pop();
       if (mounted) {
-        scaffoldMessenger.showSnackBar(SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
+        scaffoldMessenger.showSnackBar(
+            SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
       }
     }
   }
@@ -317,7 +342,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(widget.group['name'] ?? AppLocalizations.of(context)!.groupDetail),
+        title: Text(
+            widget.group['name'] ?? AppLocalizations.of(context)!.groupDetail),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -342,7 +368,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     color: AppColors.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.folder_open, size: 32, color: AppColors.primary),
+                  child: const Icon(Icons.folder_open,
+                      size: 32, color: AppColors.primary),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -350,12 +377,18 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.group['name'] ?? AppLocalizations.of(context)!.unnamed,
-                        style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                        widget.group['name'] ??
+                            AppLocalizations.of(context)!.unnamed,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        AppLocalizations.of(context)!.totalLocksCount(_groupLocks.length.toString()),
-                        style: const TextStyle(color: Colors.grey, fontSize: 14),
+                        AppLocalizations.of(context)!
+                            .totalLocksCount(_groupLocks.length.toString()),
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 14),
                       ),
                     ],
                   ),
@@ -363,9 +396,9 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Action Button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -374,24 +407,31 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               child: ElevatedButton.icon(
                 onPressed: _manageGroupLocks,
                 icon: const Icon(Icons.edit_note, color: Colors.black),
-                label: Text(AppLocalizations.of(context)!.editGroupLocks, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                label: Text(AppLocalizations.of(context)!.editGroupLocks,
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ),
           ),
 
           const SizedBox(height: 16),
-          
+
           // Lock List
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                ? const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary))
                 : _groupLocks.isEmpty
-                    ? Center(child: Text(AppLocalizations.of(context)!.noLocksInGroup, style: const TextStyle(color: Colors.grey)))
+                    ? Center(
+                        child: Text(
+                            AppLocalizations.of(context)!.noLocksInGroup,
+                            style: const TextStyle(color: Colors.grey)))
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemCount: _groupLocks.length,
@@ -400,18 +440,24 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                           return Card(
                             color: const Color(0xFF2C2C2C),
                             margin: const EdgeInsets.only(bottom: 10),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
                             child: ListTile(
-                              leading: const Icon(Icons.lock, color: Colors.white70),
+                              leading:
+                                  const Icon(Icons.lock, color: Colors.white70),
                               title: Text(
-                                lock['lockAlias'] ?? lock['lockName'] ?? AppLocalizations.of(context)!.lock,
+                                lock['lockAlias'] ??
+                                    lock['lockName'] ??
+                                    AppLocalizations.of(context)!.lock,
                                 style: const TextStyle(color: Colors.white),
                               ),
                               subtitle: Text(
                                 'ID: ${lock['lockId']}',
-                                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                style: TextStyle(
+                                    color: Colors.grey[600], fontSize: 12),
                               ),
-                              trailing: const Icon(Icons.check_circle, color: AppColors.primary, size: 16),
+                              trailing: const Icon(Icons.check_circle,
+                                  color: AppColors.primary, size: 16),
                             ),
                           );
                         },

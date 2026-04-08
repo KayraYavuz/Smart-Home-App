@@ -38,7 +38,7 @@ class _LogsPageState extends State<LogsPage> {
     try {
       await _apiService.getAccessToken();
       final accessToken = _apiService.accessToken;
-      
+
       if (accessToken == null) throw Exception('No access token');
 
       if (widget.lockId != null) {
@@ -54,7 +54,7 @@ class _LogsPageState extends State<LogsPage> {
       } else {
         final allKeys = await _apiService.getKeyList();
         List<Map<String, dynamic>> allRecords = [];
-        
+
         final limitedKeys = allKeys.take(5).toList();
         for (var key in limitedKeys) {
           try {
@@ -68,9 +68,10 @@ class _LogsPageState extends State<LogsPage> {
             debugPrint('Error fetching records for ${key['lockId']}: $e');
           }
         }
-        
-        allRecords.sort((a, b) => (b['lockDate'] ?? 0).compareTo(a['lockDate'] ?? 0));
-        
+
+        allRecords
+            .sort((a, b) => (b['lockDate'] ?? 0).compareTo(a['lockDate'] ?? 0));
+
         if (!mounted) return;
         setState(() {
           _records = allRecords;
@@ -92,7 +93,8 @@ class _LogsPageState extends State<LogsPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(l10n.clearAllRecords, style: const TextStyle(color: Colors.white)),
+        title: Text(l10n.clearAllRecords,
+            style: const TextStyle(color: Colors.white)),
         content: Text(
           '${l10n.clearAllRecords}?\\n\\n${l10n.clearAllRecordsConfirmWarning}',
           style: const TextStyle(color: Colors.grey),
@@ -100,11 +102,14 @@ class _LogsPageState extends State<LogsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.delete, style: const TextStyle(color: Colors.redAccent)), // reusing delete or clear
+            child: Text(l10n.delete,
+                style: const TextStyle(
+                    color: Colors.redAccent)), // reusing delete or clear
           ),
         ],
       ),
@@ -131,59 +136,123 @@ class _LogsPageState extends State<LogsPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.saveSuccess), backgroundColor: Colors.green), // reusing success
+        SnackBar(
+            content: Text(l10n.saveSuccess),
+            backgroundColor: Colors.green), // reusing success
       );
-      
+
       _fetchRecords();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text(l10n.errorWithMsg(e.toString())),
+            backgroundColor: Colors.red),
       );
       setState(() => _isLoading = false);
     }
   }
 
-  Map<String, dynamic> _getRecordInfo(Map<String, dynamic> record, AppLocalizations l10n) {
-    
+  Map<String, dynamic> _getRecordInfo(
+      Map<String, dynamic> record, AppLocalizations l10n) {
     final int typeFromLock = record['recordTypeFromLock'] ?? 0;
     final int recordType = record['recordType'] ?? 0;
-    
+
     switch (typeFromLock) {
       case 1:
-        return {'label': l10n.recordPasscode, 'icon': Icons.keyboard, 'color': AppColors.primary};
+        return {
+          'label': l10n.recordPasscode,
+          'icon': Icons.keyboard,
+          'color': AppColors.primary
+        };
       case 2:
-        return {'label': l10n.recordCard, 'icon': Icons.credit_card, 'color': Colors.green};
+        return {
+          'label': l10n.recordCard,
+          'icon': Icons.credit_card,
+          'color': Colors.green
+        };
       case 3:
-        return {'label': l10n.recordFingerprint, 'icon': Icons.fingerprint, 'color': Colors.purple};
+        return {
+          'label': l10n.recordFingerprint,
+          'icon': Icons.fingerprint,
+          'color': Colors.purple
+        };
       case 4:
-        return {'label': l10n.recordAppBt, 'icon': Icons.phone_android, 'color': Colors.orange};
+        return {
+          'label': l10n.recordAppBt,
+          'icon': Icons.phone_android,
+          'color': Colors.orange
+        };
       case 5:
-        return {'label': l10n.recordRemoteUnlock, 'icon': Icons.wifi, 'color': Colors.teal};
+        return {
+          'label': l10n.recordRemoteUnlock,
+          'icon': Icons.wifi,
+          'color': Colors.teal
+        };
       case 6:
-        return {'label': l10n.recordLocked, 'icon': Icons.lock, 'color': AppColors.error};
+        return {
+          'label': l10n.recordLocked,
+          'icon': Icons.lock,
+          'color': AppColors.error
+        };
       case 7:
-        return {'label': l10n.recordMechanicalKey, 'icon': Icons.vpn_key, 'color': Colors.grey};
+        return {
+          'label': l10n.recordMechanicalKey,
+          'icon': Icons.vpn_key,
+          'color': Colors.grey
+        };
       case 8:
-        return {'label': l10n.recordWristband, 'icon': Icons.watch, 'color': Colors.indigo};
+        return {
+          'label': l10n.recordWristband,
+          'icon': Icons.watch,
+          'color': Colors.indigo
+        };
       case 10:
-        return {'label': l10n.recordRemoteControl, 'icon': Icons.settings_remote, 'color': Colors.blueGrey};
+        return {
+          'label': l10n.recordRemoteControl,
+          'icon': Icons.settings_remote,
+          'color': Colors.blueGrey
+        };
       case 11:
       case 28:
-        return {'label': l10n.recordAppRemote, 'icon': Icons.cloud_done, 'color': Colors.blue};
+        return {
+          'label': l10n.recordAppRemote,
+          'icon': Icons.cloud_done,
+          'color': Colors.blue
+        };
       case 12:
-        return {'label': l10n.recordGatewayUnlock, 'icon': Icons.router, 'color': Colors.cyan};
+        return {
+          'label': l10n.recordGatewayUnlock,
+          'icon': Icons.router,
+          'color': Colors.cyan
+        };
       case 17:
       case 26:
-        return {'label': l10n.recordAutoLock, 'icon': Icons.lock_clock, 'color': Colors.redAccent};
+        return {
+          'label': l10n.recordAutoLock,
+          'icon': Icons.lock_clock,
+          'color': Colors.redAccent
+        };
       default:
-        if (recordType == 11) return {'label': l10n.recordLocked, 'icon': Icons.lock, 'color': Colors.redAccent};
-        if (recordType == 12) return {'label': l10n.recordUnlocked, 'icon': Icons.lock_open, 'color': Colors.greenAccent};
-        return {'label': l10n.recordOtherOperation(typeFromLock.toString()), 'icon': Icons.history, 'color': Colors.white54};
+        if (recordType == 11)
+          return {
+            'label': l10n.recordLocked,
+            'icon': Icons.lock,
+            'color': Colors.redAccent
+          };
+        if (recordType == 12)
+          return {
+            'label': l10n.recordUnlocked,
+            'icon': Icons.lock_open,
+            'color': Colors.greenAccent
+          };
+        return {
+          'label': l10n.recordOtherOperation(typeFromLock.toString()),
+          'icon': Icons.history,
+          'color': Colors.white54
+        };
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -202,9 +271,9 @@ class _LogsPageState extends State<LogsPage> {
         elevation: 0,
         actions: [
           IconButton(
-             icon: const Icon(Icons.bluetooth_searching, color: Colors.blue),
-             onPressed: _syncLogsWithBluetooth,
-             tooltip: l10n.readFromLock,
+            icon: const Icon(Icons.bluetooth_searching, color: Colors.blue),
+            onPressed: _syncLogsWithBluetooth,
+            tooltip: l10n.readFromLock,
           ),
           if (widget.lockId != null)
             IconButton(
@@ -227,69 +296,75 @@ class _LogsPageState extends State<LogsPage> {
   }
 
   Future<void> _syncLogsWithBluetooth() async {
-     final l10n = AppLocalizations.of(context)!;
-     if (widget.lockData == null) {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.missingLockData)));
-       return;
-     }
+    final l10n = AppLocalizations.of(context)!;
+    if (widget.lockData == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.missingLockData)));
+      return;
+    }
 
-     showDialog(
-       context: context,
-       barrierDismissible: false,
-       builder: (context) {
-         return AlertDialog(
-           backgroundColor: const Color(0xFF1E1E1E),
-           content: Column(
-             mainAxisSize: MainAxisSize.min,
-             children: [
-               const CircularProgressIndicator(color: Colors.blue),
-               const SizedBox(height: 16),
-               Text(l10n.connectingReadingLogs, style: const TextStyle(color: Colors.white)),
-             ],
-           ),
-         );
-       }
-     );
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF1E1E1E),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(color: Colors.blue),
+                const SizedBox(height: 16),
+                Text(l10n.connectingReadingLogs,
+                    style: const TextStyle(color: Colors.white)),
+              ],
+            ),
+          );
+        });
 
-     try {
-       debugPrint('🔵 Bluetooth logs reading...');
-       
-       TTLock.getLockOperateRecord(TTOperateRecordType.latest, widget.lockData!, (String log) async {
-         try {
-           await _apiService.uploadOperationLog(
-             lockId: widget.lockId!, 
-             records: log
-           );
-           
-           if (!mounted) return;
-           Navigator.pop(context); // Dialog close
-           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.recordsSynced), backgroundColor: Colors.green));
-           
-           _fetchRecords();
-           
-         } catch (e) {
-           debugPrint('❌ Upload hatası: $e');
-           if (!mounted) return;
-           Navigator.pop(context);
-           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.uploadError(e.toString())), backgroundColor: Colors.orange));
-         }
-       }, (errorCode, errorMsg) {
-         debugPrint('❌ Bluetooth error: $errorCode - $errorMsg');
-         if (!mounted) return;
-         Navigator.pop(context);
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.readError(errorMsg)), backgroundColor: Colors.red));
-       });
-       
-     } catch (e) {
-       if (!mounted) return;
-       Navigator.pop(context);
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.unexpectedError(e.toString()))));
-     }
+    try {
+      debugPrint('🔵 Bluetooth logs reading...');
+
+      TTLock.getLockOperateRecord(TTOperateRecordType.latest, widget.lockData!,
+          (String log) async {
+        try {
+          await _apiService.uploadOperationLog(
+              lockId: widget.lockId!, records: log);
+
+          if (!mounted) return;
+          Navigator.pop(context); // Dialog close
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(l10n.recordsSynced),
+              backgroundColor: Colors.green));
+
+          _fetchRecords();
+        } catch (e) {
+          debugPrint('❌ Upload hatası: $e');
+          if (!mounted) return;
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(l10n.uploadError(e.toString())),
+              backgroundColor: Colors.orange));
+        }
+      }, (errorCode, errorMsg) {
+        debugPrint('❌ Bluetooth error: $errorCode - $errorMsg');
+        if (!mounted) return;
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(l10n.readError(errorMsg)),
+            backgroundColor: Colors.red));
+      });
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.unexpectedError(e.toString()))));
+    }
   }
 
   Widget _buildContent(AppLocalizations l10n) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+      return const Center(
+          child: CircularProgressIndicator(color: AppColors.primary));
     }
 
     if (_error != null) {
@@ -299,7 +374,8 @@ class _LogsPageState extends State<LogsPage> {
           children: [
             const Icon(Icons.error_outline, color: AppColors.error, size: 48),
             const SizedBox(height: 16),
-            Text('${l10n.errorLabel}: $_error', style: const TextStyle(color: Colors.white70)),
+            Text('${l10n.errorLabel}: $_error',
+                style: const TextStyle(color: Colors.white70)),
             TextButton(onPressed: _fetchRecords, child: Text(l10n.refresh)),
           ],
         ),
@@ -315,14 +391,17 @@ class _LogsPageState extends State<LogsPage> {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: _records.length,
-      separatorBuilder: (context, index) => Divider(color: Colors.white.withValues(alpha: 0.1)),
+      separatorBuilder: (context, index) =>
+          Divider(color: Colors.white.withValues(alpha: 0.1)),
       itemBuilder: (context, index) {
         final record = _records[index];
         final typeInfo = _getRecordInfo(record, l10n);
-        
-        final timestamp = record['lockDate'] ?? DateTime.now().millisecondsSinceEpoch;
+
+        final timestamp =
+            record['lockDate'] ?? DateTime.now().millisecondsSinceEpoch;
         final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
-        final formattedDate = '${date.day}.${date.month}.${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+        final formattedDate =
+            '${date.day}.${date.month}.${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
 
         final userName = record['keyName'] ?? record['username'] ?? '';
 
@@ -334,19 +413,22 @@ class _LogsPageState extends State<LogsPage> {
               color: (typeInfo['color'] as Color).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(typeInfo['icon'] as IconData, color: typeInfo['color'] as Color, size: 24),
+            child: Icon(typeInfo['icon'] as IconData,
+                color: typeInfo['color'] as Color, size: 24),
           ),
           title: Row(
             children: [
               Expanded(
                 child: Text(
                   typeInfo['label'] as String,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
               if (userName.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(4),
@@ -362,9 +444,9 @@ class _LogsPageState extends State<LogsPage> {
             formattedDate,
             style: const TextStyle(color: Colors.grey, fontSize: 13),
           ),
-          trailing: record['success'] == 0 
-            ? const Icon(Icons.error, color: AppColors.error, size: 16)
-            : const Icon(Icons.check_circle, color: Colors.green, size: 16),
+          trailing: record['success'] == 0
+              ? const Icon(Icons.error, color: AppColors.error, size: 16)
+              : const Icon(Icons.check_circle, color: Colors.green, size: 16),
         );
       },
     );

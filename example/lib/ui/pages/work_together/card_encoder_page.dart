@@ -44,10 +44,13 @@ class _CardEncoderPageState extends State<CardEncoderPage> {
               color: _isConnected ? Colors.green : Colors.grey,
             ),
             const SizedBox(height: 16),
-            
+
             // Durum Mesajı
             Text(
-              _statusMessage ?? (_isConnected ? l10n.encoderConnected : l10n.encoderNotConnected),
+              _statusMessage ??
+                  (_isConnected
+                      ? l10n.encoderConnected
+                      : l10n.encoderNotConnected),
               style: TextStyle(
                 color: _isConnected ? Colors.green : Colors.grey,
                 fontSize: 16,
@@ -61,14 +64,19 @@ class _CardEncoderPageState extends State<CardEncoderPage> {
             if (!_isConnected)
               ElevatedButton.icon(
                 onPressed: _isScanning ? null : _connectEncoder,
-                icon: _isScanning 
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.bluetooth_searching),
+                icon: _isScanning
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                    : const Icon(Icons.bluetooth_searching),
                 label: Text(_isScanning ? l10n.scanning : l10n.connectEncoder),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
               ),
 
@@ -101,7 +109,8 @@ class _CardEncoderPageState extends State<CardEncoderPage> {
                   foregroundColor: Colors.grey,
                   side: const BorderSide(color: Colors.grey),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: Text(l10n.disconnect),
               ),

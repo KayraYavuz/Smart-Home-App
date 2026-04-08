@@ -7,7 +7,8 @@ class TTLockRepository {
   final ApiService _apiService;
 
   // TTLockService'i dışarıdan alarak bağımlılığı azaltıyoruz (Dependency Injection)
-  TTLockRepository({TTLockService? ttlockService, required ApiService apiService})
+  TTLockRepository(
+      {TTLockService? ttlockService, required ApiService apiService})
       : _ttlockService = ttlockService ?? TTLockService(),
         _apiService = apiService;
 
@@ -144,7 +145,7 @@ class TTLockRepository {
       keyboardPwdName: keyboardPwdName,
     );
   }
-  
+
   /// Bir şifreyi siler.
   Future<bool> deletePasscode({
     required String clientId,
@@ -180,7 +181,8 @@ class TTLockRepository {
   }
 
   /// Get the fingerprint list of a lock
-  Future<Map<String, dynamic>> getFingerprintList(String accessToken, int lockId) {
+  Future<Map<String, dynamic>> getFingerprintList(
+      String accessToken, int lockId) {
     return _ttlockService.getFingerprintList(
         accessToken: accessToken, lockId: lockId);
   }

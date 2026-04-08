@@ -41,7 +41,8 @@ class WorkTogetherPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const QueryLockPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const QueryLockPage()),
                 );
               },
             ),
@@ -54,7 +55,8 @@ class WorkTogetherPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CardEncoderPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const CardEncoderPage()),
                 );
               },
             ),
@@ -67,7 +69,8 @@ class WorkTogetherPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const OpenPlatformPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const OpenPlatformPage()),
                 );
               },
             ),
@@ -124,7 +127,8 @@ class WorkTogetherPage extends StatelessWidget {
           size: 20,
         ),
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
   }

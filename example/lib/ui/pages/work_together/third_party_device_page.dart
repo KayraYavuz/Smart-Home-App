@@ -100,7 +100,8 @@ class _ThirdPartyDevicePageState extends State<ThirdPartyDevicePage> {
         ),
         title: Text(
           device['name'],
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
           device['brand'],
@@ -114,7 +115,8 @@ class _ThirdPartyDevicePageState extends State<ThirdPartyDevicePage> {
             });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('${device['name']} ${value ? l10n.turnedOn : l10n.turnedOff}'),
+                content: Text(
+                    '${device['name']} ${value ? l10n.turnedOn : l10n.turnedOff}'),
                 duration: const Duration(seconds: 1),
               ),
             );
@@ -132,7 +134,8 @@ class _ThirdPartyDevicePageState extends State<ThirdPartyDevicePage> {
         final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
           backgroundColor: const Color(0xFF1E1E1E),
-          title: Text(l10n.addDevice, style: const TextStyle(color: Colors.white)),
+          title:
+              Text(l10n.addDevice, style: const TextStyle(color: Colors.white)),
           content: Text(
             l10n.featureComingSoon,
             style: const TextStyle(color: Colors.grey),

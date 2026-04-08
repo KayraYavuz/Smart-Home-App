@@ -121,13 +121,15 @@ class OpenPlatformPage extends StatelessWidget {
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
-              children: platforms.map((p) => Chip(
-                label: Text(p, style: const TextStyle(fontSize: 10)),
-                backgroundColor: Colors.grey[850],
-                labelStyle: const TextStyle(color: Colors.blue),
-                padding: EdgeInsets.zero,
-                visualDensity: VisualDensity.compact,
-              )).toList(),
+              children: platforms
+                  .map((p) => Chip(
+                        label: Text(p, style: const TextStyle(fontSize: 10)),
+                        backgroundColor: Colors.grey[850],
+                        labelStyle: const TextStyle(color: Colors.blue),
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                      ))
+                  .toList(),
             ),
             const Divider(color: Colors.grey, height: 24),
             TextButton.icon(

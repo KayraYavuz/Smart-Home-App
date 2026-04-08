@@ -81,5 +81,4 @@ class AuthRepository {
     await prefs.remove(_uidKey);
     await prefs.remove(_md5PasswordKey);
   }
-
 }

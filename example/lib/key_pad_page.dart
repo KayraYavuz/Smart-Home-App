@@ -82,39 +82,32 @@ class _KeyPadState extends State<KeyPadPage> {
         });
         break;
       case Command.addFingerprint:
-        TTRemoteKeypad.addFingerprint(mac,
-            null,
-            1746673751000,
-            1746760151000,
-            lockData,
-                (int currentCount, int totalCount){
-               debugPrint("addFingerprint;;;currentCount:$currentCount;;;;totalCount:$totalCount");
-            }, (String fingerprintNumber) {
-              debugPrint("addFingerprint fingerprintNumber:$fingerprintNumber");
-            }, (errorCode, errorMsg) {
-              debugPrint("addFingerprint;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
-
-            }, (TTRemoteKeyPadAccessoryError errorCode, String errorMsg){
-              debugPrint("addFingerprint;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
-            });
+        TTRemoteKeypad.addFingerprint(
+            mac, null, 1746673751000, 1746760151000, lockData,
+            (int currentCount, int totalCount) {
+          debugPrint(
+              "addFingerprint;;;currentCount:$currentCount;;;;totalCount:$totalCount");
+        }, (String fingerprintNumber) {
+          debugPrint("addFingerprint fingerprintNumber:$fingerprintNumber");
+        }, (errorCode, errorMsg) {
+          debugPrint(
+              "addFingerprint;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
+        }, (TTRemoteKeyPadAccessoryError errorCode, String errorMsg) {
+          debugPrint(
+              "addFingerprint;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
+        });
         break;
       case Command.addCard:
-        TTRemoteKeypad.addCard(
-            null,
-            0,
-            0,
-            lockData,
-            
-                (){
-              debugPrint("addCard;;;请刷卡");
-            }, (String cardNumber) {
-              debugPrint("addCard fingerprintNumber:$cardNumber");
-              _showSuccessAndDismiss("addCard success");
-            }, (errorCode, errorMsg) {
-              debugPrint("addCard;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
-              ProgressHud.of(_context!)!.showErrorAndDismiss(
-                  text: 'errorCode:$errorCode errorMessage:$errorMsg');
-            });
+        TTRemoteKeypad.addCard(null, 0, 0, lockData, () {
+          debugPrint("addCard;;;请刷卡");
+        }, (String cardNumber) {
+          debugPrint("addCard fingerprintNumber:$cardNumber");
+          _showSuccessAndDismiss("addCard success");
+        }, (errorCode, errorMsg) {
+          debugPrint("addCard;;;errorCode:$errorCode;;;;errorMsg:$errorMsg");
+          ProgressHud.of(_context!)!.showErrorAndDismiss(
+              text: 'errorCode:$errorCode errorMessage:$errorMsg');
+        });
         break;
     }
   }

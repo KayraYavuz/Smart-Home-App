@@ -24,8 +24,6 @@ import 'package:yavuz_lock/l10n/app_localizations.dart';
 class LockDetailPage extends StatefulWidget {
   final Map<String, dynamic> lock;
 
-
-
   const LockDetailPage({
     super.key,
     required this.lock,
@@ -35,7 +33,8 @@ class LockDetailPage extends StatefulWidget {
   State<LockDetailPage> createState() => _LockDetailPageState();
 }
 
-class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProviderStateMixin {
+class _LockDetailPageState extends State<LockDetailPage>
+    with SingleTickerProviderStateMixin {
   bool _isOnline = true;
   bool _isLoadingConnectivity = false;
   late AnimationController _animationController;
@@ -48,11 +47,11 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    
+
     _checkConnectivity();
   }
 
@@ -79,7 +78,8 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
           accessToken: accessToken,
           lockId: widget.lock['lockId'].toString(),
         );
-        debugPrint('🔍 Lock detail connectivity sonucu: ${widget.lock['lockId']} -> ${isConnected ? 'ONLINE' : 'OFFLINE'}');
+        debugPrint(
+            '🔍 Lock detail connectivity sonucu: ${widget.lock['lockId']} -> ${isConnected ? 'ONLINE' : 'OFFLINE'}');
         if (!mounted) return;
         setState(() {
           _isOnline = isConnected;
@@ -142,11 +142,14 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                   children: [
                     // Connectivity durumu
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 2),
                       decoration: BoxDecoration(
                         color: _isLoadingConnectivity
                             ? Colors.grey.withValues(alpha: 0.2)
-                            : (_isOnline ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2)),
+                            : (_isOnline
+                                ? Colors.green.withValues(alpha: 0.2)
+                                : Colors.red.withValues(alpha: 0.2)),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
@@ -156,7 +159,8 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                               ? const SizedBox(
                                   width: 14,
                                   height: 14,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2),
                                 )
                               : Icon(
                                   _isOnline ? Icons.wifi : Icons.wifi_off,
@@ -165,7 +169,9 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                                 ),
                           const SizedBox(width: 2),
                           Text(
-                            _isLoadingConnectivity ? '...' : (_isOnline ? l10n.online : l10n.offline),
+                            _isLoadingConnectivity
+                                ? '...'
+                                : (_isOnline ? l10n.online : l10n.offline),
                             style: TextStyle(
                               color: _isLoadingConnectivity
                                   ? Colors.grey
@@ -181,9 +187,11 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                     // Pil seviyesi
                     Container(
                       margin: const EdgeInsets.only(left: 4),
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _getBatteryColor(widget.lock['battery'] ?? 85).withValues(alpha: 0.2),
+                        color: _getBatteryColor(widget.lock['battery'] ?? 85)
+                            .withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
@@ -191,14 +199,16 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                         children: [
                           Icon(
                             _getBatteryIcon(widget.lock['battery'] ?? 85),
-                            color: _getBatteryColor(widget.lock['battery'] ?? 85),
+                            color:
+                                _getBatteryColor(widget.lock['battery'] ?? 85),
                             size: 14,
                           ),
                           const SizedBox(width: 2),
                           Text(
                             '${widget.lock['battery'] ?? 85}%',
                             style: TextStyle(
-                              color: _getBatteryColor(widget.lock['battery'] ?? 85),
+                              color: _getBatteryColor(
+                                  widget.lock['battery'] ?? 85),
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
@@ -211,7 +221,8 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                     if (widget.lock['shared'] == true)
                       Container(
                         margin: const EdgeInsets.only(left: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.orange.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(6),
@@ -225,12 +236,13 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                           ),
                         ),
                       ),
-                      
+
                     // Gateway durumu
                     if (widget.lock['hasGateway'] == 1)
                       Container(
                         margin: const EdgeInsets.only(left: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.blue.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(6),
@@ -282,7 +294,9 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
               final updatedLock = Map<String, dynamic>.from(widget.lock);
               if (state.newLockState != null) {
                 updatedLock['isLocked'] = state.newLockState;
-                updatedLock['status'] = state.newLockState! ? l10n.statusLocked : l10n.statusUnlocked;
+                updatedLock['status'] = state.newLockState!
+                    ? l10n.statusLocked
+                    : l10n.statusUnlocked;
               }
 
               // Kısa bir gecikmeden sonra sayfayı kapat
@@ -299,7 +313,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
             if (state is DeviceFailure) {
               // Bluetooth hata kodlarını çevir
               String errorMessage = state.error;
-              
+
               if (state.error == 'BLUETOOTH_OFF') {
                 errorMessage = l10n.bluetoothOffInstructions;
               } else if (state.error == 'LOCK_OUT_OF_RANGE') {
@@ -307,9 +321,10 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
               } else if (state.error.startsWith('CONNECTION_FAILED:')) {
                 errorMessage = l10n.lockConnectionFailedInstructions;
               }
-              
+
               scaffoldMessenger.showSnackBar(
-                SnackBar(content: Text(l10n.operationFailedWithMsg(errorMessage))),
+                SnackBar(
+                    content: Text(l10n.operationFailedWithMsg(errorMessage))),
               );
             }
           },
@@ -325,27 +340,42 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                         child: GestureDetector(
                           onTap: () {
                             if (isLocked) {
-                              context.read<DeviceBloc>().add(UnlockDevice(widget.lock, onlyBluetooth: true));
+                              context.read<DeviceBloc>().add(UnlockDevice(
+                                  widget.lock,
+                                  onlyBluetooth: true));
                             } else {
-                              context.read<DeviceBloc>().add(LockDevice(widget.lock, onlyBluetooth: true));
+                              context.read<DeviceBloc>().add(
+                                  LockDevice(widget.lock, onlyBluetooth: true));
                             }
                           },
                           child: Container(
                             width: 220,
                             height: 220,
-                            margin: const EdgeInsets.only(top: 40, bottom: 40), // Add margin for spacing
+                            margin: const EdgeInsets.only(
+                                top: 40, bottom: 40), // Add margin for spacing
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.transparent,
                               boxShadow: [
                                 BoxShadow(
-                                  color: _isLoadingConnectivity || state is DeviceLoading
+                                  color: _isLoadingConnectivity ||
+                                          state is DeviceLoading
                                       ? AppColors.primary.withValues(alpha: 0.3)
                                       : (_isOnline
-                                          ? AppColors.primary.withValues(alpha: 0.4)
-                                          : AppColors.error.withValues(alpha: 0.3)),
-                                  blurRadius: 40.0 * (_isLoadingConnectivity || state is DeviceLoading ? _pulseAnimation.value : 1.0),
-                                  spreadRadius: 8.0 * (_isLoadingConnectivity || state is DeviceLoading ? _pulseAnimation.value : 1.0),
+                                          ? AppColors.primary
+                                              .withValues(alpha: 0.4)
+                                          : AppColors.error
+                                              .withValues(alpha: 0.3)),
+                                  blurRadius: 40.0 *
+                                      (_isLoadingConnectivity ||
+                                              state is DeviceLoading
+                                          ? _pulseAnimation.value
+                                          : 1.0),
+                                  spreadRadius: 8.0 *
+                                      (_isLoadingConnectivity ||
+                                              state is DeviceLoading
+                                          ? _pulseAnimation.value
+                                          : 1.0),
                                 ),
                               ],
                             ),
@@ -353,24 +383,33 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                               animation: _pulseAnimation,
                               builder: (context, child) {
                                 return Transform.scale(
-                                  scale: (_isLoadingConnectivity || state is DeviceLoading) ? _pulseAnimation.value : 1.0,
+                                  scale: (_isLoadingConnectivity ||
+                                          state is DeviceLoading)
+                                      ? _pulseAnimation.value
+                                      : 1.0,
                                   child: Container(
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
                                         color: _isOnline
-                                            ? AppColors.primary.withValues(alpha: 0.6)
-                                            : AppColors.error.withValues(alpha: 0.5),
+                                            ? AppColors.primary
+                                                .withValues(alpha: 0.6)
+                                            : AppColors.error
+                                                .withValues(alpha: 0.5),
                                         width: 3,
                                       ),
                                       gradient: RadialGradient(
                                         colors: [
                                           _isOnline
-                                              ? AppColors.primary.withValues(alpha: 0.15)
-                                              : AppColors.error.withValues(alpha: 0.15),
+                                              ? AppColors.primary
+                                                  .withValues(alpha: 0.15)
+                                              : AppColors.error
+                                                  .withValues(alpha: 0.15),
                                           _isOnline
-                                              ? AppColors.primary.withValues(alpha: 0.05)
-                                              : AppColors.error.withValues(alpha: 0.05),
+                                              ? AppColors.primary
+                                                  .withValues(alpha: 0.05)
+                                              : AppColors.error
+                                                  .withValues(alpha: 0.05),
                                         ],
                                       ),
                                     ),
@@ -379,7 +418,8 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                                 );
                               },
                               child: Center(
-                                child: state is DeviceLoading || _isLoadingConnectivity
+                                child: state is DeviceLoading ||
+                                        _isLoadingConnectivity
                                     ? const CircularProgressIndicator(
                                         color: AppColors.primary,
                                       )
@@ -395,7 +435,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                       ),
 
                       const SizedBox(height: 10),
-                      
+
                       // Küçük Kilit Butonu (Uzaktan Erişim)
                       Center(
                         child: Column(
@@ -405,7 +445,8 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                               height: 60,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: const Color(0xFF1E1E1E), // Dark background
+                                color:
+                                    const Color(0xFF1E1E1E), // Dark background
                                 border: Border.all(
                                   color: Colors.blue.withValues(alpha: 0.6),
                                   width: 2,
@@ -420,7 +461,8 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                               ),
                               child: IconButton(
                                 onPressed: () => _remoteUnlock(),
-                                icon: const Icon(Icons.wifi_tethering, color: Colors.blue, size: 28),
+                                icon: const Icon(Icons.wifi_tethering,
+                                    color: Colors.blue, size: 28),
                                 tooltip: l10n.remoteUnlock,
                               ),
                             ),
@@ -436,7 +478,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
                           ],
                         ),
                       ),
-                      
+
                       const SizedBox(height: 20),
 
                       // Alt kısım - Grid menü
@@ -537,11 +579,10 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
     );
   }
 
-
-
-
-
-  Widget _buildGridMenuItem(BuildContext context, {required IconData icon, required String label, required VoidCallback onTap}) {
+  Widget _buildGridMenuItem(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -567,17 +608,18 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
   }
 
   void _showSettings() {
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (context) => LockSettingsPage(lock: widget.lock),
       ),
-    ).then((val) {
+    )
+        .then((val) {
       if (val == 'deleted' && mounted) {
-         Navigator.pop(context, 'deleted');
+        Navigator.pop(context, 'deleted');
       }
     });
   }
-
 
   void _remoteUnlock() async {
     final l10n = AppLocalizations.of(context)!;
@@ -585,7 +627,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       final authRepository = context.read<AuthRepository>();
       final apiService = ApiService(authRepository);
       await apiService.getAccessToken();
-      
+
       final accessToken = apiService.accessToken;
       if (accessToken == null) throw Exception(l10n.accessTokenNotFound);
 
@@ -606,15 +648,15 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
         'device_id': widget.lock['lockId'],
         'new_state': false, // Uzaktan açıldı
       });
-
     } catch (e) {
       if (!mounted) return;
-      
+
       String errorMessage = l10n.remoteControlError;
-      if (e.toString().contains('Gateway') || e.toString().contains('gateway')) {
-         errorMessage = l10n.gatewayConnectionError;
+      if (e.toString().contains('Gateway') ||
+          e.toString().contains('gateway')) {
+        errorMessage = l10n.gatewayConnectionError;
       } else {
-         errorMessage = l10n.errorWithMsg(e.toString());
+        errorMessage = l10n.errorWithMsg(e.toString());
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -625,6 +667,7 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
       );
     }
   }
+
   void _showEKeys(BuildContext context) {
     Navigator.push(
       context,
@@ -706,37 +749,41 @@ class _LockDetailPageState extends State<LockDetailPage> with SingleTickerProvid
 
   void _showRemoteControl(BuildContext context) {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => RemoteListPage(lockId: int.parse(widget.lock['lockId'].toString())),
-        ),
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            RemoteListPage(lockId: int.parse(widget.lock['lockId'].toString())),
+      ),
     );
   }
 
   void _showWirelessKeypad(BuildContext context) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => WirelessKeypadPage(lockId: int.parse(widget.lock['lockId'].toString())),
-        ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WirelessKeypadPage(
+            lockId: int.parse(widget.lock['lockId'].toString())),
+      ),
     );
   }
 
   void _showDoorSensor(BuildContext context) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => DoorSensorPage(lockId: int.parse(widget.lock['lockId'].toString())),
-        ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            DoorSensorPage(lockId: int.parse(widget.lock['lockId'].toString())),
+      ),
     );
   }
 
   void _showQrCode(BuildContext context) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => QrCodePage(lockId: int.parse(widget.lock['lockId'].toString())),
-        ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            QrCodePage(lockId: int.parse(widget.lock['lockId'].toString())),
+      ),
     );
   }
 

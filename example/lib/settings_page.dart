@@ -36,10 +36,12 @@ class _SettingsPageState extends State<SettingsPage> {
       _soundEnabled = prefs.getBool('sound_enabled') ?? true;
       _touchToUnlockEnabled = prefs.getBool('touch_to_unlock_enabled') ?? false;
       _notificationEnabled = prefs.getBool('notification_enabled') ?? true;
-      _personalizedSuggestionsEnabled = prefs.getBool('personalized_suggestions_enabled') ?? false;
+      _personalizedSuggestionsEnabled =
+          prefs.getBool('personalized_suggestions_enabled') ?? false;
       _selectedLanguage = prefs.getString('selected_language') ?? 'Otomatik';
       _selectedScreenLock = prefs.getString('selected_screen_lock') ?? 'Kapalı';
-      _selectedHideInvalidAccess = prefs.getString('selected_hide_invalid_access') ?? 'Kapalı';
+      _selectedHideInvalidAccess =
+          prefs.getString('selected_hide_invalid_access') ?? 'Kapalı';
     });
   }
 
@@ -123,21 +125,30 @@ class _SettingsPageState extends State<SettingsPage> {
             _buildSectionHeader(l10n.preferences),
             _buildSelectionTile(
               title: l10n.languages,
-              currentValue: (_selectedLanguage == 'Otomatik' || _selectedLanguage == 'Automatic') ? l10n.automatic : _selectedLanguage,
+              currentValue: (_selectedLanguage == 'Otomatik' ||
+                      _selectedLanguage == 'Automatic')
+                  ? l10n.automatic
+                  : _selectedLanguage,
               onTap: () => _showLanguageSelection(),
             ),
             _buildSelectionTile(
               title: l10n.screenLock,
-              currentValue: (_selectedScreenLock == 'Kapalı' || _selectedScreenLock == 'Off') ? l10n.off : _selectedScreenLock,
+              currentValue: (_selectedScreenLock == 'Kapalı' ||
+                      _selectedScreenLock == 'Off')
+                  ? l10n.off
+                  : _selectedScreenLock,
               onTap: () => _showScreenLockSelection(),
             ),
             _buildSelectionTile(
               title: l10n.hideInvalidAccess,
-              currentValue: (_selectedHideInvalidAccess == 'Kapalı' || _selectedHideInvalidAccess == 'Off') ? l10n.off : _selectedHideInvalidAccess,
+              currentValue: (_selectedHideInvalidAccess == 'Kapalı' ||
+                      _selectedHideInvalidAccess == 'Off')
+                  ? l10n.off
+                  : _selectedHideInvalidAccess,
               onTap: () => _showHideInvalidAccessSelection(),
             ),
 
-                    const SizedBox(height: 48),
+            const SizedBox(height: 48),
 
             // Alt Kısım - Çıkış Butonları
             Container(
@@ -287,10 +298,11 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showLanguageSelection() {
     final l10n = AppLocalizations.of(context)!;
     final languages = ['Otomatik', 'Türkçe', 'English', 'Deutsch'];
-    
+
     // Capture parent context before showing modal to ensure Provider access works correctly
     final parentContext = context;
-    final provider = Provider.of<LanguageProvider>(parentContext, listen: false);
+    final provider =
+        Provider.of<LanguageProvider>(parentContext, listen: false);
 
     showModalBottomSheet(
       context: parentContext,
@@ -324,31 +336,31 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               ...languages.map((language) => ListTile(
-                title: Text(
-                  language,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                trailing: _selectedLanguage == language
-                    ? const Icon(Icons.check, color: Colors.blue)
-                    : null,
-                onTap: () {
-                  setState(() => _selectedLanguage = language);
-                  _saveSetting('selected_language', language);
-                  
-                  // Update LanguageProvider using parent context
-                  if (language == 'Otomatik') {
-                    provider.resetLocale();
-                  } else if (language == 'Türkçe') {
-                    provider.setLocale(const Locale('tr'));
-                  } else if (language == 'English') {
-                    provider.setLocale(const Locale('en'));
-                  } else if (language == 'Deutsch') {
-                    provider.setLocale(const Locale('de'));
-                  }
+                    title: Text(
+                      language,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    trailing: _selectedLanguage == language
+                        ? const Icon(Icons.check, color: Colors.blue)
+                        : null,
+                    onTap: () {
+                      setState(() => _selectedLanguage = language);
+                      _saveSetting('selected_language', language);
 
-                  Navigator.of(modalContext).pop();
-                },
-              )),
+                      // Update LanguageProvider using parent context
+                      if (language == 'Otomatik') {
+                        provider.resetLocale();
+                      } else if (language == 'Türkçe') {
+                        provider.setLocale(const Locale('tr'));
+                      } else if (language == 'English') {
+                        provider.setLocale(const Locale('en'));
+                      } else if (language == 'Deutsch') {
+                        provider.setLocale(const Locale('de'));
+                      }
+
+                      Navigator.of(modalContext).pop();
+                    },
+                  )),
               const SizedBox(height: 16),
             ],
           ),
@@ -393,20 +405,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               ...options.map((option) => ListTile(
-                title: Text(
-                  option,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                // Note: This comparison might fail if language changes, but acceptable for now
-                trailing: _selectedScreenLock == option
-                    ? const Icon(Icons.check, color: Colors.blue)
-                    : null,
-                onTap: () {
-                  setState(() => _selectedScreenLock = option);
-                  _saveSetting('selected_screen_lock', option);
-                  Navigator.of(context).pop();
-                },
-              )),
+                    title: Text(
+                      option,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    // Note: This comparison might fail if language changes, but acceptable for now
+                    trailing: _selectedScreenLock == option
+                        ? const Icon(Icons.check, color: Colors.blue)
+                        : null,
+                    onTap: () {
+                      setState(() => _selectedScreenLock = option);
+                      _saveSetting('selected_screen_lock', option);
+                      Navigator.of(context).pop();
+                    },
+                  )),
               const SizedBox(height: 16),
             ],
           ),
@@ -451,19 +463,19 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               ...options.map((option) => ListTile(
-                title: Text(
-                  option,
-                  style: const TextStyle(color: Colors.white),
-                ),
-                trailing: _selectedHideInvalidAccess == option
-                    ? const Icon(Icons.check, color: Colors.blue)
-                    : null,
-                onTap: () {
-                  setState(() => _selectedHideInvalidAccess = option);
-                  _saveSetting('selected_hide_invalid_access', option);
-                  Navigator.of(context).pop();
-                },
-              )),
+                    title: Text(
+                      option,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    trailing: _selectedHideInvalidAccess == option
+                        ? const Icon(Icons.check, color: Colors.blue)
+                        : null,
+                    onTap: () {
+                      setState(() => _selectedHideInvalidAccess = option);
+                      _saveSetting('selected_hide_invalid_access', option);
+                      Navigator.of(context).pop();
+                    },
+                  )),
               const SizedBox(height: 16),
             ],
           ),
@@ -517,7 +529,8 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),

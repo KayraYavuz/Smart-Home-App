@@ -13,7 +13,8 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   StreamSubscription? _scanSubscription;
   final List<TTLockScanModel> _locks = [];
   final List<Map<String, dynamic>> _gateways = [];
-  StreamController<dynamic>? _scanController; // Changed to dynamic to handle both
+  StreamController<dynamic>?
+      _scanController; // Changed to dynamic to handle both
 
   ScanBloc({required this.apiService}) : super(ScanInitial()) {
     on<StartScan>(_onStartScan);
@@ -24,7 +25,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   Future<void> _onStartScan(StartScan event, Emitter<ScanState> emit) async {
     if (emit.isDone) return;
     emit(ScanLoading());
-    
+
     // Bluetooth durumunu kontrol et
     final Completer<TTBluetoothState> btStateCompleter = Completer();
     TTLock.getBluetoothState((state) {
@@ -32,7 +33,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         btStateCompleter.complete(state);
       }
     });
-    
+
     final btState = await btStateCompleter.future;
     if (emit.isDone) return;
 
@@ -45,7 +46,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     _gateways.clear();
     _scanController?.close();
     _scanController = StreamController<dynamic>();
-    
+
     if (event.isGateway) {
       // Gateway Scanning
       TTGateway.startScan((gateway) {
@@ -57,7 +58,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
           'type': gateway.type?.index ?? 0, // Assuming enum
           'isDfuMode': gateway.isDfuMode
         };
-        
+
         final mac = gwMap['gatewayMac'];
         if (!_gateways.any((element) => element['gatewayMac'] == mac)) {
           _gateways.add(gwMap);
@@ -98,14 +99,16 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     _scanSubscription?.cancel();
     _scanController?.close();
     if (!emit.isDone) {
-      emit(ScanLoaded(locks: List.from(_locks), gateways: List.from(_gateways)));
+      emit(
+          ScanLoaded(locks: List.from(_locks), gateways: List.from(_gateways)));
     }
   }
 
   Future<void> _onAddLock(AddLock event, Emitter<ScanState> emit) async {
     if (emit.isDone) return;
     // Show connecting state with specific lock name
-    emit(ScanConnecting(event.lock.lockName.isNotEmpty ? event.lock.lockName : "Unnamed Lock"));
+    emit(ScanConnecting(
+        event.lock.lockName.isNotEmpty ? event.lock.lockName : "Unnamed Lock"));
 
     try {
       // TTLock initLock için gerekli parametre haritası
@@ -134,8 +137,9 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       }, (errorCode, errorMsg) {
         if (!initCompleter.isCompleted) {
           String detailedError = errorMsg;
-          
-          debugPrint('🔍 Ham Hata Alındı - Kod: $errorCode (${errorCode.runtimeType}), Mesaj: $errorMsg');
+
+          debugPrint(
+              '🔍 Ham Hata Alındı - Kod: $errorCode (${errorCode.runtimeType}), Mesaj: $errorMsg');
 
           // TTLock spesifik hata kodlarını anlamlandır
           if (errorCode.toString().contains('4')) {
@@ -149,7 +153,8 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
             detailedError = 'bluetoothConnectionFailed';
           }
 
-          initCompleter.completeError('btErrorPrefix:$errorCode:$detailedError');
+          initCompleter
+              .completeError('btErrorPrefix:$errorCode:$detailedError');
         }
       });
 
@@ -165,7 +170,8 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         );
       } catch (e) {
         if (emit.isDone) return;
-        String userFriendlyError = e is TimeoutException ? e.message! : e.toString();
+        String userFriendlyError =
+            e is TimeoutException ? e.message! : e.toString();
         emit(ScanFailure(userFriendlyError));
         return;
       }
@@ -177,7 +183,9 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         // 2. Bluetooth'tan alınan lockData'yı TTLock Cloud'a kaydet
         final apiResult = await apiService.initializeLock(
           lockData: lockData,
-          lockAlias: event.lock.lockName.isNotEmpty ? event.lock.lockName : 'Yavuz Lock',
+          lockAlias: event.lock.lockName.isNotEmpty
+              ? event.lock.lockName
+              : 'Yavuz Lock',
         );
 
         if (emit.isDone) return;
@@ -198,11 +206,13 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
         emit(AddLockSuccess(addedLock));
       } catch (apiError) {
         debugPrint('❌ Bulut Kayıt Hatası: $apiError');
-        
-        String userFriendlyApiError = _parseApiErrorMessage(apiError.toString());
+
+        String userFriendlyApiError =
+            _parseApiErrorMessage(apiError.toString());
 
         // DÖKÜMANTASYON UYARISI: Bulut kaydı başarısız olursa kilidi Bluetooth üzerinden resetle!
-        debugPrint('♻️ Bulut kaydı başarısız olduğu için kilit Bluetooth üzerinden temizleniyor...');
+        debugPrint(
+            '♻️ Bulut kaydı başarısız olduğu için kilit Bluetooth üzerinden temizleniyor...');
         TTLock.resetLock(lockData, () {
           debugPrint('✅ Kilit başarıyla temizlendi (tekrar denenebilir).');
         }, (errorCode, errorMsg) {
@@ -221,11 +231,14 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
 
   String _parseApiErrorMessage(String errorMsg) {
     // API hata kodlarını yakala ve Türkçeleştir
-    if (errorMsg.contains('errcode: 30003') || errorMsg.contains('errcode: -1027')) {
+    if (errorMsg.contains('errcode: 30003') ||
+        errorMsg.contains('errcode: -1027')) {
       return 'apiLockRegisteredToAnother';
-    } else if (errorMsg.contains('errcode: 20002') || errorMsg.contains('errcode: -2018')) {
+    } else if (errorMsg.contains('errcode: 20002') ||
+        errorMsg.contains('errcode: -2018')) {
       return 'apiNotAuthorized';
-    } else if (errorMsg.contains('errcode: 10003') || errorMsg.contains('errcode: 10004')) {
+    } else if (errorMsg.contains('errcode: 10003') ||
+        errorMsg.contains('errcode: 10004')) {
       return 'apiSessionExpired';
     } else if (errorMsg.contains('errcode: -2025')) {
       return 'apiLockFrozen';
@@ -233,14 +246,15 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       return 'apiTimestampError';
     } else if (errorMsg.contains('errcode: -4063')) {
       return 'apiDeletePreviousLocks';
-    } else if (errorMsg.contains('errcode: 10000') || errorMsg.contains('errcode: 10001')) {
+    } else if (errorMsg.contains('errcode: 10000') ||
+        errorMsg.contains('errcode: 10001')) {
       return 'apiClientAuthError';
     } else if (errorMsg.contains('errcode: 90000')) {
       return 'apiServerError';
     } else if (errorMsg.contains('errcode: 1')) {
       return 'apiOperationRejected';
     }
-    
+
     return errorMsg; // Eşleşme yoksa orijinal hatayı dön
   }
 

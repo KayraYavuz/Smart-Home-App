@@ -10,13 +10,15 @@ import 'package:yavuz_lock/blocs/fingerprint/fingerprint_event.dart';
 class AddFingerprintPage extends StatefulWidget {
   final int lockId;
   final String lockData;
-  const AddFingerprintPage({super.key, required this.lockId, required this.lockData});
+  const AddFingerprintPage(
+      {super.key, required this.lockId, required this.lockData});
 
   @override
   State<AddFingerprintPage> createState() => _AddFingerprintPageState();
 }
 
-class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTickerProviderStateMixin {
+class _AddFingerprintPageState extends State<AddFingerprintPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _nameController = TextEditingController();
 
@@ -88,7 +90,8 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
     );
     if (pickedTime == null) return;
 
-    final combined = DateTime(pickedDate.year, pickedDate.month, pickedDate.day, pickedTime.hour, pickedTime.minute);
+    final combined = DateTime(pickedDate.year, pickedDate.month, pickedDate.day,
+        pickedTime.hour, pickedTime.minute);
     setState(() {
       if (isStart) {
         _startDate = combined;
@@ -107,7 +110,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
   Future<void> _onNext() async {
     final name = _nameController.text.trim();
     final l10n = AppLocalizations.of(context);
-    
+
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n?.nameLabel ?? 'Name is required')),
@@ -117,14 +120,17 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
 
     if (_currentTabIndex == 2 && _selectedDays.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n?.selectDays ?? 'Please configure the validity period')),
+        SnackBar(
+            content: Text(
+                l10n?.selectDays ?? 'Please configure the validity period')),
       );
       return;
     }
 
     setState(() {
       _isLoading = true;
-      _statusMessage = l10n?.fingerprintInstruction4Times ?? 'Lütfen parmağınızı kilide 4 kere okutun.'; // 4 times press instruction
+      _statusMessage = l10n?.fingerprintInstruction4Times ??
+          'Lütfen parmağınızı kilide 4 kere okutun.'; // 4 times press instruction
     });
 
     try {
@@ -147,68 +153,76 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
       }
 
       TTLock.addFingerprint(null, startDateMs, endDateMs, widget.lockData,
-        (currentCount, totalCount) {
-          if (mounted) {
-            setState(() {
-               _statusMessage = l10n?.fingerprintInstructionCount(currentCount, totalCount) ?? 'Lütfen parmağınızı kilide okutun. ($currentCount/$totalCount)';
-            });
-          }
-        }, 
-        (fingerprintNumber) async {
-          // Success Callback
-          if (!mounted) return;
-          
+          (currentCount, totalCount) {
+        if (mounted) {
           setState(() {
-            _statusMessage = l10n?.fingerprintReadSaving ?? 'Parmak izi okundu! Sunucuya kaydediliyor...';
+            _statusMessage = l10n?.fingerprintInstructionCount(
+                    currentCount, totalCount) ??
+                'Lütfen parmağınızı kilide okutun. ($currentCount/$totalCount)';
           });
-          
-          try {
-            // Add fingerprint via Gateway/Cloud logic if available, or just push to BLoC
-            context.read<FingerprintBloc>().add(
-              AddFingerprint(
+        }
+      }, (fingerprintNumber) async {
+        // Success Callback
+        if (!mounted) return;
+
+        setState(() {
+          _statusMessage = l10n?.fingerprintReadSaving ??
+              'Parmak izi okundu! Sunucuya kaydediliyor...';
+        });
+
+        try {
+          // Add fingerprint via Gateway/Cloud logic if available, or just push to BLoC
+          context.read<FingerprintBloc>().add(AddFingerprint(
                 lockId: widget.lockId,
                 fingerprintNumber: fingerprintNumber,
                 fingerprintName: name,
                 startDate: startDateMs,
                 endDate: endDateMs,
-              )
-            );
-            
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n?.fingerprintAddedSuccessfully ?? '✅ Parmak izi başarıyla eklendi!'), backgroundColor: Colors.green),
-            );
-            Navigator.pop(context, true);
-          } catch (e) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n?.fingerprintSaveFailed(e.toString()) ?? 'Sunucuya kaydedilirken hata oluştu: $e'), backgroundColor: Colors.orange),
-            );
-            setState(() {
-              _isLoading = false;
-              _statusMessage = null;
-            });
-          }
-        }, 
-        (errorCode, errorMsg) {
-          // Failure Callback
+              ));
+
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n?.fingerprintAddFailed(errorMsg) ?? 'Başarısız: $errorMsg'), backgroundColor: Colors.red),
+            SnackBar(
+                content: Text(l10n?.fingerprintAddedSuccessfully ??
+                    '✅ Parmak izi başarıyla eklendi!'),
+                backgroundColor: Colors.green),
+          );
+          Navigator.pop(context, true);
+        } catch (e) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(l10n?.fingerprintSaveFailed(e.toString()) ??
+                    'Sunucuya kaydedilirken hata oluştu: $e'),
+                backgroundColor: Colors.orange),
           );
           setState(() {
             _isLoading = false;
             _statusMessage = null;
           });
         }
-      );
-
+      }, (errorCode, errorMsg) {
+        // Failure Callback
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(l10n?.fingerprintAddFailed(errorMsg) ??
+                  'Başarısız: $errorMsg'),
+              backgroundColor: Colors.red),
+        );
+        setState(() {
+          _isLoading = false;
+          _statusMessage = null;
+        });
+      });
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n?.fingerprintError(e.toString()) ?? 'Hata: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text(l10n?.fingerprintError(e.toString()) ?? 'Hata: $e'),
+            backgroundColor: Colors.red),
       );
-      
+
       setState(() {
         _isLoading = false;
         _statusMessage = null;
@@ -252,7 +266,11 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: Text(l10n.addFingerprintTitle, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        title: Text(l10n.addFingerprintTitle,
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -264,7 +282,8 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
           unselectedLabelColor: Colors.grey,
           indicatorColor: const Color(0xFF4A90FF),
           indicatorSize: TabBarIndicatorSize.label,
-          labelStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          labelStyle:
+              const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           unselectedLabelStyle: const TextStyle(fontSize: 16),
           dividerColor: Colors.transparent,
           tabs: [
@@ -310,7 +329,8 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
                 color: const Color(0xFF4A90FF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.fingerprint, color: Color(0xFF4A90FF), size: 56),
+              child: const Icon(Icons.fingerprint,
+                  color: Color(0xFF4A90FF), size: 56),
             ),
             const SizedBox(height: 24),
             const CircularProgressIndicator(color: Color(0xFF4A90FF)),
@@ -328,7 +348,8 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
                   _statusMessage = null;
                 });
               },
-              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey, fontSize: 16)),
+              child: Text(l10n.cancel,
+                  style: const TextStyle(color: Colors.grey, fontSize: 16)),
             ),
           ],
         ),
@@ -380,12 +401,14 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
   Widget _buildNameField(AppLocalizations l10n) {
     return Container(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
+        border:
+            Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         children: [
-          Text(l10n.nameLabel, style: const TextStyle(color: Colors.white, fontSize: 16)),
+          Text(l10n.nameLabel,
+              style: const TextStyle(color: Colors.white, fontSize: 16)),
           const SizedBox(width: 16),
           Expanded(
             child: TextField(
@@ -404,19 +427,23 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
     );
   }
 
-  Widget _buildSettingsRow(String label, String value, {VoidCallback? onTap, bool showArrow = false}) {
+  Widget _buildSettingsRow(String label, String value,
+      {VoidCallback? onTap, bool showArrow = false}) {
     return Container(
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
+        border:
+            Border(bottom: BorderSide(color: Color(0xFF2A2A2A), width: 0.5)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        title: Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+        title: Text(label,
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (value.isNotEmpty)
-              Text(value, style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+              Text(value,
+                  style: TextStyle(color: Colors.grey[400], fontSize: 14)),
             if (showArrow)
               const Padding(
                 padding: EdgeInsets.only(left: 8),
@@ -439,12 +466,14 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> with SingleTick
           onPressed: _onNext,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF4A90FF),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
             elevation: 0,
           ),
           child: Text(
             l10n.next,
-            style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+                fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ),
       ),
@@ -480,7 +509,15 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
   late TimeOfDay _startTime;
   late TimeOfDay _endTime;
 
-  final List<String> _dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  final List<String> _dayLabels = [
+    'Sun',
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat'
+  ];
   final List<int> _dayValues = [7, 1, 2, 3, 4, 5, 6];
 
   @override
@@ -502,7 +539,8 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(primary: Color(0xFF4A90FF), surface: Color(0xFF1E1E1E)),
+            colorScheme: const ColorScheme.dark(
+                primary: Color(0xFF4A90FF), surface: Color(0xFF1E1E1E)),
           ),
           child: child!,
         );
@@ -526,7 +564,8 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(primary: Color(0xFF4A90FF), surface: Color(0xFF1E1E1E)),
+            colorScheme: const ColorScheme.dark(
+                primary: Color(0xFF4A90FF), surface: Color(0xFF1E1E1E)),
           ),
           child: child!,
         );
@@ -553,7 +592,10 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
         title: Text(l10n?.validityPeriod ?? 'Validity Period',
-            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -567,16 +609,21 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRow(l10n?.startDate ?? 'Start Date', DateFormat('yyyy-MM-dd').format(_startDate),
+                  _buildRow(l10n?.startDate ?? 'Start Date',
+                      DateFormat('yyyy-MM-dd').format(_startDate),
                       onTap: () => _pickDate(true)),
                   _buildDivider(),
-                  _buildRow(l10n?.endDate ?? 'End Date', DateFormat('yyyy-MM-dd').format(_endDate),
+                  _buildRow(l10n?.endDate ?? 'End Date',
+                      DateFormat('yyyy-MM-dd').format(_endDate),
                       onTap: () => _pickDate(false)),
                   _buildDivider(),
-
                   Container(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-                    child: const Text('Cycle on', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: const Text('Cycle on',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -600,9 +647,13 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                             height: 42,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: isSelected ? const Color(0xFF4A90FF) : Colors.transparent,
+                              color: isSelected
+                                  ? const Color(0xFF4A90FF)
+                                  : Colors.transparent,
                               border: Border.all(
-                                color: isSelected ? const Color(0xFF4A90FF) : Colors.grey[600]!,
+                                color: isSelected
+                                    ? const Color(0xFF4A90FF)
+                                    : Colors.grey[600]!,
                                 width: 1.5,
                               ),
                             ),
@@ -610,7 +661,9 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                               child: Text(
                                 _dayLabels[index],
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.grey[400],
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.grey[400],
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -621,20 +674,20 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                       }),
                     ),
                   ),
-
                   const SizedBox(height: 20),
                   _buildDivider(),
-                  _buildRow(l10n?.startTime ?? 'Start Time', _startTime.format(context),
+                  _buildRow(l10n?.startTime ?? 'Start Time',
+                      _startTime.format(context),
                       onTap: () => _pickTime(true)),
                   _buildDivider(),
-                  _buildRow(l10n?.endTime ?? 'End Time', _endTime.format(context),
+                  _buildRow(
+                      l10n?.endTime ?? 'End Time', _endTime.format(context),
                       onTap: () => _pickTime(false)),
                   _buildDivider(),
                 ],
               ),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
             child: SizedBox(
@@ -652,12 +705,16 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[700],
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26)),
                   elevation: 0,
                 ),
                 child: Text(
                   l10n?.ok ?? 'OK',
-                  style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -670,12 +727,14 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
   Widget _buildRow(String label, String value, {VoidCallback? onTap}) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-      title: Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
+      title: Text(label,
+          style: const TextStyle(color: Colors.white, fontSize: 16)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (value.isNotEmpty)
-            Text(value, style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+            Text(value,
+                style: TextStyle(color: Colors.grey[400], fontSize: 14)),
           const SizedBox(width: 8),
           const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
         ],
@@ -685,7 +744,7 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
   }
 
   Widget _buildDivider() {
-    return const Divider(height: 1, color: Color(0xFF2A2A2A), indent: 16, endIndent: 16);
+    return const Divider(
+        height: 1, color: Color(0xFF2A2A2A), indent: 16, endIndent: 16);
   }
 }
-

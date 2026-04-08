@@ -8,7 +8,9 @@ class LockBloc extends Bloc<LockEvent, AppLockState> {
   final ApiService _apiService;
   final String? _accessToken;
 
-  LockBloc(this._apiService, {String? accessToken}) : _accessToken = accessToken, super(LockInitial()) {
+  LockBloc(this._apiService, {String? accessToken})
+      : _accessToken = accessToken,
+        super(LockInitial()) {
     on<FetchLocks>(_onFetchLocks);
   }
 
@@ -19,7 +21,7 @@ class LockBloc extends Bloc<LockEvent, AppLockState> {
         _apiService.setAccessToken(_accessToken);
       }
       final locks = await _apiService.getLockList();
-      
+
       List<Map<String, dynamic>> gateways = [];
       try {
         final gatewayResponse = await _apiService.getGatewayList();

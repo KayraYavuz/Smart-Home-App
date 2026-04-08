@@ -31,29 +31,31 @@ import 'package:yavuz_lock/services/notification_service.dart'; // Bildirim Serv
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Enable Edge-to-Edge for Android 15 compatibility
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  
+
   debugPrint("🏁 Main fonksiyonu başladı."); // DEBUG LOG
 
   try {
     await dotenv.load(fileName: ".env");
-    debugPrint('📝 .env yüklendi: ${dotenv.env.keys.length} adet anahtar bulundu.');
+    debugPrint(
+        '📝 .env yüklendi: ${dotenv.env.keys.length} adet anahtar bulundu.');
   } catch (e) {
     debugPrint('❌ .env yükleme hatası: $e');
     // .env yüklenemese bile uygulama çalışmaya devam etsin (fallback değerlerle)
   }
-  
+
   debugPrint('🚀 Uygulama başlatılıyor...');
-  debugPrint('⚙️  API Config: ClientId=${app_config.ApiConfig.clientId.isNotEmpty ? "OK" : "BOŞ"}, Username=${app_config.ApiConfig.username.isNotEmpty ? "OK" : "BOŞ"}');
+  debugPrint(
+      '⚙️  API Config: ClientId=${app_config.ApiConfig.clientId.isNotEmpty ? "OK" : "BOŞ"}, Username=${app_config.ApiConfig.username.isNotEmpty ? "OK" : "BOŞ"}');
 
   // Firebase ve Bildirimleri Başlat
   try {
     debugPrint("🔥 Firebase.initializeApp() başlatılıyor...");
     await Firebase.initializeApp();
     debugPrint("✅ Firebase başarıyla başlatıldı");
-    
+
     debugPrint("🚀 NotificationService başlatılıyor...");
     await NotificationService().initialize();
   } catch (e, stackTrace) {
@@ -65,15 +67,17 @@ Future<void> main() async {
   if (Platform.isIOS || Platform.isAndroid) {
     try {
       if (app_config.ApiConfig.clientId.isEmpty) {
-        debugPrint('❌ TTLock Client ID boş! SDK başlatılmıyor. .env dosyasını kontrol edin.');
+        debugPrint(
+            '❌ TTLock Client ID boş! SDK başlatılmıyor. .env dosyasını kontrol edin.');
         // return; // We might not want to return here, just log the error and continue if possible.
       } else {
         // Request permissions first
         await _requestPermissions();
 
         // 1. SDK Yapılandırması
-        TTLock.setupApp(app_config.ApiConfig.clientId, app_config.ApiConfig.clientSecret);
-        
+        TTLock.setupApp(
+            app_config.ApiConfig.clientId, app_config.ApiConfig.clientSecret);
+
         // 2. SDK Durum Kontrolü (Başlangıçta bir kez kontrol et)
         TTLock.getBluetoothState((status) {
           debugPrint("✅ TTLock SDK Bluetooth Başlangıç Durumu: $status");
@@ -85,11 +89,13 @@ Future<void> main() async {
       debugPrint('❌ TTLock SDK başlatma hatası: $e');
     }
   } else {
-    debugPrint('ℹ️ TTLock SDK initialization is skipped on this platform (${Platform.operatingSystem}).');
+    debugPrint(
+        'ℹ️ TTLock SDK initialization is skipped on this platform (${Platform.operatingSystem}).');
   }
 
   // Initialize TTLock Webhook Service
-  TTLockWebhookService().startListening(app_config.TTLockConfig.webhookCallbackUrl);
+  TTLockWebhookService()
+      .startListening(app_config.TTLockConfig.webhookCallbackUrl);
 
   final authRepository = AuthRepository();
   runApp(
@@ -98,11 +104,21 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => LanguageProvider()),
         RepositoryProvider.value(value: authRepository),
         RepositoryProvider(create: (context) => ApiService(authRepository)),
-        RepositoryProvider(create: (context) => TTLockRepository(apiService: context.read<ApiService>())),
-        BlocProvider(create: (context) => AuthBloc(authRepository, context.read<ApiService>())..add(AppStarted())),
-        BlocProvider(create: (context) => TTLockWebhookBloc(TTLockWebhookService())),
-        BlocProvider(create: (context) => FingerprintBloc(context.read<TTLockRepository>(), context.read<ApiService>())),
-        BlocProvider(create: (context) => FaceBloc(context.read<TTLockRepository>(), context.read<ApiService>())),
+        RepositoryProvider(
+            create: (context) =>
+                TTLockRepository(apiService: context.read<ApiService>())),
+        BlocProvider(
+            create: (context) =>
+                AuthBloc(authRepository, context.read<ApiService>())
+                  ..add(AppStarted())),
+        BlocProvider(
+            create: (context) => TTLockWebhookBloc(TTLockWebhookService())),
+        BlocProvider(
+            create: (context) => FingerprintBloc(
+                context.read<TTLockRepository>(), context.read<ApiService>())),
+        BlocProvider(
+            create: (context) => FaceBloc(
+                context.read<TTLockRepository>(), context.read<ApiService>())),
       ],
       child: const MyApp(),
     ),
@@ -111,22 +127,21 @@ Future<void> main() async {
 
 Future<void> _requestPermissions() async {
   if (Platform.isAndroid) {
-      await [
-        Permission.bluetoothScan,
-        Permission.bluetoothConnect,
-        Permission.location,
-      ].request();
+    await [
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.location,
+    ].request();
   } else if (Platform.isIOS) {
-      await [
-        Permission.bluetooth,
-        Permission.location,
-      ].request();
+    await [
+      Permission.bluetooth,
+      Permission.location,
+    ].request();
   }
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
-
 
   @override
   State<MyApp> createState() => _MyAppState();

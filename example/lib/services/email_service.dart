@@ -17,7 +17,8 @@ class EmailService {
     String password = ApiConfig.smtpPassword;
 
     if (username == 'your_email@gmail.com' || password == 'your_app_password') {
-      debugPrint('⚠️ UYARI: E-posta ayarları yapılandırılmamış (lib/config.dart). Mail gönderilemedi.');
+      debugPrint(
+          '⚠️ UYARI: E-posta ayarları yapılandırılmamış (lib/config.dart). Mail gönderilemedi.');
       return false;
     }
 
@@ -27,7 +28,8 @@ class EmailService {
       ..from = Address(username, 'Yavuz Lock')
       ..recipients.add(recipientEmail)
       ..subject = 'Doğrulama Kodunuz: $code'
-      ..text = 'Yavuz Lock uygulaması için doğrulama kodunuz: $code\n\nBu kodu kimseyle paylaşmayın.'
+      ..text =
+          'Yavuz Lock uygulaması için doğrulama kodunuz: $code\n\nBu kodu kimseyle paylaşmayın.'
       ..html = '''
         <h1>Yavuz Lock Doğrulama</h1>
         <p>Merhaba,</p>
@@ -50,8 +52,8 @@ class EmailService {
       }
       return false;
     } catch (e) {
-       debugPrint('❌ Bilinmeyen E-posta hatası: $e');
-       return false;
+      debugPrint('❌ Bilinmeyen E-posta hatası: $e');
+      return false;
     }
   }
 }

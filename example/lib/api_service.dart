@@ -8,37 +8,36 @@ import 'package:http/http.dart' as http;
 import 'package:yavuz_lock/config.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 
-
 // Webhook olayları için model sınıfları
 enum TTLockWebhookEventType {
-  lockOpened,           // Kilit açıldı
-  lockClosed,           // Kilit kapandı
-  lockOpenedFromApp,    // Uygulamadan açıldı
+  lockOpened, // Kilit açıldı
+  lockClosed, // Kilit kapandı
+  lockOpenedFromApp, // Uygulamadan açıldı
   lockOpenedFromKeypad, // Tuş takımıyla açıldı
   lockOpenedFromFingerprint, // Parmak izi ile açıldı
-  lockOpenedFromCard,   // Kart ile açıldı
-  lowBattery,           // Düşük pil
-  lockTampered,         // Kilit manipülasyonu
+  lockOpenedFromCard, // Kart ile açıldı
+  lowBattery, // Düşük pil
+  lockTampered, // Kilit manipülasyonu
   unknown
 }
 
 /// TTLock Passcode Types for random passcode generation
 /// These values correspond to the keyboardPwdType parameter in TTLock API
 enum PasscodeType {
-  oneTime(1),       // Valid once within 6 hours after start time
-  permanent(2),     // Valid forever (must use within 24h of creation)
-  timed(3),         // Valid during specific period (must use within 24h)
-  delete(4),        // Deletes all used passcodes when entered on lock
+  oneTime(1), // Valid once within 6 hours after start time
+  permanent(2), // Valid forever (must use within 24h of creation)
+  timed(3), // Valid during specific period (must use within 24h)
+  delete(4), // Deletes all used passcodes when entered on lock
   weekendCyclic(5), // Recurring on weekends
-  dailyCyclic(6),   // Recurring daily
-  mondayCyclic(7),  // Recurring on Monday
+  dailyCyclic(6), // Recurring daily
+  mondayCyclic(7), // Recurring on Monday
   tuesdayCyclic(8), // Recurring on Tuesday
-  wednesdayCyclic(9),  // Recurring on Wednesday
-  thursdayCyclic(10),  // Recurring on Thursday
-  fridayCyclic(11),    // Recurring on Friday
-  saturdayCyclic(12),  // Recurring on Saturday
-  sundayCyclic(13),    // Recurring on Sunday
-  workdayCyclic(14);   // Recurring on workdays (Mon-Fri)
+  wednesdayCyclic(9), // Recurring on Wednesday
+  thursdayCyclic(10), // Recurring on Thursday
+  fridayCyclic(11), // Recurring on Friday
+  saturdayCyclic(12), // Recurring on Saturday
+  sundayCyclic(13), // Recurring on Sunday
+  workdayCyclic(14); // Recurring on workdays (Mon-Fri)
 
   final int value;
   const PasscodeType(this.value);
@@ -64,10 +63,10 @@ class TTLockWebhookEvent {
   factory TTLockWebhookEvent.fromJson(Map<String, dynamic> json) {
     return TTLockWebhookEvent(
       lockId: json['lockId']?.toString() ?? '',
-      eventType: ApiService._parseTTLockEventTypeLocal(json['eventType']?.toString() ?? ''),
+      eventType: ApiService._parseTTLockEventTypeLocal(
+          json['eventType']?.toString() ?? ''),
       timestamp: DateTime.fromMillisecondsSinceEpoch(
-        (json['date'] as int?) ?? DateTime.now().millisecondsSinceEpoch
-      ),
+          (json['date'] as int?) ?? DateTime.now().millisecondsSinceEpoch),
       eventData: json['data'] as Map<String, dynamic>?,
       batteryLevel: json['battery'] as int?,
       accessMethod: json['accessMethod'] as String?,
@@ -76,8 +75,6 @@ class TTLockWebhookEvent {
 }
 
 class ApiService {
-
-
   String _baseUrl = ApiConfig.baseUrl;
   final AuthRepository? _authRepository;
   String? _accessToken;
@@ -94,14 +91,16 @@ class ApiService {
       final url = Uri.parse(_baseUrl);
       // Using a HEAD request to get headers without downloading body
       final response = await http.head(url);
-      
+
       if (response.headers.containsKey('date')) {
         final serverDateStr = response.headers['date'];
         if (serverDateStr != null) {
-           final serverTime = HttpDate.parse(serverDateStr).millisecondsSinceEpoch;
-           final clientTime = DateTime.now().millisecondsSinceEpoch;
-           _serverTimeOffset = serverTime - clientTime;
-           debugPrint('⏱️ Server time sync: client=$clientTime, server=$serverTime, offset=$_serverTimeOffset ms');
+          final serverTime =
+              HttpDate.parse(serverDateStr).millisecondsSinceEpoch;
+          final clientTime = DateTime.now().millisecondsSinceEpoch;
+          _serverTimeOffset = serverTime - clientTime;
+          debugPrint(
+              '⏱️ Server time sync: client=$clientTime, server=$serverTime, offset=$_serverTimeOffset ms');
         }
       }
     } catch (e) {
@@ -111,7 +110,8 @@ class ApiService {
 
   /// Get corrected timestamp for API calls
   String _getApiTime() {
-     return (DateTime.now().millisecondsSinceEpoch + _serverTimeOffset).toString();
+    return (DateTime.now().millisecondsSinceEpoch + _serverTimeOffset)
+        .toString();
   }
 
   String? get accessToken => _accessToken;
@@ -134,11 +134,11 @@ class ApiService {
     // Not: v3/user/getRegisterCode genellikle App SDK kullanıcıları içindir.
     // Open Platform kullanıcıları için bu endpoint çalışmayabilir veya farklı davranabilir.
     // Ancak kullanıcı isteği üzerine eklenmiştir.
-    
+
     // Doğrulama kodları genellikle ana sunucudan yönetilir, bu yüzden api.ttlock.com deniyoruz.
     final url = Uri.parse('https://api.ttlock.com/v3/user/getRegisterCode');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'clientSecret': ApiConfig.clientSecret,
@@ -182,11 +182,12 @@ class ApiService {
     required String username,
   }) async {
     debugPrint('📧 Şifre sıfırlama kodu isteniyor: $username');
-    
+
     // Doğrulama kodları genellikle ana sunucudan yönetilir, bu yüzden api.ttlock.com deniyoruz.
-    final url = Uri.parse('https://api.ttlock.com/v3/user/getResetPasswordCode');
+    final url =
+        Uri.parse('https://api.ttlock.com/v3/user/getResetPasswordCode');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'clientSecret': ApiConfig.clientSecret,
@@ -213,10 +214,11 @@ class ApiService {
           throw Exception('${responseData['errmsg']}');
         }
       } else if (response.statusCode == 404 && username.contains('@')) {
-         // Eğer email ile 404 aldıysak, alphanumeric haliyle tekrar deneyelim
-         final sanitized = username.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-         debugPrint('⚠️ Email ile bulunamadı, temizlenmiş isimle deneniyor: $sanitized');
-         return getResetPasswordCode(username: sanitized);
+        // Eğer email ile 404 aldıysak, alphanumeric haliyle tekrar deneyelim
+        final sanitized = username.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+        debugPrint(
+            '⚠️ Email ile bulunamadı, temizlenmiş isimle deneniyor: $sanitized');
+        return getResetPasswordCode(username: sanitized);
       } else {
         throw Exception('HTTP error: ${response.statusCode}');
       }
@@ -262,7 +264,8 @@ class ApiService {
       }
       debugPrint('✅ Şifre başarıyla sıfırlandı');
     } else {
-      debugPrint('❌ resetPassword HTTP Error: ${response.statusCode} - ${response.body}');
+      debugPrint(
+          '❌ resetPassword HTTP Error: ${response.statusCode} - ${response.body}');
       throw Exception('apiResetPasswordFailed:HTTP ${response.statusCode}');
     }
   }
@@ -308,19 +311,21 @@ class ApiService {
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         // Eğer kullanıcı zaten varsa (errcode: 10003 - User already exists)
         if (responseData['errcode'] == 10003) {
-           throw Exception('apiUsernameAlreadyTaken');
+          throw Exception('apiUsernameAlreadyTaken');
         }
         throw Exception('apiRegistrationFailed:${responseData['errmsg']}');
       }
 
       if (responseData.containsKey('username')) {
-        debugPrint('✅ Kullanıcı başarıyla oluşturuldu: ${responseData['username']}');
+        debugPrint(
+            '✅ Kullanıcı başarıyla oluşturuldu: ${responseData['username']}');
         return responseData;
       } else {
         throw Exception('apiRegistrationUnexpectedResponse');
       }
     } else {
-      debugPrint('❌ registerUser HTTP Error: ${response.statusCode} - ${response.body}');
+      debugPrint(
+          '❌ registerUser HTTP Error: ${response.statusCode} - ${response.body}');
       throw Exception('apiRegistrationHttpError:${response.statusCode}');
     }
   }
@@ -328,7 +333,7 @@ class ApiService {
   /// Initialize tokens from persistent storage
   Future<void> initializeTokens() async {
     if (_authRepository == null) return;
-    
+
     _accessToken = await _authRepository!.getAccessToken();
     _refreshToken = await _authRepository!.getRefreshToken();
     _tokenExpiry = await _authRepository!.getTokenExpiry();
@@ -364,7 +369,8 @@ class ApiService {
       // If token exists and is valid, no need to fetch a new one
       if (_accessToken != null &&
           _tokenExpiry != null &&
-          DateTime.now().isBefore(_tokenExpiry!.subtract(const Duration(minutes: 5)))) {
+          DateTime.now()
+              .isBefore(_tokenExpiry!.subtract(const Duration(minutes: 5)))) {
         debugPrint('✅ Mevcut geçerli token kullanılıyor');
         debugPrint('   Token: ${_accessToken!.substring(0, 10)}...');
         return true;
@@ -384,7 +390,6 @@ class ApiService {
       debugPrint('🆕 Manuel giriş algılandı, cache atlanıyor...');
       clearTokens(); // Log out current state first
     }
-
 
     // Otherwise, get new token with username/password
     debugPrint('🆕 Yeni access token isteniyor...');
@@ -418,8 +423,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url =
-        Uri.parse('$_baseUrl/v3/face/getFeatureDataByPhoto').replace(queryParameters: {
+    final url = Uri.parse('$_baseUrl/v3/face/getFeatureDataByPhoto')
+        .replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
@@ -447,7 +452,8 @@ class ApiService {
         debugPrint('✅ Yüz özellik verisi başarıyla alındı');
         return responseData;
       } else {
-        debugPrint('❌ Yüz özellik verisi alma hatası: ${responseData['errmsg']}');
+        debugPrint(
+            '❌ Yüz özellik verisi alma hatası: ${responseData['errmsg']}');
         throw Exception(
             'Yüz özellik verisi alınamadı: ${responseData['errmsg']}');
       }
@@ -632,7 +638,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Yüz geçerlilik süresi değiştirilemedi: ${responseData['errmsg']}');
+      throw Exception(
+          'Yüz geçerlilik süresi değiştirilemedi: ${responseData['errmsg']}');
     }
     debugPrint('✅ Yüz geçerlilik süresi değiştirildi');
   }
@@ -753,7 +760,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData.containsKey('fingerprintId')) {
-      debugPrint('✅ Parmak izi başarıyla eklendi: ${responseData['fingerprintId']}');
+      debugPrint(
+          '✅ Parmak izi başarıyla eklendi: ${responseData['fingerprintId']}');
       return responseData;
     } else {
       debugPrint('❌ Parmak izi ekleme hatası: ${responseData['errmsg']}');
@@ -767,7 +775,8 @@ class ApiService {
     int pageNo = 1,
     int pageSize = 20,
     String? searchStr,
-    int orderBy = 1, // 0-by name, 1-reverse order by time, 2-reverse order by name
+    int orderBy =
+        1, // 0-by name, 1-reverse order by time, 2-reverse order by name
   }) async {
     debugPrint('📋 Parmak izi listesi çekiliyor: $lockId');
     await getAccessToken();
@@ -776,7 +785,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/fingerprint/list').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/fingerprint/list').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
@@ -792,11 +802,13 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-        throw Exception('Parmak izi listesi alınamadı: ${responseData['errmsg']}');
+        throw Exception(
+            'Parmak izi listesi alınamadı: ${responseData['errmsg']}');
       }
       return responseData;
     } else {
-      throw Exception('Parmak izi listesi alınamadı: HTTP ${response.statusCode}');
+      throw Exception(
+          'Parmak izi listesi alınamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -807,7 +819,8 @@ class ApiService {
     required int endDate,
     int changeType = 1,
   }) async {
-    debugPrint('🔄 Parmak izi geçerlilik süresi değiştiriliyor: $fingerprintId');
+    debugPrint(
+        '🔄 Parmak izi geçerlilik süresi değiştiriliyor: $fingerprintId');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -864,7 +877,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Tüm parmak izleri silinemedi: ${responseData['errmsg']}');
+      throw Exception(
+          'Tüm parmak izleri silinemedi: ${responseData['errmsg']}');
     }
     debugPrint('✅ Tüm parmak izleri silindi');
   }
@@ -905,8 +919,6 @@ class ApiService {
     debugPrint('✅ Parmak izi yeniden adlandırıldı');
   }
 
-
-
   /// Get user's key list (both owned and shared locks)
   Future<List<Map<String, dynamic>>> getKeyList({
     int pageNo = 1,
@@ -939,7 +951,7 @@ class ApiService {
     if (lockAlias != null) {
       body['lockAlias'] = lockAlias;
     }
-    
+
     if (groupId != null) {
       body['groupId'] = groupId.toString();
     }
@@ -961,61 +973,69 @@ class ApiService {
 
       // Check for error in response body
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-        
         // Handle Error 80000: Timestamp invalid
         if (responseData['errcode'] == 80000 && !isRetry) {
-           debugPrint('⚠️ Error 80000 detected (Time mismatch). Syncing time and retrying...');
-           await _syncServerTime();
-           return getKeyList(
-             pageNo: pageNo,
-             pageSize: pageSize,
-             lockAlias: lockAlias,
-             groupId: groupId,
-             isRetry: true,
-           );
+          debugPrint(
+              '⚠️ Error 80000 detected (Time mismatch). Syncing time and retrying...');
+          await _syncServerTime();
+          return getKeyList(
+            pageNo: pageNo,
+            pageSize: pageSize,
+            lockAlias: lockAlias,
+            groupId: groupId,
+            isRetry: true,
+          );
         }
 
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Key List API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Key List API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Key List API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Key List API Error ${responseData['errcode']}: $errorMsg');
       }
 
       if (responseData['list'] != null) {
         final List<dynamic> keysFromApi = responseData['list'];
-        debugPrint('✅ Successfully fetched ${keysFromApi.length} keys from TTLock API.');
+        debugPrint(
+            '✅ Successfully fetched ${keysFromApi.length} keys from TTLock API.');
 
         // Map to lock format for UI compatibility
         final locks = keysFromApi.map((key) {
           final lockId = key['lockId']?.toString() ?? '';
           final keyId = key['keyId']?.toString() ?? '';
-          
-          final lockAlias = key['lockAlias'] ?? key['lockName'] ?? key['lockNickName'] ?? key['name'] ?? 'Yavuz Lock';
-          
-          final keyStatus = key['keyStatus']; 
-          final electricQuantity = key['electricQuantity'] ?? key['battery'] ?? 0;
-          final userType = key['userType']; 
+
+          final lockAlias = key['lockAlias'] ??
+              key['lockName'] ??
+              key['lockNickName'] ??
+              key['name'] ??
+              'Yavuz Lock';
+
+          final keyStatus = key['keyStatus'];
+          final electricQuantity =
+              key['electricQuantity'] ?? key['battery'] ?? 0;
+          final userType = key['userType'];
 
           // Logic to identify shared locks
           bool isShared = false;
           // If senderUsername exists and is not empty, it's a shared lock
           final senderUsername = key['senderUsername'];
           if (senderUsername != null && senderUsername.toString().isNotEmpty) {
-             isShared = true;
+            isShared = true;
           } else if (userType != null) {
-             // Fallback: 110302 is Normal User (definitely shared)
-             // But 110301 could be Owner OR Shared Admin. 
-             // Without senderUsername, we can't be 100% sure for 110301, 
-             // but usually shared keys have senderUsername.
-             isShared = userType.toString() == '110302';
+            // Fallback: 110302 is Normal User (definitely shared)
+            // But 110301 could be Owner OR Shared Admin.
+            // Without senderUsername, we can't be 100% sure for 110301,
+            // but usually shared keys have senderUsername.
+            isShared = userType.toString() == '110302';
           } else if (keyStatus is int) {
-             // Fallback for very old keys
-             isShared = keyStatus == 2 || keyStatus == 3;
+            // Fallback for very old keys
+            isShared = keyStatus == 2 || keyStatus == 3;
           }
 
           return {
             'lockId': lockId,
             'keyId': keyId,
-            'name': lockAlias, 
+            'name': lockAlias,
             'lockData': key['lockData'] ?? '',
             'lockMac': key['lockMac'] ?? '',
             'battery': electricQuantity,
@@ -1025,7 +1045,7 @@ class ApiService {
             'shared': isShared,
             'lockAlias': key['lockAlias'],
             'lockName': key['lockName'],
-            'groupId': key['groupId'], 
+            'groupId': key['groupId'],
             'hasGateway': key['hasGateway'],
             'endDate': key['endDate'],
             'keyRight': key['keyRight'],
@@ -1078,8 +1098,10 @@ class ApiService {
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Get eKey API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Get eKey API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Get eKey API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Get eKey API Error ${responseData['errcode']}: $errorMsg');
       }
 
       // Successful response returns the key object directly
@@ -1103,7 +1125,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/lock/queryOpenState').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/lock/queryOpenState').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
@@ -1114,16 +1137,20 @@ class ApiService {
 
     final response = await http.get(url);
 
-    debugPrint('📨 Query Lock Open State API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Query Lock Open State API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      debugPrint('🔍 TTLock Query Lock Open State API Full Response: $responseData');
+      debugPrint(
+          '🔍 TTLock Query Lock Open State API Full Response: $responseData');
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Query Lock Open State API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Query Lock Open State API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Query Lock Open State API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Query Lock Open State API Error ${responseData['errcode']}: $errorMsg');
       }
 
       if (responseData.containsKey('state')) {
@@ -1151,7 +1178,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/lock/queryDate').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/lock/queryDate').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
@@ -1162,7 +1190,8 @@ class ApiService {
 
     final response = await http.get(url);
 
-    debugPrint('📨 Query Lock Time API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Query Lock Time API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1170,8 +1199,10 @@ class ApiService {
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Query Lock Time API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Query Lock Time API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Query Lock Time API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Query Lock Time API Error ${responseData['errcode']}: $errorMsg');
       }
 
       if (responseData.containsKey('date')) {
@@ -1219,7 +1250,8 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Update Lock Time API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Update Lock Time API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1227,12 +1259,15 @@ class ApiService {
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Update Lock Time API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Update Lock Time API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Update Lock Time API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Update Lock Time API Error ${responseData['errcode']}: $errorMsg');
       }
 
       if (responseData.containsKey('date')) {
-        debugPrint('✅ Kilit zamanı başarıyla ayarlandı: ${responseData['date']}');
+        debugPrint(
+            '✅ Kilit zamanı başarıyla ayarlandı: ${responseData['date']}');
         return responseData['date'] as int;
       } else {
         debugPrint('⚠️ API response does not contain adjusted lock time.');
@@ -1256,7 +1291,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/lock/queryElectricQuantity').replace(queryParameters: {
+    final url = Uri.parse('$_baseUrl/v3/lock/queryElectricQuantity')
+        .replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
@@ -1267,20 +1303,25 @@ class ApiService {
 
     final response = await http.get(url);
 
-    debugPrint('📨 Query Lock Battery API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Query Lock Battery API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      debugPrint('🔍 TTLock Query Lock Battery API Full Response: $responseData');
+      debugPrint(
+          '🔍 TTLock Query Lock Battery API Full Response: $responseData');
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Query Lock Battery API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Query Lock Battery API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Query Lock Battery API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Query Lock Battery API Error ${responseData['errcode']}: $errorMsg');
       }
 
       if (responseData.containsKey('electricQuantity')) {
-        debugPrint('✅ Kilit pil seviyesi alındı: ${responseData['electricQuantity']}%');
+        debugPrint(
+            '✅ Kilit pil seviyesi alındı: ${responseData['electricQuantity']}%');
         return responseData['electricQuantity'] as int;
       } else {
         debugPrint('⚠️ API response does not contain lock battery quantity.');
@@ -1298,7 +1339,8 @@ class ApiService {
     required String lockId,
   }) async {
     debugPrint('🔑 Kilit şifreleri çekiliyor: $lockId');
-    final url = Uri.parse('$_baseUrl/v3/lock/listKeyboardPwd').replace(queryParameters: {
+    final url = Uri.parse('$_baseUrl/v3/lock/listKeyboardPwd')
+        .replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
@@ -1311,7 +1353,8 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
+      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) &&
+          responseData['list'] != null) {
         return (responseData['list'] as List).cast<Map<String, dynamic>>();
       } else {
         return [];
@@ -1330,11 +1373,12 @@ class ApiService {
     int? startDate, // timestamp in millisecond
     int? endDate, // timestamp in millisecond
     int? uid,
-    int? recordType, // -5-face, -4-QR, 4-password, 7-IC card, 8-fingerprint, 55-remote
+    int?
+        recordType, // -5-face, -4-QR, 4-password, 7-IC card, 8-fingerprint, 55-remote
     String? searchStr,
   }) async {
     debugPrint('📋 Kilit kayıtları çekiliyor: $lockId');
-    
+
     final Map<String, String> queryParams = {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
@@ -1350,17 +1394,20 @@ class ApiService {
     if (recordType != null) queryParams['recordType'] = recordType.toString();
     if (searchStr != null) queryParams['searchStr'] = searchStr;
 
-    final url = Uri.parse('$_baseUrl/v3/lockRecord/list').replace(queryParameters: queryParams);
+    final url = Uri.parse('$_baseUrl/v3/lockRecord/list')
+        .replace(queryParameters: queryParams);
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('📝 Lock Records Response: $responseData');
-      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
+      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) &&
+          responseData['list'] != null) {
         return (responseData['list'] as List).cast<Map<String, dynamic>>();
       } else {
-        debugPrint('⚠️ Lock Records Error or Empty: errcode=${responseData['errcode']}, errmsg=${responseData['errmsg']}');
+        debugPrint(
+            '⚠️ Lock Records Error or Empty: errcode=${responseData['errcode']}, errmsg=${responseData['errmsg']}');
         return [];
       }
     } else {
@@ -1376,9 +1423,9 @@ class ApiService {
     required List<Map<String, dynamic>> records,
   }) async {
     debugPrint('📤 Kilit kayıtları buluta yükleniyor: $lockId');
-    
+
     final url = Uri.parse('$_baseUrl/v3/lockRecord/upload');
-    
+
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
@@ -1410,10 +1457,11 @@ class ApiService {
     required String lockId,
     required List<int> recordIdList,
   }) async {
-    debugPrint('🗑️ Kilit kayıtları siliniyor: $lockId, adet: ${recordIdList.length}');
-    
+    debugPrint(
+        '🗑️ Kilit kayıtları siliniyor: $lockId, adet: ${recordIdList.length}');
+
     final url = Uri.parse('$_baseUrl/v3/lockRecord/delete');
-    
+
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
@@ -1445,9 +1493,9 @@ class ApiService {
     required String lockId,
   }) async {
     debugPrint('🧹 Tüm kilit kayıtları temizleniyor: $lockId');
-    
+
     final url = Uri.parse('$_baseUrl/v3/lockRecord/clear');
-    
+
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
@@ -1479,12 +1527,12 @@ class ApiService {
     required String name,
   }) async {
     debugPrint('➕ Yeni grup ekleniyor: $name');
-    
+
     await getAccessToken();
     if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
 
     final url = Uri.parse('$_baseUrl/v3/group/add');
-    
+
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -1515,10 +1563,11 @@ class ApiService {
 
   /// Get the group list of an account
   Future<List<Map<String, dynamic>>> getGroupList({
-    int orderBy = 1, // 0-by name, 1-reverse order by time, 2-reverse order by name
+    int orderBy =
+        1, // 0-by name, 1-reverse order by time, 2-reverse order by name
   }) async {
     debugPrint('📋 Grup listesi çekiliyor');
-    
+
     await getAccessToken();
     if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
 
@@ -1545,11 +1594,12 @@ class ApiService {
   /// Get the lock list of a group
   Future<List<Map<String, dynamic>>> getGroupLockList(String groupId) async {
     debugPrint('📋 Gruptaki kilitler çekiliyor: $groupId');
-    
+
     await getAccessToken();
     if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
 
-    final url = Uri.parse('$_baseUrl/v3/group/lock/list').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/group/lock/list').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'groupId': groupId,
@@ -1567,7 +1617,8 @@ class ApiService {
       }
       return [];
     } else {
-      throw Exception('Grup kilit listesi alınamadı: HTTP ${response.statusCode}');
+      throw Exception(
+          'Grup kilit listesi alınamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -1577,12 +1628,12 @@ class ApiService {
     required String groupId,
   }) async {
     debugPrint('🔗 Kilit gruba atanıyor: Lock=$lockId -> Group=$groupId');
-    
+
     await getAccessToken();
     if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
 
     final url = Uri.parse('$_baseUrl/v3/lock/setGroup');
-    
+
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -1613,12 +1664,12 @@ class ApiService {
     required String groupId,
   }) async {
     debugPrint('🗑️ Grup siliniyor: $groupId');
-    
+
     await getAccessToken();
     if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
 
     final url = Uri.parse('$_baseUrl/v3/group/delete');
-    
+
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -1649,12 +1700,12 @@ class ApiService {
     required String newName,
   }) async {
     debugPrint('✏️ Grup güncelleniyor: $groupId -> $newName');
-    
+
     await getAccessToken();
     if (_accessToken == null) throw Exception('Erişim anahtarı alınamadı');
 
     final url = Uri.parse('$_baseUrl/v3/group/update');
-    
+
     final Map<String, String> body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -1686,7 +1737,8 @@ class ApiService {
     required String lockId,
   }) async {
     debugPrint('💳 Kilit kartları çekiliyor: $lockId');
-    final url = Uri.parse('$_baseUrl/v3/lock/listICCard').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/lock/listICCard').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
@@ -1699,7 +1751,8 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
+      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) &&
+          responseData['list'] != null) {
         return (responseData['list'] as List).cast<Map<String, dynamic>>();
       } else {
         return [];
@@ -1714,7 +1767,8 @@ class ApiService {
     required String lockId,
     int pageNo = 1,
     int pageSize = 20, // Max 200 as per documentation
-    int orderBy = 1, // 0-by name, 1-reverse order by time, 2-reverse order by name
+    int orderBy =
+        1, // 0-by name, 1-reverse order by time, 2-reverse order by name
     String? searchStr,
   }) async {
     debugPrint('💳 Kimlik Kartları listesi çekiliyor: $lockId');
@@ -1738,20 +1792,24 @@ class ApiService {
       queryParams['searchStr'] = searchStr;
     }
 
-    final url = Uri.parse('$_baseUrl/v3/identityCard/list').replace(queryParameters: queryParams.cast<String, String>());
+    final url = Uri.parse('$_baseUrl/v3/identityCard/list')
+        .replace(queryParameters: queryParams.cast<String, String>());
 
     debugPrint('📡 List Identity Cards API çağrısı: $url');
 
     final response = await http.get(url);
 
-    debugPrint('📨 List Identity Cards API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint(
+        '📨 List Identity Cards API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Kimlik Kartları listeleme API hatası: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Kimlik Kartları listelenemedi: ${responseData['errmsg']}');
+        debugPrint(
+            '❌ Kimlik Kartları listeleme API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Kimlik Kartları listelenemedi: ${responseData['errmsg']}');
       }
 
       if (responseData['list'] != null) {
@@ -1762,7 +1820,8 @@ class ApiService {
       }
     } else {
       debugPrint('❌ HTTP hatası: ${response.statusCode}');
-      throw Exception('Kimlik Kartları listelenemedi: HTTP ${response.statusCode}');
+      throw Exception(
+          'Kimlik Kartları listelenemedi: HTTP ${response.statusCode}');
     }
   }
 
@@ -1772,7 +1831,8 @@ class ApiService {
     required String lockId,
   }) async {
     debugPrint('👆 Kilit parmak izleri çekiliyor: $lockId');
-    final url = Uri.parse('$_baseUrl/v3/lock/listFingerprint').replace(queryParameters: {
+    final url = Uri.parse('$_baseUrl/v3/lock/listFingerprint')
+        .replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
@@ -1785,7 +1845,8 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
+      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) &&
+          responseData['list'] != null) {
         return (responseData['list'] as List).cast<Map<String, dynamic>>();
       } else {
         return [];
@@ -1799,7 +1860,8 @@ class ApiService {
   Future<List<Map<String, dynamic>>> getGatewayList({
     int pageNo = 1,
     int pageSize = 50,
-    int orderBy = 0, // 0-by name, 1-reverse order by time, 2-reverse order by name
+    int orderBy =
+        0, // 0-by name, 1-reverse order by time, 2-reverse order by name
   }) async {
     debugPrint('📡 Gateway listesi çekiliyor');
 
@@ -1818,7 +1880,8 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final url = Uri.parse('$_baseUrl/v3/gateway/list').replace(queryParameters: queryParams.cast<String, String>());
+    final url = Uri.parse('$_baseUrl/v3/gateway/list')
+        .replace(queryParameters: queryParams.cast<String, String>());
 
     debugPrint('📡 Gateway list API çağrısı: $url');
 
@@ -1826,7 +1889,8 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
+      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) &&
+          responseData['list'] != null) {
         return (responseData['list'] as List).cast<Map<String, dynamic>>();
       } else {
         return [];
@@ -1868,7 +1932,8 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint(
+        '📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1876,8 +1941,10 @@ class ApiService {
         debugPrint('✅ Remote unlock başarılı');
         return responseData;
       } else {
-        debugPrint('❌ Remote unlock API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-        throw Exception('Remote unlock failed: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        debugPrint(
+            '❌ Remote unlock API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception(
+            'Remote unlock failed: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
       }
     } else {
       debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -1915,7 +1982,7 @@ class ApiService {
     if (groupId != null) {
       body['groupId'] = groupId.toString();
     }
-    
+
     if (nbInitSuccess != null) {
       body['nbInitSuccess'] = nbInitSuccess.toString();
     }
@@ -1929,41 +1996,46 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Lock init API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint(
+        '📨 Lock init API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      
+
       // Check for both errcode (standard) or direct lockId return
       if (responseData is Map<String, dynamic>) {
+        if (responseData.containsKey('errcode') &&
+            responseData['errcode'] != 0) {
+          // Handle Error 80000: Timestamp invalid
+          if (responseData['errcode'] == 80000 && !isRetry) {
+            debugPrint(
+                '⚠️ Error 80000 detected (Time mismatch) during init. Syncing time and retrying...');
+            await _syncServerTime();
+            return initializeLock(
+              lockData: lockData,
+              lockAlias: lockAlias,
+              groupId: groupId,
+              nbInitSuccess: nbInitSuccess,
+              isRetry: true,
+            );
+          }
 
-        if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-           
-           // Handle Error 80000: Timestamp invalid
-           if (responseData['errcode'] == 80000 && !isRetry) {
-             debugPrint('⚠️ Error 80000 detected (Time mismatch) during init. Syncing time and retrying...');
-             await _syncServerTime();
-             return initializeLock(
-               lockData: lockData,
-               lockAlias: lockAlias,
-               groupId: groupId,
-               nbInitSuccess: nbInitSuccess,
-               isRetry: true,
-             );
-           }
-
-           debugPrint('❌ Kilit kaydı API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Lock init failed: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          debugPrint(
+              '❌ Kilit kaydı API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception(
+              'Lock init failed: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
         }
-        
+
         // Successful response should contain lockId
         if (responseData.containsKey('lockId')) {
-           debugPrint('✅ Kilit başarıyla kaydedildi: ${responseData['lockId']}');
-           return responseData;
-        } else if ((responseData['errcode'] == 0 || responseData['errcode'] == null) || responseData.containsKey('lockId')) {
-           // Some APIs might return just success without lockId if already handled? 
-           // But spec says it returns lockId. 
-           return responseData;
+          debugPrint('✅ Kilit başarıyla kaydedildi: ${responseData['lockId']}');
+          return responseData;
+        } else if ((responseData['errcode'] == 0 ||
+                responseData['errcode'] == null) ||
+            responseData.containsKey('lockId')) {
+          // Some APIs might return just success without lockId if already handled?
+          // But spec says it returns lockId.
+          return responseData;
         }
       }
       return responseData;
@@ -1980,7 +2052,8 @@ class ApiService {
   }) async {
     debugPrint('🔗 Gateway\'e bağlanılıyor: $gatewayId');
 
-    final url = Uri.parse('$_baseUrl/v3/gateway/connect').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/gateway/connect').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'gatewayId': gatewayId,
@@ -1995,10 +2068,12 @@ class ApiService {
         debugPrint('✅ Gateway bağlantısı başarılı: $gatewayId');
         return responseData;
       } else {
-        throw Exception('Gateway bağlantısı başarısız: ${responseData['errmsg']}');
+        throw Exception(
+            'Gateway bağlantısı başarısız: ${responseData['errmsg']}');
       }
     } else {
-      throw Exception('Gateway bağlantısı başarısız: HTTP ${response.statusCode}');
+      throw Exception(
+          'Gateway bağlantısı başarısız: HTTP ${response.statusCode}');
     }
   }
 
@@ -2009,7 +2084,8 @@ class ApiService {
   }) async {
     debugPrint('🔌 Gateway bağlantısı kesiliyor: $gatewayId');
 
-    final url = Uri.parse('$_baseUrl/v3/gateway/disconnect').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/gateway/disconnect').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'gatewayId': gatewayId,
@@ -2024,10 +2100,12 @@ class ApiService {
         debugPrint('✅ Gateway bağlantısı kesildi: $gatewayId');
         return responseData;
       } else {
-        throw Exception('Gateway bağlantı kesme başarısız: ${responseData['errmsg']}');
+        throw Exception(
+            'Gateway bağlantı kesme başarısız: ${responseData['errmsg']}');
       }
     } else {
-      throw Exception('Gateway bağlantı kesme başarısız: HTTP ${response.statusCode}');
+      throw Exception(
+          'Gateway bağlantı kesme başarısız: HTTP ${response.statusCode}');
     }
   }
 
@@ -2043,7 +2121,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/gateway/detail').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/gateway/detail').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'gatewayId': gatewayId,
@@ -2056,13 +2135,16 @@ class ApiService {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Gateway detayları API hatası: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Gateway detayları alınamadı: ${responseData['errmsg']}');
+        debugPrint(
+            '❌ Gateway detayları API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Gateway detayları alınamadı: ${responseData['errmsg']}');
       }
       debugPrint('✅ Gateway detayları alındı: $gatewayId');
       return responseData;
     } else {
-      throw Exception('Gateway detayları alınamadı: HTTP ${response.statusCode}');
+      throw Exception(
+          'Gateway detayları alınamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -2076,7 +2158,8 @@ class ApiService {
   }) async {
     debugPrint('⚙️ Gateway ayarları güncelleniyor: $gatewayId');
 
-    final url = Uri.parse('$_baseUrl/v3/gateway/update').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/gateway/update').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'gatewayId': gatewayId,
@@ -2094,10 +2177,12 @@ class ApiService {
         debugPrint('✅ Gateway ayarları güncellendi: $gatewayId');
         return responseData;
       } else {
-        throw Exception('Gateway güncelleme başarısız: ${responseData['errmsg']}');
+        throw Exception(
+            'Gateway güncelleme başarısız: ${responseData['errmsg']}');
       }
     } else {
-      throw Exception('Gateway güncelleme başarısız: HTTP ${response.statusCode}');
+      throw Exception(
+          'Gateway güncelleme başarısız: HTTP ${response.statusCode}');
     }
   }
 
@@ -2113,7 +2198,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/gateway/listByLock').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/gateway/listByLock').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
@@ -2126,10 +2212,13 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if ((responseData.containsKey('errcode') && responseData['errcode'] != 0)) {
+      if ((responseData.containsKey('errcode') &&
+          responseData['errcode'] != 0)) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Get Gateways by Lock API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Get Gateways by Lock API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Get Gateways by Lock API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Get Gateways by Lock API Error ${responseData['errcode']}: $errorMsg');
       }
 
       if (responseData['list'] != null) {
@@ -2147,14 +2236,15 @@ class ApiService {
     required String gatewayId,
   }) async {
     debugPrint('🔗 Gateway\'e bağlı kilitler alınıyor: $gatewayId');
-    
+
     await getAccessToken(); // Ensure we have a valid token
 
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/gateway/listLock').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/gateway/listLock').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'gatewayId': gatewayId,
@@ -2165,20 +2255,25 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if ((responseData.containsKey('errcode') && responseData['errcode'] != 0)) {
+      if ((responseData.containsKey('errcode') &&
+          responseData['errcode'] != 0)) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Get Gateway Locks API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Get Gateway Locks API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Get Gateway Locks API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Get Gateway Locks API Error ${responseData['errcode']}: $errorMsg');
       }
-      
+
       if (responseData['list'] != null) {
-        debugPrint('✅ Gateway kilitleri alındı: ${responseData['list'].length} kilit');
+        debugPrint(
+            '✅ Gateway kilitleri alındı: ${responseData['list'].length} kilit');
         return (responseData['list'] as List).cast<Map<String, dynamic>>();
       } else {
         return [];
       }
     } else {
-      throw Exception('Gateway kilitleri alınamadı: HTTP ${response.statusCode}');
+      throw Exception(
+          'Gateway kilitleri alınamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -2193,7 +2288,7 @@ class ApiService {
     int? orderBy, // 0: by name, 1: reverse by time, 2: reverse by name
   }) async {
     debugPrint('🔑 Kilit için e-key listesi çekiliyor: $lockId');
-    
+
     final Map<String, dynamic> queryParams = {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
@@ -2216,7 +2311,8 @@ class ApiService {
     }
 
     // TTLock API endpoint: /v3/lock/listKey
-    final url = Uri.parse('$_baseUrl/v3/lock/listKey').replace(queryParameters: queryParams);
+    final url = Uri.parse('$_baseUrl/v3/lock/listKey')
+        .replace(queryParameters: queryParams);
 
     debugPrint('📡 Lock Key List API çağrısı: $url');
 
@@ -2225,8 +2321,9 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('🔍 Lock Key List Response: $responseData');
-      
-      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
+
+      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) &&
+          responseData['list'] != null) {
         final list = responseData['list'] as List;
         return list.map((e) => Map<String, dynamic>.from(e)).toList();
       } else {
@@ -2245,7 +2342,7 @@ class ApiService {
     required String keyId,
   }) async {
     debugPrint('🗑️ E-key siliniyor: $keyId');
-    
+
     // TTLock API endpoint: /v3/key/delete
     final url = Uri.parse('$_baseUrl/v3/key/delete');
 
@@ -2271,12 +2368,13 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('🔍 Delete eKey Response: $responseData');
-      
+
       if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
         debugPrint('✅ E-key başarıyla silindi: $keyId');
         return responseData;
       } else {
-        debugPrint('❌ E-key silme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        debugPrint(
+            '❌ E-key silme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
         throw Exception('Failed to delete e-key: ${responseData['errmsg']}');
       }
     } else {
@@ -2291,7 +2389,7 @@ class ApiService {
     required String keyId,
   }) async {
     debugPrint('❄️ E-key donduruluyor: $keyId');
-    
+
     // TTLock API endpoint: /v3/key/freeze
     final url = Uri.parse('$_baseUrl/v3/key/freeze');
 
@@ -2317,12 +2415,13 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('🔍 Freeze eKey Response: $responseData');
-      
+
       if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
         debugPrint('✅ E-key başarıyla donduruldu: $keyId');
         return responseData;
       } else {
-        debugPrint('❌ E-key dondurma API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        debugPrint(
+            '❌ E-key dondurma API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
         throw Exception('Failed to freeze e-key: ${responseData['errmsg']}');
       }
     } else {
@@ -2337,7 +2436,7 @@ class ApiService {
     required String keyId,
   }) async {
     debugPrint('🔥 E-key dondurması kaldırılıyor (unfreeze): $keyId');
-    
+
     // TTLock API endpoint: /v3/key/unfreeze
     final url = Uri.parse('$_baseUrl/v3/key/unfreeze');
 
@@ -2363,12 +2462,13 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('🔍 Unfreeze eKey Response: $responseData');
-      
+
       if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
         debugPrint('✅ E-key başarıyla dondurmadan kurtarıldı: $keyId');
         return responseData;
       } else {
-        debugPrint('❌ E-key unfreeze API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        debugPrint(
+            '❌ E-key unfreeze API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
         throw Exception('Failed to unfreeze e-key: ${responseData['errmsg']}');
       }
     } else {
@@ -2385,7 +2485,7 @@ class ApiService {
     int? remoteEnable, // 1-yes, 2-no
   }) async {
     debugPrint('✏️ E-key güncelleniyor: $keyId');
-    
+
     // TTLock API endpoint: /v3/key/update
     final url = Uri.parse('$_baseUrl/v3/key/update');
 
@@ -2419,12 +2519,13 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('🔍 Update eKey Response: $responseData');
-      
+
       if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
         debugPrint('✅ E-key başarıyla güncellendi: $keyId');
         return responseData;
       } else {
-        debugPrint('❌ E-key güncelleme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        debugPrint(
+            '❌ E-key güncelleme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
         throw Exception('Failed to update e-key: ${responseData['errmsg']}');
       }
     } else {
@@ -2441,7 +2542,7 @@ class ApiService {
     required DateTime endDate,
   }) async {
     debugPrint('🕒 E-key süresi değiştiriliyor: $keyId');
-    
+
     // TTLock API endpoint: /v3/key/changePeriod
     final url = Uri.parse('$_baseUrl/v3/key/changePeriod');
 
@@ -2464,22 +2565,26 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Change eKey Period API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Change eKey Period API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('🔍 Change eKey Period Response: $responseData');
-      
+
       if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
         debugPrint('✅ E-key süresi başarıyla güncellendi: $keyId');
         return responseData;
       } else {
-        debugPrint('❌ E-key süre güncelleme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-        throw Exception('Failed to change e-key period: ${responseData['errmsg']}');
+        debugPrint(
+            '❌ E-key süre güncelleme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception(
+            'Failed to change e-key period: ${responseData['errmsg']}');
       }
     } else {
       debugPrint('❌ HTTP hatası: ${response.statusCode}');
-      throw Exception('Failed to change e-key period: HTTP ${response.statusCode}');
+      throw Exception(
+          'Failed to change e-key period: HTTP ${response.statusCode}');
     }
   }
 
@@ -2490,7 +2595,7 @@ class ApiService {
     required String keyId,
   }) async {
     debugPrint('👮 E-key yetkilendiriliyor: $keyId');
-    
+
     // TTLock API endpoint: /v3/key/authorize
     final url = Uri.parse('$_baseUrl/v3/key/authorize');
 
@@ -2517,12 +2622,13 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('🔍 Authorize eKey Response: $responseData');
-      
+
       if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
         debugPrint('✅ E-key başarıyla yetkilendirildi: $keyId');
         return responseData;
       } else {
-        debugPrint('❌ E-key yetkilendirme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        debugPrint(
+            '❌ E-key yetkilendirme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
         throw Exception('Failed to authorize e-key: ${responseData['errmsg']}');
       }
     } else {
@@ -2538,7 +2644,7 @@ class ApiService {
     required String keyId,
   }) async {
     debugPrint('🚫 E-key yetkisi iptal ediliyor: $keyId');
-    
+
     // TTLock API endpoint: /v3/key/unauthorize
     final url = Uri.parse('$_baseUrl/v3/key/unauthorize');
 
@@ -2560,22 +2666,26 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Unauthorize eKey API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Unauthorize eKey API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('🔍 Unauthorize eKey Response: $responseData');
-      
+
       if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
         debugPrint('✅ E-key yetkisi başarıyla iptal edildi: $keyId');
         return responseData;
       } else {
-        debugPrint('❌ E-key yetki iptali API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-        throw Exception('Failed to unauthorize e-key: ${responseData['errmsg']}');
+        debugPrint(
+            '❌ E-key yetki iptali API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception(
+            'Failed to unauthorize e-key: ${responseData['errmsg']}');
       }
     } else {
       debugPrint('❌ HTTP hatası: ${response.statusCode}');
-      throw Exception('Failed to unauthorize e-key: HTTP ${response.statusCode}');
+      throw Exception(
+          'Failed to unauthorize e-key: HTTP ${response.statusCode}');
     }
   }
 
@@ -2585,7 +2695,7 @@ class ApiService {
     required String keyId,
   }) async {
     debugPrint('🔗 E-key kilit açma linki alınıyor: $keyId');
-    
+
     // TTLock API endpoint: /v3/key/getUnlockLink
     final url = Uri.parse('$_baseUrl/v3/key/getUnlockLink');
 
@@ -2606,18 +2716,21 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Get Unlock Link API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Get Unlock Link API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       debugPrint('🔍 Get Unlock Link Response: $responseData');
-      
+
       if (responseData.containsKey('link') && responseData['link'] != null) {
         debugPrint('✅ Link başarıyla alındı: ${responseData['link']}');
         return responseData;
-      } else if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-         debugPrint('❌ Link alma API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-         throw Exception('Failed to get unlock link: ${responseData['errmsg']}');
+      } else if (responseData.containsKey('errcode') &&
+          responseData['errcode'] != 0) {
+        debugPrint(
+            '❌ Link alma API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception('Failed to get unlock link: ${responseData['errmsg']}');
       } else {
         // Fallback for success case where maybe errcode is 0?
         return responseData;
@@ -2650,8 +2763,10 @@ class ApiService {
     final url = Uri.parse('$_baseUrl/v3/key/send');
 
     // For permanent/one-time keys, startDate and endDate should be '0'
-    final String startDateStr = startDate != null ? startDate.millisecondsSinceEpoch.toString() : '0';
-    final String endDateStr = endDate != null ? endDate.millisecondsSinceEpoch.toString() : '0';
+    final String startDateStr =
+        startDate != null ? startDate.millisecondsSinceEpoch.toString() : '0';
+    final String endDateStr =
+        endDate != null ? endDate.millisecondsSinceEpoch.toString() : '0';
 
     // Parametreleri body olarak gönder (application/x-www-form-urlencoded)
     final Map<String, String> body = {
@@ -2669,7 +2784,7 @@ class ApiService {
     if (keyRight != 0) {
       body['keyRight'] = keyRight.toString();
     }
-    
+
     if (remarks != null && remarks.isNotEmpty) {
       body['remarks'] = remarks;
     }
@@ -2691,7 +2806,8 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Send eKey API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint(
+        '📨 Send eKey API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2699,8 +2815,10 @@ class ApiService {
         debugPrint('✅ E-key başarıyla gönderildi: $lockId');
         return responseData;
       } else {
-        debugPrint('❌ E-key gönderme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-        throw Exception('E-key gönderme başarısız: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        debugPrint(
+            '❌ E-key gönderme API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+        throw Exception(
+            'E-key gönderme başarısız: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
       }
     } else {
       debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -2716,7 +2834,8 @@ class ApiService {
   }) async {
     debugPrint('🚫 Kilit paylaşımı iptal ediliyor: $lockId <- $username');
 
-    final url = Uri.parse('$_baseUrl/v3/lock/cancelShare').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/lock/cancelShare').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
@@ -2739,8 +2858,6 @@ class ApiService {
     }
   }
 
-
-
   // --- ŞİFRE, KART VE PARMAK İZİ YÖNETİMİ ---
 
   /// Add a custom passcode to a lock
@@ -2749,7 +2866,7 @@ class ApiService {
     required String passcodeName,
     required String passcode,
     required int startDate, // timestamp ms
-    required int endDate,   // timestamp ms
+    required int endDate, // timestamp ms
   }) async {
     debugPrint('🔑 Yeni şifre ekleniyor: $passcodeName');
     await getAccessToken();
@@ -2814,7 +2931,7 @@ class ApiService {
 
   /// Get a random passcode from TTLock cloud API
   /// The passcode is generated by the server based on lock's internal algorithm
-  /// 
+  ///
   /// [lockId] The lock ID
   /// [passcodeType] Type of passcode to generate (see PasscodeType enum)
   /// [startDate] Start time in milliseconds (required for all types)
@@ -2850,11 +2967,13 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
-      debugPrint('✅ Rastgele şifre oluşturuldu: ${responseData['keyboardPwd']}');
+      debugPrint(
+          '✅ Rastgele şifre oluşturuldu: ${responseData['keyboardPwd']}');
       return responseData;
     } else {
       debugPrint('❌ Rastgele şifre oluşturulamadı: ${responseData['errmsg']}');
-      throw Exception('Rastgele şifre oluşturulamadı: ${responseData['errmsg']}');
+      throw Exception(
+          'Rastgele şifre oluşturulamadı: ${responseData['errmsg']}');
     }
   }
 
@@ -2868,7 +2987,8 @@ class ApiService {
     debugPrint('📋 Şifre listesi çekiliyor: $lockId');
     await getAccessToken();
 
-    final url = Uri.parse('$_baseUrl/v3/keyboardPwd/list').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/keyboardPwd/list').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId,
@@ -2881,7 +3001,8 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) && responseData['list'] != null) {
+      if ((responseData['errcode'] == 0 || responseData['errcode'] == null) &&
+          responseData['list'] != null) {
         debugPrint('✅ ${responseData['list'].length} şifre bulundu');
         return (responseData['list'] as List).cast<Map<String, dynamic>>();
       } else {
@@ -2931,7 +3052,6 @@ class ApiService {
       throw Exception('Şifre değiştirilemedi: ${responseData['errmsg']}');
     }
   }
-
 
   /// Add IC Card remotely via gateway.
   /// Phone NFC reads card UID as hex bytes (e.g. "6A536AA9"),
@@ -3005,11 +3125,14 @@ class ApiService {
     // Helper: check if result is success
     bool isSuccess(Map<String, dynamic>? r) {
       if (r == null) return false;
-      return r['errcode'] == 0 || r['errcode'] == null || r.containsKey('cardId');
+      return r['errcode'] == 0 ||
+          r['errcode'] == null ||
+          r.containsKey('cardId');
     }
 
     // Helper to call a single endpoint
-    Future<Map<String, dynamic>?> tryEndpoint(String fullUrl, Map<String, String> body) async {
+    Future<Map<String, dynamic>?> tryEndpoint(
+        String fullUrl, Map<String, String> body) async {
       debugPrint('📡 Trying endpoint: $fullUrl');
       debugPrint('📝 Body: $body');
       try {
@@ -3019,8 +3142,9 @@ class ApiService {
           body: body,
         );
         debugPrint('📨 Response [${response.statusCode}]: ${response.body}');
-        
-        if (response.statusCode != 200 || response.body.trimLeft().startsWith('<')) return null; // HTML error
+
+        if (response.statusCode != 200 ||
+            response.body.trimLeft().startsWith('<')) return null; // HTML error
 
         final data = json.decode(response.body);
         if (data is Map<String, dynamic>) {
@@ -3034,7 +3158,7 @@ class ApiService {
     }
 
     // Try multiple combinations of endpoint + card number format
-    // Priority: 
+    // Priority:
     // 1. EU Server + Decimal (Most likely correct)
     // 2. EU Server + Hex
     // 3. Global Server + Decimal
@@ -3056,7 +3180,7 @@ class ApiService {
       final url = attempt[0];
       final cn = attempt[1];
       final result = await tryEndpoint(url, buildBody(cn));
-      
+
       if (isSuccess(result)) {
         debugPrint('✅ IC Card added successfully via $url with card $cn');
         return result!;
@@ -3066,7 +3190,8 @@ class ApiService {
 
     // All attempts failed
     final errCode = lastError?['errcode'] ?? 'unknown';
-    final errMsg = lastError?['errmsg'] ?? 'Failed to add card via gateway (all attempts failed)';
+    final errMsg = lastError?['errmsg'] ??
+        'Failed to add card via gateway (all attempts failed)';
     throw Exception('Error $errCode: $errMsg');
   }
 
@@ -3109,7 +3234,8 @@ class ApiService {
 
       // If addForReversedCardNumber fails, try the standard /add endpoint as fallback
       if (result.containsKey('errcode') && result['errcode'] != 0) {
-        debugPrint('🔄 addForReversedCardNumber failed (${result['errcode']}), trying /add endpoint...');
+        debugPrint(
+            '🔄 addForReversedCardNumber failed (${result['errcode']}), trying /add endpoint...');
         result = await _sendAddIdentityCardRequest(
           endpoint: '/v3/identityCard/add',
           lockId: lockId,
@@ -3142,7 +3268,7 @@ class ApiService {
       debugPrint('❌ Kimlik Kartı ekleme API hatası: $errorCode - $errorMsg');
       throw Exception('Hata ($errorCode): $errorMsg\nKart: $cardNumber');
     }
-    
+
     debugPrint('✅ Kimlik Kartı başarıyla eklendi');
     return result;
   }
@@ -3163,14 +3289,17 @@ class ApiService {
     // TTLock API requires cardNumber as a decimal integer string (e.g. "1784433321").
     // Phone NFC reads card UID bytes as a hex string (e.g. "6A536AA9").
     // Convert hex → decimal so the server accepts the card number.
-    String normalizedCardNumber = cardNumber.trim().toUpperCase().replaceAll(' ', '');
+    String normalizedCardNumber =
+        cardNumber.trim().toUpperCase().replaceAll(' ', '');
     try {
       final parsed = int.parse(normalizedCardNumber, radix: 16);
       normalizedCardNumber = parsed.toString();
-      debugPrint('🔄 Kart numarası dönüştürüldü: $cardNumber → $normalizedCardNumber');
+      debugPrint(
+          '🔄 Kart numarası dönüştürüldü: $cardNumber → $normalizedCardNumber');
     } catch (_) {
       // Not valid hex (e.g. already decimal or SDK-provided), use as-is
-      debugPrint('ℹ️ Kart numarası hex değil, olduğu gibi kullanılıyor: $cardNumber');
+      debugPrint(
+          'ℹ️ Kart numarası hex değil, olduğu gibi kullanılıyor: $cardNumber');
     }
 
     // For permanent cards (startDate=0, endDate=0), substitute real timestamps.
@@ -3180,7 +3309,8 @@ class ApiService {
     if (startDate == 0 && endDate == 0) {
       effectiveStartDate = DateTime.now().millisecondsSinceEpoch;
       effectiveEndDate = DateTime(2099, 12, 31).millisecondsSinceEpoch;
-      debugPrint('📅 Kalıcı kart: tarihler ayarlandı $effectiveStartDate → $effectiveEndDate');
+      debugPrint(
+          '📅 Kalıcı kart: tarihler ayarlandı $effectiveStartDate → $effectiveEndDate');
     }
 
     final Map<String, String> body = {
@@ -3213,12 +3343,16 @@ class ApiService {
         body: body,
       );
 
-      debugPrint('📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+      debugPrint(
+          '📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        return {'errcode': response.statusCode, 'errmsg': 'HTTP ${response.statusCode}: ${response.body}'};
+        return {
+          'errcode': response.statusCode,
+          'errmsg': 'HTTP ${response.statusCode}: ${response.body}'
+        };
       }
     } catch (e) {
       debugPrint('❌ API isteği hatası: $e');
@@ -3233,7 +3367,8 @@ class ApiService {
     required int cardId,
     int deleteType = 2, // 1-APP Bluetooth, 2-Gateway/WiFi
   }) async {
-    debugPrint('🗑️ Kimlik Kartı cloud üzerinden siliniyor: $cardId (deleteType: $deleteType)');
+    debugPrint(
+        '🗑️ Kimlik Kartı cloud üzerinden siliniyor: $cardId (deleteType: $deleteType)');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -3259,13 +3394,15 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Delete Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint(
+        '📨 Delete Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Kimlik Kartı silme API hatası: ${responseData['errcode']} - $errorMsg');
+        debugPrint(
+            '❌ Kimlik Kartı silme API hatası: ${responseData['errcode']} - $errorMsg');
         throw Exception('Kimlik Kartı silinemedi: ${responseData['errmsg']}');
       }
       debugPrint('✅ Kimlik Kartı başarıyla silindi');
@@ -3283,7 +3420,8 @@ class ApiService {
     required int startDate,
     required int endDate,
   }) async {
-    debugPrint('🕒 Kimlik Kartı periyodu cloud üzerinden değiştiriliyor: $cardId');
+    debugPrint(
+        '🕒 Kimlik Kartı periyodu cloud üzerinden değiştiriliyor: $cardId');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -3311,19 +3449,23 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Change Identity Card Period API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint(
+        '📨 Change Identity Card Period API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Kimlik Kartı periyodu değiştirme API hatası: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Kimlik Kartı periyodu değiştirilemedi: ${responseData['errmsg']}');
+        debugPrint(
+            '❌ Kimlik Kartı periyodu değiştirme API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Kimlik Kartı periyodu değiştirilemedi: ${responseData['errmsg']}');
       }
       debugPrint('✅ Kimlik Kartı periyodu başarıyla değiştirildi');
     } else {
       debugPrint('❌ HTTP hatası: ${response.statusCode}');
-      throw Exception('Kimlik Kartı periyodu değiştirilemedi: HTTP ${response.statusCode}');
+      throw Exception(
+          'Kimlik Kartı periyodu değiştirilemedi: HTTP ${response.statusCode}');
     }
   }
 
@@ -3333,7 +3475,8 @@ class ApiService {
     required int cardId,
     required String cardName,
   }) async {
-    debugPrint('✏️ Kimlik Kartı cloud üzerinden yeniden adlandırılıyor: $cardId');
+    debugPrint(
+        '✏️ Kimlik Kartı cloud üzerinden yeniden adlandırılıyor: $cardId');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -3359,19 +3502,23 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Rename Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint(
+        '📨 Rename Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Kimlik Kartı yeniden adlandırma API hatası: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Kimlik Kartı yeniden adlandırılamadı: ${responseData['errmsg']}');
+        debugPrint(
+            '❌ Kimlik Kartı yeniden adlandırma API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Kimlik Kartı yeniden adlandırılamadı: ${responseData['errmsg']}');
       }
       debugPrint('✅ Kimlik Kartı başarıyla yeniden adlandırıldı');
     } else {
       debugPrint('❌ HTTP hatası: ${response.statusCode}');
-      throw Exception('Kimlik Kartı yeniden adlandırılamadı: HTTP ${response.statusCode}');
+      throw Exception(
+          'Kimlik Kartı yeniden adlandırılamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -3405,19 +3552,23 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Clear Identity Cards API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
+    debugPrint(
+        '📨 Clear Identity Cards API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Kimlik Kartları temizleme API hatası: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Kimlik Kartları temizlenemedi: ${responseData['errmsg']}');
+        debugPrint(
+            '❌ Kimlik Kartları temizleme API hatası: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Kimlik Kartları temizlenemedi: ${responseData['errmsg']}');
       }
       debugPrint('✅ Kimlik Kartları başarıyla temizlendi');
     } else {
       debugPrint('❌ HTTP hatası: ${response.statusCode}');
-      throw Exception('Kimlik Kartları temizlenemedi: HTTP ${response.statusCode}');
+      throw Exception(
+          'Kimlik Kartları temizlenemedi: HTTP ${response.statusCode}');
     }
   }
 
@@ -3428,7 +3579,8 @@ class ApiService {
     required int startDate,
     required int endDate,
   }) async {
-    debugPrint('🔄 IC Kart geçerlilik süresi gateway üzerinden değiştiriliyor: $cardId');
+    debugPrint(
+        '🔄 IC Kart geçerlilik süresi gateway üzerinden değiştiriliyor: $cardId');
     await getAccessToken();
 
     final url = Uri.parse('$_baseUrl/v3/lock/changeICCard');
@@ -3504,7 +3656,8 @@ class ApiService {
     required int startDate,
     required int endDate,
   }) async {
-    debugPrint('🔄 Parmak izi geçerlilik süresi gateway üzerinden değiştiriliyor: $fingerprintId');
+    debugPrint(
+        '🔄 Parmak izi geçerlilik süresi gateway üzerinden değiştiriliyor: $fingerprintId');
     await getAccessToken();
 
     final url = Uri.parse('$_baseUrl/v3/lock/changeFingerprint');
@@ -3556,14 +3709,17 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: body,
-    ).timeout(
-      const Duration(seconds: 20),
-      onTimeout: () => throw Exception('Sunucuya bağlanılırken zaman aşımı oluştu. Lütfen internet bağlantınızı kontrol edin.'),
-    );
+    final response = await http
+        .post(
+          url,
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: body,
+        )
+        .timeout(
+          const Duration(seconds: 20),
+          onTimeout: () => throw Exception(
+              'Sunucuya bağlanılırken zaman aşımı oluştu. Lütfen internet bağlantınızı kontrol edin.'),
+        );
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
@@ -3571,7 +3727,8 @@ class ApiService {
       return responseData;
     } else {
       debugPrint('❌ Gateway kaydedilemedi Full YANIT: ${response.body}');
-      throw Exception('Gateway kaydedilemedi: ${responseData['errmsg']} (Detay: ${response.body})');
+      throw Exception(
+          'Gateway kaydedilemedi: ${responseData['errmsg']} (Detay: ${response.body})');
     }
   }
 
@@ -3610,7 +3767,8 @@ class ApiService {
     required String gatewayId,
     required String gatewayName,
   }) async {
-    debugPrint('✏️ Gateway yeniden adlandırılıyor: $gatewayId, yeni ad: $gatewayName');
+    debugPrint(
+        '✏️ Gateway yeniden adlandırılıyor: $gatewayId, yeni ad: $gatewayName');
 
     await getAccessToken(); // Ensure we have a valid token
 
@@ -3644,8 +3802,10 @@ class ApiService {
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Rename Gateway API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Rename Gateway API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Rename Gateway API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Rename Gateway API Error ${responseData['errcode']}: $errorMsg');
       }
 
       debugPrint('✅ Gateway başarıyla yeniden adlandırıldı');
@@ -3661,7 +3821,8 @@ class ApiService {
     required String receiverUsername,
     required List<int> gatewayIdList,
   }) async {
-    debugPrint('🔄 Gateway transfer ediliyor: alıcı=$receiverUsername, gatewayler=$gatewayIdList');
+    debugPrint(
+        '🔄 Gateway transfer ediliyor: alıcı=$receiverUsername, gatewayler=$gatewayIdList');
 
     await getAccessToken(); // Ensure we have a valid token
 
@@ -3674,7 +3835,8 @@ class ApiService {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'receiverUsername': receiverUsername,
-      'gatewayIdList': json.encode(gatewayIdList), // Convert list to JSON string
+      'gatewayIdList':
+          json.encode(gatewayIdList), // Convert list to JSON string
       'date': _getApiTime(),
     };
 
@@ -3687,7 +3849,8 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Transfer Gateway API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Transfer Gateway API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -3695,8 +3858,10 @@ class ApiService {
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Transfer Gateway API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Transfer Gateway API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Transfer Gateway API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Transfer Gateway API Error ${responseData['errcode']}: $errorMsg');
       }
 
       debugPrint('✅ Gateway başarıyla transfer edildi');
@@ -3737,27 +3902,33 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Query Gateway Init Status API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Query Gateway Init Status API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      debugPrint('🔍 TTLock Query Gateway Init Status API Full Response: $responseData');
+      debugPrint(
+          '🔍 TTLock Query Gateway Init Status API Full Response: $responseData');
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Query Gateway Init Status API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Query Gateway Init Status API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Query Gateway Init Status API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Query Gateway Init Status API Error ${responseData['errcode']}: $errorMsg');
       }
 
       if (responseData.containsKey('gatewayId')) {
-        debugPrint('✅ Gateway başarıyla başlatıldı, ID: ${responseData['gatewayId']}');
+        debugPrint(
+            '✅ Gateway başarıyla başlatıldı, ID: ${responseData['gatewayId']}');
         return responseData['gatewayId'] as int;
       } else {
         debugPrint('⚠️ API response does not contain gatewayId.');
         throw Exception('API response does not contain gatewayId.');
       }
     } else {
-      debugPrint('❌ Failed to query gateway init status: ${response.statusCode}');
+      debugPrint(
+          '❌ Failed to query gateway init status: ${response.statusCode}');
       throw Exception('Failed to query gateway init status from TTLock API');
     }
   }
@@ -3799,16 +3970,20 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Upload Gateway Detail API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Upload Gateway Detail API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      debugPrint('🔍 TTLock Upload Gateway Detail API Full Response: $responseData');
+      debugPrint(
+          '🔍 TTLock Upload Gateway Detail API Full Response: $responseData');
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Upload Gateway Detail API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Upload Gateway Detail API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Upload Gateway Detail API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Upload Gateway Detail API Error ${responseData['errcode']}: $errorMsg');
       }
 
       debugPrint('✅ Gateway detayları başarıyla yüklendi');
@@ -3831,7 +4006,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/gateway/upgradeCheck').replace(queryParameters: {
+    final url = Uri.parse('$_baseUrl/v3/gateway/upgradeCheck')
+        .replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'gatewayId': gatewayId,
@@ -3842,16 +4018,20 @@ class ApiService {
 
     final response = await http.get(url);
 
-    debugPrint('📨 Gateway Upgrade Check API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Gateway Upgrade Check API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      debugPrint('🔍 TTLock Gateway Upgrade Check API Full Response: $responseData');
+      debugPrint(
+          '🔍 TTLock Gateway Upgrade Check API Full Response: $responseData');
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Gateway Upgrade Check API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Gateway Upgrade Check API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Gateway Upgrade Check API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Gateway Upgrade Check API Error ${responseData['errcode']}: $errorMsg');
       }
 
       debugPrint('✅ Gateway güncelleme kontrolü başarılı');
@@ -3891,22 +4071,27 @@ class ApiService {
       body: body,
     );
 
-    debugPrint('📨 Set Gateway Upgrade Mode API yanıtı - Status: ${response.statusCode}');
+    debugPrint(
+        '📨 Set Gateway Upgrade Mode API yanıtı - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      debugPrint('🔍 TTLock Set Gateway Upgrade Mode API Full Response: $responseData');
+      debugPrint(
+          '🔍 TTLock Set Gateway Upgrade Mode API Full Response: $responseData');
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         final errorMsg = responseData['errmsg'] ?? 'Unknown error';
-        debugPrint('❌ Set Gateway Upgrade Mode API Error: ${responseData['errcode']} - $errorMsg');
-        throw Exception('Set Gateway Upgrade Mode API Error ${responseData['errcode']}: $errorMsg');
+        debugPrint(
+            '❌ Set Gateway Upgrade Mode API Error: ${responseData['errcode']} - $errorMsg');
+        throw Exception(
+            'Set Gateway Upgrade Mode API Error ${responseData['errcode']}: $errorMsg');
       }
 
       debugPrint('✅ Gateway başarıyla güncelleme moduna alındı');
       return responseData;
     } else {
-      debugPrint('❌ Failed to set gateway upgrade mode: ${response.statusCode}');
+      debugPrint(
+          '❌ Failed to set gateway upgrade mode: ${response.statusCode}');
       throw Exception('Failed to set gateway upgrade mode from TTLock API');
     }
   }
@@ -3998,12 +4183,15 @@ class ApiService {
       }
     }
 
-    debugPrint('❌ Tüm connectivity yöntemleri başarısız, offline kabul ediliyor');
+    debugPrint(
+        '❌ Tüm connectivity yöntemleri başarısız, offline kabul ediliyor');
     return false;
   }
 
-  Future<bool> _checkConnectivityWithQueryOpenState(String accessToken, String lockId) async {
-    final url = Uri.parse('$_baseUrl/v3/lock/queryOpenState').replace(queryParameters: {
+  Future<bool> _checkConnectivityWithQueryOpenState(
+      String accessToken, String lockId) async {
+    final url =
+        Uri.parse('$_baseUrl/v3/lock/queryOpenState').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
@@ -4015,13 +4203,15 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      debugPrint('📶 queryOpenState yanıtı: errcode=${responseData['errcode']}');
+      debugPrint(
+          '📶 queryOpenState yanıtı: errcode=${responseData['errcode']}');
       return responseData['errcode'] == 0 || responseData['errcode'] == null;
     }
     return false;
   }
 
-  Future<bool> _checkConnectivityWithLockDetail(String accessToken, String lockId) async {
+  Future<bool> _checkConnectivityWithLockDetail(
+      String accessToken, String lockId) async {
     final url = Uri.parse('$_baseUrl/v3/lock/detail').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
@@ -4040,8 +4230,10 @@ class ApiService {
     return false;
   }
 
-  Future<bool> _checkConnectivityWithLockRecords(String accessToken, String lockId) async {
-    final url = Uri.parse('$_baseUrl/v3/lockRecord/list').replace(queryParameters: {
+  Future<bool> _checkConnectivityWithLockRecords(
+      String accessToken, String lockId) async {
+    final url =
+        Uri.parse('$_baseUrl/v3/lockRecord/list').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': accessToken,
       'lockId': lockId,
@@ -4068,11 +4260,11 @@ class ApiService {
     required String password,
   }) async {
     final regions = [ApiConfig.baseUrl, 'https://api.ttlock.com'];
-    
+
     // Denenecek kullanıcı adı formatlarını belirle
     Set<String> usernamesToTry = {};
     String cleanInput = username.trim();
-    
+
     // 1. Kullanıcının girdiği ham hali (boşluksuz) ekle
     usernamesToTry.add(cleanInput);
 
@@ -4084,7 +4276,7 @@ class ApiService {
 
     // 3. Başında + olan hali ekle (eğer kullanıcı zaten + girdiyse bu adım 1 ile aynı olur)
     if (!cleanInput.startsWith('+') && digitsOnly.isNotEmpty) {
-       usernamesToTry.add('+$digitsOnly');
+      usernamesToTry.add('+$digitsOnly');
     }
 
     // 4. TR numarası tahminleri
@@ -4093,22 +4285,23 @@ class ApiService {
       usernamesToTry.add('+90$digitsOnly'); // 532... -> +90532...
     } else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
       usernamesToTry.add('90${digitsOnly.substring(1)}'); // 0532... -> 90532...
-      usernamesToTry.add('+90${digitsOnly.substring(1)}'); 
+      usernamesToTry.add('+90${digitsOnly.substring(1)}');
     }
 
     // 5. E-posta adresi için varyasyonlar
     if (cleanInput.contains('@')) {
       // a) Ham hali (bazı endpointler destekleyebilir)
       usernamesToTry.add(cleanInput);
-      
+
       // b) Sadece alphanumeric (bizim register'da kullandığımız)
       String alphanumeric = cleanInput.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
       if (alphanumeric.isNotEmpty) {
         usernamesToTry.add(alphanumeric);
       }
-      
+
       // c) Domain hariç partlar (Opsiyonel ama yararlı olabilir)
-      String namePart = cleanInput.split('@')[0].replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      String namePart =
+          cleanInput.split('@')[0].replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
       if (namePart.isNotEmpty) {
         usernamesToTry.add(namePart);
       }
@@ -4120,49 +4313,54 @@ class ApiService {
     for (var userFormat in usernamesToTry) {
       for (var regionBaseUrl in regions) {
         debugPrint('🔐 Deneniyor: User="$userFormat", Region="$regionBaseUrl"');
-        
+
         final url = Uri.parse('$regionBaseUrl/oauth2/token');
         final bodyParams = <String, String>{
-          'client_id': ApiConfig.clientId, 
+          'client_id': ApiConfig.clientId,
           'clientId': ApiConfig.clientId,
-          'client_secret': ApiConfig.clientSecret, 
+          'client_secret': ApiConfig.clientSecret,
           'clientSecret': ApiConfig.clientSecret,
           'username': userFormat,
           'password': _generateMd5(password),
           'grant_type': 'password',
-          'date': _getApiTime(), 
+          'date': _getApiTime(),
         };
 
         try {
-          final response = await http.post(
-            url,
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: bodyParams,
-          ).timeout(const Duration(seconds: 10));
+          final response = await http
+              .post(
+                url,
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: bodyParams,
+              )
+              .timeout(const Duration(seconds: 10));
 
           if (response.statusCode == 200) {
             final responseData = json.decode(response.body);
-            
+
             // Hata kontrolü
-            if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+            if (responseData.containsKey('errcode') &&
+                responseData['errcode'] != 0) {
               // Bu format/bölge kombinasyonu hatalı, sonrakine geç
               debugPrint('⚠️  Başarısız: errcode=${responseData['errcode']}');
-              continue; 
+              continue;
             }
-            
+
             // Başarılı!
             _accessToken = responseData['access_token'];
             _refreshToken = responseData['refresh_token'];
-            
+
             final expiresInValue = responseData['expires_in'];
-            int expiresIn = (expiresInValue is int) ? expiresInValue : (int.tryParse(expiresInValue?.toString() ?? '3600') ?? 3600);
+            int expiresIn = (expiresInValue is int)
+                ? expiresInValue
+                : (int.tryParse(expiresInValue?.toString() ?? '3600') ?? 3600);
             _tokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
 
             if (_accessToken != null && _refreshToken != null) {
               _baseUrl = regionBaseUrl;
               int? uid = responseData['uid'] as int?;
               String md5Password = _generateMd5(password);
-              
+
               if (_authRepository != null) {
                 await _authRepository!.saveTokens(
                   accessToken: _accessToken!,
@@ -4183,7 +4381,7 @@ class ApiService {
         }
       }
     }
-    
+
     // Hiçbiri tutmadıysa
     debugPrint('❌ Tüm format ve bölgeler denendi, giriş başarısız.');
     return false;
@@ -4195,8 +4393,9 @@ class ApiService {
 
     debugPrint('Refreshing access token...');
     final regions = [_baseUrl, ApiConfig.baseUrl, 'https://api.ttlock.com'];
-    
-    for (var regionBaseUrl in Set.from(regions)) { // Set to avoid duplicate checks
+
+    for (var regionBaseUrl in Set.from(regions)) {
+      // Set to avoid duplicate checks
       final url = Uri.parse('$regionBaseUrl/oauth2/token');
       try {
         final response = await http.post(
@@ -4215,19 +4414,24 @@ class ApiService {
 
         if (response.statusCode == 200) {
           final responseData = json.decode(response.body);
-          if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+          if (responseData.containsKey('errcode') &&
+              responseData['errcode'] != 0) {
             continue; // Try next region if current fails
           }
-          
+
           _accessToken = responseData['access_token'];
           _refreshToken = responseData['refresh_token'] ?? _refreshToken;
-          
+
           final expiresInValue = responseData['expires_in'];
-          int expiresIn = (expiresInValue is int) ? expiresInValue : (int.tryParse(expiresInValue?.toString() ?? '3600') ?? 3600);
+          int expiresIn = (expiresInValue is int)
+              ? expiresInValue
+              : (int.tryParse(expiresInValue?.toString() ?? '3600') ?? 3600);
           _tokenExpiry = DateTime.now().add(Duration(seconds: expiresIn));
           _baseUrl = regionBaseUrl; // Update working baseUrl
 
-          if (_authRepository != null && _accessToken != null && _refreshToken != null) {
+          if (_authRepository != null &&
+              _accessToken != null &&
+              _refreshToken != null) {
             await _authRepository!.saveTokens(
               accessToken: _accessToken!,
               refreshToken: _refreshToken!,
@@ -4241,7 +4445,7 @@ class ApiService {
         continue;
       }
     }
-    
+
     // If all regions fail, clear tokens
     _accessToken = null;
     _refreshToken = null;
@@ -4260,8 +4464,6 @@ class ApiService {
     return _authRepository?.getMd5Password();
   }
 
-
-
   /// Get list of users registered via cloud API
   Future<Map<String, dynamic>> getUserList({
     int pageNo = 1,
@@ -4270,7 +4472,7 @@ class ApiService {
     int? endDate,
   }) async {
     debugPrint('👥 Kullanıcı listesi çekiliyor...');
-    
+
     final url = Uri.parse('$_baseUrl/v3/user/list').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'clientSecret': ApiConfig.clientSecret,
@@ -4287,7 +4489,7 @@ class ApiService {
       final response = await http.get(url);
 
       debugPrint('📨 User List API yanıtı - Status: ${response.statusCode}');
-      
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         debugPrint('🔍 User List: $responseData');
@@ -4307,11 +4509,11 @@ class ApiService {
     required String username,
   }) async {
     debugPrint('🗑️ Kullanıcı siliniyor: $username');
-    
+
     // Kullanıcı yönetimi işlemleri ana sunucudan yapılmalıdır.
     final url = Uri.parse('https://api.ttlock.com/v3/user/delete');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'clientSecret': ApiConfig.clientSecret,
@@ -4335,13 +4537,14 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Kullanıcı başarıyla silindi');
           return true;
         } else {
-           debugPrint('❌ Delete User API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('User deletion failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Delete User API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception('User deletion failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -4362,7 +4565,7 @@ class ApiService {
     debugPrint('Fetching lock list from API...');
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
@@ -4383,26 +4586,30 @@ class ApiService {
       queryParams['groupId'] = groupId.toString();
     }
 
-    final url = Uri.parse('$_baseUrl/v3/lock/list').replace(queryParameters: queryParams);
+    final url = Uri.parse('$_baseUrl/v3/lock/list')
+        .replace(queryParameters: queryParams);
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      debugPrint('🔍 TTLock API Full Response: $responseData'); // Debug için tüm yanıtı logla
+      debugPrint(
+          '🔍 TTLock API Full Response: $responseData'); // Debug için tüm yanıtı logla
       debugPrint('🔍 Response Code: ${response.statusCode}');
       debugPrint('🔍 Response Headers: ${response.headers}');
 
       if (responseData['list'] != null) {
         final List<dynamic> locksFromApi = responseData['list'];
-        debugPrint('✅ Successfully fetched ${locksFromApi.length} locks from TTLock API.');
+        debugPrint(
+            '✅ Successfully fetched ${locksFromApi.length} locks from TTLock API.');
 
         // Debug: Her kilidin detaylarını detaylı logla
         for (var lock in locksFromApi) {
           debugPrint('🔐 Lock Details:');
           debugPrint('  - ID: ${lock['lockId']}');
           debugPrint('  - Name: ${lock['lockAlias']}');
-          debugPrint('  - UserType: ${lock['userType'] ?? 'null'} (1=sahip, 2+=paylaşılmış)');
+          debugPrint(
+              '  - UserType: ${lock['userType'] ?? 'null'} (1=sahip, 2+=paylaşılmış)');
           debugPrint('  - LockData: ${lock['lockData'] != null ? '✅' : '❌'}');
           debugPrint('  - KeyState: ${lock['keyState']}');
           debugPrint('  - ElectricQuantity: ${lock['electricQuantity']}');
@@ -4410,7 +4617,7 @@ class ApiService {
           debugPrint('  - IsShared: ${lock['userType'] != 1 ? '✅' : '❌'}');
           debugPrint('  ---');
         }
-        
+
         // Map the API data to the format our UI expects
         return locksFromApi.map((lock) {
           // Determine lock status based on 'lockState' if available, otherwise default
@@ -4429,10 +4636,9 @@ class ApiService {
             'lockMac': lock['lockMac'],
           };
         }).toList();
-
       } else {
-         debugPrint('API response does not contain a lock list.');
-         return [];
+        debugPrint('API response does not contain a lock list.');
+        return [];
       }
     } else {
       debugPrint('Failed to get lock list: ${response.statusCode}');
@@ -4452,7 +4658,8 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final url = Uri.parse('$_baseUrl/v3/lock/detail').replace(queryParameters: queryParams);
+    final url = Uri.parse('$_baseUrl/v3/lock/detail')
+        .replace(queryParameters: queryParams);
 
     debugPrint('📡 Lock Detail API çağrısı: $url');
 
@@ -4460,18 +4667,20 @@ class ApiService {
       final response = await http.get(url);
 
       debugPrint('📨 Lock Detail API yanıtı - Status: ${response.statusCode}');
-      
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         // TTLock API error handling
         if (responseData.containsKey('errcode')) {
-           if (responseData['errcode'] != 0) {
-              debugPrint('❌ Lock Detail API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-              throw Exception('Get lock detail failed: ${responseData['errmsg']}');
-           }
+          if (responseData['errcode'] != 0) {
+            debugPrint(
+                '❌ Lock Detail API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+            throw Exception(
+                'Get lock detail failed: ${responseData['errmsg']}');
+          }
         }
-        
+
         debugPrint('✅ Kilit detayları alındı');
         return responseData;
       } else {
@@ -4491,18 +4700,19 @@ class ApiService {
     required String lockId,
   }) async {
     debugPrint('🗑️ Kilit siliniyor: $lockId');
-    debugPrint('⚠️ UYARI: Kilit silinmeden önce APP SDK ile resetlenmiş olmalıdır!');
-    
+    debugPrint(
+        '⚠️ UYARI: Kilit silinmeden önce APP SDK ile resetlenmiş olmalıdır!');
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/delete');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -4527,13 +4737,14 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Kilit başarıyla silindi');
           return true;
         } else {
-           debugPrint('❌ Delete Lock API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Lock deletion failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Delete Lock API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception('Lock deletion failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -4552,17 +4763,17 @@ class ApiService {
     required String lockData,
   }) async {
     debugPrint('🔄 Kilit verisi güncelleniyor: $lockId');
-    
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/updateLockData');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -4583,18 +4794,20 @@ class ApiService {
         body: formBody,
       );
 
-      debugPrint('📨 Update Lock Data API yanıtı - Status: ${response.statusCode}');
+      debugPrint(
+          '📨 Update Lock Data API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Kilit verisi başarıyla güncellendi');
           return true;
         } else {
-           debugPrint('❌ Update Lock Data API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Update lock data failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Update Lock Data API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception('Update lock data failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -4612,17 +4825,17 @@ class ApiService {
     required String newName,
   }) async {
     debugPrint('✏️ Kilit yeniden adlandırılıyor: $lockId -> $newName');
-    
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/rename');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -4648,13 +4861,14 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Kilit başarıyla yeniden adlandırıldı');
           return true;
         } else {
-           debugPrint('❌ Rename Lock API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Rename lock failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Rename Lock API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception('Rename lock failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -4675,19 +4889,20 @@ class ApiService {
   }) async {
     debugPrint('🔑 Süper şifre değiştiriliyor: $lockId');
     if (changeType == 1) {
-      debugPrint('⚠️ UYARI: Bluetooth ile değişim için önce APP SDK methodu çağrılmalıdır!');
+      debugPrint(
+          '⚠️ UYARI: Bluetooth ile değişim için önce APP SDK methodu çağrılmalıdır!');
     }
-    
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/changeAdminKeyboardPwd');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -4709,18 +4924,21 @@ class ApiService {
         body: formBody,
       );
 
-      debugPrint('📨 Change Admin Pwd API yanıtı - Status: ${response.statusCode}');
+      debugPrint(
+          '📨 Change Admin Pwd API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Süper şifre başarıyla değiştirildi');
           return true;
         } else {
-           debugPrint('❌ Change Admin Pwd API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Change admin password failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Change Admin Pwd API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception(
+              'Change admin password failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -4738,18 +4956,19 @@ class ApiService {
     required String receiverUsername,
     required List<int> lockIdList,
   }) async {
-    debugPrint('🔄 Kilitler transfer ediliyor: $lockIdList -> $receiverUsername');
-    
+    debugPrint(
+        '🔄 Kilitler transfer ediliyor: $lockIdList -> $receiverUsername');
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/transfer');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -4770,18 +4989,20 @@ class ApiService {
         body: formBody,
       );
 
-      debugPrint('📨 Transfer Lock API yanıtı - Status: ${response.statusCode}');
+      debugPrint(
+          '📨 Transfer Lock API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Kilitler başarıyla transfer edildi');
           return true;
         } else {
-           debugPrint('❌ Transfer Lock API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Transfer lock failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Transfer Lock API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception('Transfer lock failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -4799,18 +5020,19 @@ class ApiService {
     required String lockId,
     required int electricQuantity,
   }) async {
-    debugPrint('🔋 Batarya seviyesi güncelleniyor: $lockId -> $electricQuantity%');
-    
+    debugPrint(
+        '🔋 Batarya seviyesi güncelleniyor: $lockId -> $electricQuantity%');
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/updateElectricQuantity');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -4831,18 +5053,20 @@ class ApiService {
         body: formBody,
       );
 
-      debugPrint('📨 Update Battery API yanıtı - Status: ${response.statusCode}');
+      debugPrint(
+          '📨 Update Battery API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Batarya seviyesi başarıyla güncellendi');
           return true;
         } else {
-           debugPrint('❌ Update Battery API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Update battery failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Update Battery API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception('Update battery failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -4862,21 +5086,23 @@ class ApiService {
     required int seconds,
     int type = 1,
   }) async {
-    debugPrint('⏱️ Otomatik kilitlenme süresi ayarlanıyor: $lockId -> ${seconds}s (Type: $type)');
+    debugPrint(
+        '⏱️ Otomatik kilitlenme süresi ayarlanıyor: $lockId -> ${seconds}s (Type: $type)');
     if (type == 1) {
-      debugPrint('⚠️ UYARI: Bluetooth ile ayar için önce APP SDK methodu çağrılmalıdır!');
+      debugPrint(
+          '⚠️ UYARI: Bluetooth ile ayar için önce APP SDK methodu çağrılmalıdır!');
     }
-    
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/setAutoLockTime');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -4898,18 +5124,21 @@ class ApiService {
         body: formBody,
       );
 
-      debugPrint('📨 Set Auto Lock Time API yanıtı - Status: ${response.statusCode}');
+      debugPrint(
+          '📨 Set Auto Lock Time API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Otomatik kilitlenme süresi başarıyla ayarlandı');
           return true;
         } else {
-           debugPrint('❌ Set Auto Lock Time API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Set auto lock time failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Set Auto Lock Time API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception(
+              'Set auto lock time failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -4931,21 +5160,23 @@ class ApiService {
     List<Map<String, dynamic>>? cyclicConfig,
     int type = 1,
   }) async {
-    debugPrint('🔓 Passage modu ayarlanıyor: $lockId -> Mode: $passageMode (Type: $type)');
+    debugPrint(
+        '🔓 Passage modu ayarlanıyor: $lockId -> Mode: $passageMode (Type: $type)');
     if (type == 1) {
-      debugPrint('⚠️ UYARI: Bluetooth ile ayar için önce APP SDK methodu çağrılmalıdır!');
+      debugPrint(
+          '⚠️ UYARI: Bluetooth ile ayar için önce APP SDK methodu çağrılmalıdır!');
     }
-    
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/configurePassageMode');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -4971,18 +5202,21 @@ class ApiService {
         body: formBody,
       );
 
-      debugPrint('📨 Config Passage Mode API yanıtı - Status: ${response.statusCode}');
+      debugPrint(
+          '📨 Config Passage Mode API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Passage modu başarıyla ayarlandı');
           return true;
         } else {
-           debugPrint('❌ Config Passage Mode API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Config passage mode failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Config Passage Mode API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception(
+              'Config passage mode failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -4999,10 +5233,10 @@ class ApiService {
     required String lockId,
   }) async {
     debugPrint('🧐 Passage modu konfigürasyonu çekiliyor: $lockId');
-    
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
@@ -5014,32 +5248,40 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final url = Uri.parse('$_baseUrl/v3/lock/getPassageModeConfiguration').replace(queryParameters: queryParams);
+    final url = Uri.parse('$_baseUrl/v3/lock/getPassageModeConfiguration')
+        .replace(queryParameters: queryParams);
 
     debugPrint('📡 Get Passage Mode Config API çağrısı: $url');
 
     try {
       final response = await http.get(url);
 
-      debugPrint('📨 Get Passage Mode Config API yanıtı - Status: ${response.statusCode}');
-      
+      debugPrint(
+          '📨 Get Passage Mode Config API yanıtı - Status: ${response.statusCode}');
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         // TTLock API error handling
         if (responseData.containsKey('errcode')) {
-           // errcode is present in success response too? The example doesn't show it in success JSON but description mentions it.
-           // Usually GET requests return data directly or with errcode.
-           // Let's check if there is an error code that is NOT 0.
-           if ((responseData['errcode'] == 0 || responseData['errcode'] == null) || (responseData['errcode'] != null && responseData['errcode'] != 0)) {
-              // This is a GET config, if it's not a non-zero error, consider it okay or check for error specifically
-              if (responseData['errcode'] != null && responseData['errcode'] != 0) {
-                 debugPrint('❌ Get Passage Mode Config API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-                 throw Exception('Get passage mode config failed: ${responseData['errmsg']}');
-              }
-           }
+          // errcode is present in success response too? The example doesn't show it in success JSON but description mentions it.
+          // Usually GET requests return data directly or with errcode.
+          // Let's check if there is an error code that is NOT 0.
+          if ((responseData['errcode'] == 0 ||
+                  responseData['errcode'] == null) ||
+              (responseData['errcode'] != null &&
+                  responseData['errcode'] != 0)) {
+            // This is a GET config, if it's not a non-zero error, consider it okay or check for error specifically
+            if (responseData['errcode'] != null &&
+                responseData['errcode'] != 0) {
+              debugPrint(
+                  '❌ Get Passage Mode Config API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+              throw Exception(
+                  'Get passage mode config failed: ${responseData['errmsg']}');
+            }
+          }
         }
-        
+
         debugPrint('✅ Passage modu konfigürasyonu alındı');
         return responseData;
       } else {
@@ -5060,18 +5302,19 @@ class ApiService {
     required String sector,
   }) async {
     debugPrint('🏨 Hotel kart sektörü ayarlanıyor: $lockId -> $sector');
-    debugPrint('⚠️ UYARI: Bu API çağrılmadan önce APP SDK ile sektör ayarı yapılmalıdır!');
-    
+    debugPrint(
+        '⚠️ UYARI: Bu API çağrılmadan önce APP SDK ile sektör ayarı yapılmalıdır!');
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/setHotelCardSector');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -5092,18 +5335,21 @@ class ApiService {
         body: formBody,
       );
 
-      debugPrint('📨 Set Hotel Card Sector API yanıtı - Status: ${response.statusCode}');
+      debugPrint(
+          '📨 Set Hotel Card Sector API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Hotel kart sektörü başarıyla ayarlandı');
           return true;
         } else {
-           debugPrint('❌ Set Hotel Card Sector API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Set hotel card sector failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Set Hotel Card Sector API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception(
+              'Set hotel card sector failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -5122,17 +5368,17 @@ class ApiService {
     required int type,
   }) async {
     debugPrint('❓ Kilit ayarı sorgulanıyor: $lockId -> Type: $type');
-    
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/querySetting');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -5153,25 +5399,29 @@ class ApiService {
         body: formBody,
       );
 
-      debugPrint('📨 Query Lock Setting API yanıtı - Status: ${response.statusCode}');
+      debugPrint(
+          '📨 Query Lock Setting API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
-        if (responseData.containsKey('errcode') && responseData['errcode'] != 0 && responseData['errcode'] != null) {
-           debugPrint('❌ Query Lock Setting API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Query lock setting failed: ${responseData['errmsg']}');
-        }
-        
-        // Success response contains "value"
-        if (responseData.containsKey('value')) {
-           debugPrint('✅ Kilit ayarı sorgulandı: ${responseData['value']}');
-           return responseData['value'];
-        } else {
-           throw Exception('Unexpected response format: no value field');
+
+        if (responseData.containsKey('errcode') &&
+            responseData['errcode'] != 0 &&
+            responseData['errcode'] != null) {
+          debugPrint(
+              '❌ Query Lock Setting API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception(
+              'Query lock setting failed: ${responseData['errmsg']}');
         }
 
+        // Success response contains "value"
+        if (responseData.containsKey('value')) {
+          debugPrint('✅ Kilit ayarı sorgulandı: ${responseData['value']}');
+          return responseData['value'];
+        } else {
+          throw Exception('Unexpected response format: no value field');
+        }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
         throw Exception('HTTP error: ${response.statusCode}');
@@ -5187,10 +5437,10 @@ class ApiService {
     required String lockId,
   }) async {
     debugPrint('🧐 Çalışma modu çekiliyor: $lockId');
-    
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
@@ -5213,16 +5463,20 @@ class ApiService {
         body: queryParams,
       );
 
-      debugPrint('📨 Get Working Mode API yanıtı - Status: ${response.statusCode}');
-      
+      debugPrint(
+          '📨 Get Working Mode API yanıtı - Status: ${response.statusCode}');
+
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
-        if (responseData.containsKey('errcode') && responseData['errcode'] != 0 && responseData['errcode'] != null) {
-           debugPrint('❌ Get Working Mode API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Get working mode failed: ${responseData['errmsg']}');
+
+        if (responseData.containsKey('errcode') &&
+            responseData['errcode'] != 0 &&
+            responseData['errcode'] != null) {
+          debugPrint(
+              '❌ Get Working Mode API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception('Get working mode failed: ${responseData['errmsg']}');
         }
-        
+
         debugPrint('✅ Çalışma modu alındı');
         return responseData;
       } else {
@@ -5245,21 +5499,23 @@ class ApiService {
     required int type,
     List<Map<String, dynamic>>? cyclicConfig,
   }) async {
-    debugPrint('⚙️ Çalışma modu ayarlanıyor: $lockId -> Mode: $workingMode (Type: $type)');
+    debugPrint(
+        '⚙️ Çalışma modu ayarlanıyor: $lockId -> Mode: $workingMode (Type: $type)');
     if (type == 1) {
-      debugPrint('⚠️ UYARI: Bluetooth ile ayar için önce APP SDK methodu çağrılmalıdır!');
+      debugPrint(
+          '⚠️ UYARI: Bluetooth ile ayar için önce APP SDK methodu çağrılmalıdır!');
     }
-    
+
     // Ensure we have a valid token
     await getAccessToken();
-    
+
     if (_accessToken == null) {
       throw Exception('No access token available');
     }
 
     final url = Uri.parse('$_baseUrl/v3/lock/configWorkingMode');
     final now = DateTime.now().millisecondsSinceEpoch;
-    
+
     final body = {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
@@ -5285,18 +5541,21 @@ class ApiService {
         body: formBody,
       );
 
-      debugPrint('📨 Config Working Mode API yanıtı - Status: ${response.statusCode}');
+      debugPrint(
+          '📨 Config Working Mode API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        
+
         if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
           debugPrint('✅ Çalışma modu başarıyla ayarlandı');
           return true;
         } else {
-           debugPrint('❌ Config Working Mode API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
-           throw Exception('Config working mode failed: ${responseData['errmsg']}');
+          debugPrint(
+              '❌ Config Working Mode API hatası: ${responseData['errmsg']} (errcode: ${responseData['errcode']})');
+          throw Exception(
+              'Config working mode failed: ${responseData['errmsg']}');
         }
       } else {
         debugPrint('❌ HTTP hatası: ${response.statusCode}');
@@ -5307,7 +5566,6 @@ class ApiService {
       rethrow;
     }
   }
-
 
   // TTLock kilidi açma/kapama (Gateway API ile - Callback URL gerekli)
 
@@ -5371,7 +5629,8 @@ class ApiService {
         debugPrint('TTLock webhook URL başarıyla ayarlandı: $callbackUrl');
         return responseData;
       } else {
-        throw Exception('TTLock webhook ayarlama hatası: ${responseData['errmsg']}');
+        throw Exception(
+            'TTLock webhook ayarlama hatası: ${responseData['errmsg']}');
       }
     } else {
       throw Exception('TTLock webhook HTTP hatası: ${response.statusCode}');
@@ -5389,9 +5648,9 @@ class ApiService {
 
     // Farklı endpoint'leri sırayla dene
     final endpoints = [
-      '$_baseUrl/v3/lock/listShared',  // Paylaşılmış kilitler için özel endpoint
-      '$_baseUrl/v3/lock/listAll',     // Tüm kilitler için
-      '$_baseUrl/v3/lock/list',        // Normal endpoint (farklı parametrelerle)
+      '$_baseUrl/v3/lock/listShared', // Paylaşılmış kilitler için özel endpoint
+      '$_baseUrl/v3/lock/listAll', // Tüm kilitler için
+      '$_baseUrl/v3/lock/list', // Normal endpoint (farklı parametrelerle)
     ];
 
     for (final endpoint in endpoints) {
@@ -5416,17 +5675,20 @@ class ApiService {
 
           if (responseData['list'] != null) {
             final List<dynamic> locksFromApi = responseData['list'];
-            debugPrint('📋 $endpoint\'den ${locksFromApi.length} kilit çekildi.');
+            debugPrint(
+                '📋 $endpoint\'den ${locksFromApi.length} kilit çekildi.');
 
             // Tüm kilitleri işle (hem kendi hem paylaşılmış)
             final allLocks = locksFromApi.map((lock) {
               bool isLocked = lock['keyState'] == 1 || lock['keyState'] == 2;
               String status = isLocked ? 'Kilitli' : 'Açık';
-              bool isShared = lock['userType'] != 1; // 1: sahip, diğer: paylaşılmış
+              bool isShared =
+                  lock['userType'] != 1; // 1: sahip, diğer: paylaşılmış
 
               return {
                 'lockId': lock['lockId'],
-                'name': lock['lockAlias'] ?? (isShared ? 'Paylaşılmış Kilit' : 'Yavuz Lock'),
+                'name': lock['lockAlias'] ??
+                    (isShared ? 'Paylaşılmış Kilit' : 'Yavuz Lock'),
                 'status': status,
                 'isLocked': isLocked,
                 'battery': lock['electricQuantity'] ?? 0,
@@ -5444,7 +5706,8 @@ class ApiService {
             continue; // Sonraki endpoint'i dene
           }
         } else {
-          debugPrint('❌ $endpoint başarısız: ${response.statusCode} - ${response.body}');
+          debugPrint(
+              '❌ $endpoint başarısız: ${response.statusCode} - ${response.body}');
           continue; // Sonraki endpoint'i dene
         }
       } catch (e) {
@@ -5495,10 +5758,12 @@ class ApiService {
   }
 
   // TTLock Webhook olaylarını işleme
-  static TTLockWebhookEvent? processTTLockWebhookEvent(Map<String, dynamic> payload) {
+  static TTLockWebhookEvent? processTTLockWebhookEvent(
+      Map<String, dynamic> payload) {
     try {
       final event = TTLockWebhookEvent.fromJson(payload);
-      debugPrint('TTLock webhook olayı alındı: ${event.eventType} - Kilit: ${event.lockId}');
+      debugPrint(
+          'TTLock webhook olayı alındı: ${event.eventType} - Kilit: ${event.lockId}');
       return event;
     } catch (e) {
       debugPrint('TTLock webhook işleme hatası: $e');
@@ -5535,18 +5800,19 @@ class ApiService {
     );
 
     final responseData = json.decode(response.body);
-    
+
     // Check for explicit error code if present
     if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-       debugPrint('❌ Upgrade check hatası: ${responseData['errmsg']}');
-       throw Exception('Upgrade check failed: ${responseData['errmsg']}');
+      debugPrint('❌ Upgrade check hatası: ${responseData['errmsg']}');
+      throw Exception('Upgrade check failed: ${responseData['errmsg']}');
     }
 
     if (responseData.containsKey('needUpgrade')) {
-      debugPrint('✅ Upgrade check başarılı. Durum: ${responseData['needUpgrade']}'); // 0-No, 1-Yes, 2-Unknown
+      debugPrint(
+          '✅ Upgrade check başarılı. Durum: ${responseData['needUpgrade']}'); // 0-No, 1-Yes, 2-Unknown
       return responseData;
-    } 
-    
+    }
+
     return responseData;
   }
 
@@ -5557,7 +5823,8 @@ class ApiService {
     required int lockId,
     required String lockData,
   }) async {
-    debugPrint('🔄 Firmware güncellemesi tekrar kontrol ediliyor (Recheck): $lockId');
+    debugPrint(
+        '🔄 Firmware güncellemesi tekrar kontrol ediliyor (Recheck): $lockId');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -5580,17 +5847,18 @@ class ApiService {
     );
 
     final responseData = json.decode(response.body);
-    
+
     if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-       debugPrint('❌ Upgrade recheck hatası: ${responseData['errmsg']}');
-       throw Exception('Upgrade recheck failed: ${responseData['errmsg']}');
+      debugPrint('❌ Upgrade recheck hatası: ${responseData['errmsg']}');
+      throw Exception('Upgrade recheck failed: ${responseData['errmsg']}');
     }
 
     if (responseData.containsKey('needUpgrade')) {
-      debugPrint('✅ Upgrade recheck başarılı. Durum: ${responseData['needUpgrade']}');
+      debugPrint(
+          '✅ Upgrade recheck başarılı. Durum: ${responseData['needUpgrade']}');
       return responseData;
     }
-    
+
     return responseData;
   }
 
@@ -5605,7 +5873,8 @@ class ApiService {
     required String wirelessKeypadFeatureValue,
     int? electricQuantity,
   }) async {
-    debugPrint('🔢 Kablosuz tuş takımı buluta ekleniyor: $wirelessKeypadNumber');
+    debugPrint(
+        '🔢 Kablosuz tuş takımı buluta ekleniyor: $wirelessKeypadNumber');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -5637,11 +5906,14 @@ class ApiService {
     final responseData = json.decode(response.body);
 
     if (responseData.containsKey('wirelessKeypadId')) {
-      debugPrint('✅ Kablosuz tuş takımı başarıyla eklendi: ${responseData['wirelessKeypadId']}');
+      debugPrint(
+          '✅ Kablosuz tuş takımı başarıyla eklendi: ${responseData['wirelessKeypadId']}');
       return responseData;
     } else {
-      debugPrint('❌ Kablosuz tuş takımı ekleme hatası: ${responseData['errmsg']}');
-      throw Exception('Kablosuz tuş takımı eklenemedi: ${responseData['errmsg']}');
+      debugPrint(
+          '❌ Kablosuz tuş takımı ekleme hatası: ${responseData['errmsg']}');
+      throw Exception(
+          'Kablosuz tuş takımı eklenemedi: ${responseData['errmsg']}');
     }
   }
 
@@ -5656,7 +5928,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/wirelessKeypad/listByLock').replace(queryParameters: {
+    final url = Uri.parse('$_baseUrl/v3/wirelessKeypad/listByLock')
+        .replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
@@ -5668,11 +5941,13 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-        throw Exception('Kablosuz tuş takımı listesi alınamadı: ${responseData['errmsg']}');
+        throw Exception(
+            'Kablosuz tuş takımı listesi alınamadı: ${responseData['errmsg']}');
       }
       return responseData;
     } else {
-      throw Exception('Kablosuz tuş takımı listesi alınamadı: HTTP ${response.statusCode}');
+      throw Exception(
+          'Kablosuz tuş takımı listesi alınamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -5703,7 +5978,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Kablosuz tuş takımı silinemedi: ${responseData['errmsg']}');
+      throw Exception(
+          'Kablosuz tuş takımı silinemedi: ${responseData['errmsg']}');
     }
     debugPrint('✅ Kablosuz tuş takımı silindi');
   }
@@ -5713,7 +5989,8 @@ class ApiService {
     required int wirelessKeypadId,
     required String wirelessKeypadName,
   }) async {
-    debugPrint('✏️ Kablosuz tuş takımı yeniden adlandırılıyor: $wirelessKeypadId -> $wirelessKeypadName');
+    debugPrint(
+        '✏️ Kablosuz tuş takımı yeniden adlandırılıyor: $wirelessKeypadId -> $wirelessKeypadName');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -5737,7 +6014,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Kablosuz tuş takımı yeniden adlandırılamadı: ${responseData['errmsg']}');
+      throw Exception(
+          'Kablosuz tuş takımı yeniden adlandırılamadı: ${responseData['errmsg']}');
     }
     debugPrint('✅ Kablosuz tuş takımı yeniden adlandırıldı');
   }
@@ -5747,7 +6025,8 @@ class ApiService {
     required int wirelessKeypadId,
     required int slotNumber,
   }) async {
-    debugPrint('🔄 Kablosuz tuş takımı güncellemeleri kontrol ediliyor: $wirelessKeypadId');
+    debugPrint(
+        '🔄 Kablosuz tuş takımı güncellemeleri kontrol ediliyor: $wirelessKeypadId');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -5770,9 +6049,10 @@ class ApiService {
     );
 
     final responseData = json.decode(response.body);
-    
+
     if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-       throw Exception('Kablosuz tuş takımı güncelleme kontrolü başarısız: ${responseData['errmsg']}');
+      throw Exception(
+          'Kablosuz tuş takımı güncelleme kontrolü başarısız: ${responseData['errmsg']}');
     }
 
     return responseData;
@@ -5784,7 +6064,8 @@ class ApiService {
     required int slotNumber,
     int? featureValue,
   }) async {
-    debugPrint('✅ Kablosuz tuş takımı güncelleme başarısı bildiriliyor: $wirelessKeypadId');
+    debugPrint(
+        '✅ Kablosuz tuş takımı güncelleme başarısı bildiriliyor: $wirelessKeypadId');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -5812,7 +6093,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Kablosuz tuş takımı güncelleme bildirimi başarısız: ${responseData['errmsg']}');
+      throw Exception(
+          'Kablosuz tuş takımı güncelleme bildirimi başarısız: ${responseData['errmsg']}');
     }
     debugPrint('✅ Kablosuz tuş takımı güncelleme başarıyla bildirildi');
   }
@@ -5879,7 +6161,8 @@ class ApiService {
     required int lockId,
     int pageNo = 1,
     int pageSize = 20,
-    int orderBy = 1, // 0-by name, 1-reverse order by time, 2-reverse order by name
+    int orderBy =
+        1, // 0-by name, 1-reverse order by time, 2-reverse order by name
   }) async {
     debugPrint('📋 Kumanda listesi çekiliyor: $lockId');
     await getAccessToken();
@@ -5888,7 +6171,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/remote/listByLock').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/remote/listByLock').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
@@ -6051,9 +6335,10 @@ class ApiService {
     );
 
     final responseData = json.decode(response.body);
-    
+
     if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-       throw Exception('Kumanda güncelleme kontrolü başarısız: ${responseData['errmsg']}');
+      throw Exception(
+          'Kumanda güncelleme kontrolü başarısız: ${responseData['errmsg']}');
     }
 
     return responseData;
@@ -6091,7 +6376,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Kumanda güncelleme bildirimi başarısız: ${responseData['errmsg']}');
+      throw Exception(
+          'Kumanda güncelleme bildirimi başarısız: ${responseData['errmsg']}');
     }
     debugPrint('✅ Kumanda güncelleme başarıyla bildirildi');
   }
@@ -6137,7 +6423,8 @@ class ApiService {
     final responseData = json.decode(response.body);
 
     if (responseData.containsKey('doorSensorId')) {
-      debugPrint('✅ Kapı sensörü başarıyla eklendi: ${responseData['doorSensorId']}');
+      debugPrint(
+          '✅ Kapı sensörü başarıyla eklendi: ${responseData['doorSensorId']}');
       return responseData;
     } else {
       debugPrint('❌ Kapı sensörü ekleme hatası: ${responseData['errmsg']}');
@@ -6171,12 +6458,12 @@ class ApiService {
     );
 
     final responseData = json.decode(response.body);
-    
+
     // API returns the object directly or error
     if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-       // If no sensor is found, it might return a specific error or empty. 
-       // Documentation implies it returns sensor or error.
-       throw Exception('Kapı sensörü sorgulanamadı: ${responseData['errmsg']}');
+      // If no sensor is found, it might return a specific error or empty.
+      // Documentation implies it returns sensor or error.
+      throw Exception('Kapı sensörü sorgulanamadı: ${responseData['errmsg']}');
     }
 
     return responseData;
@@ -6244,7 +6531,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Kapı sensörü yeniden adlandırılamadı: ${responseData['errmsg']}');
+      throw Exception(
+          'Kapı sensörü yeniden adlandırılamadı: ${responseData['errmsg']}');
     }
     debugPrint('✅ Kapı sensörü yeniden adlandırıldı');
   }
@@ -6256,7 +6544,8 @@ class ApiService {
     String? hardwareRevision,
     String? firmwareRevision,
   }) async {
-    debugPrint('🔄 Kapı sensörü güncellemeleri kontrol ediliyor: $doorSensorId');
+    debugPrint(
+        '🔄 Kapı sensörü güncellemeleri kontrol ediliyor: $doorSensorId');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -6282,9 +6571,10 @@ class ApiService {
     );
 
     final responseData = json.decode(response.body);
-    
+
     if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-       throw Exception('Kapı sensörü güncelleme kontrolü başarısız: ${responseData['errmsg']}');
+      throw Exception(
+          'Kapı sensörü güncelleme kontrolü başarısız: ${responseData['errmsg']}');
     }
 
     return responseData;
@@ -6294,7 +6584,8 @@ class ApiService {
   Future<void> setDoorSensorUpgradeSuccess({
     required int doorSensorId,
   }) async {
-    debugPrint('✅ Kapı sensörü güncelleme başarısı bildiriliyor: $doorSensorId');
+    debugPrint(
+        '✅ Kapı sensörü güncelleme başarısı bildiriliyor: $doorSensorId');
     await getAccessToken();
 
     if (_accessToken == null) {
@@ -6317,7 +6608,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Kapı sensörü güncelleme bildirimi başarısız: ${responseData['errmsg']}');
+      throw Exception(
+          'Kapı sensörü güncelleme bildirimi başarısız: ${responseData['errmsg']}');
     }
     debugPrint('✅ Kapı sensörü güncelleme başarıyla bildirildi');
   }
@@ -6360,7 +6652,8 @@ class ApiService {
     final responseData = json.decode(response.body);
 
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('NB-IoT kilit kaydı başarısız: ${responseData['errmsg']}');
+      throw Exception(
+          'NB-IoT kilit kaydı başarısız: ${responseData['errmsg']}');
     }
     debugPrint('✅ NB-IoT kilit kaydedildi');
   }
@@ -6376,7 +6669,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/lock/getNbDeviceInfo').replace(queryParameters: {
+    final url = Uri.parse('$_baseUrl/v3/lock/getNbDeviceInfo')
+        .replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'lockId': lockId.toString(),
@@ -6388,11 +6682,13 @@ class ApiService {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-        throw Exception('NB-IoT cihaz bilgisi alınamadı: ${responseData['errmsg']}');
+        throw Exception(
+            'NB-IoT cihaz bilgisi alınamadı: ${responseData['errmsg']}');
       }
       return responseData;
     } else {
-      throw Exception('NB-IoT cihaz bilgisi alınamadı: HTTP ${response.statusCode}');
+      throw Exception(
+          'NB-IoT cihaz bilgisi alınamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -6405,7 +6701,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/lock/getNbPlatformIpAndPort').replace(queryParameters: {
+    final url = Uri.parse('$_baseUrl/v3/lock/getNbPlatformIpAndPort')
+        .replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'date': _getApiTime(),
@@ -6415,17 +6712,19 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      
+
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-         throw Exception('NB-IoT sunucu bilgileri alınamadı: ${responseData['errmsg']}');
+        throw Exception(
+            'NB-IoT sunucu bilgileri alınamadı: ${responseData['errmsg']}');
       }
-      
+
       if (responseData['list'] != null) {
         return responseData['list'];
       }
       return [];
     } else {
-      throw Exception('NB-IoT sunucu bilgileri alınamadı: HTTP ${response.statusCode}');
+      throw Exception(
+          'NB-IoT sunucu bilgileri alınamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -6530,7 +6829,8 @@ class ApiService {
       throw Exception('No access token available');
     }
 
-    final url = Uri.parse('$_baseUrl/v3/qrCode/getData').replace(queryParameters: {
+    final url =
+        Uri.parse('$_baseUrl/v3/qrCode/getData').replace(queryParameters: {
       'clientId': ApiConfig.clientId,
       'accessToken': _accessToken!,
       'qrCodeId': qrCodeId.toString(),
@@ -6541,15 +6841,15 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-       // API might return standard error format or direct object. 
-       // If no error, it returns object with qrCodeContent
-       // Checking for errcode just in case it's in the response structure for errors
+      // API might return standard error format or direct object.
+      // If no error, it returns object with qrCodeContent
+      // Checking for errcode just in case it's in the response structure for errors
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
         throw Exception('QR kod verisi alınamadı: ${responseData['errmsg']}');
       }
       return responseData;
     } else {
-       throw Exception('QR kod verisi alınamadı: HTTP ${response.statusCode}');
+      throw Exception('QR kod verisi alınamadı: HTTP ${response.statusCode}');
     }
   }
 
@@ -6717,7 +7017,8 @@ class ApiService {
     final responseData = json.decode(response.body);
 
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Wi-Fi ağ bilgisi güncellenemedi: ${responseData['errmsg']}');
+      throw Exception(
+          'Wi-Fi ağ bilgisi güncellenemedi: ${responseData['errmsg']}');
     }
     debugPrint('✅ Wi-Fi ağ bilgisi güncellendi');
   }
@@ -6750,7 +7051,8 @@ class ApiService {
     final responseData = json.decode(response.body);
 
     if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-      throw Exception('Wi-Fi kilit detayları alınamadı: ${responseData['errmsg']}');
+      throw Exception(
+          'Wi-Fi kilit detayları alınamadı: ${responseData['errmsg']}');
     }
 
     return responseData;
@@ -6795,13 +7097,14 @@ class ApiService {
     if (responseData.containsKey('list')) {
       return responseData;
     } else {
-       // Check for error code if list is missing
-       if(responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-          throw Exception('Palm Vein listesi alınamadı: ${responseData['errmsg']}');
-       }
-       // If no list and no error, return empty format or handle as error depending on API behavior.
-       // Assuming standard success structure will contain list.
-       return responseData;
+      // Check for error code if list is missing
+      if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
+        throw Exception(
+            'Palm Vein listesi alınamadı: ${responseData['errmsg']}');
+      }
+      // If no list and no error, return empty format or handle as error depending on API behavior.
+      // Assuming standard success structure will contain list.
+      return responseData;
     }
   }
 
@@ -6883,7 +7186,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Palm Vein yeniden adlandırılamadı: ${responseData['errmsg']}');
+      throw Exception(
+          'Palm Vein yeniden adlandırılamadı: ${responseData['errmsg']}');
     }
     debugPrint('✅ Palm Vein yeniden adlandırıldı');
   }
@@ -6924,7 +7228,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Palm Vein süresi güncellenemedi: ${responseData['errmsg']}');
+      throw Exception(
+          'Palm Vein süresi güncellenemedi: ${responseData['errmsg']}');
     }
     debugPrint('✅ Palm Vein süresi güncellendi');
   }
@@ -6948,7 +7253,7 @@ class ApiService {
       'id': palmVeinId.toString(),
       'date': _getApiTime(),
     };
-    
+
     if (type != null) body['type'] = type.toString();
 
     final response = await http.post(
@@ -6991,7 +7296,8 @@ class ApiService {
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-      throw Exception('Tüm Palm Vein verileri silinemedi: ${responseData['errmsg']}');
+      throw Exception(
+          'Tüm Palm Vein verileri silinemedi: ${responseData['errmsg']}');
     }
     debugPrint('✅ Tüm Palm Vein verileri silindi');
   }
@@ -7046,11 +7352,9 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await http.post(
-      url, 
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: body
-    );
+    final response = await http.post(url,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: body);
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
@@ -7071,17 +7375,15 @@ class ApiService {
   }) async {
     await getAccessToken();
     if (_accessToken == null) throw Exception('Token yok');
-    
+
     await sendEKey(
-       accessToken: _accessToken!, 
-       lockId: lockId, 
-       receiverUsername: receiverUsername, 
-       keyName: 'Admin', 
-       startDate: DateTime.now(), 
-       endDate: DateTime(2099), // Permanent
-       keyRight: 1, // Admin
+      accessToken: _accessToken!,
+      lockId: lockId,
+      receiverUsername: receiverUsername,
+      keyName: 'Admin',
+      startDate: DateTime.now(),
+      endDate: DateTime(2099), // Permanent
+      keyRight: 1, // Admin
     );
   }
 }
-
-

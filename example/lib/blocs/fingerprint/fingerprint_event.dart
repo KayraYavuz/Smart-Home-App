@@ -32,7 +32,8 @@ class AddFingerprint extends FingerprintEvent {
   });
 
   @override
-  List<Object> get props => [lockId, fingerprintNumber, fingerprintName, startDate, endDate];
+  List<Object> get props =>
+      [lockId, fingerprintNumber, fingerprintName, startDate, endDate];
 }
 
 class DeleteFingerprint extends FingerprintEvent {

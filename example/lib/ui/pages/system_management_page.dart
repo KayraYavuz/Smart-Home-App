@@ -67,12 +67,14 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
             accessToken: _apiService.accessToken!,
             lockId: lock['lockId'].toString(),
             startDate: picked.start.millisecondsSinceEpoch,
-            endDate: picked.end.add(const Duration(hours: 23, minutes: 59, seconds: 59)).millisecondsSinceEpoch,
+            endDate: picked.end
+                .add(const Duration(hours: 23, minutes: 59, seconds: 59))
+                .millisecondsSinceEpoch,
             pageSize: 100,
           );
-          
+
           for (var r in records) {
-             r['lockName'] = lock['lockAlias'] ?? lock['lockName'] ?? 'Unknown';
+            r['lockName'] = lock['lockAlias'] ?? lock['lockName'] ?? 'Unknown';
           }
           allRecords.addAll(records);
         } catch (e) {
@@ -92,11 +94,14 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
       final file = File('${directory.path}/yavuz_lock_records.json');
       await file.writeAsString(jsonEncode(allRecords));
 
-      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'Yavuz Lock Records Export'));
+      await SharePlus.instance.share(ShareParams(
+          files: [XFile(file.path)], text: 'Yavuz Lock Records Export'));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.exportError(e.toString())), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text(l10n.exportError(e.toString())),
+            backgroundColor: Colors.red),
       );
     }
   }
@@ -132,20 +137,30 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Text(
             l10n.adminRights.toUpperCase(),
-            style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+            style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2),
           ),
         ),
         _buildMenuItem(
           icon: Icons.people_outline,
           title: l10n.userManagement,
           subtitle: l10n.lockUsersSubtitle,
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const UserManagementPage())),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const UserManagementPage())),
         ),
         _buildMenuItem(
           icon: Icons.router_outlined,
           title: l10n.gatewayManagement,
           subtitle: l10n.transferGatewaySubtitle,
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const GatewayManagementPage())),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const GatewayManagementPage())),
         ),
       ],
     );
@@ -159,7 +174,11 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           child: Text(
             l10n.dataManagement.toUpperCase(),
-            style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+            style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2),
           ),
         ),
         _buildMenuItem(
@@ -193,8 +212,11 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
           ),
           child: Icon(icon, color: AppColors.primary),
         ),
-        title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle, style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+        title: Text(title,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w600)),
+        subtitle: Text(subtitle,
+            style: TextStyle(color: Colors.grey[400], fontSize: 12)),
         trailing: const Icon(Icons.chevron_right, color: Colors.grey),
         onTap: onTap,
       ),

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:yavuz_lock/api_service.dart';
@@ -103,9 +102,12 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                   ),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isFrozen ? Colors.red.withValues(alpha: 0.2) : Colors.green.withValues(alpha: 0.2),
+                      color: isFrozen
+                          ? Colors.red.withValues(alpha: 0.2)
+                          : Colors.green.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isFrozen ? Colors.red : Colors.green,
@@ -139,7 +141,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
               Icons.security,
             ),
             const SizedBox(height: 12),
-             _buildInfoCard(
+            _buildInfoCard(
               l10n.remoteUnlock,
               _eKey['remoteEnable'] == 1 ? l10n.active : l10n.passive,
               Icons.wifi_tethering,
@@ -158,7 +160,6 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              
               Wrap(
                 spacing: 12,
                 runSpacing: 12,
@@ -174,7 +175,9 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                   // Authorize / Unauthorize
                   _buildActionButton(
                     label: isAuthorized ? l10n.revokeAuthority : l10n.authorize,
-                    icon: isAuthorized ? Icons.remove_moderator : Icons.add_moderator,
+                    icon: isAuthorized
+                        ? Icons.remove_moderator
+                        : Icons.add_moderator,
                     color: isAuthorized ? Colors.redAccent : Colors.blue,
                     onTap: () => _toggleAuthorization(isAuthorized),
                   ),
@@ -187,7 +190,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                     onTap: _showChangePeriodDialog,
                   ),
 
-                   // Rename / Update Remote
+                  // Rename / Update Remote
                   _buildActionButton(
                     label: l10n.edit,
                     icon: Icons.edit,
@@ -271,9 +274,11 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
         onTap: _isLoading ? null : onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          width: MediaQuery.of(context).size.width / 3 - 24, // Dynamic width for 3 cols roughly
+          width: MediaQuery.of(context).size.width / 3 -
+              24, // Dynamic width for 3 cols roughly
           constraints: const BoxConstraints(minHeight: 100), // Reduced from 110
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4), // Reduced vertical from 16
+          padding: const EdgeInsets.symmetric(
+              vertical: 12, horizontal: 4), // Reduced vertical from 16
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -336,7 +341,9 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
       if (!mounted) return;
       setState(() {});
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(isCurrentlyFrozen ? l10n.unfreezeSuccess : l10n.freezeSuccess)),
+        SnackBar(
+            content: Text(
+                isCurrentlyFrozen ? l10n.unfreezeSuccess : l10n.freezeSuccess)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -377,7 +384,10 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
       if (!mounted) return;
       setState(() {});
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(isCurrentlyAuthorized ? l10n.revokeSuccess : l10n.authorizeSuccess)),
+        SnackBar(
+            content: Text(isCurrentlyAuthorized
+                ? l10n.revokeSuccess
+                : l10n.authorizeSuccess)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -391,7 +401,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     }
   }
 
-   Future<void> _getUnlockLink() async {
+  Future<void> _getUnlockLink() async {
     if (_accessToken == null) return;
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
@@ -405,16 +415,17 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
         accessToken: _accessToken!,
         keyId: _eKey['keyId'].toString(),
       );
-      
+
       final link = result['link'];
       if (link != null) {
         if (!mounted) return;
-        
+
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             backgroundColor: const Color(0xFF1E1E1E),
-            title: Text(l10n.unlockLink, style: const TextStyle(color: Colors.white)),
+            title: Text(l10n.unlockLink,
+                style: const TextStyle(color: Colors.white)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -425,32 +436,35 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                 const SizedBox(height: 16),
                 SelectableText(
                   link,
-                  style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () {
-                   Clipboard.setData(ClipboardData(text: link));
-                   scaffoldMessenger.showSnackBar(
-                     SnackBar(content: Text(l10n.linkCopied)),
-                   );
-                   navigator.pop();
+                  Clipboard.setData(ClipboardData(text: link));
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(content: Text(l10n.linkCopied)),
+                  );
+                  navigator.pop();
                 },
-                 child: Text(l10n.copy),
-               ),
-               TextButton(
-                 onPressed: () => navigator.pop(),
-                 child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
-               ),
+                child: Text(l10n.copy),
+              ),
+              TextButton(
+                onPressed: () => navigator.pop(),
+                child: Text(l10n.cancel,
+                    style: const TextStyle(color: Colors.grey)),
+              ),
             ],
           ),
         );
       }
     } catch (e) {
       String msg = l10n.linkRetrievalError(e.toString());
-      if (e.toString().contains('20002') || e.toString().contains('Not lock admin')) {
+      if (e.toString().contains('20002') ||
+          e.toString().contains('Not lock admin')) {
         msg = l10n.authorityError;
       }
       if (!mounted) return;
@@ -466,7 +480,8 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
   void _showChangePeriodDialog() {
     // Current dates
-    DateTime currentStart = DateTime.fromMillisecondsSinceEpoch(_eKey['startDate']);
+    DateTime currentStart =
+        DateTime.fromMillisecondsSinceEpoch(_eKey['startDate']);
     DateTime currentEnd = DateTime.fromMillisecondsSinceEpoch(_eKey['endDate']);
     final l10n = AppLocalizations.of(context)!;
     final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -474,39 +489,39 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     showDialog(
       context: context,
       builder: (context) => _ChangePeriodDialog(
-        initialStartDate: currentStart, 
+        initialStartDate: currentStart,
         initialEndDate: currentEnd,
         onSave: (start, end) async {
-           if (_accessToken == null) return;
-           try {
-             await _apiService.changeEKeyPeriod(
-               accessToken: _accessToken!,
-               keyId: _eKey['keyId'].toString(),
-               startDate: start,
-               endDate: end,
-             );
-             
-             if (!mounted) return;
-             setState(() {
-               _eKey['startDate'] = start.millisecondsSinceEpoch;
-               _eKey['endDate'] = end.millisecondsSinceEpoch;
-             });
-             
-             scaffoldMessenger.showSnackBar(
-               SnackBar(content: Text(l10n.updateSuccess)),
-             );
-           } catch(e) {
-             if (!mounted) return;
-             scaffoldMessenger.showSnackBar(
-                SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
-             );
-           }
+          if (_accessToken == null) return;
+          try {
+            await _apiService.changeEKeyPeriod(
+              accessToken: _accessToken!,
+              keyId: _eKey['keyId'].toString(),
+              startDate: start,
+              endDate: end,
+            );
+
+            if (!mounted) return;
+            setState(() {
+              _eKey['startDate'] = start.millisecondsSinceEpoch;
+              _eKey['endDate'] = end.millisecondsSinceEpoch;
+            });
+
+            scaffoldMessenger.showSnackBar(
+              SnackBar(content: Text(l10n.updateSuccess)),
+            );
+          } catch (e) {
+            if (!mounted) return;
+            scaffoldMessenger.showSnackBar(
+              SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
+            );
+          }
         },
       ),
     );
   }
 
-   void _showUpdateDialog() {
+  void _showUpdateDialog() {
     final nameController = TextEditingController(text: _eKey['keyName']);
     // remoteEnable: 1-yes, 2-no
     bool remoteInfo = _eKey['remoteEnable'] == 1;
@@ -518,79 +533,83 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
       context: context,
       builder: (context) {
         bool remoteEnabled = remoteInfo;
-        return StatefulBuilder(
-          builder: (context, setStateSB) {
-            return AlertDialog(
-              backgroundColor: const Color(0xFF1E1E1E),
-              title: Text(l10n.edit, style: const TextStyle(color: Colors.white)),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                   TextField(
-                    controller: nameController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: l10n.nameLabel,
-                      labelStyle: const TextStyle(color: Colors.grey),
-                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                    ),
+        return StatefulBuilder(builder: (context, setStateSB) {
+          return AlertDialog(
+            backgroundColor: const Color(0xFF1E1E1E),
+            title: Text(l10n.edit, style: const TextStyle(color: Colors.white)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: l10n.nameLabel,
+                    labelStyle: const TextStyle(color: Colors.grey),
+                    enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey)),
                   ),
-                  const SizedBox(height: 16),
-                   SwitchListTile(
-                    title: Text(l10n.allowRemoteUnlock, style: const TextStyle(color: Colors.white)),
-                    subtitle: Text(l10n.gatewayRequired, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                    value: remoteEnabled,
-                    onChanged: (val) {
-                      setStateSB(() => remoteEnabled = val);
-                    },
-                    activeTrackColor: Colors.blue,
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => navigator.pop(),
-                  child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
                 ),
-                TextButton(
-                  onPressed: () async {
-                    navigator.pop();
-                    if (_accessToken == null) return;
-                    
-                    try {
-                       await _apiService.updateEKey(
-                         accessToken: _accessToken!, 
-                         keyId: _eKey['keyId'].toString(),
-                         keyName: nameController.text,
-                         remoteEnable: remoteEnabled ? 1 : 2,
-                       );
-
-                       if (!mounted) return;
-                       setState(() {
-                         _eKey['keyName'] = nameController.text;
-                         _eKey['remoteEnable'] = remoteEnabled ? 1 : 2;
-                       });
-                       
-                       scaffoldMessenger.showSnackBar(
-                          SnackBar(content: Text(l10n.updateSuccess)),
-                       );
-                    } catch(e) {
-                      if (!mounted) return;
-                      scaffoldMessenger.showSnackBar(
-                          SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
-                      );
-                    }
+                const SizedBox(height: 16),
+                SwitchListTile(
+                  title: Text(l10n.allowRemoteUnlock,
+                      style: const TextStyle(color: Colors.white)),
+                  subtitle: Text(l10n.gatewayRequired,
+                      style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  value: remoteEnabled,
+                  onChanged: (val) {
+                    setStateSB(() => remoteEnabled = val);
                   },
-                  child: Text(l10n.save, style: const TextStyle(color: Colors.blue)),
+                  activeTrackColor: Colors.blue,
                 ),
               ],
-            );
-          }
-        );
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => navigator.pop(),
+                child: Text(l10n.cancel,
+                    style: const TextStyle(color: Colors.grey)),
+              ),
+              TextButton(
+                onPressed: () async {
+                  navigator.pop();
+                  if (_accessToken == null) return;
+
+                  try {
+                    await _apiService.updateEKey(
+                      accessToken: _accessToken!,
+                      keyId: _eKey['keyId'].toString(),
+                      keyName: nameController.text,
+                      remoteEnable: remoteEnabled ? 1 : 2,
+                    );
+
+                    if (!mounted) return;
+                    setState(() {
+                      _eKey['keyName'] = nameController.text;
+                      _eKey['remoteEnable'] = remoteEnabled ? 1 : 2;
+                    });
+
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(content: Text(l10n.updateSuccess)),
+                    );
+                  } catch (e) {
+                    if (!mounted) return;
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(
+                          content: Text('Hata: $e'),
+                          backgroundColor: Colors.red),
+                    );
+                  }
+                },
+                child:
+                    Text(l10n.save, style: const TextStyle(color: Colors.blue)),
+              ),
+            ],
+          );
+        });
       },
     );
   }
-
 
   void _confirmDelete() {
     final l10n = AppLocalizations.of(context)!;
@@ -608,27 +627,29 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
         actions: [
           TextButton(
             onPressed: () => navigator.pop(),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () async {
-               navigator.pop();
-               if (_accessToken == null) return;
+              navigator.pop();
+              if (_accessToken == null) return;
 
-               try {
-                 await _apiService.deleteEKey(
-                   accessToken: _accessToken!,
-                   keyId: _eKey['keyId'].toString(),
-                 );
-                 
-                 if (!mounted) return;
-                 navigator.pop('deleted'); // Return to list with deleted signal
-               } catch(e) {
-                 if (!mounted) return;
-                 scaffoldMessenger.showSnackBar(
-                    SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
-                 );
-               }
+              try {
+                await _apiService.deleteEKey(
+                  accessToken: _accessToken!,
+                  keyId: _eKey['keyId'].toString(),
+                );
+
+                if (!mounted) return;
+                navigator.pop('deleted'); // Return to list with deleted signal
+              } catch (e) {
+                if (!mounted) return;
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(
+                      content: Text('Hata: $e'), backgroundColor: Colors.red),
+                );
+              }
             },
             child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
           ),
@@ -692,21 +713,16 @@ class __ChangePeriodDialogState extends State<_ChangePeriodDialog> {
       );
 
       if (time != null) {
-         setState(() {
-           final newDate = DateTime(
-             picked.year, 
-             picked.month, 
-             picked.day, 
-             time.hour, 
-             time.minute
-           );
-           
-           if (isStart) {
-             _startDate = newDate;
-           } else {
-             _endDate = newDate;
-           }
-         });
+        setState(() {
+          final newDate = DateTime(
+              picked.year, picked.month, picked.day, time.hour, time.minute);
+
+          if (isStart) {
+            _startDate = newDate;
+          } else {
+            _endDate = newDate;
+          }
+        });
       }
     }
   }
@@ -716,12 +732,14 @@ class __ChangePeriodDialogState extends State<_ChangePeriodDialog> {
     final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       backgroundColor: const Color(0xFF1E1E1E),
-      title: Text(l10n.changePeriod, style: const TextStyle(color: Colors.white)),
+      title:
+          Text(l10n.changePeriod, style: const TextStyle(color: Colors.white)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: Text(l10n.start, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            title: Text(l10n.start,
+                style: const TextStyle(color: Colors.grey, fontSize: 12)),
             subtitle: Text(
               '${_startDate.day}.${_startDate.month}.${_startDate.year} ${_startDate.hour}:${_startDate.minute.toString().padLeft(2, '0')}',
               style: const TextStyle(color: Colors.white),
@@ -730,12 +748,13 @@ class __ChangePeriodDialogState extends State<_ChangePeriodDialog> {
             onTap: () => _selectDate(true),
           ),
           ListTile(
-             title: Text(l10n.end, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            title: Text(l10n.end,
+                style: const TextStyle(color: Colors.grey, fontSize: 12)),
             subtitle: Text(
               '${_endDate.day}.${_endDate.month}.${_endDate.year} ${_endDate.hour}:${_endDate.minute.toString().padLeft(2, '0')}',
-               style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
-             trailing: const Icon(Icons.event_busy, color: Colors.blue),
+            trailing: const Icon(Icons.event_busy, color: Colors.blue),
             onTap: () => _selectDate(false),
           ),
         ],

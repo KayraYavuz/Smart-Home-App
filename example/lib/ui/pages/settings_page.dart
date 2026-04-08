@@ -89,10 +89,13 @@ class SettingsPage extends StatelessWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: LanguageProvider.supportedLocales.map((locale) {
-            final isSelected = languageProvider.locale.languageCode == locale.languageCode;
+            final isSelected =
+                languageProvider.locale.languageCode == locale.languageCode;
             return ListTile(
               leading: Icon(
-                isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                isSelected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
                 color: isSelected ? Colors.blue : Colors.grey,
               ),
               title: Text(
@@ -112,7 +115,8 @@ class SettingsPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
         ],
       ),

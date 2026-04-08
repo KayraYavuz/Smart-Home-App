@@ -31,7 +31,8 @@ class _CardPageState extends State<CardPage> {
     setState(() => _isLoading = true);
     try {
       final apiService = Provider.of<ApiService>(context, listen: false);
-      final fetchedCards = await apiService.listIdentityCards(lockId: widget.lockId);
+      final fetchedCards =
+          await apiService.listIdentityCards(lockId: widget.lockId);
       setState(() {
         _cards = fetchedCards;
       });
@@ -60,13 +61,12 @@ class _CardPageState extends State<CardPage> {
           content: Text(l10n.deleteCardConfirm(cardNumber)),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false), 
-              child: Text(l10n.cancel)
-            ),
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(l10n.cancel)),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(true), 
-              child: Text(l10n.delete, style: const TextStyle(color: Colors.red))
-            ),
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(l10n.delete,
+                    style: const TextStyle(color: Colors.red))),
           ],
         );
       },
@@ -75,34 +75,36 @@ class _CardPageState extends State<CardPage> {
     if (confirm == true) {
       if (!mounted) return;
       setState(() => _isLoading = true);
-      
+
       final apiService = Provider.of<ApiService>(context, listen: false);
       bool bluetoothSuccess = false;
 
       // 1. Try Bluetooth Deletion First
       try {
-        // We attempt to delete via Bluetooth. 
+        // We attempt to delete via Bluetooth.
         // If the lock is not connected or reachable, this might fail or timeout.
         // We can use a short timeout or just try.
         // Note: TTLock.deleteCard requires the card number.
         // We'll wrap this in a try-catch to not block the process if BT fails.
         final completer = Completer<void>();
-        
+
         TTLock.deleteCard(cardNumber, widget.lockData, () {
           // Success
           completer.complete();
         }, (errorCode, errorMsg) {
           // Failure
-          if (!completer.isCompleted) completer.completeError(Exception("$errorCode: $errorMsg"));
+          if (!completer.isCompleted)
+            completer.completeError(Exception("$errorCode: $errorMsg"));
         });
-        
+
         // Wait for result with a timeout (e.g., 5 seconds)
         // If it times out, we assume we are not near the lock and proceed to Gateway deletion.
         await completer.future.timeout(const Duration(seconds: 5));
         bluetoothSuccess = true;
         debugPrint("Card deleted via Bluetooth successfully.");
       } catch (e) {
-        debugPrint("Bluetooth deletion failed or timed out: $e. Falling back to Gateway/Cloud deletion.");
+        debugPrint(
+            "Bluetooth deletion failed or timed out: $e. Falling back to Gateway/Cloud deletion.");
         bluetoothSuccess = false;
       }
 
@@ -111,19 +113,19 @@ class _CardPageState extends State<CardPage> {
         // If Bluetooth success -> deleteType: 1
         // If Bluetooth fail -> deleteType: 2 (Gateway/WiFi)
         await apiService.deleteIdentityCard(
-          lockId: widget.lockId, 
-          cardId: cardId,
-          deleteType: bluetoothSuccess ? 1 : 2
-        );
-        
+            lockId: widget.lockId,
+            cardId: cardId,
+            deleteType: bluetoothSuccess ? 1 : 2);
+
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.cardDeletedSuccess(cardNumber, bluetoothSuccess ? "Bluetooth" : "Gateway")))
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(l10n.cardDeletedSuccess(
+                cardNumber, bluetoothSuccess ? "Bluetooth" : "Gateway"))));
         await _fetchCards();
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardDeleteError(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.cardDeleteError(e.toString()))));
         setState(() => _isLoading = false);
       }
     }
@@ -132,7 +134,8 @@ class _CardPageState extends State<CardPage> {
   Future<void> _showEditCardDialog(Map<String, dynamic> card) async {
     final l10n = AppLocalizations.of(context)!;
     final cardId = card['cardId'] as int;
-    final TextEditingController nameController = TextEditingController(text: card['cardName'] ?? '');
+    final TextEditingController nameController =
+        TextEditingController(text: card['cardName'] ?? '');
     DateTime startDate = DateTime.fromMillisecondsSinceEpoch(card['startDate']);
     DateTime endDate = DateTime.fromMillisecondsSinceEpoch(card['endDate']);
 
@@ -146,30 +149,49 @@ class _CardPageState extends State<CardPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextField(controller: nameController, decoration: InputDecoration(labelText: l10n.cardNameLabel)),
+                  TextField(
+                      controller: nameController,
+                      decoration:
+                          InputDecoration(labelText: l10n.cardNameLabel)),
                   const SizedBox(height: 20),
                   ListTile(
-                    title: Text('${l10n.startDatePrefix}${DateFormat('dd/MM/yyyy').format(startDate)}'),
+                    title: Text(
+                        '${l10n.startDatePrefix}${DateFormat('dd/MM/yyyy').format(startDate)}'),
                     trailing: const Icon(Icons.calendar_today),
                     onTap: () async {
-                      final picked = await showDatePicker(context: context, initialDate: startDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
-                      if (picked != null) setDialogState(() => startDate = picked);
+                      final picked = await showDatePicker(
+                          context: context,
+                          initialDate: startDate,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100));
+                      if (picked != null)
+                        setDialogState(() => startDate = picked);
                     },
                   ),
                   ListTile(
-                    title: Text('${l10n.endDatePrefix}${DateFormat('dd/MM/yyyy').format(endDate)}'),
+                    title: Text(
+                        '${l10n.endDatePrefix}${DateFormat('dd/MM/yyyy').format(endDate)}'),
                     trailing: const Icon(Icons.calendar_today),
                     onTap: () async {
-                      final picked = await showDatePicker(context: context, initialDate: endDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
-                      if (picked != null) setDialogState(() => endDate = picked);
+                      final picked = await showDatePicker(
+                          context: context,
+                          initialDate: endDate,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100));
+                      if (picked != null)
+                        setDialogState(() => endDate = picked);
                     },
                   ),
                 ],
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancel)),
-              TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.save)),
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(l10n.cancel)),
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(l10n.save)),
             ],
           );
         });
@@ -185,40 +207,54 @@ class _CardPageState extends State<CardPage> {
 
         // Rename if name is different
         if (nameController.text != (card['cardName'] ?? '')) {
-          await apiService.renameIdentityCard(lockId: widget.lockId, cardId: cardId, cardName: nameController.text);
+          await apiService.renameIdentityCard(
+              lockId: widget.lockId,
+              cardId: cardId,
+              cardName: nameController.text);
           needsRefresh = true;
         }
 
         // Change period if dates are different
-        if (startDate.millisecondsSinceEpoch != card['startDate'] || endDate.millisecondsSinceEpoch != card['endDate']) {
-          await apiService.changeIdentityCardPeriod(lockId: widget.lockId, cardId: cardId, startDate: startDate.millisecondsSinceEpoch, endDate: endDate.millisecondsSinceEpoch);
+        if (startDate.millisecondsSinceEpoch != card['startDate'] ||
+            endDate.millisecondsSinceEpoch != card['endDate']) {
+          await apiService.changeIdentityCardPeriod(
+              lockId: widget.lockId,
+              cardId: cardId,
+              startDate: startDate.millisecondsSinceEpoch,
+              endDate: endDate.millisecondsSinceEpoch);
           needsRefresh = true;
         }
 
         if (needsRefresh) {
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardUpdatedSuccess)));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(l10n.cardUpdatedSuccess)));
           await _fetchCards();
         }
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardUpdateError(e.toString()))));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.cardUpdateError(e.toString()))));
         setState(() => _isLoading = false);
       }
     }
   }
-  
+
   Future<void> _clearAllCards() async {
-     final l10n = AppLocalizations.of(context)!;
-     final bool? confirm = await showDialog<bool>(
+    final l10n = AppLocalizations.of(context)!;
+    final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(l10n.clearAllCardsTitle),
           content: Text(l10n.clearAllCardsConfirm),
           actions: <Widget>[
-            TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancel)),
-            TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.clear)),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(l10n.cancel)),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(l10n.clear)),
           ],
         );
       },
@@ -231,12 +267,14 @@ class _CardPageState extends State<CardPage> {
         final apiService = Provider.of<ApiService>(context, listen: false);
         await apiService.clearIdentityCards(lockId: widget.lockId);
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.allCardsClearedSuccess)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.allCardsClearedSuccess)));
         await _fetchCards();
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cardsClearError(e.toString()))));
-         setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.cardsClearError(e.toString()))));
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -253,7 +291,8 @@ class _CardPageState extends State<CardPage> {
         return StatefulBuilder(builder: (context, setDialogState) {
           return AlertDialog(
             backgroundColor: Colors.grey[900],
-            title: Text(l10n.recoverCardTitle, style: const TextStyle(color: Colors.white)),
+            title: Text(l10n.recoverCardTitle,
+                style: const TextStyle(color: Colors.white)),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -269,15 +308,20 @@ class _CardPageState extends State<CardPage> {
                     decoration: InputDecoration(
                       labelText: l10n.cardNumberLabel,
                       labelStyle: TextStyle(color: Colors.grey[400]),
-                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF4A90FF))),
+                      enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey)),
+                      focusedBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xFF4A90FF))),
                     ),
                   ),
                   const SizedBox(height: 16),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text('${l10n.startDatePrefix}${DateFormat('dd/MM/yyyy').format(startDate)}', style: const TextStyle(color: Colors.white)),
-                    trailing: const Icon(Icons.calendar_today, color: Colors.grey),
+                    title: Text(
+                        '${l10n.startDatePrefix}${DateFormat('dd/MM/yyyy').format(startDate)}',
+                        style: const TextStyle(color: Colors.white)),
+                    trailing:
+                        const Icon(Icons.calendar_today, color: Colors.grey),
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
@@ -285,13 +329,17 @@ class _CardPageState extends State<CardPage> {
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null) setDialogState(() => startDate = picked);
+                      if (picked != null)
+                        setDialogState(() => startDate = picked);
                     },
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text('${l10n.endDatePrefix}${DateFormat('dd/MM/yyyy').format(endDate)}', style: const TextStyle(color: Colors.white)),
-                    trailing: const Icon(Icons.calendar_today, color: Colors.grey),
+                    title: Text(
+                        '${l10n.endDatePrefix}${DateFormat('dd/MM/yyyy').format(endDate)}',
+                        style: const TextStyle(color: Colors.white)),
+                    trailing:
+                        const Icon(Icons.calendar_today, color: Colors.grey),
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
@@ -299,7 +347,8 @@ class _CardPageState extends State<CardPage> {
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null) setDialogState(() => endDate = picked);
+                      if (picked != null)
+                        setDialogState(() => endDate = picked);
                     },
                   ),
                 ],
@@ -308,11 +357,13 @@ class _CardPageState extends State<CardPage> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+                child: Text(l10n.cancel,
+                    style: const TextStyle(color: Colors.grey)),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text(l10n.recover, style: const TextStyle(color: Color(0xFF4A90FF))),
+                child: Text(l10n.recover,
+                    style: const TextStyle(color: Color(0xFF4A90FF))),
               ),
             ],
           );
@@ -346,13 +397,17 @@ class _CardPageState extends State<CardPage> {
 
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.cardRecoveredSuccess), backgroundColor: Colors.green),
+          SnackBar(
+              content: Text(l10n.cardRecoveredSuccess),
+              backgroundColor: Colors.green),
         );
         await _fetchCards();
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.cardRecoverError(e.toString())), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text(l10n.cardRecoverError(e.toString())),
+              backgroundColor: Colors.red),
         );
         setState(() => _isLoading = false);
       }
@@ -387,11 +442,16 @@ class _CardPageState extends State<CardPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(l10n.howToAddCard, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                child: Text(l10n.howToAddCard,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
               ),
               ListTile(
                 leading: const Icon(Icons.bluetooth, color: Colors.blueAccent),
-                title: Text(l10n.addViaBluetooth, style: const TextStyle(color: Colors.white)),
+                title: Text(l10n.addViaBluetooth,
+                    style: const TextStyle(color: Colors.white)),
                 onTap: () {
                   Navigator.pop(context);
                   _addCardViaBluetooth();
@@ -399,8 +459,10 @@ class _CardPageState extends State<CardPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.nfc, color: Colors.white),
-                title: Text(l10n.addViaNfc, style: const TextStyle(color: Colors.white)),
-                subtitle: Text(l10n.savedViaGateway, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                title: Text(l10n.addViaNfc,
+                    style: const TextStyle(color: Colors.white)),
+                subtitle: Text(l10n.savedViaGateway,
+                    style: const TextStyle(color: Colors.grey, fontSize: 12)),
                 onTap: () {
                   Navigator.pop(context);
                   _navigateToRemoteAddCard();
@@ -428,7 +490,8 @@ class _CardPageState extends State<CardPage> {
     if (result == true) await _fetchCards();
   }
 
-  String _formatDate(int timestamp) => DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(timestamp));
+  String _formatDate(int timestamp) => DateFormat('dd/MM/yyyy')
+      .format(DateTime.fromMillisecondsSinceEpoch(timestamp));
 
   @override
   Widget build(BuildContext context) {
@@ -465,7 +528,8 @@ class _CardPageState extends State<CardPage> {
                   children: [
                     const Icon(Icons.restore, color: Colors.white, size: 20),
                     const SizedBox(width: 12),
-                    Text(l10n.recoverCardTitle, style: const TextStyle(color: Colors.white)),
+                    Text(l10n.recoverCardTitle,
+                        style: const TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
@@ -475,7 +539,8 @@ class _CardPageState extends State<CardPage> {
                   children: [
                     const Icon(Icons.nfc, color: Colors.white, size: 20),
                     const SizedBox(width: 12),
-                    Text(l10n.remoteCardCreation, style: const TextStyle(color: Colors.white)),
+                    Text(l10n.remoteCardCreation,
+                        style: const TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
@@ -483,9 +548,11 @@ class _CardPageState extends State<CardPage> {
                 value: 'bluetooth_add',
                 child: Row(
                   children: [
-                    const Icon(Icons.bluetooth, color: Colors.blueAccent, size: 20),
+                    const Icon(Icons.bluetooth,
+                        color: Colors.blueAccent, size: 20),
                     const SizedBox(width: 12),
-                    Text(l10n.addCardViaLockMenu, style: const TextStyle(color: Colors.blueAccent)),
+                    Text(l10n.addCardViaLockMenu,
+                        style: const TextStyle(color: Colors.blueAccent)),
                   ],
                 ),
               ),
@@ -494,9 +561,11 @@ class _CardPageState extends State<CardPage> {
                 value: 'clear_all',
                 child: Row(
                   children: [
-                    const Icon(Icons.delete_sweep, color: Colors.redAccent, size: 20),
+                    const Icon(Icons.delete_sweep,
+                        color: Colors.redAccent, size: 20),
                     const SizedBox(width: 12),
-                    Text(l10n.clearAllCardsTitle, style: const TextStyle(color: Colors.redAccent)),
+                    Text(l10n.clearAllCardsTitle,
+                        style: const TextStyle(color: Colors.redAccent)),
                   ],
                 ),
               ),
@@ -507,7 +576,9 @@ class _CardPageState extends State<CardPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _cards.isEmpty
-              ? Center(child: Text(l10n.noCardsFound, style: const TextStyle(color: Colors.white)))
+              ? Center(
+                  child: Text(l10n.noCardsFound,
+                      style: const TextStyle(color: Colors.white)))
               : RefreshIndicator(
                   onRefresh: _fetchCards,
                   child: ListView.builder(
@@ -515,34 +586,50 @@ class _CardPageState extends State<CardPage> {
                     itemBuilder: (context, index) {
                       final card = _cards[index];
                       final int cardId = card['cardId'] as int;
-                      final String cardName = card['cardName'] ?? l10n.unnamedCard;
+                      final String cardName =
+                          card['cardName'] ?? l10n.unnamedCard;
                       final String cardNumber = card['cardNumber'] ?? 'N/A';
-                      final String startDate = card['startDate'] != null ? _formatDate(card['startDate']) : 'N/A';
-                      final String endDate = card['endDate'] != null ? _formatDate(card['endDate']) : 'N/A';
+                      final String startDate = card['startDate'] != null
+                          ? _formatDate(card['startDate'])
+                          : 'N/A';
+                      final String endDate = card['endDate'] != null
+                          ? _formatDate(card['endDate'])
+                          : 'N/A';
 
                       return Card(
                         color: Colors.grey[850],
-                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 16),
                         child: ListTile(
-                          leading: const Icon(Icons.credit_card, color: Color(0xFF1E90FF)),
-                          title: Text(cardName, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                          leading: const Icon(Icons.credit_card,
+                              color: Color(0xFF1E90FF)),
+                          title: Text(cardName,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold)),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(l10n.cardNumberPrefix(cardNumber), style: TextStyle(color: Colors.grey[400])),
-                              Text(l10n.validityPrefix(startDate, endDate), style: TextStyle(color: Colors.grey[400])),
+                              Text(l10n.cardNumberPrefix(cardNumber),
+                                  style: TextStyle(color: Colors.grey[400])),
+                              Text(l10n.validityPrefix(startDate, endDate),
+                                  style: TextStyle(color: Colors.grey[400])),
                             ],
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.edit, color: Colors.amber),
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.amber),
                                 onPressed: () => _showEditCardDialog(card),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                                onPressed: () => _deleteCard(cardId, cardNumber),
+                                icon: const Icon(Icons.delete_outline,
+                                    color: Colors.redAccent),
+                                onPressed: () =>
+                                    _deleteCard(cardId, cardNumber),
                               ),
                             ],
                           ),

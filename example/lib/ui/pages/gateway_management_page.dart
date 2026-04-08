@@ -79,7 +79,8 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
                   hintStyle: const TextStyle(color: Colors.grey),
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 ),
                 onChanged: (value) {
                   // Arama filtresi uygulanabilir
@@ -192,7 +193,9 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
                 Text(
                   gateway['status'] == 'online' ? l10n.online : l10n.offline,
                   style: TextStyle(
-                    color: gateway['status'] == 'online' ? Colors.green : Colors.red,
+                    color: gateway['status'] == 'online'
+                        ? Colors.green
+                        : Colors.red,
                     fontSize: 12,
                   ),
                 ),
@@ -207,7 +210,8 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
                 );
               },
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
         );
       },

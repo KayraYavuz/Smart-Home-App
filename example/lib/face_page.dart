@@ -31,7 +31,8 @@ class _FacePageState extends State<FacePage> {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Clear All Faces'),
-                  content: const Text('Are you sure you want to clear all faces?'),
+                  content:
+                      const Text('Are you sure you want to clear all faces?'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
@@ -39,7 +40,9 @@ class _FacePageState extends State<FacePage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        context.read<FaceBloc>().add(ClearAllFaces(widget.lockId));
+                        context
+                            .read<FaceBloc>()
+                            .add(ClearAllFaces(widget.lockId));
                         Navigator.pop(context);
                       },
                       child: const Text('Clear'),
@@ -84,7 +87,9 @@ class _FacePageState extends State<FacePage> {
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
-                      context.read<FaceBloc>().add(DeleteFace(widget.lockId, face['faceId']));
+                      context
+                          .read<FaceBloc>()
+                          .add(DeleteFace(widget.lockId, face['faceId']));
                     },
                   ),
                   onLongPress: () {
@@ -96,11 +101,8 @@ class _FacePageState extends State<FacePage> {
                           child: const Text('Rename'),
                           onTap: () {
                             if (!mounted) return;
-                            _showRenameDialog(
-                                context,
-                                widget.lockId,
-                                face['faceId'],
-                                face['name']);
+                            _showRenameDialog(context, widget.lockId,
+                                face['faceId'], face['name']);
                           },
                         ),
                         PopupMenuItem(
@@ -108,9 +110,7 @@ class _FacePageState extends State<FacePage> {
                           onTap: () {
                             if (!mounted) return;
                             _showChangePeriodDialog(
-                                context,
-                                widget.lockId,
-                                face['faceId']);
+                                context, widget.lockId, face['faceId']);
                           },
                         ),
                       ],
@@ -123,7 +123,8 @@ class _FacePageState extends State<FacePage> {
           if (state is FaceOperationFailure) {
             return Center(child: Text('Error: ${state.error}'));
           }
-          return Center(child: Text('Face management for lock ${widget.lockId}'));
+          return Center(
+              child: Text('Face management for lock ${widget.lockId}'));
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -144,7 +145,8 @@ class _FacePageState extends State<FacePage> {
     );
   }
 
-  void _showRenameDialog(BuildContext context, int lockId, int faceId, String currentName) {
+  void _showRenameDialog(
+      BuildContext context, int lockId, int faceId, String currentName) {
     final nameController = TextEditingController(text: currentName);
     showDialog(
       context: context,

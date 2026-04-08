@@ -43,7 +43,7 @@ class _PassageModePageState extends State<PassageModePage> {
 
       setState(() {
         _passageModeEnabled = config['passageMode'] == 1;
-        
+
         // Parse cyclic config if available
         if (config['cyclicConfig'] != null && config['cyclicConfig'] is List) {
           List<TimePeriod> periods = [];
@@ -54,7 +54,7 @@ class _PassageModePageState extends State<PassageModePage> {
           }
           _timePeriods = TimePeriod.mergeByTime(periods);
         }
-        
+
         _isLoading = false;
       });
     } catch (e) {
@@ -85,8 +85,9 @@ class _PassageModePageState extends State<PassageModePage> {
 
     if (result != null) {
       // Check for conflicts
-      final conflicts = _timePeriods.where((p) => p.overlapsWith(result)).toList();
-      
+      final conflicts =
+          _timePeriods.where((p) => p.overlapsWith(result)).toList();
+
       if (conflicts.isNotEmpty && mounted) {
         final proceed = await _showConflictWarning(conflicts);
         if (!proceed) return;
@@ -103,15 +104,17 @@ class _PassageModePageState extends State<PassageModePage> {
     final result = await Navigator.push<TimePeriod>(
       context,
       MaterialPageRoute(
-        builder: (context) => TimePeriodPage(existingPeriod: _timePeriods[index]),
+        builder: (context) =>
+            TimePeriodPage(existingPeriod: _timePeriods[index]),
       ),
     );
 
     if (result != null) {
       // Check for conflicts with other periods (excluding the one being edited)
       final otherPeriods = List<TimePeriod>.from(_timePeriods)..removeAt(index);
-      final conflicts = otherPeriods.where((p) => p.overlapsWith(result)).toList();
-      
+      final conflicts =
+          otherPeriods.where((p) => p.overlapsWith(result)).toList();
+
       if (conflicts.isNotEmpty && mounted) {
         final proceed = await _showConflictWarning(conflicts);
         if (!proceed) return;
@@ -127,54 +130,58 @@ class _PassageModePageState extends State<PassageModePage> {
   Future<bool> _showConflictWarning(List<TimePeriod> conflicts) async {
     final l10n = AppLocalizations.of(context)!;
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Row(
-          children: [
-            const Icon(Icons.warning_amber_rounded, color: AppColors.warning),
-            const SizedBox(width: 12),
-            Text(
-              l10n.timeConflict,
-              style: const TextStyle(color: Colors.white),
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: AppColors.surface,
+            title: Row(
+              children: [
+                const Icon(Icons.warning_amber_rounded,
+                    color: AppColors.warning),
+                const SizedBox(width: 12),
+                Text(
+                  l10n.timeConflict,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ],
             ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.timeOverlapWarning,
-              style: const TextStyle(color: AppColors.textSecondary),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.timeOverlapWarning,
+                  style: const TextStyle(color: AppColors.textSecondary),
+                ),
+                const SizedBox(height: 12),
+                ...conflicts.map((c) => Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        '• ${c.daysFormatted}: ${c.startTimeFormatted} - ${c.endTimeFormatted}',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    )),
+                const SizedBox(height: 12),
+                Text(
+                  l10n.addStill,
+                  style: const TextStyle(color: AppColors.textSecondary),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            ...conflicts.map((c) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                '• ${c.daysFormatted}: ${c.startTimeFormatted} - ${c.endTimeFormatted}',
-                style: const TextStyle(color: Colors.white),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel,
+                    style: const TextStyle(color: AppColors.textSecondary)),
               ),
-            )),
-            const SizedBox(height: 12),
-            Text(
-              l10n.addStill,
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel, style: const TextStyle(color: AppColors.textSecondary)),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.add,
+                    style: const TextStyle(color: AppColors.primary)),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.add, style: const TextStyle(color: AppColors.primary)),
-          ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
   }
 
   void _deleteTimePeriod(int index) {
@@ -187,12 +194,13 @@ class _PassageModePageState extends State<PassageModePage> {
 
   Future<void> _saveConfiguration() async {
     final l10n = AppLocalizations.of(context)!;
-    
+
     // Validation: If passage mode is enabled, at least one time period is required
     if (_passageModeEnabled && _timePeriods.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.noPlanAdded), // "Plan eklenmedi" veya benzer bir mesaj
+          content:
+              Text(l10n.noPlanAdded), // "Plan eklenmedi" veya benzer bir mesaj
           backgroundColor: AppColors.error,
         ),
       );
@@ -278,7 +286,8 @@ class _PassageModePageState extends State<PassageModePage> {
         centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary))
           : Column(
               children: [
                 Expanded(
@@ -287,19 +296,19 @@ class _PassageModePageState extends State<PassageModePage> {
                     children: [
                       // Description
                       _buildDescription(),
-                      
+
                       const SizedBox(height: 24),
-                      
+
                       // Passage Mode Toggle
                       _buildPassageModeToggle(),
-                      
+
                       const SizedBox(height: 12),
-                      
+
                       // Time Period Add Row
                       _buildTimePeriodRow(),
-                      
+
                       const SizedBox(height: 20),
-                      
+
                       // Time Periods List or Empty State
                       if (_timePeriods.isEmpty)
                         _buildEmptyState()
@@ -308,7 +317,7 @@ class _PassageModePageState extends State<PassageModePage> {
                     ],
                   ),
                 ),
-                
+
                 // Save Button
                 _buildSaveButton(),
               ],
@@ -366,14 +375,16 @@ class _PassageModePageState extends State<PassageModePage> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _passageModeEnabled 
+                    color: _passageModeEnabled
                         ? AppColors.primary.withValues(alpha: 0.2)
                         : AppColors.border.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     Icons.door_front_door,
-                    color: _passageModeEnabled ? AppColors.primary : AppColors.textSecondary,
+                    color: _passageModeEnabled
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
                     size: 22,
                   ),
                 ),
@@ -500,7 +511,7 @@ class _PassageModePageState extends State<PassageModePage> {
     return _timePeriods.asMap().entries.map((entry) {
       final index = entry.key;
       final period = entry.value;
-      
+
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: Dismissible(
@@ -603,8 +614,8 @@ class _PassageModePageState extends State<PassageModePage> {
           child: ElevatedButton(
             onPressed: _isSaving ? null : _saveConfiguration,
             style: ElevatedButton.styleFrom(
-              backgroundColor: _hasChanges 
-                  ? AppColors.primary 
+              backgroundColor: _hasChanges
+                  ? AppColors.primary
                   : AppColors.textSecondary.withValues(alpha: 0.3),
               foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(
@@ -651,11 +662,13 @@ class _PassageModePageState extends State<PassageModePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel, style: const TextStyle(color: AppColors.textSecondary)),
+            child: Text(l10n.cancel,
+                style: const TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.exit, style: const TextStyle(color: AppColors.error)),
+            child:
+                Text(l10n.exit, style: const TextStyle(color: AppColors.error)),
           ),
         ],
       ),

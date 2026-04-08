@@ -7,7 +7,7 @@ class AppColors {
   static const Color primary = Color(0xFF00D1FF); // Neon Blue
   static const Color secondary = Color(0xFF00F5A0); // Neon Teal
   static const Color accent = Color(0xFF7000FF); // Cyber Purple
-  
+
   static const Color textPrimary = Color(0xFFFFFFFF);
   static const Color textSecondary = Color(0xFF8B949E);
   static const Color error = Color(0xFFFF4D4D);

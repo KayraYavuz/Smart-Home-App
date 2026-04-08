@@ -216,8 +216,7 @@ class TTLockService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data.containsKey('errcode') && data['errcode'] != 0) {
-          throw Exception(
-              'Failed to get fingerprint list: ${data['errmsg']}');
+          throw Exception('Failed to get fingerprint list: ${data['errmsg']}');
         }
         return data;
       } else {

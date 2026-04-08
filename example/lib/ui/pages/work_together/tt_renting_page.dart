@@ -82,7 +82,8 @@ class _TTRentingPageState extends State<TTRentingPage> {
     );
   }
 
-  Widget _buildPropertyCard(Map<String, dynamic> property, AppLocalizations l10n) {
+  Widget _buildPropertyCard(
+      Map<String, dynamic> property, AppLocalizations l10n) {
     bool isRented = property['status'] == 'rented';
     Color statusColor = isRented ? Colors.blue : Colors.green;
     String statusText = isRented ? l10n.rented : l10n.vacant;
@@ -110,7 +111,8 @@ class _TTRentingPageState extends State<TTRentingPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
@@ -135,8 +137,12 @@ class _TTRentingPageState extends State<TTRentingPage> {
                 l10n.rentDueDate,
                 _formatDate(property['dueDate']),
                 trailing: property['isPaid']
-                    ? Text(l10n.paid, style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
-                    : Text(l10n.unpaid, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                    ? Text(l10n.paid,
+                        style: const TextStyle(
+                            color: Colors.green, fontWeight: FontWeight.bold))
+                    : Text(l10n.unpaid,
+                        style: const TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold)),
               ),
               const SizedBox(height: 16),
               Row(
@@ -176,13 +182,16 @@ class _TTRentingPageState extends State<TTRentingPage> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value, {Widget? trailing}) {
+  Widget _buildInfoRow(IconData icon, String label, String value,
+      {Widget? trailing}) {
     return Row(
       children: [
         Icon(icon, color: Colors.grey, size: 20),
         const SizedBox(width: 8),
         Text('$label: ', style: const TextStyle(color: Colors.grey)),
-        Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+        Text(value,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w500)),
         if (trailing != null) ...[
           const Spacer(),
           trailing,
@@ -214,7 +223,8 @@ class _TTRentingPageState extends State<TTRentingPage> {
         final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
           backgroundColor: const Color(0xFF1E1E1E),
-          title: Text(l10n.addProperty, style: const TextStyle(color: Colors.white)),
+          title: Text(l10n.addProperty,
+              style: const TextStyle(color: Colors.white)),
           content: Text(
             l10n.featureComingSoon,
             style: const TextStyle(color: Colors.grey),

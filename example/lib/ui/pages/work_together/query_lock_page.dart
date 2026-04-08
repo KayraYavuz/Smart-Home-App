@@ -58,13 +58,13 @@ class _QueryLockPageState extends State<QueryLockPage> {
     try {
       final apiService = ApiService(context.read<AuthRepository>());
       final lockId = _selectedLock!['lockId'].toString();
-      
+
       // Fetch lock time as a representation of querying lock details
       // In a real scenario, we might want to fetch more details if available
       // For now, we use queryLockTime and merge with existing info
       final lockTime = await apiService.queryLockTime(lockId: lockId);
       final battery = await apiService.queryLockBattery(lockId: lockId);
-      
+
       if (mounted) {
         setState(() {
           _queryResult = {
@@ -116,7 +116,9 @@ class _QueryLockPageState extends State<QueryLockPage> {
                   _buildLockSelector(l10n),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: _selectedLock == null || _isLoading ? null : _queryLockDetails,
+                    onPressed: _selectedLock == null || _isLoading
+                        ? null
+                        : _queryLockDetails,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -128,11 +130,13 @@ class _QueryLockPageState extends State<QueryLockPage> {
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
                           )
                         : Text(
                             l10n.queryLock,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                   ),
                   if (_errorMessage != null)
@@ -181,7 +185,8 @@ class _QueryLockPageState extends State<QueryLockPage> {
           }).toList(),
           onChanged: (value) {
             setState(() {
-              _selectedLock = _locks.firstWhere((lock) => lock['lockId'].toString() == value);
+              _selectedLock = _locks
+                  .firstWhere((lock) => lock['lockId'].toString() == value);
               _queryResult = null; // Reset previous result
             });
           },
@@ -207,8 +212,10 @@ class _QueryLockPageState extends State<QueryLockPage> {
               ),
             ),
             const Divider(color: Colors.grey, height: 24),
-            _buildResultRow(Icons.fingerprint, l10n.lockId, _queryResult!['lockId']),
-            _buildResultRow(Icons.bluetooth, l10n.macAddress, _queryResult!['mac']),
+            _buildResultRow(
+                Icons.fingerprint, l10n.lockId, _queryResult!['lockId']),
+            _buildResultRow(
+                Icons.bluetooth, l10n.macAddress, _queryResult!['mac']),
             _buildResultRow(
               Icons.access_time,
               l10n.lockTime,
@@ -240,7 +247,10 @@ class _QueryLockPageState extends State<QueryLockPage> {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500),
               textAlign: TextAlign.right,
             ),
           ),

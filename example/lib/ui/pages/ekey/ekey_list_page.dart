@@ -62,10 +62,12 @@ class _EKeyListPageState extends State<EKeyListPage> {
 
       if (accessToken == null) throw Exception(_l10n!.noAccessPermission);
 
-      final keys = await apiService.getLockEKeys(
-        accessToken: accessToken,
-        lockId: widget.lock['lockId'].toString(),
-      ).timeout(const Duration(seconds: 10));
+      final keys = await apiService
+          .getLockEKeys(
+            accessToken: accessToken,
+            lockId: widget.lock['lockId'].toString(),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (mounted) {
         setState(() {
@@ -89,14 +91,16 @@ class _EKeyListPageState extends State<EKeyListPage> {
       _filteredKeys = _allKeys.where((key) {
         final name = (key['keyName'] ?? '').toLowerCase();
         final username = (key['username'] ?? '').toLowerCase();
-        final matchesQuery = query.isEmpty || name.contains(query.toLowerCase()) || username.contains(query.toLowerCase());
-        
+        final matchesQuery = query.isEmpty ||
+            name.contains(query.toLowerCase()) ||
+            username.contains(query.toLowerCase());
+
         if (_showOnlyAdmins) {
           final keyRight = key['keyRight'];
           final isAdmin = keyRight == 1 || keyRight == '1';
           return matchesQuery && isAdmin;
         }
-        
+
         return matchesQuery;
       }).toList();
     });
@@ -128,11 +132,13 @@ class _EKeyListPageState extends State<EKeyListPage> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(_l10n!.electronicKeysMenu.replaceAll('\n', ' '), style: const TextStyle(color: Colors.white, fontSize: 18)),
+        title: Text(_l10n!.electronicKeysMenu.replaceAll('\n', ' '),
+            style: const TextStyle(color: Colors.white, fontSize: 18)),
         actions: [
           TextButton(
             onPressed: _resetKeys,
-            child: Text(_l10n!.reset, style: const TextStyle(color: Colors.white)),
+            child:
+                Text(_l10n!.reset, style: const TextStyle(color: Colors.white)),
           ),
         ],
         backgroundColor: Colors.transparent,
@@ -143,7 +149,8 @@ class _EKeyListPageState extends State<EKeyListPage> {
           Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: const Color(0xFF2C2C2C),
@@ -190,9 +197,13 @@ class _EKeyListPageState extends State<EKeyListPage> {
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : _errorMessage != null
-                        ? Center(child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)))
+                        ? Center(
+                            child: Text(_errorMessage!,
+                                style: const TextStyle(color: Colors.red)))
                         : _filteredKeys.isEmpty
-                            ? Center(child: Text(_l10n!.noEKeysFound, style: const TextStyle(color: Colors.grey)))
+                            ? Center(
+                                child: Text(_l10n!.noEKeysFound,
+                                    style: const TextStyle(color: Colors.grey)))
                             : ListView.builder(
                                 itemCount: _filteredKeys.length,
                                 padding: const EdgeInsets.only(bottom: 150),
@@ -211,11 +222,10 @@ class _EKeyListPageState extends State<EKeyListPage> {
             child: Container(
               color: const Color(0xFF1E1E1E),
               padding: EdgeInsets.only(
-                left: 16.0, 
-                right: 16.0, 
-                top: 16.0, 
-                bottom: 30.0 + MediaQuery.of(context).padding.bottom
-              ),
+                  left: 16.0,
+                  right: 16.0,
+                  top: 16.0,
+                  bottom: 30.0 + MediaQuery.of(context).padding.bottom),
               child: SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -223,16 +233,22 @@ class _EKeyListPageState extends State<EKeyListPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SendEKeyPage(lock: widget.lock)),
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SendEKeyPage(lock: widget.lock)),
                     ).then((_) => _fetchKeys());
                   },
                   icon: const Icon(Icons.add, color: AppColors.primary),
-                  label: Text(_l10n!.sendKey, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                  label: Text(_l10n!.sendKey,
+                      style: const TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2C2C2C),
                     foregroundColor: AppColors.primary,
                     side: BorderSide.none,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ),
@@ -245,29 +261,30 @@ class _EKeyListPageState extends State<EKeyListPage> {
 
   Widget _buildKeyCard(Map<String, dynamic> keyItem) {
     final username = keyItem['username'] ?? '';
-    final startDate = DateTime.fromMillisecondsSinceEpoch(keyItem['startDate'] ?? 0);
-    final endDate = DateTime.fromMillisecondsSinceEpoch(keyItem['endDate'] ?? 0);
+    final startDate =
+        DateTime.fromMillisecondsSinceEpoch(keyItem['startDate'] ?? 0);
+    final endDate =
+        DateTime.fromMillisecondsSinceEpoch(keyItem['endDate'] ?? 0);
     final keyRight = keyItem['keyRight'];
     final isAdmin = keyRight == 1 || keyRight == '1';
-    
+
     final isExpired = DateTime.now().isAfter(endDate);
-    
-    final startStr = "${startDate.year}.${startDate.month.toString().padLeft(2,'0')}.${startDate.day.toString().padLeft(2,'0')} ${startDate.hour.toString().padLeft(2,'0')}:${startDate.minute.toString().padLeft(2,'0')}";
-    final endStr = "${endDate.year}.${endDate.month.toString().padLeft(2,'0')}.${endDate.day.toString().padLeft(2,'0')} ${endDate.hour.toString().padLeft(2,'0')}:${endDate.minute.toString().padLeft(2,'0')}";
+
+    final startStr =
+        "${startDate.year}.${startDate.month.toString().padLeft(2, '0')}.${startDate.day.toString().padLeft(2, '0')} ${startDate.hour.toString().padLeft(2, '0')}:${startDate.minute.toString().padLeft(2, '0')}";
+    final endStr =
+        "${endDate.year}.${endDate.month.toString().padLeft(2, '0')}.${endDate.day.toString().padLeft(2, '0')} ${endDate.hour.toString().padLeft(2, '0')}:${endDate.minute.toString().padLeft(2, '0')}";
 
     return InkWell(
       onTap: () {
         Navigator.push(
             context,
             MaterialPageRoute(
-               builder: (context) => EKeyDetailPage(
-                 eKey: keyItem, 
-                 lockId: widget.lock['lockId'].toString(),
-                 lockName: widget.lock['name'] ?? '',
-                 isOwner: true
-               )
-            )
-        ).then((_) => _fetchKeys());
+                builder: (context) => EKeyDetailPage(
+                    eKey: keyItem,
+                    lockId: widget.lock['lockId'].toString(),
+                    lockName: widget.lock['name'] ?? '',
+                    isOwner: true))).then((_) => _fetchKeys());
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -293,7 +310,10 @@ class _EKeyListPageState extends State<EKeyListPage> {
                 children: [
                   Text(
                     _l10n!.keyFor(username),
-                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -304,15 +324,20 @@ class _EKeyListPageState extends State<EKeyListPage> {
                     Padding(
                       padding: const EdgeInsets.only(top: 4.0),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.orange.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
+                          border: Border.all(
+                              color: Colors.orange.withValues(alpha: 0.5)),
                         ),
                         child: Text(
                           _l10n!.roleAdmin,
-                          style: const TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.orange,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -323,9 +348,11 @@ class _EKeyListPageState extends State<EKeyListPage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                   Text(_l10n!.expired, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                  Text(_l10n!.expired,
+                      style: const TextStyle(color: Colors.red, fontSize: 12)),
                   const SizedBox(height: 4),
-                  const Icon(Icons.watch_later_outlined, color: Colors.red, size: 16),
+                  const Icon(Icons.watch_later_outlined,
+                      color: Colors.red, size: 16),
                 ],
               )
             else
@@ -336,7 +363,10 @@ class _EKeyListPageState extends State<EKeyListPage> {
     );
   }
 
-  Widget _buildFilterChip({required String label, required bool isSelected, required VoidCallback onTap}) {
+  Widget _buildFilterChip(
+      {required String label,
+      required bool isSelected,
+      required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

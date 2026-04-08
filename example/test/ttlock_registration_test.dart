@@ -39,10 +39,12 @@ void main() {
     }
 
     // Test username (randomly generated to avoid conflict)
-    final String rawEmail = "testuser${DateTime.now().millisecondsSinceEpoch}@gmail.com";
+    final String rawEmail =
+        "testuser${DateTime.now().millisecondsSinceEpoch}@gmail.com";
     final String username = rawEmail.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
     const String password = "Password123!";
-    final String passwordMd5 = md5.convert(utf8.encode(password)).toString().toLowerCase();
+    final String passwordMd5 =
+        md5.convert(utf8.encode(password)).toString().toLowerCase();
 
     print("Attempting to register user: $username");
 

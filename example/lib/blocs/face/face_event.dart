@@ -34,7 +34,8 @@ class AddFace extends FaceEvent {
   });
 
   @override
-  List<Object> get props => [lockId, featureData, addType, name, startDate, endDate];
+  List<Object> get props =>
+      [lockId, featureData, addType, name, startDate, endDate];
 }
 
 class DeleteFace extends FaceEvent {

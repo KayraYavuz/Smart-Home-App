@@ -135,7 +135,8 @@ class _UtilityMeterPageState extends State<UtilityMeterPage> {
         final l10n = AppLocalizations.of(context)!;
         return AlertDialog(
           backgroundColor: const Color(0xFF1E1E1E),
-          title: Text(l10n.addMeter, style: const TextStyle(color: Colors.white)),
+          title:
+              Text(l10n.addMeter, style: const TextStyle(color: Colors.white)),
           content: Text(
             l10n.featureComingSoon,
             style: const TextStyle(color: Colors.grey),

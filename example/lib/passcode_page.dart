@@ -68,7 +68,8 @@ class PasscodePage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final Passcode passcode = state.passcodes[index];
                   return ListTile(
-                    leading: const Icon(Icons.password, color: Color(0xFF1E90FF)),
+                    leading:
+                        const Icon(Icons.password, color: Color(0xFF1E90FF)),
                     title: Text(passcode.keyboardPwd,
                         style: const TextStyle(
                             color: Colors.white,
@@ -78,7 +79,8 @@ class PasscodePage extends StatelessWidget {
                         '${passcode.keyboardPwdName} | ${l10n.typePrefix}: ${_getPasscodeType(passcode.keyboardPwdType, l10n)}',
                         style: TextStyle(color: Colors.grey[400])),
                     trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                      icon: const Icon(Icons.delete_outline,
+                          color: Colors.redAccent),
                       onPressed: () {
                         // TODO: Implement delete passcode functionality using Cubit
                         debugPrint('Deleting ${passcode.keyboardPwd}');
@@ -95,7 +97,8 @@ class PasscodePage extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CreatePasscodePage(lock: lock)),
+              MaterialPageRoute(
+                  builder: (context) => CreatePasscodePage(lock: lock)),
             );
           },
           backgroundColor: const Color(0xFF1E90FF),

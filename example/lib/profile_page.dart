@@ -37,24 +37,26 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadUserInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Get package info for version
       // Since we don't have package_info_plus added in pubspec yet, we'll hardcode it for now
       // or we can add the package. Given the constraints, I'll hardcode or use a const from config if available.
       // Actually, better to just show the text hardcoded or check if package_info_plus is available.
-      // Looking at pubspec in Step 9, package_info_plus is NOT listed. 
-      // I will add the version manually to a constant or just string for now to save a pub add step if not strictly needed, 
-      // but the user wants "transparency". 
+      // Looking at pubspec in Step 9, package_info_plus is NOT listed.
+      // I will add the version manually to a constant or just string for now to save a pub add step if not strictly needed,
+      // but the user wants "transparency".
       // Plan: I'll hardcode it here to match pubspec for simplicity and speed, as I am controlling the version bump.
       setState(() {
-        _version = 'v1.0.61 (215)'; 
+        _version = 'v1.0.61 (215)';
       });
 
       String loadedEmail = prefs.getString('saved_email') ?? 'user@example.com';
       String loadedUsername = prefs.getString('saved_username') ?? '';
 
       // Eğer kullanıcı adı kayıtlı değilse veya varsayılan ise, e-postadan üret
-      if (loadedUsername.isEmpty || loadedUsername == 'Kullanıcı' || loadedUsername == 'User') {
+      if (loadedUsername.isEmpty ||
+          loadedUsername == 'Kullanıcı' ||
+          loadedUsername == 'User') {
         if (loadedEmail.contains('@')) {
           loadedUsername = loadedEmail.split('@')[0];
         } else {
@@ -120,7 +122,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.white54, size: 16),
+                              icon: const Icon(Icons.edit,
+                                  color: Colors.white54, size: 16),
                               onPressed: _editUsername,
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
@@ -145,7 +148,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.headset_mic, color: Colors.white70),
+                        icon: const Icon(Icons.headset_mic,
+                            color: Colors.white70),
                         onPressed: () {
                           // Destek sayfası
                         },
@@ -174,7 +178,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const AccountInfoPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const AccountInfoPage()),
                       ).then((_) => _loadUserInfo());
                     },
                   ),
@@ -186,7 +191,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const CustomerServicePage()),
+                        MaterialPageRoute(
+                            builder: (context) => const CustomerServicePage()),
                       );
                     },
                   ),
@@ -198,7 +204,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LogsPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const LogsPage()),
                       );
                     },
                   ),
@@ -210,7 +217,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SystemManagementPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const SystemManagementPage()),
                       );
                     },
                   ),
@@ -222,7 +230,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const WorkTogetherPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const WorkTogetherPage()),
                       );
                     },
                   ),
@@ -234,7 +243,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SettingsPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const SettingsPage()),
                       );
                     },
                   ),
@@ -254,7 +264,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       child: Text(
                         l10n.logout,
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ),
                   ),
@@ -277,7 +288,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Version Display
                   Center(
                     child: Text(
@@ -346,10 +357,10 @@ class _ProfilePageState extends State<ProfilePage> {
     // SharedPreferences temizleme ve AuthService token temizleme işlemi
     // AuthBloc'un LoggedOut eventi içinde yapılıyor (AuthRepository.deleteTokens)
     // Bu yüzden buradaki manuel temizlemeye gerek yok, veya sadece UI state için kalabilir.
-    
+
     // AuthBloc'a çıkış eventi gönder
     context.read<AuthBloc>().add(LoggedOut());
-    
+
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -358,7 +369,7 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.green,
       ),
     );
-    
+
     // Manuel navigasyon kaldırıldı. Main.dart içindeki BlocBuilder durumu dinleyip sayfayı değiştirecek.
   }
 
@@ -386,7 +397,8 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           TextButton(
             onPressed: () => navigator.pop(false),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => navigator.pop(true),
@@ -410,14 +422,15 @@ class _ProfilePageState extends State<ProfilePage> {
           backgroundColor: Colors.red,
         ),
       );
-      
+
       // Manuel navigasyon kaldırıldı. Main.dart içindeki BlocBuilder durumu dinleyip sayfayı değiştirecek.
     }
   }
 
   Future<void> _editUsername() async {
     final l10n = AppLocalizations.of(context)!;
-    final TextEditingController controller = TextEditingController(text: _username);
+    final TextEditingController controller =
+        TextEditingController(text: _username);
     final newName = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -429,14 +442,17 @@ class _ProfilePageState extends State<ProfilePage> {
           decoration: InputDecoration(
             hintText: l10n.enterNewName,
             hintStyle: const TextStyle(color: Colors.grey),
-            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+            enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey)),
+            focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            child:
+                Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text),

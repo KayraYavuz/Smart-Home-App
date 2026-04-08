@@ -8,7 +8,7 @@ import '../../../api_service.dart';
 import '../../../repositories/auth_repository.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_state.dart';
-import 'recurring_period_page.dart';  // Import the new page
+import 'recurring_period_page.dart'; // Import the new page
 
 class SendEKeyPage extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -19,11 +19,12 @@ class SendEKeyPage extends StatefulWidget {
   State<SendEKeyPage> createState() => _SendEKeyPageState();
 }
 
-class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderStateMixin {
+class _SendEKeyPageState extends State<SendEKeyPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _receiverController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  
+
   // Timed Defaults
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now().add(const Duration(hours: 1));
@@ -39,7 +40,8 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
   bool _allowRemoteUnlock = false;
   bool _isLoading = false;
 
-  List<String> _getTabs(AppLocalizations l10n) => [l10n.tabTimed, l10n.tabOneTime, l10n.tabPermanent, l10n.tabRecurring];
+  List<String> _getTabs(AppLocalizations l10n) =>
+      [l10n.tabTimed, l10n.tabOneTime, l10n.tabPermanent, l10n.tabRecurring];
 
   @override
   void initState() {
@@ -71,12 +73,14 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
       final time = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(isStart ? _startDate : _endDate),
-         builder: (context, child) => Theme(data: ThemeData.dark(), child: child!),
+        builder: (context, child) =>
+            Theme(data: ThemeData.dark(), child: child!),
       );
 
       if (time != null) {
         setState(() {
-          final newDate = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute);
+          final newDate = DateTime(
+              picked.year, picked.month, picked.day, time.hour, time.minute);
           if (isStart) {
             _startDate = newDate;
             if (_endDate.isBefore(_startDate)) {
@@ -114,7 +118,8 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
     final l10n = AppLocalizations.of(context)!;
     final receiver = _receiverController.text.trim();
     if (receiver.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.enterReceiver)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.enterReceiver)));
       return;
     }
 
@@ -130,7 +135,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
       if (token == null) throw Exception(l10n.tokenNotFound);
 
       final apiService = ApiService(AuthRepository());
-      
+
       // Determine startDate/endDate based on key type
       // Timed (tab 0): use selected dates
       // One-Time (tab 1): null (API sends '0')
@@ -148,7 +153,7 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
         // Recurring
         finalStartDate = _recStartDate;
         finalEndDate = _recEndDate;
-        
+
         cyclicConfig = [
           {
             "startTime": _recStartTime.hour * 60 + _recStartTime.minute,
@@ -163,12 +168,14 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
       try {
         // First attempt: Try to send to existing global user (createUser: 2)
         // This handles users registered via TTLock app or other apps
-        debugPrint("Attempting sendEKey with createUser: 2 (Global user check)");
+        debugPrint(
+            "Attempting sendEKey with createUser: 2 (Global user check)");
         result = await apiService.sendEKey(
           accessToken: token,
           lockId: widget.lock['lockId'].toString(),
           receiverUsername: receiver,
-          keyName: _nameController.text.isEmpty ? receiver : _nameController.text,
+          keyName:
+              _nameController.text.isEmpty ? receiver : _nameController.text,
           startDate: finalStartDate,
           endDate: finalEndDate,
           remoteEnable: _allowRemoteUnlock ? 1 : 2,
@@ -179,12 +186,14 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
         // If user not found (errcode: 10004), fallback to auto-create (createUser: 1)
         // This handles new users or app-specific users
         if (e.toString().contains('10004')) {
-           debugPrint("User not found (10004). Retrying with createUser: 1 (Auto-create)");
-           result = await apiService.sendEKey(
+          debugPrint(
+              "User not found (10004). Retrying with createUser: 1 (Auto-create)");
+          result = await apiService.sendEKey(
             accessToken: token,
             lockId: widget.lock['lockId'].toString(),
             receiverUsername: receiver,
-            keyName: _nameController.text.isEmpty ? receiver : _nameController.text,
+            keyName:
+                _nameController.text.isEmpty ? receiver : _nameController.text,
             startDate: finalStartDate,
             endDate: finalEndDate,
             remoteEnable: _allowRemoteUnlock ? 1 : 2,
@@ -201,36 +210,39 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
       if (result.containsKey('keyId')) {
         int retryCount = 0;
         const int maxRetries = 3;
-        
+
         while (retryCount < maxRetries) {
           try {
-             if (retryCount > 0) {
-               await Future.delayed(const Duration(milliseconds: 1500)); // Wait before retry
-             }
-             
-             final linkResult = await apiService.getUnlockLink(
-               accessToken: token,
-               keyId: result['keyId'].toString()
-             );
-             
-             if (linkResult['link'] != null) {
-               unlockLink = linkResult['link'];
-               break; // Success, exit loop
-             }
+            if (retryCount > 0) {
+              await Future.delayed(
+                  const Duration(milliseconds: 1500)); // Wait before retry
+            }
+
+            final linkResult = await apiService.getUnlockLink(
+                accessToken: token, keyId: result['keyId'].toString());
+
+            if (linkResult['link'] != null) {
+              unlockLink = linkResult['link'];
+              break; // Success, exit loop
+            }
           } catch (e) {
             debugPrint("Link retry ${retryCount + 1} failed: $e");
             retryCount++;
-            
+
             // If it's the last try, log the error but don't stop the flow
             if (retryCount >= maxRetries) {
-               if (e.toString().contains('20002') || e.toString().contains('Not lock admin')) {
-                  if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.adminOnlyLinkWarning), backgroundColor: Colors.orange));
-               }
+              if (e.toString().contains('20002') ||
+                  e.toString().contains('Not lock admin')) {
+                if (mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(l10n.adminOnlyLinkWarning),
+                      backgroundColor: Colors.orange));
+              }
             }
           }
         }
       }
-      
+
       // Always show success dialog if sendEKey worked, even if link failed
       if (mounted) {
         _showSuccessDialog(unlockLink, receiver, l10n);
@@ -238,14 +250,17 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(l10n.errorWithMsg(e.toString())),
+            backgroundColor: Colors.red));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  void _showSuccessDialog(String? link, String receiver, AppLocalizations l10n) {
+  void _showSuccessDialog(
+      String? link, String receiver, AppLocalizations l10n) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -257,74 +272,85 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 60),
             const SizedBox(height: 16),
-            Text(l10n.sentSuccessfully, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(l10n.sentSuccessfully,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(l10n.keySentToReceiver, style: const TextStyle(color: Colors.grey), textAlign: TextAlign.center),
+            Text(l10n.keySentToReceiver,
+                style: const TextStyle(color: Colors.grey),
+                textAlign: TextAlign.center),
             if (link != null) ...[
-               const SizedBox(height: 20),
-               Container(
-                 padding: const EdgeInsets.all(12),
-                 decoration: BoxDecoration(
-                   color: Colors.black,
-                   borderRadius: BorderRadius.circular(8),
-                   border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
-                 ),
-                 child: Column(
-                   children: [
-                     Text(l10n.shareableLink, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                     const SizedBox(height: 4),
-                     SelectableText(
-                       link,
-                       style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
-                       textAlign: TextAlign.center,
-                     ),
-                   ],
-                 ),
-               ),
-               const SizedBox(height: 12),
-               
-               // Share Buttons
-               Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                 children: [
-                    // Copy
-                    IconButton(
-                      icon: const Icon(Icons.copy, color: Colors.white),
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: link));
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.linkCopied)));
-                      },
-                      tooltip: l10n.copy,
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  children: [
+                    Text(l10n.shareableLink,
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 12)),
+                    const SizedBox(height: 4),
+                    SelectableText(
+                      link,
+                      style: const TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
                     ),
-                    // Email
-                    if (receiver.contains('@'))
-                      IconButton(
-                        icon: const Icon(Icons.email, color: AppColors.primary),
-                        onPressed: () => _launchEmail(receiver, link),
-                        tooltip: l10n.sendViaEmail,
-                      )
-                    else 
-                      IconButton(
-                        icon: const Icon(Icons.message, color: Colors.green),
-                        onPressed: () => _launchSMS(receiver, link),
-                        tooltip: l10n.sendViaSMS,
-                      ),
-                 ],
-               )
-            ] else ...[
-               const SizedBox(height: 20),
-               Text(
-                 l10n.sendKeySuccessNoLink,
-                 style: const TextStyle(color: Colors.orange, fontSize: 13),
-                 textAlign: TextAlign.center,
-               ),
-               const SizedBox(height: 12),
-                if (receiver.contains('@'))
-                  TextButton.icon(
-                    icon: const Icon(Icons.email, color: AppColors.primary),
-                    onPressed: () => _launchEmail(receiver, null),
-                    label: Text(l10n.sendAppDownloadLink),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Share Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Copy
+                  IconButton(
+                    icon: const Icon(Icons.copy, color: Colors.white),
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: link));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.linkCopied)));
+                    },
+                    tooltip: l10n.copy,
                   ),
+                  // Email
+                  if (receiver.contains('@'))
+                    IconButton(
+                      icon: const Icon(Icons.email, color: AppColors.primary),
+                      onPressed: () => _launchEmail(receiver, link),
+                      tooltip: l10n.sendViaEmail,
+                    )
+                  else
+                    IconButton(
+                      icon: const Icon(Icons.message, color: Colors.green),
+                      onPressed: () => _launchSMS(receiver, link),
+                      tooltip: l10n.sendViaSMS,
+                    ),
+                ],
+              )
+            ] else ...[
+              const SizedBox(height: 20),
+              Text(
+                l10n.sendKeySuccessNoLink,
+                style: const TextStyle(color: Colors.orange, fontSize: 13),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              if (receiver.contains('@'))
+                TextButton.icon(
+                  icon: const Icon(Icons.email, color: AppColors.primary),
+                  onPressed: () => _launchEmail(receiver, null),
+                  label: Text(l10n.sendAppDownloadLink),
+                ),
             ],
             const SizedBox(height: 20),
             SizedBox(
@@ -336,9 +362,11 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25)),
                 ),
-                child: Text(l10n.ok, style: const TextStyle(color: Colors.white)),
+                child:
+                    Text(l10n.ok, style: const TextStyle(color: Colors.white)),
               ),
             )
           ],
@@ -349,10 +377,10 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
 
   Future<void> _launchEmail(String email, String? link) async {
     final l10n = AppLocalizations.of(context)!;
-    final String body = link != null 
+    final String body = link != null
         ? l10n.shareMessageWithLink(link)
         : l10n.shareMessageNoLink;
-        
+
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: email,
@@ -366,16 +394,18 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
         throw 'Could not launch email';
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.emailAppNotFound)));
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.emailAppNotFound)));
     }
   }
 
   Future<void> _launchSMS(String phoneNumber, String? link) async {
     final l10n = AppLocalizations.of(context)!;
-    final String body = link != null 
+    final String body = link != null
         ? l10n.shareMessageWithLink(link)
         : l10n.shareMessageNoLink;
-    
+
     final Uri smsLaunchUri = Uri(
       scheme: 'sms',
       path: phoneNumber,
@@ -388,7 +418,9 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
         throw 'Could not launch SMS';
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.smsAppNotFound)));
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.smsAppNotFound)));
     }
   }
 
@@ -412,25 +444,26 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
+        padding: EdgeInsets.fromLTRB(
+            20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // --- Common Fields ---
-            
+
             // Receiver
             _buildInputRow(
-              label: l10n.receiver, 
-              hint: l10n.receiverHint, 
+              label: l10n.receiver,
+              hint: l10n.receiverHint,
               controller: _receiverController,
               icon: Icons.contacts,
               keyboardType: TextInputType.emailAddress,
             ),
-            
-             // Name
+
+            // Name
             _buildInputRow(
-              label: l10n.nameLabel, 
-              hint: l10n.enterHere, 
+              label: l10n.nameLabel,
+              hint: l10n.enterHere,
               controller: _nameController,
               keyboardType: TextInputType.name,
             ),
@@ -439,56 +472,64 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
 
             // Timed (0): Start/End Time
             if (_tabController.index == 0) ...[
-               _buildTimeRow(l10n.startDate, _startDate, () => _selectDate(true)),
-               _buildDivider(),
-               _buildTimeRow(l10n.endDate, _endDate, () => _selectDate(false)),
+              _buildTimeRow(
+                  l10n.startDate, _startDate, () => _selectDate(true)),
+              _buildDivider(),
+              _buildTimeRow(l10n.endDate, _endDate, () => _selectDate(false)),
             ],
 
             // Recurring (3): Validity Period Link
             if (_tabController.index == 3) ...[
-               InkWell(
-                 onTap: _openRecurringSettings,
-                 child: Padding(
-                   padding: const EdgeInsets.symmetric(vertical: 16),
-                   child: Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: [
-                       Text(l10n.validityPeriod, style: const TextStyle(color: Colors.white, fontSize: 16)),
-                       Row(
-                         children: [
-                           Text(
-                             _isRecurringConfigured ? l10n.configured : l10n.set, 
-                             style: TextStyle(color: _isRecurringConfigured ? AppColors.primary : Colors.grey, fontSize: 16)
-                           ),
-                           const SizedBox(width: 8),
-                           const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 14),
-                         ],
-                       )
-                     ],
-                   ),
-                 ),
-               ),
+              InkWell(
+                onTap: _openRecurringSettings,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(l10n.validityPeriod,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 16)),
+                      Row(
+                        children: [
+                          Text(
+                              _isRecurringConfigured
+                                  ? l10n.configured
+                                  : l10n.set,
+                              style: TextStyle(
+                                  color: _isRecurringConfigured
+                                      ? AppColors.primary
+                                      : Colors.grey,
+                                  fontSize: 16)),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.arrow_forward_ios,
+                              color: Colors.grey, size: 14),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ],
 
-             // --- Common Toggle ---
+            // --- Common Toggle ---
             const SizedBox(height: 10),
-             SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                activeThumbColor: AppColors.primary,
-                title: Text(l10n.allowRemoteUnlock, style: const TextStyle(color: Colors.white, fontSize: 16)),
-                value: _allowRemoteUnlock,
-                onChanged: (val) => setState(() => _allowRemoteUnlock = val),
-             ),
-            
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              activeThumbColor: AppColors.primary,
+              title: Text(l10n.allowRemoteUnlock,
+                  style: const TextStyle(color: Colors.white, fontSize: 16)),
+              value: _allowRemoteUnlock,
+              onChanged: (val) => setState(() => _allowRemoteUnlock = val),
+            ),
+
             const SizedBox(height: 20),
 
             // --- Dynamic Footers ---
-            if (_tabController.index == 1) 
-              _buildNote(l10n.oneTimeKeyNote),
-            
-            if (_tabController.index == 2)
-              _buildNote(l10n.permanentKeyNote),
-              
+            if (_tabController.index == 1) _buildNote(l10n.oneTimeKeyNote),
+
+            if (_tabController.index == 2) _buildNote(l10n.permanentKeyNote),
+
             if (_tabController.index == 0 || _tabController.index == 3)
               _buildNote(l10n.timedKeyNote),
 
@@ -502,16 +543,21 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
                 onPressed: _isLoading ? null : _sendKey,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25)),
                 ),
-                child: _isLoading 
-                   ? const CircularProgressIndicator(color: Colors.white)
-                   : Text(l10n.send, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(l10n.send,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
               ),
             ),
-            
-            const SizedBox(height: 100), // Extra padding for bottom navigation area
 
+            const SizedBox(
+                height: 100), // Extra padding for bottom navigation area
           ],
         ),
       ),
@@ -519,9 +565,9 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
   }
 
   Widget _buildInputRow({
-    required String label, 
-    required String hint, 
-    required TextEditingController controller, 
+    required String label,
+    required String hint,
+    required TextEditingController controller,
     IconData? icon,
     TextInputType keyboardType = TextInputType.text,
   }) {
@@ -531,31 +577,35 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
         decoration: const BoxDecoration(
           border: Border(bottom: BorderSide(color: Color(0xFF2C2C2C))),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 4), // Reduced vertical padding as TextField will have its own
+        padding: const EdgeInsets.symmetric(
+            vertical:
+                4), // Reduced vertical padding as TextField will have its own
         child: Row(
           children: [
-             Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
-             const SizedBox(width: 16),
-             Expanded(
-               child: TextField(
-                 controller: controller,
-                 style: const TextStyle(color: Colors.white),
-                 textAlign: TextAlign.right,
-                 keyboardType: keyboardType,
-                 textInputAction: TextInputAction.next,
-                 decoration: InputDecoration(
-                   hintText: hint,
-                   hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-                   border: InputBorder.none,
-                   contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8), // Larger hit area
-                   isDense: false, // Allow normal height
-                 ),
-               ),
-             ),
-             if (icon != null) ...[
-               const SizedBox(width: 12),
-               Icon(icon, color: AppColors.primary, size: 24),
-             ]
+            Text(label,
+                style: const TextStyle(color: Colors.white, fontSize: 16)),
+            const SizedBox(width: 16),
+            Expanded(
+              child: TextField(
+                controller: controller,
+                style: const TextStyle(color: Colors.white),
+                textAlign: TextAlign.right,
+                keyboardType: keyboardType,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  hintText: hint,
+                  hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 12, horizontal: 8), // Larger hit area
+                  isDense: false, // Allow normal height
+                ),
+              ),
+            ),
+            if (icon != null) ...[
+              const SizedBox(width: 12),
+              Icon(icon, color: AppColors.primary, size: 24),
+            ]
           ],
         ),
       ),
@@ -563,7 +613,8 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
   }
 
   Widget _buildTimeRow(String label, DateTime date, VoidCallback onTap) {
-    final dateStr = "${date.year}-${date.month.toString().padLeft(2,'0')}-${date.day.toString().padLeft(2,'0')} ${date.hour.toString().padLeft(2,'0')}:${date.minute.toString().padLeft(2,'0')}";
+    final dateStr =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -571,20 +622,23 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-             Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
-             Row(
-               children: [
-                 Text(dateStr, style: const TextStyle(color: Colors.grey, fontSize: 16)),
-                 const SizedBox(width: 8),
-                 const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 14),
-               ],
-             )
-           ],
+            Text(label,
+                style: const TextStyle(color: Colors.white, fontSize: 16)),
+            Row(
+              children: [
+                Text(dateStr,
+                    style: const TextStyle(color: Colors.grey, fontSize: 16)),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward_ios,
+                    color: Colors.grey, size: 14),
+              ],
+            )
+          ],
         ),
       ),
     );
   }
-  
+
   Widget _buildDivider() {
     return const Divider(color: Color(0xFF2C2C2C), height: 1);
   }
@@ -592,7 +646,8 @@ class _SendEKeyPageState extends State<SendEKeyPage> with SingleTickerProviderSt
   Widget _buildNote(String text) {
     return Padding(
       padding: const EdgeInsets.only(top: 8),
-      child: Text(text, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+      child:
+          Text(text, style: const TextStyle(color: Colors.grey, fontSize: 12)),
     );
   }
 }

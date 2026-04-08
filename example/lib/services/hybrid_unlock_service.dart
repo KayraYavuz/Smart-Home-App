@@ -24,7 +24,8 @@ class HybridUnlockService {
   }) async {
     // First, try Bluetooth unlock
     debugPrint('Attempting Bluetooth unlock for lock: $lockMac');
-    final bluetoothResult = await _tryBluetoothUnlock(lockData, lockMac, lockId);
+    final bluetoothResult =
+        await _tryBluetoothUnlock(lockData, lockMac, lockId);
 
     if (bluetoothResult.success) {
       debugPrint('Bluetooth unlock successful');
@@ -41,7 +42,8 @@ class HybridUnlockService {
     }
 
     // If Bluetooth fails, try Gateway API unlock
-    debugPrint('Bluetooth unlock failed: ${bluetoothResult.error}. Trying Gateway API...');
+    debugPrint(
+        'Bluetooth unlock failed: ${bluetoothResult.error}. Trying Gateway API...');
     if (lockId != null) {
       final gatewayResult = await _tryGatewayUnlock(lockId);
       if (gatewayResult.success) {
@@ -74,7 +76,7 @@ class HybridUnlockService {
     }
 
     if (onlyBluetooth) {
-       return UnlockResult(
+      return UnlockResult(
         success: false,
         error: bluetoothResult.error ?? 'Bluetooth lock failed',
         method: 'bluetooth',
@@ -96,17 +98,19 @@ class HybridUnlockService {
     );
   }
 
-
   /// Try to unlock via Bluetooth
-  Future<UnlockResult> _tryBluetoothUnlock(String lockData, String lockMac, String? lockId) async {
+  Future<UnlockResult> _tryBluetoothUnlock(
+      String lockData, String lockMac, String? lockId) async {
     // 1. Bluetooth durum kontrolü
     final Completer<bool> btCheckCompleter = Completer();
     TTLock.getBluetoothState((state) {
-      btCheckCompleter.complete(state == TTBluetoothState.turnOn); // 1: PowerOn, 2: PoweredOn
+      btCheckCompleter.complete(
+          state == TTBluetoothState.turnOn); // 1: PowerOn, 2: PoweredOn
     });
-    
-    final bool isBtEnabled = await btCheckCompleter.future.timeout(const Duration(seconds: 2), onTimeout: () => false);
-    
+
+    final bool isBtEnabled = await btCheckCompleter.future
+        .timeout(const Duration(seconds: 2), onTimeout: () => false);
+
     if (!isBtEnabled) {
       return UnlockResult(
         success: false,
@@ -115,11 +119,12 @@ class HybridUnlockService {
       );
     }
 
-    debugPrint('📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
+    debugPrint(
+        '📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
 
     try {
       final completer = Completer<UnlockResult>();
-      
+
       TTLock.controlLock(
         lockData,
         TTControlAction.unlock,
@@ -127,29 +132,28 @@ class HybridUnlockService {
           if (!completer.isCompleted) {
             // Unlocked successfully, now immediately fetch the operation log from the lock
             // and upload it to the TTLock cloud so webhooks can fire.
-            TTLock.getLockOperateRecord(
-              TTOperateRecordType.latest, 
-              lockData, 
-              (records) async {
-                try {
-                  if (lockId != null && lockId.isNotEmpty) {
-                      debugPrint('📡 Bluetooth kilit açma başarılı. Kayıtlar TTLock bulutuna yükleniyor...');
-                      await _apiService.uploadOperationLog(
-                        lockId: lockId,
-                        records: records,
-                      );
-                      debugPrint('✅ Kayıtlar başarıyla yüklendi, webhook tetiklenecek.');
-                  } else {
-                      debugPrint('⚠️ lockId eksik olduğu için kayıtlar buluta yüklenemedi.');
-                  }
-                } catch (e) {
-                  debugPrint('⚠️ Error uploading operation log: $e');
+            TTLock.getLockOperateRecord(TTOperateRecordType.latest, lockData,
+                (records) async {
+              try {
+                if (lockId != null && lockId.isNotEmpty) {
+                  debugPrint(
+                      '📡 Bluetooth kilit açma başarılı. Kayıtlar TTLock bulutuna yükleniyor...');
+                  await _apiService.uploadOperationLog(
+                    lockId: lockId,
+                    records: records,
+                  );
+                  debugPrint(
+                      '✅ Kayıtlar başarıyla yüklendi, webhook tetiklenecek.');
+                } else {
+                  debugPrint(
+                      '⚠️ lockId eksik olduğu için kayıtlar buluta yüklenemedi.');
                 }
-              }, 
-              (errorCode, errorMsg) {
-                debugPrint('⚠️ Could not fetch operation record: $errorMsg');
+              } catch (e) {
+                debugPrint('⚠️ Error uploading operation log: $e');
               }
-            );
+            }, (errorCode, errorMsg) {
+              debugPrint('⚠️ Could not fetch operation record: $errorMsg');
+            });
 
             completer.complete(UnlockResult(
               success: true,
@@ -177,7 +181,8 @@ class HybridUnlockService {
       return await completer.future.timeout(
         const Duration(seconds: _bluetoothTimeoutSeconds),
         onTimeout: () {
-          debugPrint('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
+          debugPrint(
+              '⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(
             success: false,
             error: 'LOCK_OUT_OF_RANGE',
@@ -196,15 +201,18 @@ class HybridUnlockService {
   }
 
   /// Try to lock via Bluetooth
-  Future<UnlockResult> _tryBluetoothLock(String lockData, String lockMac, String? lockId) async {
+  Future<UnlockResult> _tryBluetoothLock(
+      String lockData, String lockMac, String? lockId) async {
     // 1. Bluetooth durum kontrolü
     final Completer<bool> btCheckCompleter = Completer();
     TTLock.getBluetoothState((state) {
-      btCheckCompleter.complete(state == TTBluetoothState.turnOn); // 1: PowerOn, 2: PoweredOn
+      btCheckCompleter.complete(
+          state == TTBluetoothState.turnOn); // 1: PowerOn, 2: PoweredOn
     });
-    
-    final bool isBtEnabled = await btCheckCompleter.future.timeout(const Duration(seconds: 2), onTimeout: () => false);
-    
+
+    final bool isBtEnabled = await btCheckCompleter.future
+        .timeout(const Duration(seconds: 2), onTimeout: () => false);
+
     if (!isBtEnabled) {
       return UnlockResult(
         success: false,
@@ -213,11 +221,12 @@ class HybridUnlockService {
       );
     }
 
-    debugPrint('📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
+    debugPrint(
+        '📡 Kilide bağlanılıyor (BT)... Lütfen kilidi uyandırmak için tuş takımına dokunun.');
 
     try {
       final completer = Completer<UnlockResult>();
-      
+
       TTLock.controlLock(
         lockData,
         TTControlAction.lock,
@@ -225,29 +234,28 @@ class HybridUnlockService {
           if (!completer.isCompleted) {
             // Locked successfully, now immediately fetch the operation log from the lock
             // and upload it to the TTLock cloud so webhooks can fire.
-            TTLock.getLockOperateRecord(
-              TTOperateRecordType.latest, 
-              lockData, 
-              (records) async {
-                try {
-                  if (lockId != null && lockId.isNotEmpty) {
-                      debugPrint('📡 Bluetooth kilitleme başarılı. Kayıtlar TTLock bulutuna yükleniyor...');
-                      await _apiService.uploadOperationLog(
-                        lockId: lockId,
-                        records: records,
-                      );
-                      debugPrint('✅ Kayıtlar başarıyla yüklendi, webhook tetiklenecek.');
-                  } else {
-                      debugPrint('⚠️ lockId eksik olduğu için kayıtlar buluta yüklenemedi.');
-                  }
-                } catch (e) {
-                  debugPrint('⚠️ Error uploading operation log: $e');
+            TTLock.getLockOperateRecord(TTOperateRecordType.latest, lockData,
+                (records) async {
+              try {
+                if (lockId != null && lockId.isNotEmpty) {
+                  debugPrint(
+                      '📡 Bluetooth kilitleme başarılı. Kayıtlar TTLock bulutuna yükleniyor...');
+                  await _apiService.uploadOperationLog(
+                    lockId: lockId,
+                    records: records,
+                  );
+                  debugPrint(
+                      '✅ Kayıtlar başarıyla yüklendi, webhook tetiklenecek.');
+                } else {
+                  debugPrint(
+                      '⚠️ lockId eksik olduğu için kayıtlar buluta yüklenemedi.');
                 }
-              }, 
-              (errorCode, errorMsg) {
-                debugPrint('⚠️ Could not fetch operation record: $errorMsg');
+              } catch (e) {
+                debugPrint('⚠️ Error uploading operation log: $e');
               }
-            );
+            }, (errorCode, errorMsg) {
+              debugPrint('⚠️ Could not fetch operation record: $errorMsg');
+            });
 
             completer.complete(UnlockResult(
               success: true,
@@ -274,7 +282,8 @@ class HybridUnlockService {
       return await completer.future.timeout(
         const Duration(seconds: _bluetoothTimeoutSeconds),
         onTimeout: () {
-          debugPrint('⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
+          debugPrint(
+              '⏳ Bluetooth bağlantı zaman aşımı. Kilit uyuyor olabilir.');
           return UnlockResult(
             success: false,
             error: 'LOCK_OUT_OF_RANGE',
@@ -295,22 +304,24 @@ class HybridUnlockService {
   /// TTLock hata kodlarına göre hata tipi belirle
   String _getBluetoothErrorType(dynamic errorCode, String errorMsg) {
     final errorMsgLower = errorMsg.toLowerCase();
-    
+
     // Bluetooth durumu hataları
-    if (errorMsgLower.contains('bluetooth') && 
-        (errorMsgLower.contains('off') || errorMsgLower.contains('disabled') || errorMsgLower.contains('kapalı'))) {
+    if (errorMsgLower.contains('bluetooth') &&
+        (errorMsgLower.contains('off') ||
+            errorMsgLower.contains('disabled') ||
+            errorMsgLower.contains('kapalı'))) {
       return 'BLUETOOTH_OFF';
     }
-    
+
     // Bağlantı/aralık hataları
-    if (errorMsgLower.contains('connect') || 
-        errorMsgLower.contains('timeout') || 
+    if (errorMsgLower.contains('connect') ||
+        errorMsgLower.contains('timeout') ||
         errorMsgLower.contains('not found') ||
         errorMsgLower.contains('out of range') ||
         errorMsgLower.contains('fail')) {
       return 'LOCK_OUT_OF_RANGE';
     }
-    
+
     // Diğer hatalar için genel bağlantı hatası
     return 'CONNECTION_FAILED:$errorMsg';
   }
@@ -321,7 +332,7 @@ class HybridUnlockService {
       // Ensure we have a valid access token
       await _apiService.getAccessToken();
       final accessToken = _apiService.accessToken;
-      
+
       if (accessToken == null) {
         return UnlockResult(
           success: false,
@@ -330,7 +341,8 @@ class HybridUnlockService {
         );
       }
 
-      final url = Uri.parse('$_baseUrl/v3/lock/unlock').replace(queryParameters: {
+      final url =
+          Uri.parse('$_baseUrl/v3/lock/unlock').replace(queryParameters: {
         'clientId': ApiConfig.clientId,
         'accessToken': accessToken,
         'lockId': lockId.toString(),
@@ -349,7 +361,8 @@ class HybridUnlockService {
         } else {
           return UnlockResult(
             success: false,
-            error: 'Gateway API error: ${responseData['errmsg'] ?? 'Unknown error'}',
+            error:
+                'Gateway API error: ${responseData['errmsg'] ?? 'Unknown error'}',
             method: 'gateway',
           );
         }
@@ -374,7 +387,7 @@ class HybridUnlockService {
     try {
       await _apiService.getAccessToken();
       final accessToken = _apiService.accessToken;
-      
+
       if (accessToken == null) {
         return UnlockResult(
           success: false,
@@ -402,7 +415,8 @@ class HybridUnlockService {
         } else {
           return UnlockResult(
             success: false,
-            error: 'Gateway API error: ${responseData['errmsg'] ?? 'Unknown error'}',
+            error:
+                'Gateway API error: ${responseData['errmsg'] ?? 'Unknown error'}',
             method: 'gateway',
           );
         }
@@ -441,4 +455,3 @@ class UnlockResult {
     this.uniqueId,
   });
 }
-

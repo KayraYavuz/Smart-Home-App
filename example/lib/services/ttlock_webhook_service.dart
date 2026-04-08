@@ -7,7 +7,8 @@ import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_event.dart';
 import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_state.dart';
 
 class TTLockWebhookService {
-  static final TTLockWebhookService _instance = TTLockWebhookService._internal();
+  static final TTLockWebhookService _instance =
+      TTLockWebhookService._internal();
   factory TTLockWebhookService() => _instance;
   TTLockWebhookService._internal();
 
@@ -34,7 +35,8 @@ class TTLockWebhookService {
 
   void startListening(String webhookUrl) {
     _webhookUrl = webhookUrl;
-    debugPrint('TTLock Webhook Service initialized. Ready to process events for: $webhookUrl');
+    debugPrint(
+        'TTLock Webhook Service initialized. Ready to process events for: $webhookUrl');
     // In a real app, this would typically connect to a backend WebSocket
     // or register the webhook URL with the TTLock API if dynamic registration is supported
     // and this client acts as a proxy for a server.
@@ -52,10 +54,12 @@ class TTLockWebhookService {
     try {
       final eventData = TTLockWebhookEventData.fromJson(payload);
 
-      _eventController.add(eventData); // Add to internal stream for other listeners
+      _eventController
+          .add(eventData); // Add to internal stream for other listeners
       _bloc?.add(TTLockWebhookEventReceived(eventData)); // Dispatch to BLoC
 
-      debugPrint('✅ Processed TTLock Webhook event: ${eventData.eventType} for lock ${eventData.lockId}');
+      debugPrint(
+          '✅ Processed TTLock Webhook event: ${eventData.eventType} for lock ${eventData.lockId}');
     } catch (e) {
       debugPrint('❌ Error processing incoming webhook payload: $e');
     }
@@ -68,7 +72,8 @@ class TTLockWebhookService {
   }
 
   /// Sends an event to the configured webhook URL
-  Future<void> sendEvent({required String eventType, required Map<String, dynamic> data}) async {
+  Future<void> sendEvent(
+      {required String eventType, required Map<String, dynamic> data}) async {
     if (_webhookUrl == null || _webhookUrl!.isEmpty) {
       debugPrint('❌ Webhook URL is not configured.');
       return;
@@ -91,7 +96,8 @@ class TTLockWebhookService {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         debugPrint('✅ Webhook sent successfully: ${response.statusCode}');
       } else {
-        debugPrint('⚠️ Webhook sent but returned error: ${response.statusCode} - ${response.body}');
+        debugPrint(
+            '⚠️ Webhook sent but returned error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
       debugPrint('❌ Webhook send error: $e');

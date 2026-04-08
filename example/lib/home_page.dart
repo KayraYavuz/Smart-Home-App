@@ -1,5 +1,5 @@
- import 'dart:ui';
- import 'dart:async';
+import 'dart:ui';
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    
+
     // Önce önbelleği yükle, sonra güncel veriyi çek
     _loadCachedLocks().then((_) {
       _fetchAndSetLocks();
@@ -118,8 +118,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         final keyState = latest['keyState'] ?? 0;
         final isLocked = keyState == 0 || keyState == 2;
         final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
-        final battery = latest['electricQuantity'] ?? latest['battery'] ?? _locks[i]['battery'] ?? 0;
-        if (_locks[i]['isLocked'] != isLocked || _locks[i]['status'] != status || _locks[i]['battery'] != battery) {
+        final battery = latest['electricQuantity'] ??
+            latest['battery'] ??
+            _locks[i]['battery'] ??
+            0;
+        if (_locks[i]['isLocked'] != isLocked ||
+            _locks[i]['status'] != status ||
+            _locks[i]['battery'] != battery) {
           _locks[i]['isLocked'] = isLocked;
           _locks[i]['status'] = status;
           _locks[i]['battery'] = battery;
@@ -132,7 +137,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     } catch (_) {}
   }
 
-          void _initializeWebhookConnection() {
+  void _initializeWebhookConnection() {
     // TTLock webhook olaylarını dinle (şimdilik sadece TTLock)
     // Not: Webhook server çalışmadığı için şu anda sadece loglama yapılacak
     context.read<TTLockWebhookBloc>().stream.listen((state) {
@@ -142,12 +147,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     });
   }
 
-
   void _handleTTLockWebhookEvent(TTLockWebhookEventData event) {
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
     // TTLock webhook event'ini işle ve UI'ı güncelle
-    final deviceIndex = _locks.indexWhere((lock) => lock['lockId'] == event.lockId);
+    final deviceIndex =
+        _locks.indexWhere((lock) => lock['lockId'] == event.lockId);
 
     if (deviceIndex != -1) {
       setState(() {
@@ -188,7 +193,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
-
   void _showTTLockWebhookNotification(TTLockWebhookEventData event) {
     if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
@@ -196,10 +200,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     Color backgroundColor = Colors.blue;
     IconData iconData = Icons.lock;
 
-    final lockName = _locks.firstWhere(
-      (lock) => lock['lockId'] == event.lockId,
-      orElse: () => {'name': l10n.unknownLock}
-    )['name'];
+    final lockName = _locks.firstWhere((lock) => lock['lockId'] == event.lockId,
+        orElse: () => {'name': l10n.unknownLock})['name'];
 
     switch (event.eventType) {
       case '1': // lockOpened
@@ -286,12 +288,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       final apiService = ApiService(authRepository);
       final allKeys = await apiService.getKeyList();
 
-      final ttlockDevices = allKeys.where((key) => key['shared'] == false).toList();
-      final sharedTTLockDevices = allKeys.where((key) => key['shared'] == true).toList();
+      final ttlockDevices =
+          allKeys.where((key) => key['shared'] == false).toList();
+      final sharedTTLockDevices =
+          allKeys.where((key) => key['shared'] == true).toList();
 
       debugPrint('📊 TTLock Key List API Sonuçları:');
       debugPrint('  TTLock kendi kilitleri: ${ttlockDevices.length}');
-      debugPrint('  TTLock paylaşılan kilitleri: ${sharedTTLockDevices.length}');
+      debugPrint(
+          '  TTLock paylaşılan kilitleri: ${sharedTTLockDevices.length}');
       debugPrint('  Toplam kilit: ${allKeys.length}');
 
       if (allKeys.isNotEmpty) {
@@ -299,7 +304,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         for (var i = 0; i < allKeys.length; i++) {
           final lock = allKeys[i];
           final sharedText = lock['shared'] ? '[PAYLAŞILAN]' : '[KENDİ]';
-          debugPrint('  ${i + 1}. $sharedText ID: ${lock['lockId']}, KeyID: ${lock['keyId']}, İsim: ${lock['name']}');
+          debugPrint(
+              '  ${i + 1}. $sharedText ID: ${lock['lockId']}, KeyID: ${lock['keyId']}, İsim: ${lock['name']}');
         }
       } else {
         debugPrint('⚠️  TTLock hesabında hiç kilit bulunamadı!');
@@ -319,7 +325,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         final isLocked = keyState == 0 || keyState == 2;
         final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
-        debugPrint('🔋 Kilit $lockId: keyState=$keyState, battery=$electricQuantity');
+        debugPrint(
+            '🔋 Kilit $lockId: keyState=$keyState, battery=$electricQuantity');
         debugPrint('🏷️  Kilit adı: $lockAlias');
         debugPrint('👤 KeyRight: $keyRight, UserType: $userType');
 
@@ -352,7 +359,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         final isLocked = keyState == 0 || keyState == 2;
         final status = isLocked ? l10n.statusLocked : l10n.statusUnlocked;
 
-        debugPrint('🔋 Paylaşılan kilit $lockId: keyState=$keyState, battery=$electricQuantity');
+        debugPrint(
+            '🔋 Paylaşılan kilit $lockId: keyState=$keyState, battery=$electricQuantity');
         debugPrint('👤 KeyRight: $keyRight, UserType: $userType');
 
         allLocks.add({
@@ -412,13 +420,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
       if (allLocks.isEmpty) {
         debugPrint('⚠️  UYARI: TTLock hesabınızda hiç kilit bulunamadı!');
-        debugPrint('   TTLock hesabınızı kontrol edin: https://lock.ttlock.com');
+        debugPrint(
+            '   TTLock hesabınızı kontrol edin: https://lock.ttlock.com');
       }
     } catch (e) {
       debugPrint('❌ Kilit listesi çekme hatası: $e');
       debugPrint('   Hata detayları: ${e.toString()}');
 
-      if (e.toString().contains('access_token') || e.toString().contains('token')) {
+      if (e.toString().contains('access_token') ||
+          e.toString().contains('token')) {
         debugPrint('   🔑 Öneri: TTLock hesabınıza tekrar giriş yapın');
       }
       if (!mounted) return;
@@ -427,7 +437,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       });
 
       String errorMessage = l10n.errorDevicesLoading;
-      if (e.toString().contains('network') || e.toString().contains('connection')) {
+      if (e.toString().contains('network') ||
+          e.toString().contains('connection')) {
         errorMessage = l10n.errorInternetConnection;
       } else if (e.toString().contains('timeout')) {
         errorMessage = l10n.errorServerTimeout;
@@ -468,15 +479,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           for (final device in seamDevices) {
             // Check if device already exists
             final existingIndex = _locks.indexWhere(
-              (lock) => lock['seamDeviceId'] == device['device_id']
-            );
+                (lock) => lock['seamDeviceId'] == device['device_id']);
 
             if (existingIndex == -1) {
               // Add new Seam device
               final properties = device['properties'] ?? {};
               _locks.add({
                 'name': device['display_name'] ?? l10n.seamLockDefaultName,
-                'status': properties['locked'] == true ? l10n.statusLocked : l10n.statusUnlocked,
+                'status': properties['locked'] == true
+                    ? l10n.statusLocked
+                    : l10n.statusUnlocked,
                 'isLocked': properties['locked'] ?? false,
                 'battery': (properties['battery_level'] as num?)?.toInt() ?? 0,
                 'lockData': device['device_id'] ?? '',
@@ -504,10 +516,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
         setState(() {
           // Check if device already exists (by lockId or lockData)
-          final existingIndex = _locks.indexWhere(
-            (lock) => lock['lockId'] == ttlockDevice['lockId'] ||
-                     lock['lockData'] == ttlockDevice['lockData']
-          );
+          final existingIndex = _locks.indexWhere((lock) =>
+              lock['lockId'] == ttlockDevice['lockId'] ||
+              lock['lockData'] == ttlockDevice['lockData']);
 
           if (existingIndex == -1) {
             _locks.add(ttlockDevice);
@@ -529,7 +540,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-
     // The body of the Scaffold will now be determined by the selected page
     final List<Widget> pages = [
       _buildMainContent(context), // Ana sayfa - Cihaz listesi
@@ -573,26 +583,32 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       children: [
         _buildHeader(context),
         if (_isLoading && _locks.isNotEmpty)
-           const LinearProgressIndicator(minHeight: 2, color: Color(0xFF1E90FF), backgroundColor: Colors.transparent),
+          const LinearProgressIndicator(
+              minHeight: 2,
+              color: Color(0xFF1E90FF),
+              backgroundColor: Colors.transparent),
         Expanded(
           child: _isLoading && _locks.isEmpty
-              ? const Center(child: CircularProgressIndicator(color: Colors.white))
+              ? const Center(
+                  child: CircularProgressIndicator(color: Colors.white))
               : _locks.isEmpty
                   ? Center(
                       child: Text(
                         l10n.noLocksFound,
-                        style: const TextStyle(color: Colors.white, fontSize: 18),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     )
                   : GridView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         childAspectRatio: 0.85,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),
-
                       itemCount: _locks.length,
                       itemBuilder: (context, index) {
                         return _buildLockCard(_locks[index], context);
@@ -628,11 +644,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   return Stack(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.notifications, color: Colors.white, size: 28),
+                        icon: const Icon(Icons.notifications,
+                            color: Colors.white, size: 28),
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const NotificationPage()),
+                            MaterialPageRoute(
+                                builder: (context) => const NotificationPage()),
                           );
                         },
                       ),
@@ -685,7 +703,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Widget _buildLockCard(Map<String, dynamic> lock, BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     final bool isGateway = lock['deviceType'] == 'gateway';
 
     // Calculate remaining days and role for shared locks
@@ -697,16 +715,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (isShared) {
       final userType = lock['userType']?.toString();
       final keyRight = lock['keyRight']?.toString();
-      
+
       // Check both userType and keyRight for Admin status
       if (userType == '110301' || keyRight == '1') {
         roleText = l10n.roleAdmin;
       } else {
         roleText = l10n.roleNormal;
       }
-      
-      if (lock['endDate'] != null && (lock['endDate'] is num) && lock['endDate'] > 0) {
-        final endDate = DateTime.fromMillisecondsSinceEpoch((lock['endDate'] as num).toInt());
+
+      if (lock['endDate'] != null &&
+          (lock['endDate'] is num) &&
+          lock['endDate'] > 0) {
+        final endDate = DateTime.fromMillisecondsSinceEpoch(
+            (lock['endDate'] as num).toInt());
         final now = DateTime.now();
         final diff = endDate.difference(now);
 
@@ -745,9 +766,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => GatewayDetailPage(gateway: lock['gatewayDetails']),
+                      builder: (context) =>
+                          GatewayDetailPage(gateway: lock['gatewayDetails']),
                     ),
-                  ).then((_) => _fetchAndSetLocks()); // Refresh when we come back
+                  ).then(
+                      (_) => _fetchAndSetLocks()); // Refresh when we come back
                   return;
                 }
 
@@ -766,14 +789,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
                     setState(() {
                       final index = _locks.indexWhere((lock) =>
-                        (lock['seamDeviceId'] == deviceId) ||
-                        (lock['lockId'] == deviceId) ||
-                        (lock['lockData'] == deviceId)
-                      );
+                          (lock['seamDeviceId'] == deviceId) ||
+                          (lock['lockId'] == deviceId) ||
+                          (lock['lockData'] == deviceId));
 
                       if (index != -1 && newState != null) {
                         _locks[index]['isLocked'] = newState;
-                        _locks[index]['status'] = newState ? l10n.statusLocked : l10n.statusUnlocked;
+                        _locks[index]['status'] =
+                            newState ? l10n.statusLocked : l10n.statusUnlocked;
                       }
                     });
 
@@ -782,7 +805,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       final lockName = lock['name'] ?? l10n.unknownLock;
                       scaffoldMessenger.showSnackBar(
                         SnackBar(
-                          content: Text('$lockName ${newState ? l10n.locked.toLowerCase() : l10n.unlocked.toLowerCase()}'),
+                          content: Text(
+                              '$lockName ${newState ? l10n.locked.toLowerCase() : l10n.unlocked.toLowerCase()}'),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -792,16 +816,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               },
               onLongPress: () async {
                 if (isGateway) {
-                   // Gateway delete handling from main screen? Handled in detail page typically, but could implement shortcut here.
-                   return;
+                  // Gateway delete handling from main screen? Handled in detail page typically, but could implement shortcut here.
+                  return;
                 }
                 if (lock['shared'] == true) {
-                  final action = await _showSharedLockOptionsDialog(context, lock);
+                  final action =
+                      await _showSharedLockOptionsDialog(context, lock);
                   if (action == 'cancel_share') {
                     await _cancelLockShare(lock);
                   }
                 } else {
-                  final shouldDelete = await _showDeleteConfirmationDialog(lock);
+                  final shouldDelete =
+                      await _showDeleteConfirmationDialog(lock);
                   if (shouldDelete) {
                     _removeDevice(lock);
                   }
@@ -821,7 +847,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         Icon(
                           isGateway
                               ? Icons.router
-                              : (lock['isLocked'] ? Icons.lock : Icons.lock_open),
+                              : (lock['isLocked']
+                                  ? Icons.lock
+                                  : Icons.lock_open),
                           color: const Color(0xFF3B9EFF),
                           size: 32,
                         ),
@@ -838,13 +866,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               const SizedBox(width: 4),
                             if (isGateway)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: lock['isOnline'] == true ? const Color(0xFF34C759) : const Color(0xFFFF3B30),
+                                  color: lock['isOnline'] == true
+                                      ? const Color(0xFF34C759)
+                                      : const Color(0xFFFF3B30),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  lock['isOnline'] == true ? l10n.online : l10n.offline,
+                                  lock['isOnline'] == true
+                                      ? l10n.online
+                                      : l10n.offline,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 10,
@@ -854,7 +887,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               )
                             else
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
                                 decoration: BoxDecoration(
                                   color: _getBatteryColor(lock['battery'] ?? 0),
                                   borderRadius: BorderRadius.circular(8),
@@ -901,7 +935,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     if (!isGateway && isShared)
                       Row(
                         children: [
-                          const Icon(Icons.people, color: Colors.white60, size: 13),
+                          const Icon(Icons.people,
+                              color: Colors.white60, size: 13),
                           const SizedBox(width: 3),
                           Text(
                             l10n.sharedLock,
@@ -914,14 +949,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       ),
                     const Spacer(),
                     // Status button and Days badge - only show admin role and days
-                    if (!isGateway && (roleText == l10n.roleAdmin || (isShared && remainingDaysText != null)))
+                    if (!isGateway &&
+                        (roleText == l10n.roleAdmin ||
+                            (isShared && remainingDaysText != null)))
                       Row(
                         children: [
                           if (roleText == l10n.roleAdmin)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                border: Border.all(color: const Color(0xFF3B9EFF), width: 1.5),
+                                border: Border.all(
+                                    color: const Color(0xFF3B9EFF), width: 1.5),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
@@ -938,7 +977,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               const SizedBox(width: 5),
                             Flexible(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 6),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFF9500),
                                   borderRadius: BorderRadius.circular(20),
@@ -948,15 +988,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ),
                           ],
-                      ],
-                    ),
+                        ],
+                      ),
                   ],
                 ),
               ),
@@ -967,7 +1007,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  Future<String?> _showSharedLockOptionsDialog(BuildContext context, Map<String, dynamic> lock) async {
+  Future<String?> _showSharedLockOptionsDialog(
+      BuildContext context, Map<String, dynamic> lock) async {
     final l10n = AppLocalizations.of(context)!;
     return await showDialog<String>(
       context: context,
@@ -1037,9 +1078,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       // Listeden kaldır
       setState(() {
         _locks.removeWhere((device) =>
-          device['lockId'] == lock['lockId'] &&
-          device['source'] == 'ttlock_shared'
-        );
+            device['lockId'] == lock['lockId'] &&
+            device['source'] == 'ttlock_shared');
       });
 
       scaffoldMessenger.showSnackBar(
@@ -1048,75 +1088,73 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           backgroundColor: Colors.orange,
         ),
       );
-
     } catch (e) {
       scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Text(l10n.shareCancelError(e.toString())), // Error message often technical, keeping as is or generic
+          content: Text(l10n.shareCancelError(e
+              .toString())), // Error message often technical, keeping as is or generic
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-
-
-
   Future<bool> _showDeleteConfirmationDialog(Map<String, dynamic> lock) async {
     final l10n = AppLocalizations.of(context)!;
     return await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.grey[900],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Row(
-            children: [
-              const Icon(Icons.warning, color: Colors.redAccent),
-              const SizedBox(width: 12),
-              Text(
-                l10n.deleteDevice,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Colors.grey[900],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-            ],
-          ),
-          content: Text(
-            '${lock['name']} ${l10n.deleteDeviceConfirmation}\n\n${l10n.deleteDeviceDisclaimer}',
-            style: TextStyle(color: Colors.grey[400]),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(
-                l10n.cancel,
+              title: Row(
+                children: [
+                  const Icon(Icons.warning, color: Colors.redAccent),
+                  const SizedBox(width: 12),
+                  Text(
+                    l10n.deleteDevice,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              content: Text(
+                '${lock['name']} ${l10n.deleteDeviceConfirmation}\n\n${l10n.deleteDeviceDisclaimer}',
                 style: TextStyle(color: Colors.grey[400]),
               ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(
-                l10n.delete,
-                style: const TextStyle(color: Colors.redAccent),
-              ),
-            ),
-          ],
-        );
-      },
-    ) ?? false;
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(
+                    l10n.cancel,
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(
+                    l10n.delete,
+                    style: const TextStyle(color: Colors.redAccent),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 
   void _removeDevice(Map<String, dynamic> lock) {
     final l10n = AppLocalizations.of(context)!;
     setState(() {
       _locks.removeWhere((device) =>
-        device['name'] == lock['name'] &&
-        (device['seamDeviceId'] == lock['seamDeviceId'] || device['lockId'] == lock['lockId'])
-      );
+          device['name'] == lock['name'] &&
+          (device['seamDeviceId'] == lock['seamDeviceId'] ||
+              device['lockId'] == lock['lockId']));
     });
 
     ScaffoldMessenger.of(context).showSnackBar(

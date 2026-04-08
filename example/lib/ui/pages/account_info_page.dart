@@ -28,14 +28,17 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       _email = prefs.getString('saved_email') ?? '';
       _username = prefs.getString('saved_username') ?? '';
       _phone = prefs.getString('saved_phone') ?? '';
-      _country = prefs.getString('saved_country') ?? AppLocalizations.of(context)!.defaultCountry;
-      
+      _country = prefs.getString('saved_country') ??
+          AppLocalizations.of(context)!.defaultCountry;
+
       // Eski hardcoded veya istenmeyen verileri temizle
-      if (_phone.contains('5XX XXX') || _phone.contains('05316305072') || _phone.contains('05326305072')) {
-         _phone = '';
-         prefs.remove('saved_phone');
+      if (_phone.contains('5XX XXX') ||
+          _phone.contains('05316305072') ||
+          _phone.contains('05326305072')) {
+        _phone = '';
+        prefs.remove('saved_phone');
       }
-      
+
       // Eğer username boşsa ve email varsa, email'in başını kullan
       if (_username.isEmpty && _email.contains('@')) {
         _username = _email.split('@')[0];
@@ -70,7 +73,8 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 children: [
                   // Avatar ve Kullanıcı Bilgileri
                   Container(
@@ -87,7 +91,9 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                           radius: 24,
                           backgroundColor: Colors.blue.withValues(alpha: 0.2),
                           child: Text(
-                            _username.isNotEmpty ? _username[0].toUpperCase() : 'U',
+                            _username.isNotEmpty
+                                ? _username[0].toUpperCase()
+                                : 'U',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -133,19 +139,22 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                     title: l10n.accountInfoUsername,
                     value: _username,
                     showEditIcon: true,
-                    onTap: () => _editField(l10n.accountInfoUsername, 'saved_username', _username),
+                    onTap: () => _editField(
+                        l10n.accountInfoUsername, 'saved_username', _username),
                   ),
                   _buildInfoTile(
                     title: l10n.accountInfoEmail,
                     value: _email,
                     showEditIcon: true,
-                    onTap: () => _editField(l10n.accountInfoEmail, 'saved_email', _email),
+                    onTap: () => _editField(
+                        l10n.accountInfoEmail, 'saved_email', _email),
                   ),
                   _buildInfoTile(
                     title: l10n.accountInfoPhone,
                     value: _phone,
                     showEditIcon: true,
-                    onTap: () => _editField(l10n.accountInfoPhone, 'saved_phone', _phone),
+                    onTap: () => _editField(
+                        l10n.accountInfoPhone, 'saved_phone', _phone),
                   ),
                   _buildInfoTile(
                     title: l10n.resetPasswordBtn,
@@ -168,7 +177,8 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                     title: l10n.countryRegion,
                     value: _country,
                     showEditIcon: true,
-                    onTap: () => _editField(l10n.countryRegion, 'saved_country', _country),
+                    onTap: () => _editField(
+                        l10n.countryRegion, 'saved_country', _country),
                   ),
                 ],
               ),
@@ -183,7 +193,8 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton(
-                        onPressed: () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
+                        onPressed: () => _launchUrl(
+                            'https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
                         child: Text(
                           l10n.userTerms,
                           style: const TextStyle(
@@ -194,7 +205,8 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
                       ),
                       const SizedBox(width: 16),
                       TextButton(
-                        onPressed: () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
+                        onPressed: () => _launchUrl(
+                            'https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
                         child: Text(
                           l10n.privacyPolicy,
                           style: const TextStyle(
@@ -289,7 +301,8 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
           ],
         ),
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
   }
@@ -310,30 +323,36 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
   }
 
   Future<void> _editField(String title, String key, String currentValue) async {
-    final TextEditingController controller = TextEditingController(text: currentValue);
+    final TextEditingController controller =
+        TextEditingController(text: currentValue);
     final newValue = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: Text(AppLocalizations.of(context)!.editField(title), style: const TextStyle(color: Colors.white)),
+        title: Text(AppLocalizations.of(context)!.editField(title),
+            style: const TextStyle(color: Colors.white)),
         content: TextField(
           controller: controller,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: AppLocalizations.of(context)!.enterNewField(title),
             hintStyle: const TextStyle(color: Colors.grey),
-            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+            enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey)),
+            focusedBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: Colors.grey)),
+            child: Text(AppLocalizations.of(context)!.cancel,
+                style: const TextStyle(color: Colors.grey)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: Text(AppLocalizations.of(context)!.save, style: const TextStyle(color: Colors.blue)),
+            child: Text(AppLocalizations.of(context)!.save,
+                style: const TextStyle(color: Colors.blue)),
           ),
         ],
       ),
@@ -342,7 +361,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
     if (newValue != null && newValue.isNotEmpty && newValue != currentValue) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(key, newValue);
-      
+
       setState(() {
         if (key == 'saved_username') _username = newValue;
         if (key == 'saved_email') _email = newValue;
@@ -353,7 +372,8 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.fieldUpdatedSuccess(title)),
+          content:
+              Text(AppLocalizations.of(context)!.fieldUpdatedSuccess(title)),
           backgroundColor: Colors.green,
         ),
       );
@@ -363,7 +383,9 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
   Future<void> _changePassword() async {
     // Burada şifre değiştirme dialogu olabilir veya Firebase'e yönlendirilebilir
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.passwordResetInstruction)),
+      SnackBar(
+          content:
+              Text(AppLocalizations.of(context)!.passwordResetInstruction)),
     );
   }
 

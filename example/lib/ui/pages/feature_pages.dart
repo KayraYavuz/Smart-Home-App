@@ -4,14 +4,14 @@ import 'package:yavuz_lock/l10n/app_localizations.dart';
 import '../../api_service.dart';
 import '../../repositories/auth_repository.dart';
 
-
 // --- Base Page Structure ---
 class FeatureBasePage extends StatelessWidget {
   final String title;
   final Widget body;
   final List<Widget>? actions;
 
-  const FeatureBasePage({super.key, required this.title, required this.body, this.actions});
+  const FeatureBasePage(
+      {super.key, required this.title, required this.body, this.actions});
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,8 @@ class _RemoteListPageState extends State<RemoteListPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
+        scaffoldMessenger
+            .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
       }
     }
   }
@@ -79,10 +80,15 @@ class _RemoteListPageState extends State<RemoteListPage> {
                 final remote = _remotes[index];
                 return Card(
                   color: const Color(0xFF1E1E1E),
-                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
-                    title: Text(remote['remoteName'] ?? AppLocalizations.of(context)!.remoteControl, style: const TextStyle(color: Colors.white)),
-                    subtitle: Text('ID: ${remote['remoteId']}', style: const TextStyle(color: Colors.grey)),
+                    title: Text(
+                        remote['remoteName'] ??
+                            AppLocalizations.of(context)!.remoteControl,
+                        style: const TextStyle(color: Colors.white)),
+                    subtitle: Text('ID: ${remote['remoteId']}',
+                        style: const TextStyle(color: Colors.grey)),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
@@ -90,12 +96,15 @@ class _RemoteListPageState extends State<RemoteListPage> {
                         final l10n = AppLocalizations.of(context)!;
                         // Implement delete
                         try {
-                           final api = ApiService(context.read<AuthRepository>());
-                           await api.deleteRemote(remoteId: remote['remoteId']);
-                           _loadRemotes();
-                        } catch(e) {
+                          final api =
+                              ApiService(context.read<AuthRepository>());
+                          await api.deleteRemote(remoteId: remote['remoteId']);
+                          _loadRemotes();
+                        } catch (e) {
                           if (mounted) {
-                            scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
+                            scaffoldMessenger.showSnackBar(SnackBar(
+                                content: Text(
+                                    l10n.deleteErrorWithMsg(e.toString()))));
                           }
                         }
                       },
@@ -104,15 +113,17 @@ class _RemoteListPageState extends State<RemoteListPage> {
                 );
               },
             ),
-       actions: [
-         IconButton(
-           icon: const Icon(Icons.add),
-           onPressed: () {
-             // Add logic would go here (usually needs bluetooth interaction first)
-             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.bluetoothAddInstructions)));
-           },
-         )
-       ],
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () {
+            // Add logic would go here (usually needs bluetooth interaction first)
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    AppLocalizations.of(context)!.bluetoothAddInstructions)));
+          },
+        )
+      ],
     );
   }
 }
@@ -148,9 +159,10 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
         _isLoading = false;
       });
     } catch (e) {
-       if (mounted) {
+      if (mounted) {
         setState(() => _isLoading = false);
-        scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
+        scaffoldMessenger
+            .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
       }
     }
   }
@@ -167,22 +179,31 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
                 final keypad = _keypads[index];
                 return Card(
                   color: const Color(0xFF1E1E1E),
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
-                    title: Text(keypad['wirelessKeypadName'] ?? AppLocalizations.of(context)!.wirelessKeypad, style: const TextStyle(color: Colors.white)),
-                    subtitle: Text('MAC: ${keypad['wirelessKeypadMac']}', style: const TextStyle(color: Colors.grey)),
-                     trailing: IconButton(
+                    title: Text(
+                        keypad['wirelessKeypadName'] ??
+                            AppLocalizations.of(context)!.wirelessKeypad,
+                        style: const TextStyle(color: Colors.white)),
+                    subtitle: Text('MAC: ${keypad['wirelessKeypadMac']}',
+                        style: const TextStyle(color: Colors.grey)),
+                    trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
                         final scaffoldMessenger = ScaffoldMessenger.of(context);
                         final l10n = AppLocalizations.of(context)!;
                         try {
-                           final api = ApiService(context.read<AuthRepository>());
-                           await api.deleteWirelessKeypad(wirelessKeypadId: keypad['wirelessKeypadId']);
-                           _loadKeypads();
-                        } catch(e) {
+                          final api =
+                              ApiService(context.read<AuthRepository>());
+                          await api.deleteWirelessKeypad(
+                              wirelessKeypadId: keypad['wirelessKeypadId']);
+                          _loadKeypads();
+                        } catch (e) {
                           if (!mounted) return;
-                          scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
+                          scaffoldMessenger.showSnackBar(SnackBar(
+                              content:
+                                  Text(l10n.deleteErrorWithMsg(e.toString()))));
                         }
                       },
                     ),
@@ -190,14 +211,16 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
                 );
               },
             ),
-             actions: [
-         IconButton(
-           icon: const Icon(Icons.add),
-           onPressed: () {
-             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.bluetoothAddInstructions)));
-           },
-         )
-       ],
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    AppLocalizations.of(context)!.bluetoothAddInstructions)));
+          },
+        )
+      ],
     );
   }
 }
@@ -227,11 +250,12 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
       final result = await api.queryDoorSensor(lockId: widget.lockId);
       if (!mounted) return;
       setState(() {
-        _sensor = result; // Assuming result is the sensor object or null if not found (needs proper handling based on API)
+        _sensor =
+            result; // Assuming result is the sensor object or null if not found (needs proper handling based on API)
         _isLoading = false;
       });
     } catch (e) {
-       if (mounted) {
+      if (mounted) {
         setState(() => _isLoading = false);
         // API might throw if no sensor, handle gracefully
       }
@@ -245,37 +269,48 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _sensor == null
-              ? Center(child: Text(AppLocalizations.of(context)!.sensorNotFound, style: const TextStyle(color: Colors.grey)))
+              ? Center(
+                  child: Text(AppLocalizations.of(context)!.sensorNotFound,
+                      style: const TextStyle(color: Colors.grey)))
               : ListView(
-                children: [
-                   Card(
-                  color: const Color(0xFF1E1E1E),
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    title: Text(AppLocalizations.of(context)!.doorSensor, style: const TextStyle(color: Colors.white)),
-                    subtitle: Text('MAC: ${_sensor!['doorSensorMac'] ?? 'N/A'}', style: const TextStyle(color: Colors.grey)),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        final scaffoldMessenger = ScaffoldMessenger.of(context);
-                        final l10n = AppLocalizations.of(context)!;
-                         try {
-                           final api = ApiService(context.read<AuthRepository>());
-                           await api.deleteDoorSensor(doorSensorId: _sensor!['doorSensorId']);
-                           if (!mounted) return;
-                           setState(() {
-                             _sensor = null;
-                           });
-                        } catch(e) {
-                          if (!mounted) return;
-                          scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
-                        }
-                      },
-                    ),
-                  ),
-                )
-                ],
-              ),
+                  children: [
+                    Card(
+                      color: const Color(0xFF1E1E1E),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: ListTile(
+                        title: Text(AppLocalizations.of(context)!.doorSensor,
+                            style: const TextStyle(color: Colors.white)),
+                        subtitle: Text(
+                            'MAC: ${_sensor!['doorSensorMac'] ?? 'N/A'}',
+                            style: const TextStyle(color: Colors.grey)),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () async {
+                            final scaffoldMessenger =
+                                ScaffoldMessenger.of(context);
+                            final l10n = AppLocalizations.of(context)!;
+                            try {
+                              final api =
+                                  ApiService(context.read<AuthRepository>());
+                              await api.deleteDoorSensor(
+                                  doorSensorId: _sensor!['doorSensorId']);
+                              if (!mounted) return;
+                              setState(() {
+                                _sensor = null;
+                              });
+                            } catch (e) {
+                              if (!mounted) return;
+                              scaffoldMessenger.showSnackBar(SnackBar(
+                                  content: Text(
+                                      l10n.deleteErrorWithMsg(e.toString()))));
+                            }
+                          },
+                        ),
+                      ),
+                    )
+                  ],
+                ),
     );
   }
 }
@@ -313,30 +348,34 @@ class _QrCodePageState extends State<QrCodePage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
+        scaffoldMessenger
+            .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
       }
     }
   }
-  
+
   void _addQrCode() async {
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
-      final l10n = AppLocalizations.of(context)!;
-      try {
-           final api = ApiService(context.read<AuthRepository>());
-           await api.addQrCode(
-               lockId: widget.lockId, 
-               type: 1, 
-               name: l10n.newQrWithName("${DateTime.now().minute}"),
-               startDate: DateTime.now().millisecondsSinceEpoch,
-               endDate: DateTime.now().add(const Duration(days: 1)).millisecondsSinceEpoch,
-           );
-           _loadQrCodes();
-           if (!mounted) return;
-           scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.qrCodeCreated)));
-        } catch(e) {
-          if (!mounted) return;
-          scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
-        }
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final api = ApiService(context.read<AuthRepository>());
+      await api.addQrCode(
+        lockId: widget.lockId,
+        type: 1,
+        name: l10n.newQrWithName("${DateTime.now().minute}"),
+        startDate: DateTime.now().millisecondsSinceEpoch,
+        endDate:
+            DateTime.now().add(const Duration(days: 1)).millisecondsSinceEpoch,
+      );
+      _loadQrCodes();
+      if (!mounted) return;
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text(l10n.qrCodeCreated)));
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
+    }
   }
 
   @override
@@ -351,43 +390,57 @@ class _QrCodePageState extends State<QrCodePage> {
                 final qr = _qrCodes[index];
                 return Card(
                   color: const Color(0xFF1E1E1E),
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
-                    title: Text(qr['name'] ?? AppLocalizations.of(context)!.qrCode, style: const TextStyle(color: Colors.white)),
-                    subtitle: Text('ID: ${qr['qrCodeId']}', style: const TextStyle(color: Colors.grey)),
+                    title: Text(
+                        qr['name'] ?? AppLocalizations.of(context)!.qrCode,
+                        style: const TextStyle(color: Colors.white)),
+                    subtitle: Text('ID: ${qr['qrCodeId']}',
+                        style: const TextStyle(color: Colors.grey)),
                     onTap: () async {
-                       final scaffoldMessenger = ScaffoldMessenger.of(context);
-                       final l10n = AppLocalizations.of(context)!;
-                       // Show QR content
-                       try {
-                           final api = ApiService(context.read<AuthRepository>());
-                           final data = await api.getQrCodeData(qrCodeId: qr['qrCodeId']);
-                           if (!context.mounted) return;
-                           showDialog(
-                               context: context, 
-                               builder: (c) => AlertDialog(
-                                   title: Text(l10n.qrContent),
-                                   content: Text(data['qrCodeContent'] ?? l10n.empty),
-                                   actions: [TextButton(onPressed: () => Navigator.pop(c), child: Text(l10n.ok))],
-                               )
-                           );
-                       } catch (e) {
-                           if (!context.mounted) return;
-                           scaffoldMessenger.showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
-                       }
+                      final scaffoldMessenger = ScaffoldMessenger.of(context);
+                      final l10n = AppLocalizations.of(context)!;
+                      // Show QR content
+                      try {
+                        final api = ApiService(context.read<AuthRepository>());
+                        final data =
+                            await api.getQrCodeData(qrCodeId: qr['qrCodeId']);
+                        if (!context.mounted) return;
+                        showDialog(
+                            context: context,
+                            builder: (c) => AlertDialog(
+                                  title: Text(l10n.qrContent),
+                                  content:
+                                      Text(data['qrCodeContent'] ?? l10n.empty),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () => Navigator.pop(c),
+                                        child: Text(l10n.ok))
+                                  ],
+                                ));
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        scaffoldMessenger.showSnackBar(
+                            SnackBar(content: Text('${l10n.errorLabel}: $e')));
+                      }
                     },
                     trailing: IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () async {
                         final scaffoldMessenger = ScaffoldMessenger.of(context);
                         final l10n = AppLocalizations.of(context)!;
-                         try {
-                           final api = ApiService(context.read<AuthRepository>());
-                           await api.deleteQrCode(lockId: widget.lockId, qrCodeId: qr['qrCodeId']);
-                           _loadQrCodes();
-                        } catch(e) {
+                        try {
+                          final api =
+                              ApiService(context.read<AuthRepository>());
+                          await api.deleteQrCode(
+                              lockId: widget.lockId, qrCodeId: qr['qrCodeId']);
+                          _loadQrCodes();
+                        } catch (e) {
                           if (!mounted) return;
-                          scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
+                          scaffoldMessenger.showSnackBar(SnackBar(
+                              content:
+                                  Text(l10n.deleteErrorWithMsg(e.toString()))));
                         }
                       },
                     ),
@@ -396,11 +449,11 @@ class _QrCodePageState extends State<QrCodePage> {
               },
             ),
       actions: [
-         IconButton(
-           icon: const Icon(Icons.add),
-           onPressed: _addQrCode,
-         )
-       ],
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: _addQrCode,
+        )
+      ],
     );
   }
 }
@@ -451,64 +504,75 @@ class _WifiLockPageState extends State<WifiLockPage> {
       title: AppLocalizations.of(context)!.wifiLockDetails,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null 
-             ? Center(
-                 child: Padding(
-                   padding: const EdgeInsets.all(20.0),
-                   child: Column(
-                     mainAxisAlignment: MainAxisAlignment.center,
-                     children: [
-                       const Icon(Icons.error_outline, color: Colors.orange, size: 48),
-                       const SizedBox(height: 16),
-                       const Text(
-                         "This feature is only for locks with built-in Wi-Fi.",
-                         textAlign: TextAlign.center,
-                         style: TextStyle(color: Colors.white, fontSize: 16),
-                       ),
-                       const SizedBox(height: 8),
-                       Text(
-                         "If you use a Gateway, please check the Gateway menu.",
-                         textAlign: TextAlign.center,
-                         style: TextStyle(color: Colors.grey[400]),
-                       ),
-                       const SizedBox(height: 16),
-                       Text(
-                         _errorMessage!,
-                         textAlign: TextAlign.center,
-                         style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                       ),
-                     ],
-                   ),
-                 ),
-               )
-             : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                   if (_detail != null) ...[
-                       _buildInfoRow(AppLocalizations.of(context)!.isOnline, _detail!['isOnline'] == true ? AppLocalizations.of(context)!.online : AppLocalizations.of(context)!.offline),
-                       _buildInfoRow(AppLocalizations.of(context)!.networkName, _detail!['networkName'] ?? '-'),
-                       _buildInfoRow('MAC', _detail!['wifiMac'] ?? '-'),
-                       _buildInfoRow('IP', _detail!['ip'] ?? '-'),
-                       _buildInfoRow(AppLocalizations.of(context)!.rssiGrade, '${_detail!['rssiGrade'] ?? '0'}'),
-                   ] else 
-                       Text(AppLocalizations.of(context)!.detailNotFound, style: const TextStyle(color: Colors.white)),
-                ],
-              ),
-            ),
+          : _errorMessage != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline,
+                            color: Colors.orange, size: 48),
+                        const SizedBox(height: 16),
+                        const Text(
+                          "This feature is only for locks with built-in Wi-Fi.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "If you use a Gateway, please check the Gateway menu.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey[400]),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _errorMessage!,
+                          textAlign: TextAlign.center,
+                          style:
+                              TextStyle(color: Colors.grey[600], fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      if (_detail != null) ...[
+                        _buildInfoRow(
+                            AppLocalizations.of(context)!.isOnline,
+                            _detail!['isOnline'] == true
+                                ? AppLocalizations.of(context)!.online
+                                : AppLocalizations.of(context)!.offline),
+                        _buildInfoRow(AppLocalizations.of(context)!.networkName,
+                            _detail!['networkName'] ?? '-'),
+                        _buildInfoRow('MAC', _detail!['wifiMac'] ?? '-'),
+                        _buildInfoRow('IP', _detail!['ip'] ?? '-'),
+                        _buildInfoRow(AppLocalizations.of(context)!.rssiGrade,
+                            '${_detail!['rssiGrade'] ?? '0'}'),
+                      ] else
+                        Text(AppLocalizations.of(context)!.detailNotFound,
+                            style: const TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ),
     );
   }
-  
+
   Widget _buildInfoRow(String label, String value) {
-      return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                  Text(label, style: const TextStyle(color: Colors.grey)),
-                  Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ],
-          ),
-      );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(color: Colors.grey)),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
   }
 }

@@ -81,7 +81,8 @@ class _GatewaysPageState extends State<GatewaysPage> {
 
     if (_gateways.isEmpty) {
       return Center(
-        child: Text(l10n.noGatewaysFound, style: const TextStyle(color: Colors.white)),
+        child: Text(l10n.noGatewaysFound,
+            style: const TextStyle(color: Colors.white)),
       );
     }
 
@@ -91,14 +92,21 @@ class _GatewaysPageState extends State<GatewaysPage> {
         final gateway = _gateways[index];
         final isOnline = gateway['isOnline'] == 1;
         return ListTile(
-          leading: Icon(Icons.router, color: isOnline ? Colors.green : Colors.grey),
-          title: Text(gateway['gatewayName'] ?? l10n.unknownGateway, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-          subtitle: Text(gateway['gatewayMac'] ?? '', style: TextStyle(color: Colors.grey[400])),
+          leading:
+              Icon(Icons.router, color: isOnline ? Colors.green : Colors.grey),
+          title: Text(gateway['gatewayName'] ?? l10n.unknownGateway,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold)),
+          subtitle: Text(gateway['gatewayMac'] ?? '',
+              style: TextStyle(color: Colors.grey[400])),
           trailing: const Icon(Icons.chevron_right, color: Colors.grey),
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => GatewayDetailPage(gateway: gateway)),
+              MaterialPageRoute(
+                  builder: (context) => GatewayDetailPage(gateway: gateway)),
             );
           },
         );

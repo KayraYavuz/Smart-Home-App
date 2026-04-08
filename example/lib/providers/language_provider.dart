@@ -26,7 +26,7 @@ class LanguageProvider extends ChangeNotifier {
   /// If no preference is saved, try to use the system locale.
   Future<void> _loadSavedLocale() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // If the user modified the locale while we were loading, don't overwrite it.
     if (_isUserModified) return;
 

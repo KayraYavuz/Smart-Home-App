@@ -34,7 +34,10 @@ class _WifiPageState extends State<WifiPage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)?.locationPermissionRequiredForWifi ?? 'Wi-Fi taraması için konum izni gereklidir.')),
+            SnackBar(
+                content: Text(AppLocalizations.of(context)
+                        ?.locationPermissionRequiredForWifi ??
+                    'Wi-Fi taraması için konum izni gereklidir.')),
           );
         }
       });
@@ -69,8 +72,7 @@ class _WifiPageState extends State<WifiPage> {
   }
 
   void _pushGatewayPage(String wifi) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
       return GatewayPage(type: TTGatewayType.g2, wifi: wifi, mac: widget.mac);
     }));
   }
@@ -79,7 +81,8 @@ class _WifiPageState extends State<WifiPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)?.selectWifi ?? 'Select Wifi'),
+          title:
+              Text(AppLocalizations.of(context)?.selectWifi ?? 'Select Wifi'),
         ),
         body: Material(child: ProgressHud(
           child: Builder(builder: (context) {
@@ -93,9 +96,11 @@ class _WifiPageState extends State<WifiPage> {
     if (_isScanning && _wifiList.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     if (!_isScanning && _wifiList.isEmpty) {
-      return Center(child: Text(AppLocalizations.of(context)?.noWifiNetworksFound ?? 'Bulunan Wi-Fi ağı yok.'));
+      return Center(
+          child: Text(AppLocalizations.of(context)?.noWifiNetworksFound ??
+              'Bulunan Wi-Fi ağı yok.'));
     }
 
     return ListView.builder(

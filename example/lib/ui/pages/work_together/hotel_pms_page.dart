@@ -143,12 +143,15 @@ class _HotelPMSPageState extends State<HotelPMSPage> {
         if (room['status'] == 'vacant') {
           return AlertDialog(
             backgroundColor: const Color(0xFF1E1E1E),
-            title: Text('${l10n.checkIn} - ${room['number']}', style: const TextStyle(color: Colors.white)),
-            content: Text(l10n.checkInConfirm, style: const TextStyle(color: Colors.grey)),
+            title: Text('${l10n.checkIn} - ${room['number']}',
+                style: const TextStyle(color: Colors.white)),
+            content: Text(l10n.checkInConfirm,
+                style: const TextStyle(color: Colors.grey)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+                child: Text(l10n.cancel,
+                    style: const TextStyle(color: Colors.grey)),
               ),
               TextButton(
                 onPressed: () {
@@ -161,19 +164,23 @@ class _HotelPMSPageState extends State<HotelPMSPage> {
                     SnackBar(content: Text(l10n.checkInSuccess)),
                   );
                 },
-                child: Text(l10n.checkIn, style: const TextStyle(color: Colors.blue)),
+                child: Text(l10n.checkIn,
+                    style: const TextStyle(color: Colors.blue)),
               ),
             ],
           );
         } else if (room['status'] == 'occupied') {
           return AlertDialog(
             backgroundColor: const Color(0xFF1E1E1E),
-            title: Text('${l10n.checkOut} - ${room['number']}', style: const TextStyle(color: Colors.white)),
-            content: Text(l10n.checkOutConfirm, style: const TextStyle(color: Colors.grey)),
+            title: Text('${l10n.checkOut} - ${room['number']}',
+                style: const TextStyle(color: Colors.white)),
+            content: Text(l10n.checkOutConfirm,
+                style: const TextStyle(color: Colors.grey)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+                child: Text(l10n.cancel,
+                    style: const TextStyle(color: Colors.grey)),
               ),
               TextButton(
                 onPressed: () {
@@ -186,19 +193,23 @@ class _HotelPMSPageState extends State<HotelPMSPage> {
                     SnackBar(content: Text(l10n.checkOutSuccess)),
                   );
                 },
-                child: Text(l10n.checkOut, style: const TextStyle(color: Colors.red)),
+                child: Text(l10n.checkOut,
+                    style: const TextStyle(color: Colors.red)),
               ),
             ],
           );
         } else {
           return AlertDialog(
             backgroundColor: const Color(0xFF1E1E1E),
-            title: Text('${l10n.roomCleaning} - ${room['number']}', style: const TextStyle(color: Colors.white)),
-            content: Text(l10n.finishCleaningConfirm, style: const TextStyle(color: Colors.grey)),
+            title: Text('${l10n.roomCleaning} - ${room['number']}',
+                style: const TextStyle(color: Colors.white)),
+            content: Text(l10n.finishCleaningConfirm,
+                style: const TextStyle(color: Colors.grey)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+                child: Text(l10n.cancel,
+                    style: const TextStyle(color: Colors.grey)),
               ),
               TextButton(
                 onPressed: () {
@@ -207,7 +218,8 @@ class _HotelPMSPageState extends State<HotelPMSPage> {
                   });
                   Navigator.pop(context);
                 },
-                child: Text(l10n.finish, style: const TextStyle(color: Colors.green)),
+                child: Text(l10n.finish,
+                    style: const TextStyle(color: Colors.green)),
               ),
             ],
           );

@@ -42,7 +42,7 @@ class AddLockSuccess extends ScanState {
 
 class ScanConnecting extends ScanState {
   final String lockName;
-  
+
   const ScanConnecting(this.lockName);
 
   @override

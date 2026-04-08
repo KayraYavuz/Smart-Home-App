@@ -37,7 +37,8 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
     if (authState is Authenticated) {
       try {
         final apiService = ApiService(context.read<AuthRepository>());
-        final details = await apiService.getGatewayDetail(gatewayId: widget.gateway['gatewayId'].toString());
+        final details = await apiService.getGatewayDetail(
+            gatewayId: widget.gateway['gatewayId'].toString());
         if (!mounted) return;
         setState(() {
           _gatewayDetails = details;
@@ -82,34 +83,45 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
         child: Text(_errorMessage, style: const TextStyle(color: Colors.red)),
       );
     }
-    
+
     if (_gatewayDetails == null) {
       return Center(
-        child: Text(l10n.detailNotFound, style: const TextStyle(color: Colors.white)),
+        child: Text(l10n.detailNotFound,
+            style: const TextStyle(color: Colors.white)),
       );
     }
 
     return ListView(
       children: [
         ListTile(
-          title: Text(l10n.gatewayName, style: const TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['gatewayName'] ?? 'N/A', style: const TextStyle(color: Colors.grey)),
+          title: Text(l10n.gatewayName,
+              style: const TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['gatewayName'] ?? 'N/A',
+              style: const TextStyle(color: Colors.grey)),
         ),
         ListTile(
-          title: Text(l10n.gatewayMac, style: const TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['gatewayMac'] ?? 'N/A', style: const TextStyle(color: Colors.grey)),
+          title: Text(l10n.gatewayMac,
+              style: const TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['gatewayMac'] ?? 'N/A',
+              style: const TextStyle(color: Colors.grey)),
         ),
         ListTile(
-          title: Text(l10n.networkName, style: const TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['networkName'] ?? 'N/A', style: const TextStyle(color: Colors.grey)),
+          title: Text(l10n.networkName,
+              style: const TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['networkName'] ?? 'N/A',
+              style: const TextStyle(color: Colors.grey)),
         ),
         ListTile(
-          title: Text(l10n.isOnline, style: const TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['isOnline'] == 1 ? l10n.yes : l10n.no, style: const TextStyle(color: Colors.grey)),
+          title:
+              Text(l10n.isOnline, style: const TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['isOnline'] == 1 ? l10n.yes : l10n.no,
+              style: const TextStyle(color: Colors.grey)),
         ),
         ListTile(
-          title: Text(l10n.lockCountLabel, style: const TextStyle(color: Colors.white)),
-          subtitle: Text(_gatewayDetails!['lockNum']?.toString() ?? 'N/A', style: const TextStyle(color: Colors.grey)),
+          title: Text(l10n.lockCountLabel,
+              style: const TextStyle(color: Colors.white)),
+          subtitle: Text(_gatewayDetails!['lockNum']?.toString() ?? 'N/A',
+              style: const TextStyle(color: Colors.grey)),
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
@@ -144,7 +156,9 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                     MaterialPageRoute(
                       builder: (context) => GatewayLocksPage(
                         gatewayId: widget.gateway['gatewayId'].toString(),
-                        gatewayName: _gatewayDetails!['gatewayName'] ?? widget.gateway['gatewayName'] ?? 'Gateway',
+                        gatewayName: _gatewayDetails!['gatewayName'] ??
+                            widget.gateway['gatewayName'] ??
+                            'Gateway',
                       ),
                     ),
                   );
@@ -183,7 +197,8 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                 final authState = this.context.read<AuthBloc>().state;
                 if (authState is Authenticated) {
                   try {
-                    final apiService = ApiService(this.context.read<AuthRepository>());
+                    final apiService =
+                        ApiService(this.context.read<AuthRepository>());
                     await apiService.renameGateway(
                       gatewayId: widget.gateway['gatewayId'].toString(),
                       gatewayName: nameController.text,
@@ -198,7 +213,9 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                     if (!mounted) return;
                     navigator.pop();
                     scaffoldMessenger.showSnackBar(
-                      SnackBar(content: Text(l10n.errorRenamingGateway(e.toString()))),
+                      SnackBar(
+                          content:
+                              Text(l10n.errorRenamingGateway(e.toString()))),
                     );
                   }
                 }
@@ -231,7 +248,8 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                 final authState = this.context.read<AuthBloc>().state;
                 if (authState is Authenticated) {
                   try {
-                    final apiService = ApiService(this.context.read<AuthRepository>());
+                    final apiService =
+                        ApiService(this.context.read<AuthRepository>());
                     await apiService.deleteGateway(
                       gatewayId: widget.gateway['gatewayId'].toString(),
                     );
@@ -245,7 +263,9 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                     if (!mounted) return;
                     navigator.pop();
                     scaffoldMessenger.showSnackBar(
-                      SnackBar(content: Text(l10n.errorDeletingGateway(e.toString()))),
+                      SnackBar(
+                          content:
+                              Text(l10n.errorDeletingGateway(e.toString()))),
                     );
                   }
                 }
@@ -283,7 +303,8 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                 final authState = this.context.read<AuthBloc>().state;
                 if (authState is Authenticated) {
                   try {
-                    final apiService = ApiService(this.context.read<AuthRepository>());
+                    final apiService =
+                        ApiService(this.context.read<AuthRepository>());
                     await apiService.transferGateway(
                       receiverUsername: usernameController.text,
                       gatewayIdList: [widget.gateway['gatewayId'] as int],
@@ -298,7 +319,9 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                     if (!mounted) return;
                     navigator.pop();
                     scaffoldMessenger.showSnackBar(
-                      SnackBar(content: Text(l10n.errorTransferringGateway(e.toString()))),
+                      SnackBar(
+                          content: Text(
+                              l10n.errorTransferringGateway(e.toString()))),
                     );
                   }
                 }
@@ -330,8 +353,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
               title: Text(l10n.upgradeCheckTitle),
               content: Text(
                   '${l10n.needUpgrade}: ${result['needUpgrade'] == 1 ? l10n.yes : l10n.no}\n'
-                  '${l10n.version}: ${result['version'] ?? 'N/A'}'
-              ),
+                  '${l10n.version}: ${result['version'] ?? 'N/A'}'),
               actions: [
                 TextButton(
                   onPressed: () => navigator.pop(),

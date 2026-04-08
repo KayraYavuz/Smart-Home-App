@@ -30,10 +30,10 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
   bool _isLoading = false;
 
   Map<int, String> _getPermissionOptions(AppLocalizations l10n) => {
-    1: l10n.adminPermission,
-    2: l10n.normalUserPermission,
-    3: l10n.limitedUserPermission,
-  };
+        1: l10n.adminPermission,
+        2: l10n.normalUserPermission,
+        3: l10n.limitedUserPermission,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -81,14 +81,16 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                     labelText: l10n.emailOrPhone,
                     labelStyle: const TextStyle(color: Colors.grey),
                     hintText: l10n.emailOrPhoneHint,
-                    hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
+                    hintStyle:
+                        const TextStyle(color: Colors.grey, fontSize: 12),
                     filled: true,
                     fillColor: Colors.grey[850],
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide.none,
                     ),
-                    prefixIcon: const Icon(Icons.person_add, color: Colors.grey),
+                    prefixIcon:
+                        const Icon(Icons.person_add, color: Colors.grey),
                   ),
                   style: const TextStyle(color: Colors.white),
                   keyboardType: TextInputType.emailAddress,
@@ -142,48 +144,51 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                 // Permission Selection
                 Column(
                   children: [
-
                     RadioListTile<int>(
                       title: Text(
                         permissionOptions[1]!,
-                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 14),
                       ),
                       value: 1,
                       groupValue: _selectedPermission,
                       onChanged: (value) {
-                        if (value != null) setState(() => _selectedPermission = value);
+                        if (value != null)
+                          setState(() => _selectedPermission = value);
                       },
                       activeColor: Colors.blue,
                       contentPadding: EdgeInsets.zero,
                       dense: true,
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
-
                     RadioListTile<int>(
                       title: Text(
                         permissionOptions[2]!,
-                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 14),
                       ),
                       value: 2,
                       groupValue: _selectedPermission,
                       onChanged: (value) {
-                        if (value != null) setState(() => _selectedPermission = value);
+                        if (value != null)
+                          setState(() => _selectedPermission = value);
                       },
                       activeColor: Colors.blue,
                       contentPadding: EdgeInsets.zero,
                       dense: true,
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
-
                     RadioListTile<int>(
                       title: Text(
                         permissionOptions[3]!,
-                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 14),
                       ),
                       value: 3,
                       groupValue: _selectedPermission,
                       onChanged: (value) {
-                        if (value != null) setState(() => _selectedPermission = value);
+                        if (value != null)
+                          setState(() => _selectedPermission = value);
                       },
                       activeColor: Colors.blue,
                       contentPadding: EdgeInsets.zero,
@@ -234,7 +239,8 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                     labelText: l10n.remarksLabel,
                     labelStyle: const TextStyle(color: Colors.grey),
                     hintText: l10n.remarksHint,
-                    hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
+                    hintStyle:
+                        const TextStyle(color: Colors.grey, fontSize: 12),
                     filled: true,
                     fillColor: Colors.grey[850],
                     border: OutlineInputBorder(
@@ -259,7 +265,8 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                         ),
                         child: Text(
                           l10n.cancel,
-                          style: const TextStyle(color: Colors.grey, fontSize: 16),
+                          style:
+                              const TextStyle(color: Colors.grey, fontSize: 16),
                         ),
                       ),
                     ),
@@ -280,7 +287,8 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : Text(
@@ -464,7 +472,7 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
       }
 
       final originalReceiver = _emailController.text.trim();
-      
+
       bool shareSuccess = false;
       String? lastError;
 
@@ -479,31 +487,33 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
           keyName: 'Key for $originalReceiver',
           startDate: shareStart,
           endDate: shareEnd,
-          remoteEnable: _selectedPermission == 1 ? 1 : 2, // Map permission logic as needed
-          createUser: 2, 
+          remoteEnable: _selectedPermission == 1
+              ? 1
+              : 2, // Map permission logic as needed
+          createUser: 2,
         );
         shareSuccess = true;
       } catch (e) {
         lastError = e.toString();
         // If user not found (errcode: 10004), fallback to auto-create (createUser: 1)
         if (e.toString().contains('10004')) {
-           try {
-              final DateTime? shareStart2 = _shareType == 0 ? _startDate : null;
-              final DateTime? shareEnd2 = _shareType == 0 ? _endDate : null;
-              await apiService.sendEKey(
-                accessToken: accessToken,
-                lockId: widget.lock['lockId'].toString(),
-                receiverUsername: originalReceiver,
-                keyName: 'Key for $originalReceiver',
-                startDate: shareStart2,
-                endDate: shareEnd2,
-                remoteEnable: _selectedPermission == 1 ? 1 : 2,
-                createUser: 1, 
-              );
-              shareSuccess = true;
-           } catch (e2) {
-             lastError = e2.toString();
-           }
+          try {
+            final DateTime? shareStart2 = _shareType == 0 ? _startDate : null;
+            final DateTime? shareEnd2 = _shareType == 0 ? _endDate : null;
+            await apiService.sendEKey(
+              accessToken: accessToken,
+              lockId: widget.lock['lockId'].toString(),
+              receiverUsername: originalReceiver,
+              keyName: 'Key for $originalReceiver',
+              startDate: shareStart2,
+              endDate: shareEnd2,
+              remoteEnable: _selectedPermission == 1 ? 1 : 2,
+              createUser: 1,
+            );
+            shareSuccess = true;
+          } catch (e2) {
+            lastError = e2.toString();
+          }
         }
       }
 
@@ -522,13 +532,13 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
           duration: const Duration(seconds: 3),
         ),
       );
-
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${l10n.sharingError}: ${e.toString().replaceAll('Exception: ', '')}'),
+          content: Text(
+              '${l10n.sharingError}: ${e.toString().replaceAll('Exception: ', '')}'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 5),
         ),

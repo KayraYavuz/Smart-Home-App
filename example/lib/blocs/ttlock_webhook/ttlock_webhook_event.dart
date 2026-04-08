@@ -22,8 +22,11 @@ class TTLockWebhookEventData {
     return TTLockWebhookEventData(
       lockId: json['lockId']?.toString() ?? 'unknown',
       eventType: json['eventType']?.toString() ?? 'unknown',
-      timestamp: (json['date']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString()),
-      batteryLevel: json['batteryLevel'] != null ? int.tryParse(json['batteryLevel'].toString()) : null, // Parse batteryLevel
+      timestamp: (json['date']?.toString() ??
+          DateTime.now().millisecondsSinceEpoch.toString()),
+      batteryLevel: json['batteryLevel'] != null
+          ? int.tryParse(json['batteryLevel'].toString())
+          : null, // Parse batteryLevel
       accessMethod: json['accessMethod']?.toString(), // Parse accessMethod
       data: json,
     );

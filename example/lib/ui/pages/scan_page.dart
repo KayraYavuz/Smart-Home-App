@@ -16,10 +16,13 @@ class ScanPage extends StatelessWidget {
     if (error == 'bluetoothDisabledError') return l10n.bluetoothDisabledError;
     if (error == 'lockNotInSettingMode') return l10n.lockNotInSettingMode;
     if (error == 'lockAlreadyRegistered') return l10n.lockAlreadyRegistered;
-    if (error == 'bluetoothConnectionRejected') return l10n.bluetoothConnectionRejected;
-    if (error == 'bluetoothConnectionFailed') return l10n.bluetoothConnectionFailed;
+    if (error == 'bluetoothConnectionRejected')
+      return l10n.bluetoothConnectionRejected;
+    if (error == 'bluetoothConnectionFailed')
+      return l10n.bluetoothConnectionFailed;
     if (error == 'lockNotResponding') return l10n.lockNotResponding;
-    if (error == 'apiLockRegisteredToAnother') return l10n.apiLockRegisteredToAnother;
+    if (error == 'apiLockRegisteredToAnother')
+      return l10n.apiLockRegisteredToAnother;
     if (error == 'apiNotAuthorized') return l10n.apiNotAuthorized;
     if (error == 'apiSessionExpired') return l10n.apiSessionExpired;
     if (error == 'apiLockFrozen') return l10n.apiLockFrozen;
@@ -40,10 +43,12 @@ class ScanPage extends StatelessWidget {
     }
     if (error.startsWith('cloudRegistrationError:')) {
       final detailsKey = error.substring('cloudRegistrationError:'.length);
-      return l10n.cloudRegistrationError(_getLocalizedErrorMessage(detailsKey, l10n));
+      return l10n
+          .cloudRegistrationError(_getLocalizedErrorMessage(detailsKey, l10n));
     }
     if (error.startsWith('unexpectedErrorPrefix:')) {
-      return l10n.unexpectedErrorPrefix(error.substring('unexpectedErrorPrefix:'.length));
+      return l10n.unexpectedErrorPrefix(
+          error.substring('unexpectedErrorPrefix:'.length));
     }
 
     return error;
@@ -85,7 +90,9 @@ class ScanPage extends StatelessWidget {
                     if (state is ScanLoading) {
                       context.read<ScanBloc>().add(StopScan());
                     } else {
-                      context.read<ScanBloc>().add(StartScan(isGateway: isGateway));
+                      context
+                          .read<ScanBloc>()
+                          .add(StartScan(isGateway: isGateway));
                     }
                   },
                   tooltip: state is ScanLoading ? l10n.stopScan : l10n.reScan,
@@ -133,7 +140,9 @@ class ScanPage extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF1E90FF).withValues(alpha: 0.2 - (value - 1.0) * 0.2), // Fading ripple
+                              color: const Color(0xFF1E90FF).withValues(
+                                  alpha: 0.2 -
+                                      (value - 1.0) * 0.2), // Fading ripple
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -144,7 +153,7 @@ class ScanPage extends StatelessWidget {
                           ),
                         );
                       },
-                      onEnd: () {}, 
+                      onEnd: () {},
                     ),
                     const SizedBox(height: 32),
                     const CircularProgressIndicator(
@@ -162,7 +171,9 @@ class ScanPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      isGateway ? l10n.scanningGatewayStatus : l10n.scanningLockStatus,
+                      isGateway
+                          ? l10n.scanningGatewayStatus
+                          : l10n.scanningLockStatus,
                       style: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 14,
@@ -202,7 +213,7 @@ class ScanPage extends StatelessWidget {
             }
             if (state is ScanLoaded) {
               final items = isGateway ? state.gateways : state.locks;
-              
+
               if (items.isEmpty) {
                 return Center(
                   child: Column(
@@ -234,7 +245,9 @@ class ScanPage extends StatelessWidget {
                       const SizedBox(height: 24),
                       ElevatedButton.icon(
                         onPressed: () {
-                          context.read<ScanBloc>().add(StartScan(isGateway: isGateway));
+                          context
+                              .read<ScanBloc>()
+                              .add(StartScan(isGateway: isGateway));
                         },
                         icon: const Icon(Icons.refresh, color: Colors.white),
                         label: Text(
@@ -243,7 +256,8 @@ class ScanPage extends StatelessWidget {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
                         ),
                       ),
                     ],
@@ -282,33 +296,43 @@ class ScanPage extends StatelessWidget {
                         if (isGateway) {
                           final gateway = items[index] as Map<String, dynamic>;
                           return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 4),
                             decoration: BoxDecoration(
                               color: const Color(0xFF1E1E1E),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: ListTile(
-                              leading: const Icon(Icons.router, color: Colors.blue),
-                              title: Text(gateway['gatewayName'] ?? l10n.unknownGateway, style: const TextStyle(color: Colors.white)),
-                              subtitle: Text(gateway['gatewayMac'] ?? '', style: TextStyle(color: Colors.grey[400])),
+                              leading:
+                                  const Icon(Icons.router, color: Colors.blue),
+                              title: Text(
+                                  gateway['gatewayName'] ?? l10n.unknownGateway,
+                                  style: const TextStyle(color: Colors.white)),
+                              subtitle: Text(gateway['gatewayMac'] ?? '',
+                                  style: TextStyle(color: Colors.grey[400])),
                               trailing: ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => WifiPage(mac: gateway['gatewayMac']),
+                                      builder: (context) =>
+                                          WifiPage(mac: gateway['gatewayMac']),
                                     ),
                                   );
                                 },
-                                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                child: Text(l10n.add, style: const TextStyle(color: Colors.white)),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green),
+                                child: Text(l10n.add,
+                                    style:
+                                        const TextStyle(color: Colors.white)),
                               ),
                             ),
                           );
                         } else {
                           final lock = items[index] as TTLockScanModel;
                           return Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 4),
                             decoration: BoxDecoration(
                               color: const Color(0xFF1E1E1E),
                               borderRadius: BorderRadius.circular(12),
@@ -328,7 +352,9 @@ class ScanPage extends StatelessWidget {
                                 ),
                               ),
                               title: Text(
-                                lock.lockName.isNotEmpty ? lock.lockName : l10n.unnamedLock,
+                                lock.lockName.isNotEmpty
+                                    ? lock.lockName
+                                    : l10n.unnamedLock,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -360,7 +386,8 @@ class ScanPage extends StatelessWidget {
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green,
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
                                 ),
                                 child: Text(
                                   l10n.add,
@@ -371,7 +398,8 @@ class ScanPage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
                             ),
                           );
                         }
