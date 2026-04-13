@@ -116,12 +116,46 @@ class _SendEKeyPageState extends State<SendEKeyPage>
 
   Future<void> _sendKey() async {
     final l10n = AppLocalizations.of(context)!;
-    final receiver = _receiverController.text.trim();
+    String receiver = _receiverController.text.trim();
     if (receiver.isEmpty) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.enterReceiver)));
       return;
     }
+
+    // --- Format receiver for TTLock API ---
+    // Remove any spaces or dashes
+    receiver = receiver.replaceAll(RegExp(r'[\s\-]'), '');
+
+    List<String> usernamesToTry = [];
+    usernamesToTry.add(receiver); // Original (trimmed)
+
+    // 1. Phone number logic (Turkey specific and general)
+    String digitsOnly = receiver.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.isNotEmpty) {
+      // If it's a 10-digit number starting with 5 (e.g. 532...)
+      if (digitsOnly.length == 10 && digitsOnly.startsWith('5')) {
+        usernamesToTry.add('90$digitsOnly');
+      }
+      // If it's an 11-digit number starting with 05 (e.g. 0532...)
+      else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
+        usernamesToTry.add('90${digitsOnly.substring(1)}');
+      }
+      // If it starts with +, also try without +
+      if (receiver.startsWith('+')) {
+        usernamesToTry.add(receiver.substring(1));
+      }
+    }
+
+    // 2. Email logic (Sanitization as used in RegisterPage)
+    if (receiver.contains('@')) {
+      String alphanumeric = receiver.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      if (alphanumeric.isNotEmpty && !usernamesToTry.contains(alphanumeric)) {
+        usernamesToTry.add(alphanumeric);
+      }
+    }
+
+    debugPrint('👥 Sharing eKey - trying formats: $usernamesToTry');
 
     setState(() => _isLoading = true);
 
@@ -136,21 +170,14 @@ class _SendEKeyPageState extends State<SendEKeyPage>
 
       final apiService = ApiService(AuthRepository());
 
-      // Determine startDate/endDate based on key type
-      // Timed (tab 0): use selected dates
-      // One-Time (tab 1): null (API sends '0')
-      // Permanent (tab 2): null (API sends '0')
-      // Recurring (tab 3): use recurring dates
       DateTime? finalStartDate;
       DateTime? finalEndDate;
       List<Map<String, dynamic>>? cyclicConfig;
 
       if (_tabController.index == 0) {
-        // Timed
         finalStartDate = _startDate;
         finalEndDate = _endDate;
       } else if (_tabController.index == 3) {
-        // Recurring
         finalStartDate = _recStartDate;
         finalEndDate = _recEndDate;
 
@@ -162,47 +189,61 @@ class _SendEKeyPageState extends State<SendEKeyPage>
           }
         ];
       }
-      // For tab 1 (One-Time) and tab 2 (Permanent): finalStartDate and finalEndDate remain null
 
-      Map<String, dynamic> result;
-      try {
-        // First attempt: Try to send to existing global user (createUser: 2)
-        // This handles users registered via TTLock app or other apps
-        debugPrint(
-            "Attempting sendEKey with createUser: 2 (Global user check)");
-        result = await apiService.sendEKey(
-          accessToken: token,
-          lockId: widget.lock['lockId'].toString(),
-          receiverUsername: receiver,
-          keyName:
-              _nameController.text.isEmpty ? receiver : _nameController.text,
-          startDate: finalStartDate,
-          endDate: finalEndDate,
-          remoteEnable: _allowRemoteUnlock ? 1 : 2,
-          cyclicConfig: cyclicConfig,
-          createUser: 2, // Do NOT auto-create, check if user exists
-        );
-      } catch (e) {
-        // If user not found (errcode: 10004), fallback to auto-create (createUser: 1)
-        // This handles new users or app-specific users
-        if (e.toString().contains('10004')) {
-          debugPrint(
-              "User not found (10004). Retrying with createUser: 1 (Auto-create)");
+      Map<String, dynamic>? result;
+      String? lastError;
+
+      // Try each format until one works
+      for (String userToTry in usernamesToTry) {
+        try {
+          debugPrint("Attempting sendEKey to: $userToTry (createUser: 2)");
           result = await apiService.sendEKey(
             accessToken: token,
             lockId: widget.lock['lockId'].toString(),
-            receiverUsername: receiver,
+            receiverUsername: userToTry,
             keyName:
                 _nameController.text.isEmpty ? receiver : _nameController.text,
             startDate: finalStartDate,
             endDate: finalEndDate,
             remoteEnable: _allowRemoteUnlock ? 1 : 2,
             cyclicConfig: cyclicConfig,
-            createUser: 1, // Auto-create user
+            createUser: 2,
           );
-        } else {
-          rethrow; // Rethrow other errors
+          if (result != null) break; // Success!
+        } catch (e) {
+          lastError = e.toString();
+          debugPrint("Failed with $userToTry: $lastError");
+
+          // If user not found (10004) or invalid username (1002),
+          // we might try with createUser: 1 for this same userToTry
+          if (lastError.contains('10004') || lastError.contains('1002')) {
+            try {
+              debugPrint("Retrying sendEKey to: $userToTry (createUser: 1)");
+              result = await apiService.sendEKey(
+                accessToken: token,
+                lockId: widget.lock['lockId'].toString(),
+                receiverUsername: userToTry,
+                keyName: _nameController.text.isEmpty
+                    ? receiver
+                    : _nameController.text,
+                startDate: finalStartDate,
+                endDate: finalEndDate,
+                remoteEnable: _allowRemoteUnlock ? 1 : 2,
+                cyclicConfig: cyclicConfig,
+                createUser: 1,
+              );
+              if (result != null) break; // Success!
+            } catch (e2) {
+              lastError = e2.toString();
+              debugPrint("Retry failed with $userToTry: $lastError");
+              // Continue to next format in usernamesToTry
+            }
+          }
         }
+      }
+
+      if (result == null) {
+        throw Exception(lastError ?? "Unknown error");
       }
 
       // Fetch unlock link with retry mechanism
@@ -214,8 +255,7 @@ class _SendEKeyPageState extends State<SendEKeyPage>
         while (retryCount < maxRetries) {
           try {
             if (retryCount > 0) {
-              await Future.delayed(
-                  const Duration(milliseconds: 1500)); // Wait before retry
+              await Future.delayed(const Duration(milliseconds: 1500));
             }
 
             final linkResult = await apiService.getUnlockLink(
@@ -223,13 +263,12 @@ class _SendEKeyPageState extends State<SendEKeyPage>
 
             if (linkResult['link'] != null) {
               unlockLink = linkResult['link'];
-              break; // Success, exit loop
+              break;
             }
           } catch (e) {
             debugPrint("Link retry ${retryCount + 1} failed: $e");
             retryCount++;
 
-            // If it's the last try, log the error but don't stop the flow
             if (retryCount >= maxRetries) {
               if (e.toString().contains('20002') ||
                   e.toString().contains('Not lock admin')) {
@@ -243,7 +282,6 @@ class _SendEKeyPageState extends State<SendEKeyPage>
         }
       }
 
-      // Always show success dialog if sendEKey worked, even if link failed
       if (mounted) {
         _showSuccessDialog(unlockLink, receiver, l10n);
       }

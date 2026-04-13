@@ -298,22 +298,81 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         return;
       }
 
+      String receiver = receiverUsername.trim();
+      // Remove any spaces or dashes
+      receiver = receiver.replaceAll(RegExp(r'[\s\-]'), '');
+
+      List<String> usernamesToTry = [];
+      usernamesToTry.add(receiver);
+
+      // 1. Phone number logic
+      String digitsOnly = receiver.replaceAll(RegExp(r'[^0-9]'), '');
+      if (digitsOnly.isNotEmpty) {
+        if (digitsOnly.length == 10 && digitsOnly.startsWith('5')) {
+          usernamesToTry.add('90$digitsOnly');
+        } else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
+          usernamesToTry.add('90${digitsOnly.substring(1)}');
+        }
+        if (receiver.startsWith('+')) {
+          usernamesToTry.add(receiver.substring(1));
+        }
+      }
+
+      // 2. Email logic (Sanitization as used in RegisterPage)
+      if (receiver.contains('@')) {
+        String alphanumeric = receiver.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+        if (alphanumeric.isNotEmpty && !usernamesToTry.contains(alphanumeric)) {
+          usernamesToTry.add(alphanumeric);
+        }
+      }
+
       int successCount = 0;
       int failCount = 0;
 
       for (var lock in locks) {
-        try {
-          await _apiService.sendEKey(
-            accessToken: token,
-            lockId: lock['lockId'].toString(),
-            receiverUsername: receiverUsername,
-            keyName: "${lock['lockAlias'] ?? 'Lock'} (Group)",
-            startDate: DateTime.fromMillisecondsSinceEpoch(startDateMs),
-            endDate: DateTime.fromMillisecondsSinceEpoch(endDateMs),
-            remoteEnable: 2,
-          );
+        bool lockShared = false;
+        String? lastError;
+
+        for (String userToTry in usernamesToTry) {
+          try {
+            await _apiService.sendEKey(
+              accessToken: token,
+              lockId: lock['lockId'].toString(),
+              receiverUsername: userToTry,
+              keyName: "${lock['lockAlias'] ?? 'Lock'} (Group)",
+              startDate: DateTime.fromMillisecondsSinceEpoch(startDateMs),
+              endDate: DateTime.fromMillisecondsSinceEpoch(endDateMs),
+              remoteEnable: 2,
+              createUser: 2,
+            );
+            lockShared = true;
+            break;
+          } catch (e) {
+            lastError = e.toString();
+            if (lastError.contains('10004') || lastError.contains('1002')) {
+              try {
+                await _apiService.sendEKey(
+                  accessToken: token,
+                  lockId: lock['lockId'].toString(),
+                  receiverUsername: userToTry,
+                  keyName: "${lock['lockAlias'] ?? 'Lock'} (Group)",
+                  startDate: DateTime.fromMillisecondsSinceEpoch(startDateMs),
+                  endDate: DateTime.fromMillisecondsSinceEpoch(endDateMs),
+                  remoteEnable: 2,
+                  createUser: 1,
+                );
+                lockShared = true;
+                break;
+              } catch (e2) {
+                lastError = e2.toString();
+              }
+            }
+          }
+        }
+
+        if (lockShared) {
           successCount++;
-        } catch (e) {
+        } else {
           failCount++;
         }
       }

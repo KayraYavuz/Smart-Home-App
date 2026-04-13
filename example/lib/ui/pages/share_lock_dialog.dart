@@ -471,48 +471,79 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
         throw Exception(l10n.accessTokenNotFound);
       }
 
-      final originalReceiver = _emailController.text.trim();
+      String receiver = _emailController.text.trim();
+      // Remove any spaces or dashes
+      receiver = receiver.replaceAll(RegExp(r'[\s\-]'), '');
+
+      List<String> usernamesToTry = [];
+      usernamesToTry.add(receiver);
+
+      // 1. Phone number logic
+      String digitsOnly = receiver.replaceAll(RegExp(r'[^0-9]'), '');
+      if (digitsOnly.isNotEmpty) {
+        if (digitsOnly.length == 10 && digitsOnly.startsWith('5')) {
+          usernamesToTry.add('90$digitsOnly');
+        } else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
+          usernamesToTry.add('90${digitsOnly.substring(1)}');
+        }
+        if (receiver.startsWith('+')) {
+          usernamesToTry.add(receiver.substring(1));
+        }
+      }
+
+      // 2. Email logic (Sanitization as used in RegisterPage)
+      if (receiver.contains('@')) {
+        String alphanumeric = receiver.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+        if (alphanumeric.isNotEmpty && !usernamesToTry.contains(alphanumeric)) {
+          usernamesToTry.add(alphanumeric);
+        }
+      }
 
       bool shareSuccess = false;
       String? lastError;
 
-      // First attempt: Try to send to existing global user (createUser: 2)
-      try {
-        final DateTime? shareStart = _shareType == 0 ? _startDate : null;
-        final DateTime? shareEnd = _shareType == 0 ? _endDate : null;
-        await apiService.sendEKey(
-          accessToken: accessToken,
-          lockId: widget.lock['lockId'].toString(),
-          receiverUsername: originalReceiver,
-          keyName: 'Key for $originalReceiver',
-          startDate: shareStart,
-          endDate: shareEnd,
-          remoteEnable: _selectedPermission == 1
-              ? 1
-              : 2, // Map permission logic as needed
-          createUser: 2,
-        );
-        shareSuccess = true;
-      } catch (e) {
-        lastError = e.toString();
-        // If user not found (errcode: 10004), fallback to auto-create (createUser: 1)
-        if (e.toString().contains('10004')) {
-          try {
-            final DateTime? shareStart2 = _shareType == 0 ? _startDate : null;
-            final DateTime? shareEnd2 = _shareType == 0 ? _endDate : null;
-            await apiService.sendEKey(
-              accessToken: accessToken,
-              lockId: widget.lock['lockId'].toString(),
-              receiverUsername: originalReceiver,
-              keyName: 'Key for $originalReceiver',
-              startDate: shareStart2,
-              endDate: shareEnd2,
-              remoteEnable: _selectedPermission == 1 ? 1 : 2,
-              createUser: 1,
-            );
-            shareSuccess = true;
-          } catch (e2) {
-            lastError = e2.toString();
+      final DateTime? shareStart = _shareType == 0 ? _startDate : null;
+      final DateTime? shareEnd = _shareType == 0 ? _endDate : null;
+
+      // Try each format until one works
+      for (String userToTry in usernamesToTry) {
+        try {
+          debugPrint("Attempting sendEKey to: $userToTry (createUser: 2)");
+          await apiService.sendEKey(
+            accessToken: accessToken,
+            lockId: widget.lock['lockId'].toString(),
+            receiverUsername: userToTry,
+            keyName: 'Key for $receiver',
+            startDate: shareStart,
+            endDate: shareEnd,
+            remoteEnable: _selectedPermission == 1 ? 1 : 2,
+            createUser: 2,
+          );
+          shareSuccess = true;
+          break;
+        } catch (e) {
+          lastError = e.toString();
+          debugPrint("Failed with $userToTry: $lastError");
+
+          if (lastError.contains('10004') || lastError.contains('1002')) {
+            try {
+              debugPrint("Retrying sendEKey to: $userToTry (createUser: 1)");
+              await apiService.sendEKey(
+                accessToken: accessToken,
+                lockId: widget.lock['lockId'].toString(),
+                receiverUsername: userToTry,
+                keyName: 'Key for $receiver',
+                startDate: shareStart,
+                endDate: shareEnd,
+                remoteEnable: _selectedPermission == 1 ? 1 : 2,
+                createUser: 1,
+              );
+              shareSuccess = true;
+              break;
+            } catch (e2) {
+              lastError = e2.toString();
+              debugPrint("Retry failed with $userToTry: $lastError");
+            }
           }
         }
       }
