@@ -8,8 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:ttlock_flutter/ttlock.dart'; // TTLock SDK import
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_event.dart';
 import 'package:yavuz_lock/blocs/auth/auth_state.dart';
@@ -36,15 +34,6 @@ Future<void> main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   debugPrint("🏁 Main fonksiyonu başladı."); // DEBUG LOG
-
-  try {
-    await dotenv.load(fileName: ".env");
-    debugPrint(
-        '📝 .env yüklendi: ${dotenv.env.keys.length} adet anahtar bulundu.');
-  } catch (e) {
-    debugPrint('❌ .env yükleme hatası: $e');
-    // .env yüklenemese bile uygulama çalışmaya devam etsin (fallback değerlerle)
-  }
 
   debugPrint('🚀 Uygulama başlatılıyor...');
   debugPrint(

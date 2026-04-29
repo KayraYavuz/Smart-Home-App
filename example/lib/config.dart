@@ -1,10 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:yavuz_lock/env/env.dart';
 
 class ApiConfig {
   static const String baseUrl = 'https://euapi.ttlock.com';
-  static String clientId = (dotenv.env['TTLOCK_CLIENT_ID'] ?? '').trim();
-  static String clientSecret =
-      (dotenv.env['TTLOCK_CLIENT_SECRET'] ?? '').trim();
+  static String clientId = Env.ttlockClientId;
+  static String clientSecret = Env.ttlockClientSecret;
   static String redirectUri = '';
   static String username = ''; // Boş bırakıldı
   static String password = ''; // Boş bırakıldı
@@ -45,8 +44,7 @@ class GatewayConfig {
   //test account ttlock uid,  https://api.ttlock.com/v3/user/getUid
   static int uid = 17498;
   //test account ttlock login password
-  static String ttlockLoginPassword =
-      (dotenv.env['TTLOCK_PASSWORD'] ?? '111111').trim();
+  static String ttlockLoginPassword = Env.ttlockPassword;
 
   // custom gateway name
   static String gatewayName = 'My gateway 1';

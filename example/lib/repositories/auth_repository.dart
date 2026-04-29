@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthRepository {
   static const _accessTokenKey = 'access_token';
@@ -8,6 +8,8 @@ class AuthRepository {
   static const _uidKey = 'uid';
   static const _md5PasswordKey = 'md5_password';
 
+  final _secureStorage = const FlutterSecureStorage();
+
   Future<void> saveTokens({
     required String accessToken,
     required String refreshToken,
@@ -16,51 +18,50 @@ class AuthRepository {
     int? uid,
     String? md5Password,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_accessTokenKey, accessToken);
-    await prefs.setString(_refreshTokenKey, refreshToken);
-    await prefs.setInt(_tokenExpiryKey, expiry.millisecondsSinceEpoch);
+    await _secureStorage.write(key: _accessTokenKey, value: accessToken);
+    await _secureStorage.write(key: _refreshTokenKey, value: refreshToken);
+    await _secureStorage.write(
+        key: _tokenExpiryKey, value: expiry.millisecondsSinceEpoch.toString());
+    
     if (baseUrl != null) {
-      await prefs.setString(_baseUrlKey, baseUrl);
+      await _secureStorage.write(key: _baseUrlKey, value: baseUrl);
     }
     if (uid != null) {
-      await prefs.setInt(_uidKey, uid);
+      await _secureStorage.write(key: _uidKey, value: uid.toString());
     }
     if (md5Password != null) {
-      await prefs.setString(_md5PasswordKey, md5Password);
+      await _secureStorage.write(key: _md5PasswordKey, value: md5Password);
     }
   }
 
   Future<String?> getBaseUrl() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_baseUrlKey);
+    return await _secureStorage.read(key: _baseUrlKey);
   }
 
   Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_accessTokenKey);
+    return await _secureStorage.read(key: _accessTokenKey);
   }
 
   Future<String?> getRefreshToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_refreshTokenKey);
+    return await _secureStorage.read(key: _refreshTokenKey);
   }
 
   Future<int?> getUid() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_uidKey);
+    final uidStr = await _secureStorage.read(key: _uidKey);
+    return uidStr != null ? int.tryParse(uidStr) : null;
   }
 
   Future<String?> getMd5Password() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_md5PasswordKey);
+    return await _secureStorage.read(key: _md5PasswordKey);
   }
 
   Future<DateTime?> getTokenExpiry() async {
-    final prefs = await SharedPreferences.getInstance();
-    final expiryMs = prefs.getInt(_tokenExpiryKey);
-    if (expiryMs != null) {
-      return DateTime.fromMillisecondsSinceEpoch(expiryMs);
+    final expiryStr = await _secureStorage.read(key: _tokenExpiryKey);
+    if (expiryStr != null) {
+      final expiryMs = int.tryParse(expiryStr);
+      if (expiryMs != null) {
+        return DateTime.fromMillisecondsSinceEpoch(expiryMs);
+      }
     }
     return null;
   }
@@ -73,12 +74,11 @@ class AuthRepository {
   }
 
   Future<void> deleteTokens() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_accessTokenKey);
-    await prefs.remove(_refreshTokenKey);
-    await prefs.remove(_tokenExpiryKey);
-    await prefs.remove(_baseUrlKey);
-    await prefs.remove(_uidKey);
-    await prefs.remove(_md5PasswordKey);
+    await _secureStorage.delete(key: _accessTokenKey);
+    await _secureStorage.delete(key: _refreshTokenKey);
+    await _secureStorage.delete(key: _tokenExpiryKey);
+    await _secureStorage.delete(key: _baseUrlKey);
+    await _secureStorage.delete(key: _uidKey);
+    await _secureStorage.delete(key: _md5PasswordKey);
   }
 }

@@ -14,7 +14,6 @@ dependencies:
     sdk: flutter
 
   bmprogresshud: ^1.0.3
-  flutter_dotenv: ^6.0.0
 
   
   ttlock_flutter:
@@ -50,6 +49,7 @@ dependencies:
   share_plus: ^12.0.1
   path_provider: ^2.1.5
   nfc_manager: ^4.1.1
+  flutter_secure_storage: ^10.0.0
 
 
 dev_dependencies:
@@ -76,7 +76,6 @@ flutter:
   assets:
     - assets/images/
     - assets/icon/
-    - .env
 
 
 
