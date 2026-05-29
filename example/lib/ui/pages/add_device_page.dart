@@ -254,12 +254,12 @@ class _AddDevicePageState extends State<AddDevicePage> {
       _buildDeviceButton(context, l10n.deviceCameraSurveillance, Icons.videocam,
           () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.tc2Scanning)),
+          const SnackBar(content: Text('TC2 scanning...')),
         );
       }),
       _buildDeviceButton(context, 'DB2', Icons.doorbell, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.db2Scanning)),
+          const SnackBar(content: Text('DB2 scanning...')),
         );
       }),
     ];
@@ -270,24 +270,22 @@ class _AddDevicePageState extends State<AddDevicePage> {
     return [
       _buildDeviceButton(context, l10n.doorSensor, Icons.sensors, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.sensorScanning)),
+          const SnackBar(content: Text('Sensor scanning...')),
         );
       }),
     ];
   }
 
   List<Widget> _buildMeters(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return [
-      _buildDeviceButton(context, l10n.utilityMeter, Icons.electrical_services,
-          () {
+      _buildDeviceButton(context, 'Electric', Icons.electrical_services, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.electricMeterScanning)),
+          const SnackBar(content: Text('Electric meter scanning...')),
         );
       }),
-      _buildDeviceButton(context, l10n.utilityMeter, Icons.water_drop, () {
+      _buildDeviceButton(context, 'Water', Icons.water_drop, () {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.waterMeterScanning)),
+          const SnackBar(content: Text('Water meter scanning...')),
         );
       }),
     ];

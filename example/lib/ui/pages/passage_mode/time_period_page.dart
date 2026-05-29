@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'time_period_model.dart';
 
@@ -76,7 +75,7 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
         );
       },
     );
-    if (picked != null && mounted) {
+    if (picked != null) {
       HapticFeedback.selectionClick();
       setState(() => _startTime = picked);
     }
@@ -98,7 +97,7 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
         );
       },
     );
-    if (picked != null && mounted) {
+    if (picked != null) {
       HapticFeedback.selectionClick();
       setState(() => _endTime = picked);
     }
@@ -107,8 +106,8 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
   void _save() {
     if (_selectedDays.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.selectDays),
+        const SnackBar(
+          content: Text('Lütfen en az bir gün seçin'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -142,9 +141,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          AppLocalizations.of(context)!.timePeriod,
-          style: const TextStyle(
+        title: const Text(
+          'Zaman dilimi',
+          style: TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -399,9 +398,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
               ),
               elevation: 0,
             ),
-            child: Text(
-              AppLocalizations.of(context)!.ok,
-              style: const TextStyle(
+            child: const Text(
+              'Tamam',
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),

@@ -83,15 +83,6 @@ class ApiService {
 
   ApiService(this._authRepository);
 
-  static const _kHttpTimeout = Duration(seconds: 30);
-
-  Future<http.Response> _post(Uri url,
-          {Map<String, String>? headers, Object? body}) =>
-      http.post(url, headers: headers, body: body).timeout(_kHttpTimeout);
-
-  Future<http.Response> _get(Uri url, {Map<String, String>? headers}) =>
-      http.get(url, headers: headers).timeout(_kHttpTimeout);
-
   int _serverTimeOffset = 0;
 
   /// Sync client time with server time using HTTP Date header
@@ -158,7 +149,7 @@ class ApiService {
     final formBody = body.map((key, value) => MapEntry(key, value.toString()));
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -207,7 +198,7 @@ class ApiService {
     final formBody = body.map((key, value) => MapEntry(key, value.toString()));
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -259,7 +250,7 @@ class ApiService {
       body['verifyCode'] = verifyCode;
     }
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -305,7 +296,7 @@ class ApiService {
 
     debugPrint('📡 Register API çağrısı: $url');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -518,7 +509,7 @@ class ApiService {
       body['cyclicConfig'] = jsonEncode(cyclicConfig);
     }
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -558,7 +549,7 @@ class ApiService {
       if (searchStr != null) 'searchStr': searchStr,
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -594,7 +585,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -639,7 +630,7 @@ class ApiService {
       body['cyclicConfig'] = jsonEncode(cyclicConfig);
     }
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -672,7 +663,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -708,7 +699,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -761,7 +752,7 @@ class ApiService {
       body['cyclicConfig'] = jsonEncode(cyclicConfig);
     }
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -806,7 +797,7 @@ class ApiService {
       'orderBy': orderBy.toString(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -848,7 +839,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -878,7 +869,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -914,7 +905,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -968,7 +959,7 @@ class ApiService {
     debugPrint('📡 Key list API çağrısı: $url');
     debugPrint('📝 Body parametreleri: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1097,7 +1088,7 @@ class ApiService {
 
     debugPrint('📡 Get eKey API çağrısı: $url');
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     debugPrint('📨 Get eKey API yanıtı - Status: ${response.statusCode}');
 
@@ -1144,7 +1135,7 @@ class ApiService {
 
     debugPrint('📡 Query Lock Open State API çağrısı: $url');
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     debugPrint(
         '📨 Query Lock Open State API yanıtı - Status: ${response.statusCode}');
@@ -1197,7 +1188,7 @@ class ApiService {
 
     debugPrint('📡 Query Lock Time API çağrısı: $url');
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     debugPrint(
         '📨 Query Lock Time API yanıtı - Status: ${response.statusCode}');
@@ -1253,7 +1244,7 @@ class ApiService {
     debugPrint('📡 Update Lock Time API çağrısı: $url');
     debugPrint('📝 Body parametreleri: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1310,7 +1301,7 @@ class ApiService {
 
     debugPrint('📡 Query Lock Battery API çağrısı: $url');
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     debugPrint(
         '📨 Query Lock Battery API yanıtı - Status: ${response.statusCode}');
@@ -1358,7 +1349,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1406,7 +1397,7 @@ class ApiService {
     final url = Uri.parse('$_baseUrl/v3/lockRecord/list')
         .replace(queryParameters: queryParams);
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1443,7 +1434,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1479,7 +1470,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1512,7 +1503,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1549,7 +1540,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1587,7 +1578,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1617,7 +1608,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1651,7 +1642,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1686,7 +1677,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1723,7 +1714,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1756,7 +1747,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1806,7 +1797,7 @@ class ApiService {
 
     debugPrint('📡 List Identity Cards API çağrısı: $url');
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     debugPrint(
         '📨 List Identity Cards API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -1850,7 +1841,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1894,7 +1885,7 @@ class ApiService {
 
     debugPrint('📡 Gateway list API çağrısı: $url');
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1935,7 +1926,7 @@ class ApiService {
     debugPrint('📡 Remote unlock API çağrısı: $url');
     debugPrint('📝 Body parametreleri: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -1999,7 +1990,7 @@ class ApiService {
     debugPrint('📡 Lock init API çağrısı: $url');
     // debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2069,7 +2060,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _post(url);
+    final response = await http.post(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2101,7 +2092,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _post(url);
+    final response = await http.post(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2138,7 +2129,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2178,7 +2169,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _post(url);
+    final response = await http.post(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2217,7 +2208,7 @@ class ApiService {
 
     debugPrint('📡 Get Gateways by Lock API çağrısı: $url');
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2260,7 +2251,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2325,7 +2316,7 @@ class ApiService {
 
     debugPrint('📡 Lock Key List API çağrısı: $url');
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2366,7 +2357,7 @@ class ApiService {
     debugPrint('📡 Delete eKey API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2413,7 +2404,7 @@ class ApiService {
     debugPrint('📡 Freeze eKey API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2460,7 +2451,7 @@ class ApiService {
     debugPrint('📡 Unfreeze eKey API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2517,7 +2508,7 @@ class ApiService {
     debugPrint('📡 Update eKey API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2568,7 +2559,7 @@ class ApiService {
     debugPrint('📡 Change eKey Period API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2620,7 +2611,7 @@ class ApiService {
     debugPrint('📡 Authorize eKey API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2669,7 +2660,7 @@ class ApiService {
     debugPrint('📡 Unauthorize eKey API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2719,7 +2710,7 @@ class ApiService {
     debugPrint('📡 Get Unlock Link API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2809,7 +2800,7 @@ class ApiService {
     debugPrint('📡 Send eKey API çağrısı: $url');
     debugPrint('📝 Body parametreleri: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2852,7 +2843,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _post(url);
+    final response = await http.post(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2892,7 +2883,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2925,7 +2916,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -2968,7 +2959,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3006,7 +2997,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -3047,7 +3038,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3145,7 +3136,7 @@ class ApiService {
       debugPrint('📡 Trying endpoint: $fullUrl');
       debugPrint('📝 Body: $body');
       try {
-        final response = await _post(
+        final response = await http.post(
           Uri.parse(fullUrl),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: body,
@@ -3153,9 +3144,7 @@ class ApiService {
         debugPrint('📨 Response [${response.statusCode}]: ${response.body}');
 
         if (response.statusCode != 200 ||
-            response.body.trimLeft().startsWith('<')) {
-          return null; // HTML error
-        }
+            response.body.trimLeft().startsWith('<')) return null; // HTML error
 
         final data = json.decode(response.body);
         if (data is Map<String, dynamic>) {
@@ -3348,7 +3337,7 @@ class ApiService {
     debugPrint('📝 Body: $body');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: body,
@@ -3399,7 +3388,7 @@ class ApiService {
     debugPrint('📡 Delete Identity Card API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3454,7 +3443,7 @@ class ApiService {
     debugPrint('📡 Change Identity Card Period API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3507,7 +3496,7 @@ class ApiService {
     debugPrint('📡 Rename Identity Card API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3557,7 +3546,7 @@ class ApiService {
     debugPrint('📡 Clear Identity Cards API çağrısı: $url');
     debugPrint('📝 Body: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3606,7 +3595,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3644,7 +3633,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3683,7 +3672,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3758,7 +3747,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3799,7 +3788,7 @@ class ApiService {
     debugPrint('📡 Rename Gateway API çağrısı: $url');
     debugPrint('📝 Body parametreleri: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3854,7 +3843,7 @@ class ApiService {
     debugPrint('📡 Transfer Gateway API çağrısı: $url');
     debugPrint('📝 Body parametreleri: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3907,7 +3896,7 @@ class ApiService {
     debugPrint('📡 Query Gateway Init Status API çağrısı: $url');
     debugPrint('📝 Body parametreleri: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -3975,7 +3964,7 @@ class ApiService {
     debugPrint('📡 Upload Gateway Detail API çağrısı: $url');
     debugPrint('📝 Body parametreleri: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -4027,7 +4016,7 @@ class ApiService {
 
     debugPrint('📡 Gateway Upgrade Check API çağrısı: $url');
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     debugPrint(
         '📨 Gateway Upgrade Check API yanıtı - Status: ${response.statusCode}');
@@ -4076,7 +4065,7 @@ class ApiService {
     debugPrint('📡 Set Gateway Upgrade Mode API çağrısı: $url');
     debugPrint('📝 Body parametreleri: $body');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -4124,7 +4113,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -4154,7 +4143,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -4210,7 +4199,7 @@ class ApiService {
     });
 
     debugPrint('📡 queryOpenState ile kontrol ediliyor...');
-    final response = await _get(url).timeout(const Duration(seconds: 5));
+    final response = await http.get(url).timeout(const Duration(seconds: 5));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -4231,7 +4220,7 @@ class ApiService {
     });
 
     debugPrint('📋 lock detail ile kontrol ediliyor...');
-    final response = await _get(url).timeout(const Duration(seconds: 3));
+    final response = await http.get(url).timeout(const Duration(seconds: 3));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -4254,7 +4243,7 @@ class ApiService {
     });
 
     debugPrint('📝 lock records ile kontrol ediliyor...');
-    final response = await _get(url).timeout(const Duration(seconds: 3));
+    final response = await http.get(url).timeout(const Duration(seconds: 3));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -4409,7 +4398,7 @@ class ApiService {
       // Set to avoid duplicate checks
       final url = Uri.parse('$regionBaseUrl/oauth2/token');
       try {
-        final response = await _post(
+        final response = await http.post(
           url,
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: {
@@ -4497,7 +4486,7 @@ class ApiService {
     debugPrint('📡 User List API çağrısı: $url');
 
     try {
-      final response = await _get(url);
+      final response = await http.get(url);
 
       debugPrint('📨 User List API yanıtı - Status: ${response.statusCode}');
 
@@ -4537,7 +4526,7 @@ class ApiService {
     final formBody = body.map((key, value) => MapEntry(key, value.toString()));
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -4600,7 +4589,7 @@ class ApiService {
     final url = Uri.parse('$_baseUrl/v3/lock/list')
         .replace(queryParameters: queryParams);
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -4675,7 +4664,7 @@ class ApiService {
     debugPrint('📡 Lock Detail API çağrısı: $url');
 
     try {
-      final response = await _get(url);
+      final response = await http.get(url);
 
       debugPrint('📨 Lock Detail API yanıtı - Status: ${response.statusCode}');
 
@@ -4737,7 +4726,7 @@ class ApiService {
     debugPrint('📡 Delete Lock API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -4799,7 +4788,7 @@ class ApiService {
     debugPrint('📡 Update Lock Data API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -4861,7 +4850,7 @@ class ApiService {
     debugPrint('📡 Rename Lock API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -4929,7 +4918,7 @@ class ApiService {
     debugPrint('📡 Change Admin Pwd API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -4994,7 +4983,7 @@ class ApiService {
     debugPrint('📡 Transfer Lock API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -5058,7 +5047,7 @@ class ApiService {
     debugPrint('📡 Update Battery API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -5129,7 +5118,7 @@ class ApiService {
     debugPrint('📡 Set Auto Lock Time API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -5207,7 +5196,7 @@ class ApiService {
     debugPrint('📡 Config Passage Mode API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -5265,7 +5254,7 @@ class ApiService {
     debugPrint('📡 Get Passage Mode Config API çağrısı: $url');
 
     try {
-      final response = await _get(url);
+      final response = await http.get(url);
 
       debugPrint(
           '📨 Get Passage Mode Config API yanıtı - Status: ${response.statusCode}');
@@ -5340,7 +5329,7 @@ class ApiService {
     debugPrint('📡 Set Hotel Card Sector API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -5404,7 +5393,7 @@ class ApiService {
     debugPrint('📡 Query Lock Setting API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -5468,7 +5457,7 @@ class ApiService {
     debugPrint('📡 Get Working Mode API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: queryParams,
@@ -5546,7 +5535,7 @@ class ApiService {
     debugPrint('📡 Config Working Mode API çağrısı: $url');
 
     try {
-      final response = await _post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
@@ -5588,7 +5577,7 @@ class ApiService {
   }) async {
     final url = Uri.parse('$_baseUrl/v3/lock/${lock ? 'lock' : 'unlock'}');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -5621,7 +5610,7 @@ class ApiService {
   }) async {
     final url = Uri.parse('$_baseUrl/v3/setting/webhook');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -5676,7 +5665,7 @@ class ApiService {
           'date': _getApiTime(),
         });
 
-        final response = await _get(url);
+        final response = await http.get(url);
 
         debugPrint('📡 Endpoint: $endpoint - Status: ${response.statusCode}');
 
@@ -5741,7 +5730,7 @@ class ApiService {
   }) async {
     final url = Uri.parse('$_baseUrl/v3/lockRecord/list');
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -5804,7 +5793,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -5851,7 +5840,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -5908,7 +5897,7 @@ class ApiService {
       body['electricQuantity'] = electricQuantity.toString();
     }
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -5947,7 +5936,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -5981,7 +5970,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6017,7 +6006,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6053,7 +6042,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6096,7 +6085,7 @@ class ApiService {
       body['featureValue'] = featureValue.toString();
     }
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6150,7 +6139,7 @@ class ApiService {
     if (type != null) body['type'] = type.toString();
     if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6193,7 +6182,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6225,7 +6214,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6257,7 +6246,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6300,7 +6289,7 @@ class ApiService {
     if (endDate != null) body['endDate'] = endDate.toString();
     if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6339,7 +6328,7 @@ class ApiService {
     if (hardwareRevision != null) body['hardwareRevision'] = hardwareRevision;
     if (firmwareRevision != null) body['firmwareRevision'] = firmwareRevision;
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6379,7 +6368,7 @@ class ApiService {
     if (slotNumber != null) body['slotNumber'] = slotNumber.toString();
     if (featureValue != null) body['featureValue'] = featureValue.toString();
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6425,7 +6414,7 @@ class ApiService {
 
     if (name != null) body['name'] = name;
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6462,7 +6451,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6499,7 +6488,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6534,7 +6523,7 @@ class ApiService {
 
     if (name != null) body['name'] = name;
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6575,7 +6564,7 @@ class ApiService {
     if (hardwareRevision != null) body['hardwareRevision'] = hardwareRevision;
     if (firmwareRevision != null) body['firmwareRevision'] = firmwareRevision;
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6611,7 +6600,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6654,7 +6643,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6688,7 +6677,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6719,7 +6708,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6775,7 +6764,7 @@ class ApiService {
     if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
     if (qrCodeNumber != null) body['qrCodeNumber'] = qrCodeNumber;
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6816,7 +6805,7 @@ class ApiService {
       if (name != null) 'name': name,
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6848,7 +6837,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await _get(url);
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6896,7 +6885,7 @@ class ApiService {
     if (endDate != null) body['endDate'] = endDate.toString();
     if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6932,7 +6921,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -6966,7 +6955,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -7019,7 +7008,7 @@ class ApiService {
     if (preferredDns != null) body['preferredDns'] = preferredDns;
     if (alternateDns != null) body['alternateDns'] = alternateDns;
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -7053,7 +7042,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -7097,7 +7086,7 @@ class ApiService {
 
     if (searchStr != null) body['searchStr'] = searchStr;
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -7151,7 +7140,7 @@ class ApiService {
     if (name != null) body['name'] = name;
     if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -7189,7 +7178,7 @@ class ApiService {
 
     if (name != null) body['name'] = name;
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -7231,7 +7220,7 @@ class ApiService {
     if (type != null) body['type'] = type.toString();
     if (cyclicConfig != null) body['cyclicConfig'] = jsonEncode(cyclicConfig);
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -7267,7 +7256,7 @@ class ApiService {
 
     if (type != null) body['type'] = type.toString();
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -7299,7 +7288,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(
+    final response = await http.post(
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -7363,7 +7352,7 @@ class ApiService {
       'date': _getApiTime(),
     };
 
-    final response = await _post(url,
+    final response = await http.post(url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: body);
 

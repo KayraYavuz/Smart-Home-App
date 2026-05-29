@@ -179,7 +179,7 @@
   "developerPortalInfo": "For more technical information and credentials, visit the Developer Portal.",
   "visitPortal": "Visit Developer Portal",
   "viewDocumentation": "View Documentation",
-  "noLocksFound": "No locks found",
+  "noLocksFound": "No locks found from API.",
   "allLocks": "Yavuz Lock",
   "refreshLocks": "Refresh Locks",
   "gateways": "Gateways",
@@ -403,7 +403,7 @@
   "lockUsers": "Lock Users",
   "lockUsersSubtitle": "Manage lock access and block users",
   "transferLock": "Transfer Lock",
-  "transferLockSubtitle": "Transfer to another user",
+  "transferLockSubtitle": "Transfer lock ownership to another account",
   "transferGateway": "Transfer Gateway",
   "transferGatewaySubtitle": "Transfer gateway ownership to another account",
   "dataManagement": "Data Management",
@@ -425,7 +425,7 @@
       }
     }
   },
-  "editingGroup": "Editing group '{groupName}'",
+  "editingGroup": "Editing group {groupName}",
   "@editingGroup": {
     "placeholders": {
       "groupName": {
@@ -450,12 +450,8 @@
   "lockRecordsTitle": "Lock Records ({start} - {end})",
   "@lockRecordsTitle": {
     "placeholders": {
-      "start": {
-        "type": "String"
-      },
-      "end": {
-        "type": "String"
-      }
+      "start": { "type": "String" },
+      "end": { "type": "String" }
     }
   },
   "userAccessManagement": "User & Access Management",
@@ -473,17 +469,13 @@
   "errorWithMsg": "Error: {error}",
   "@errorWithMsg": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "lockRecordsWithName": "{lockName} Records",
   "@lockRecordsWithName": {
     "placeholders": {
-      "lockName": {
-        "type": "String"
-      }
+      "lockName": { "type": "String" }
     }
   },
   "lockRecords": "Lock Records",
@@ -497,25 +489,19 @@
   "uploadError": "Upload error: {error}",
   "@uploadError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "readError": "Read error: {error}",
   "@readError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "unexpectedError": "Unexpected error: {error}",
   "@unexpectedError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "shareLockTitle": "Share {lockName} Lock",
@@ -540,30 +526,30 @@
   "tabPermanent": "Permanent",
   "tabRecurring": "Recurring",
   "enterReceiver": "Please enter receiver",
-  "keySentToReceiver": "The key has been sent to the receiver.",
+  "keySentToReceiver": "Electronic key sent to receiver.",
   "sentSuccessfully": "Sent Successfully",
-  "shareableLink": "Shareable Link",
+  "shareableLink": "Shareable Link:",
   "copy": "Copy",
-  "linkCopied": "Link copied to clipboard",
-  "sendViaEmail": "Send via Email",
+  "linkCopied": "Link copied",
+  "sendViaEmail": "Send via email",
   "sendViaSMS": "Send via SMS",
   "sendAppDownloadLink": "Send App Download Link",
   "receiver": "Receiver",
-  "receiverHint": "Email or Phone",
+  "receiverHint": "Phone number / Email",
   "nameLabel": "Name",
-  "enterHere": "Enter here",
-  "validityPeriod": "Validity Period",
+  "enterHere": "Please enter here",
+  "validityPeriod": "Validity period",
   "configured": "Configured",
   "set": "Set",
-  "allowRemoteUnlock": "Allow Remote Unlock",
-  "permanentKeyNote": "Permanent keys remain valid unless deleted.",
-  "timedKeyNote": "Timed keys are valid only during the specified period.",
+  "allowRemoteUnlock": "Allow remote unlock",
+  "permanentKeyNote": "Receivers can unlock the lock indefinitely with this app.",
+  "timedKeyNote": "Invitees can unlock via Bluetooth or remotely (if Gateway exists) within the validity period.",
   "send": "Send",
   "cycle": "Cycle",
   "remoteControls": "Remote Controls",
   "remoteControl": "Remote Control",
   "wirelessKeypads": "Wireless Keypads",
-  "wirelessKeypad": "Wireless Keypad",
+  "wirelessKeypad": "Keypad",
   "doorSensor": "Door Sensor",
   "sensorNotFound": "Sensor not found",
   "qrCodes": "QR Codes",
@@ -572,7 +558,7 @@
   "empty": "Empty",
   "qrCodeCreated": "QR Code created",
   "wifiLockDetails": "Wi-Fi Lock Details",
-  "isOnline": "Is Online",
+  "isOnline": "Online Status",
   "networkName": "Network Name",
   "rssiGrade": "Signal Strength",
   "detailNotFound": "Detail not found",
@@ -610,6 +596,7 @@
   "autoLockTime": "Auto Lock Time",
   "enterTimeInSeconds": "Enter time in seconds (0 to turn off)",
   "secondsShortcut": "sec",
+  "set": "Set",
   "workingMode": "Working Mode",
   "continuouslyWorking": "Continuously Working (Default)",
   "freezingMode": "Freezing Mode (Stays Locked)",
@@ -663,8 +650,12 @@
   "urlOpenError": "Could not open URL: {url}",
   "timePeriod": "Time Period",
   "add": "Add",
+  "save": "Save",
   "transferAction": "Transfer",
   "timeSet": "Time set",
+  "delete": "Delete",
+  "transferLockSubtitle": "Transfer to another user",
+  "off": "Off",
   "tokenNotFound": "Token not found",
   "adminOnlyLinkWarning": "Note: Only the Lock Admin can generate unlock links.",
   "sendKeySuccessNoLink": "Key sent successfully, but a web link could not be generated due to permission restrictions.\nThe receiver can use the key by downloading the app.",
@@ -673,11 +664,51 @@
   "keyAccessSubject": "Lock Access Key",
   "emailAppNotFound": "Email app not found",
   "smsAppNotFound": "SMS app not found",
+  "validityPeriod": "Validity Period",
+  "configured": "Configured",
   "deleteErrorWithMsg": "Deletion error: {error}",
   "newQrWithName": "New QR ({name})",
+  "qrCodeCreated": "QR Code created",
+  "errorLabel": "Error",
+  "remoteControls": "Remote Controls",
+  "remoteControl": "Remote Control",
+  "wirelessKeypads": "Wireless Keypads",
+  "wirelessKeypad": "Wireless Keypad",
+  "doorSensor": "Door Sensor",
+  "sensorNotFound": "Sensor not found",
+  "qrCodes": "QR Codes",
+  "qrCode": "QR Code",
+  "qrContent": "QR Content",
+  "empty": "Empty",
+  "ok": "OK",
+  "wifiLockDetails": "Wi-Fi Lock Details",
+  "isOnline": "Is Online",
+  "sendKey": "Send Key",
+  "tabTimed": "Timed",
+  "tabOneTime": "One-time",
+  "tabPermanent": "Permanent",
+  "tabRecurring": "Recurring",
+  "receiver": "Receiver",
+  "receiverHint": "Email or Phone",
+  "nameLabel": "Name",
+  "enterHere": "Enter here",
+  "startDate": "Start Date",
+  "endDate": "End Date",
+  "allowRemoteUnlock": "Allow Remote Unlock",
   "oneTimeKeyNote": "One-time keys expire after first use or 1 hour.",
+  "permanentKeyNote": "Permanent keys remain valid unless deleted.",
+  "timedKeyNote": "Timed keys are valid only during the specified period.",
+  "send": "Send",
   "sendMultipleKeys": "Send Multiple Keys",
   "sendMultipleKeysComingSoon": "Send multiple keys feature coming soon",
+  "sentSuccessfully": "Sent Successfully",
+  "keySentToReceiver": "The key has been sent to the receiver.",
+  "shareableLink": "Shareable Link",
+  "linkCopied": "Link copied to clipboard",
+  "copy": "Copy",
+  "sendViaEmail": "Send via Email",
+  "sendViaSMS": "Send via SMS",
+  "sendAppDownloadLink": "Send App Download Link",
   "groupListLoadError": "Failed to load group list: {error}",
   "addNewGroup": "Add New Group",
   "groupName": "Group Name",
@@ -686,11 +717,16 @@
   "editGroup": "Edit Group",
   "newGroupName": "New Group Name",
   "groupUpdated": "Group updated",
+  "groupManagement": "Group Management",
   "noGroupsCreatedYet": "No groups created yet",
   "createGroup": "Create Group",
+  "unnamedGroup": "Unnamed Group",
   "rename": "Rename",
   "deleteGroupConfirmation": "Are you sure you want to delete the group {name}?",
   "groupDeleted": "Group deleted",
+  "key": "Key",
+  "frozen": "Frozen",
+  "active": "Active",
   "authorizationStatus": "Authorization Status",
   "authorizedAdmin": "Authorized Administrator (Admin)",
   "normalUser": "Normal User",
@@ -700,6 +736,7 @@
   "revokeAuthority": "Revoke Authority",
   "authorize": "Authorize",
   "changePeriod": "Change Period",
+  "edit": "Edit",
   "unlockLink": "Unlock Link",
   "unfreezeSuccess": "Freeze removed",
   "freezeSuccess": "Key frozen",
@@ -717,6 +754,7 @@
   "groupManagementTitle": "Group Management",
   "groupLocksLoadError": "Failed to load group locks: {error}",
   "groupLocksTitle": "{groupName} Locks",
+  "noLocksFound": "No locks found",
   "lock": "Lock",
   "lockListRetrievalError": "Failed to retrieve lock list: {error}",
   "operationCompletedWithCounts": "Operation completed. {success} added, {fail} errors.",
@@ -736,6 +774,9 @@
   "securityQuestionSoon": "Security question setting will be added soon",
   "countryRegion": "Country/Region",
   "userTerms": "User Terms",
+  "privacyPolicy": "Privacy Policy",
+  "add": "Add",
+  "urlOpenError": "Could not open URL: {url}",
   "editField": "Edit {field}",
   "enterNewField": "Enter new {field}",
   "fieldUpdatedSuccess": "{field} updated successfully",
@@ -769,20 +810,14 @@
   "gatewayAddedSuccessServerFail": "Gateway added to device but could not be saved to server: {error}",
   "@gatewayAddedSuccessServerFail": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "gatewayError": "Error: {errorCode} - {errorMsg}",
   "@gatewayError": {
     "placeholders": {
-      "errorCode": {
-        "type": "String"
-      },
-      "errorMsg": {
-        "type": "String"
-      }
+      "errorCode": { "type": "String" },
+      "errorMsg": { "type": "String" }
     }
   },
   "gatewayRestartAndReconnect": "Please restart the gateway and connect again.",
@@ -798,9 +833,7 @@
   "cannotReachLockBluetooth": "Cannot reach the lock. Make sure Bluetooth is on and you are nearby. Error: {error}",
   "@cannotReachLockBluetooth": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "passcodeCreatedTitleAlt": "Passcode Created!",
@@ -809,9 +842,7 @@
   "errorGeneric": "Error: {error}",
   "@errorGeneric": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "infoPermanent": "Permanent passcodes are valid indefinitely until deleted from the lock. If left blank, the system will generate one automatically.",
@@ -838,17 +869,13 @@
   "failedToAddCard": "Failed: {error}",
   "@failedToAddCard": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "cardSaving": "Card: {cardNumber}\nSaving...",
   "@cardSaving": {
     "placeholders": {
-      "cardNumber": {
-        "type": "String"
-      }
+      "cardNumber": { "type": "String" }
     }
   },
   "cycleOn": "Cycle on",
@@ -860,12 +887,8 @@
   "fingerprintInstructionCount": "Please press your finger on the lock ({current}/{total}).",
   "@fingerprintInstructionCount": {
     "placeholders": {
-      "current": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
+      "current": { "type": "int" },
+      "total": { "type": "int" }
     }
   },
   "fingerprintReadSaving": "Fingerprint read! Saving to server...",
@@ -873,25 +896,19 @@
   "fingerprintSaveFailed": "Error saving to server: {error}",
   "@fingerprintSaveFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "fingerprintAddFailed": "Failed: {error}",
   "@fingerprintAddFailed": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "fingerprintError": "Error: {error}",
   "@fingerprintError": {
     "placeholders": {
-      "error": {
-        "type": "String"
-      }
+      "error": { "type": "String" }
     }
   },
   "addFingerprintTitle": "Add Fingerprint",
@@ -913,6 +930,7 @@
   "expired": "Expired",
   "deleteGroup": "Delete Group",
   "updateErrorWithMsg": "Update error: {error}",
+  "errorWithMsg": "Error: {error}",
   "scanGatewayTitle": "Scan Gateway",
   "scanLockTitle": "Scan Lock",
   "stopScan": "Stop Scan",
@@ -948,6 +966,7 @@
   "gatewayDetailTitle": "Gateway Detail",
   "gatewayName": "Gateway Name",
   "gatewayMac": "Gateway MAC",
+  "networkName": "Network Name",
   "yes": "Yes",
   "no": "No",
   "lockCountLabel": "Lock Count",
@@ -976,7 +995,7 @@
   "roleAdmin": "Admin",
   "roleNormal": "Normal",
   "roleObserver": "Observer",
-  "accessTokenNotFound": "Access token could not be retrieved",
+  "accessTokenNotFound": "Access token not found",
   "lockIdNotFound": "Lock ID not found.",
   "invalidLockIdFormat": "Invalid Lock ID format.",
   "loginToSeePasscodes": "Please login to see passcodes.",
@@ -1084,11 +1103,16 @@
   "clearAllRecordsConfirmWarning": "(This action cannot be undone)",
   "ungrouped": "Ungrouped",
   "unassignedLocksAndUsers": "Unassigned locks and users",
+  "lockUsers": "Lock Users",
   "manageLockAccessAndBlockUsers": "Manage lock access and block users",
+  "transferLock": "Transfer Lock",
   "transferLockOwnership": "Transfer lock ownership to another account",
+  "transferGateway": "Transfer Gateway",
   "transferGatewayOwnership": "Transfer gateway ownership to another account",
+  "exportData": "Export Data",
   "exportDataDesc": "Export data or backup",
   "membersAndLocksCount": "{members} members, {locks} locks",
+  "editingGroup": "Editing group '{groupName}'",
   "searchGateway": "Search gateway...",
   "noGatewayFound": "No gateway found yet",
   "actionsFor": "Actions for {name}",
@@ -1100,6 +1124,7 @@
   "networkLabel": "Network",
   "statusLabel": "Status",
   "connectedLocks": "Connected Locks",
+  "unnamedLock": "Unnamed Lock",
   "gatewayDetailError": "Gateway detail error: {error}",
   "gatewayManagementDesc": "Manage your TTLock Gateways and connect for remote control.",
   "noConnectedGatewaysDesc": "No Gateways found.\\nAdd a Gateway from your TTLock app.",
@@ -1108,6 +1133,7 @@
   "connectButton": "Connect",
   "closeButton": "Close",
   "shareFailed": "Share failed",
+  "accessTokenNotFound": "Access token could not be retrieved",
   "passwordUpdatedButLoginFailed": "Password updated but login failed.",
   "loginSuccessButNoToken": "Login successful but no token received.",
   "loginFailedCheckCredentials": "Login failed. Please check your credentials.",
@@ -1133,32 +1159,5 @@
   "registrationFailed": "Registration failed",
   "apiRegistrationUnexpectedResponse": "Registration failed: Unexpected response format",
   "apiResetPasswordFailed": "Password reset failed",
-  "iosNfcWarning": "Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.",
-  "validityStart": "Validity Start",
-  "validityEnd": "Validity End",
-  "noName": "No Name",
-  "facesTitle": "Faces",
-  "fingerprintsTitle": "Fingerprints",
-  "noFacesFound": "No faces found.",
-  "noFingerprintsFound": "No fingerprints found.",
-  "clearAllFacesTitle": "Clear All Faces",
-  "clearAllFacesConfirm": "Are you sure you want to clear all faces?",
-  "clearAllFingerprintsTitle": "Clear All Fingerprints",
-  "clearAllFingerprintsConfirm": "Are you sure you want to clear all fingerprints?",
-  "addFaceTitle": "Add Face",
-  "pickImage": "Pick Image",
-  "faceFeatureDataSuccess": "Face feature data obtained successfully.",
-  "faceFeatureDataFailed": "Failed to get feature data: {error}",
-  "faceAddedSuccessfully": "Face added successfully.",
-  "faceAddFailed": "Failed to add face: {error}",
-  "faceSelectImageFirst": "Please select an image and get feature data first.",
-  "faceName": "Face Name",
-  "locksForGateway": "Locks for {gatewayName}",
-  "tc2Scanning": "TC2 scanning...",
-  "db2Scanning": "DB2 scanning...",
-  "sensorScanning": "Sensor scanning...",
-  "electricMeterScanning": "Electric meter scanning...",
-  "waterMeterScanning": "Water meter scanning...",
-  "bluetoothFailed": "Failed via Bluetooth: {btError}\n\nFailed via Gateway: {gwError}",
-  "bluetoothTimeout": "Bluetooth operation timed out."
+  "iosNfcWarning": "Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth."
 }

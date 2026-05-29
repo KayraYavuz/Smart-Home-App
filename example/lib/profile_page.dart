@@ -37,7 +37,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadUserInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      if (!mounted) return;
 
       // Get package info for version
       // Since we don't have package_info_plus added in pubspec yet, we'll hardcode it for now

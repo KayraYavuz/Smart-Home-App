@@ -190,34 +190,25 @@ class _LockDetailPageState extends State<LockDetailPage>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 4, vertical: 2),
                       decoration: BoxDecoration(
-                        color: widget.lock['battery'] != null
-                            ? _getBatteryColor(widget.lock['battery'] as int)
-                                .withValues(alpha: 0.2)
-                            : Colors.grey.withValues(alpha: 0.2),
+                        color: _getBatteryColor(widget.lock['battery'] ?? 85)
+                            .withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            widget.lock['battery'] != null
-                                ? _getBatteryIcon(widget.lock['battery'] as int)
-                                : Icons.battery_unknown,
-                            color: widget.lock['battery'] != null
-                                ? _getBatteryColor(widget.lock['battery'] as int)
-                                : Colors.grey,
+                            _getBatteryIcon(widget.lock['battery'] ?? 85),
+                            color:
+                                _getBatteryColor(widget.lock['battery'] ?? 85),
                             size: 14,
                           ),
                           const SizedBox(width: 2),
                           Text(
-                            widget.lock['battery'] != null
-                                ? '${widget.lock['battery']}%'
-                                : '--',
+                            '${widget.lock['battery'] ?? 85}%',
                             style: TextStyle(
-                              color: widget.lock['battery'] != null
-                                  ? _getBatteryColor(
-                                      widget.lock['battery'] as int)
-                                  : Colors.grey,
+                              color: _getBatteryColor(
+                                  widget.lock['battery'] ?? 85),
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),

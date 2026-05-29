@@ -3,7 +3,6 @@ import 'package:yavuz_lock/api_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_state.dart';
-import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class GatewayLocksPage extends StatefulWidget {
@@ -40,13 +39,11 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
         final apiService = ApiService(context.read<AuthRepository>());
         final locks =
             await apiService.getGatewayLocks(gatewayId: widget.gatewayId);
-        if (!mounted) return;
         setState(() {
           _locks = locks;
           _isLoading = false;
         });
       } catch (e) {
-        if (!mounted) return;
         setState(() {
           _errorMessage = e.toString();
           _isLoading = false;
@@ -62,19 +59,17 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        title: Text(l10n.locksForGateway(widget.gatewayName)),
+        title: Text('Locks for ${widget.gatewayName}'),
       ),
       body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
-    final l10n = AppLocalizations.of(context)!;
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -86,9 +81,9 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
     }
 
     if (_locks.isEmpty) {
-      return Center(
-        child: Text(l10n.noLocksFound,
-            style: const TextStyle(color: Colors.white)),
+      return const Center(
+        child: Text('No locks found for this gateway.',
+            style: TextStyle(color: Colors.white)),
       );
     }
 

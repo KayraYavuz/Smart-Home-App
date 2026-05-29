@@ -184,13 +184,10 @@ class _QueryLockPageState extends State<QueryLockPage> {
             );
           }).toList(),
           onChanged: (value) {
-            final lock = _locks.firstWhere(
-              (l) => l['lockId'].toString() == value,
-              orElse: () => _locks.first,
-            );
             setState(() {
-              _selectedLock = lock;
-              _queryResult = null;
+              _selectedLock = _locks
+                  .firstWhere((lock) => lock['lockId'].toString() == value);
+              _queryResult = null; // Reset previous result
             });
           },
         ),

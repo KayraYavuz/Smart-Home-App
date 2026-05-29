@@ -224,9 +224,8 @@ class _AddCardPageState extends State<AddCardPage>
         }, (cardNumber) {
           if (!completer.isCompleted) completer.complete(cardNumber);
         }, (errorCode, errorMsg) {
-          if (!completer.isCompleted) {
+          if (!completer.isCompleted)
             completer.completeError(Exception('$errorCode: $errorMsg'));
-          }
         });
       } else {
         if (Platform.isIOS) {
@@ -325,8 +324,7 @@ class _AddCardPageState extends State<AddCardPage>
         );
       }
 
-      final cardNumber =
-          await completer.future.timeout(const Duration(seconds: 30));
+      final cardNumber = await completer.future;
       if (!mounted) return;
 
       setState(() {

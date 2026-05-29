@@ -16,16 +16,13 @@ class ScanPage extends StatelessWidget {
     if (error == 'bluetoothDisabledError') return l10n.bluetoothDisabledError;
     if (error == 'lockNotInSettingMode') return l10n.lockNotInSettingMode;
     if (error == 'lockAlreadyRegistered') return l10n.lockAlreadyRegistered;
-    if (error == 'bluetoothConnectionRejected') {
+    if (error == 'bluetoothConnectionRejected')
       return l10n.bluetoothConnectionRejected;
-    }
-    if (error == 'bluetoothConnectionFailed') {
+    if (error == 'bluetoothConnectionFailed')
       return l10n.bluetoothConnectionFailed;
-    }
     if (error == 'lockNotResponding') return l10n.lockNotResponding;
-    if (error == 'apiLockRegisteredToAnother') {
+    if (error == 'apiLockRegisteredToAnother')
       return l10n.apiLockRegisteredToAnother;
-    }
     if (error == 'apiNotAuthorized') return l10n.apiNotAuthorized;
     if (error == 'apiSessionExpired') return l10n.apiSessionExpired;
     if (error == 'apiLockFrozen') return l10n.apiLockFrozen;

@@ -34,9 +34,7 @@ class Passcode {
       keyboardPwd: json['keyboardPwd'] as String,
       keyboardPwdName: json['keyboardPwdName'] as String,
       keyboardPwdType:
-          keyboardPwdTypeString != null
-              ? (int.tryParse(keyboardPwdTypeString) ?? -1)
-              : -1,
+          keyboardPwdTypeString != null ? int.parse(keyboardPwdTypeString) : -1,
       startDate: json['startDate'] as int?,
       endDate: json['endDate'] as int?,
       senderUsername: json['senderUsername'] as String?,

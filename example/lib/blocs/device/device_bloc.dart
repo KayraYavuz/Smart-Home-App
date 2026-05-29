@@ -15,7 +15,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
     on<LockDevice>(_onLockDevice);
   }
 
-  Future<void> _onUnlockDevice(UnlockDevice event, Emitter<DeviceState> emit) async {
+  void _onUnlockDevice(UnlockDevice event, Emitter<DeviceState> emit) async {
     emit(DeviceLoading());
     try {
       final String lockData = event.lock['lockData'] ?? '';
@@ -43,7 +43,7 @@ class DeviceBloc extends Bloc<DeviceEvent, DeviceState> {
     }
   }
 
-  Future<void> _onLockDevice(LockDevice event, Emitter<DeviceState> emit) async {
+  void _onLockDevice(LockDevice event, Emitter<DeviceState> emit) async {
     emit(DeviceLoading());
     try {
       final String lockData = event.lock['lockData'] ?? '';

@@ -1,11 +1,7 @@
 const { onRequest, onCall } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
-const { defineSecret } = require("firebase-functions/v2/params");
 const admin = require("firebase-admin");
 const nodemailer = require('nodemailer');
-
-const smtpUser = defineSecret("SMTP_USER");
-const smtpPass = defineSecret("SMTP_PASS");
 
 admin.initializeApp();
 
@@ -27,8 +23,7 @@ const recordTypes = {
   46: "Otomatik Kilit Açıldı (Auto Unlock)"
 };
 
-// batteryWarnings Firestore'da saklanıyor: Cloud Functions her invocation'da
-// in-memory state'i sıfırlayabileceğinden in-memory map güvenilmez.
+const batteryWarnings = {}; // lockId -> timestamp
 
 exports.ttlockCallback = onRequest(async (req, res) => {
   // Not: Acil freni kaldırdık, artık kod normal çalışacak.
@@ -78,25 +73,24 @@ exports.ttlockCallback = onRequest(async (req, res) => {
             body: actionText
           });
 
-          // PİL KONTROLÜ — throttle Firestore'da saklanır (in-memory güvenilmez)
-          if (!isNaN(battery) && battery > 0 && battery < 15) {
+          // PİL KONTROLÜ (GÜVENLİ HALE GETİRİLDİ VE BİR SEFERLİK YAPILDI)
+          // Sadece battery < 15 ise ve son 24 saat içinde uyarı verilmediyse çalışır
+          if (!isNaN(battery) && battery !== null && battery > 0 && battery < 15) {
             const now = Date.now();
+            const lastWarnTime = batteryWarnings[lockId];
             const ONE_DAY = 24 * 60 * 60 * 1000;
-            const warnRef = admin.firestore()
-                .collection('batteryWarnings').doc(lockId.toString());
-            const warnDoc = await warnRef.get();
-            const lastWarnTime = warnDoc.exists ? warnDoc.data().timestamp : 0;
 
-            if ((now - lastWarnTime) > ONE_DAY) {
-              await warnRef.set({ timestamp: now });
+            // Eğer daha önce uyarı verilmemişse veya üzerinden 24 saat geçmişse
+            if (!lastWarnTime || (now - lastWarnTime) > ONE_DAY) {
+              batteryWarnings[lockId] = now; // Uyarı zamanını kaydet
               messagesToSend.push({
                 title: "⚠️ Düşük Pil Uyarısı!",
                 body: `Kilit pili kritik seviyede: %${battery}. Lütfen pilleri değiştirin.`
               });
             }
           } else if (!isNaN(battery) && battery >= 15) {
-            await admin.firestore()
-                .collection('batteryWarnings').doc(lockId.toString()).delete();
+            // Pil %15 ve üzerine çıkmışsa uyarı engelini sıfırla
+            delete batteryWarnings[lockId];
           }
         }
       } catch (e) {
@@ -158,8 +152,7 @@ exports.ttlockCallback = onRequest(async (req, res) => {
 });
 
 // E-posta Gönderme Fonksiyonu (Flutter'dan çağrılır)
-// Secrets: firebase functions:secrets:set SMTP_USER ve SMTP_PASS komutlarıyla ayarlayın.
-exports.sendVerificationCode = onCall({ secrets: [smtpUser, smtpPass] }, async (request) => {
+exports.sendVerificationCode = onCall(async (request) => {
   const email = request.data.email;
   const code = request.data.code;
 
@@ -167,11 +160,14 @@ exports.sendVerificationCode = onCall({ secrets: [smtpUser, smtpPass] }, async (
     throw new Error('Email ve kod gerekli.');
   }
 
+  // Gmail Transporter Ayarları
+  // GÜVENLİK NOTU: Prodüksiyonda bu şifreleri "Firebase Secrets" ile saklayın.
+  // LÜTFEN AŞAĞIDAKİ BİLGİLERİ GÜNCELLEYİN
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: smtpUser.value(),
-      pass: smtpPass.value(),
+      user: 'ahmetkayrayavuz@gmail.com', // Gönderici Gmail Adresi
+      pass: 'xxxx xxxx xxxx xxxx'     // 16 Haneli Uygulama Şifresi
     }
   });
 

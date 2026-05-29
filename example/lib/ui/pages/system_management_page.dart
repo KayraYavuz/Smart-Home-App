@@ -59,14 +59,12 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
 
     try {
       final locks = await _apiService.getKeyList();
-      final token = _apiService.accessToken;
-      if (token == null) throw Exception('No access token');
       List<Map<String, dynamic>> allRecords = [];
 
       await Future.wait(locks.map((lock) async {
         try {
           final records = await _apiService.getLockRecords(
-            accessToken: token,
+            accessToken: _apiService.accessToken!,
             lockId: lock['lockId'].toString(),
             startDate: picked.start.millisecondsSinceEpoch,
             endDate: picked.end

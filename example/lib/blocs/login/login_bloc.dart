@@ -17,7 +17,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<SyncPassword>(_onSyncPassword);
   }
 
-  Future<void> _onSyncPassword(SyncPassword event, Emitter<LoginState> emit) async {
+  void _onSyncPassword(SyncPassword event, Emitter<LoginState> emit) async {
     emit(LoginLoading());
     try {
       // 1. TTLock Şifresini Sıfırla (Kod ile)
@@ -55,7 +55,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  Future<void> _onLoginButtonPressed(
+  void _onLoginButtonPressed(
       LoginButtonPressed event, Emitter<LoginState> emit) async {
     emit(LoginLoading());
 

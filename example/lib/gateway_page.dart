@@ -245,8 +245,8 @@ class _GatewayPageState extends State<GatewayPage> {
         textAlign: TextAlign.center,
         controller: TextEditingController(text: _wifiPassword),
         decoration: InputDecoration(
-            hintText: l10n?.enterWifiPasswordHint ?? 'Wi-Fi Password'),
-        obscureText: true,
+            hintText: l10n?.enterWifiPasswordHint ?? 'Wi-Fi Şifresini Girin'),
+        obscureText: false,
         onChanged: (String content) {
           _wifiPassword = content;
         });

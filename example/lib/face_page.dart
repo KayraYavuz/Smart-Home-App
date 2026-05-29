@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/add_face_page.dart';
 import 'package:yavuz_lock/blocs/face/face_bloc.dart';
-import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class FacePage extends StatefulWidget {
   final int lockId;
@@ -21,23 +20,23 @@ class _FacePageState extends State<FacePage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.facesTitle),
+        title: const Text('Faces'),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
             onPressed: () {
-              showDialog<void>(
+              showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text(l10n.clearAllFacesTitle),
-                  content: Text(l10n.clearAllFacesConfirm),
+                  title: const Text('Clear All Faces'),
+                  content:
+                      const Text('Are you sure you want to clear all faces?'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(l10n.cancel),
+                      child: const Text('Cancel'),
                     ),
                     TextButton(
                       onPressed: () {
@@ -46,7 +45,7 @@ class _FacePageState extends State<FacePage> {
                             .add(ClearAllFaces(widget.lockId));
                         Navigator.pop(context);
                       },
-                      child: Text(l10n.clear),
+                      child: const Text('Clear'),
                     ),
                   ],
                 ),
@@ -63,7 +62,7 @@ class _FacePageState extends State<FacePage> {
           if (state is FaceOperationFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(l10n.operationFailedWithMsg(state.error)),
+                content: Text('Operation failed: ${state.error}'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -76,14 +75,14 @@ class _FacePageState extends State<FacePage> {
           if (state is FacesLoaded) {
             final faces = state.faces;
             if (faces.isEmpty) {
-              return Center(child: Text(l10n.noFacesFound));
+              return const Center(child: Text('No faces found.'));
             }
             return ListView.builder(
               itemCount: faces.length,
               itemBuilder: (context, index) {
                 final face = faces[index];
                 return ListTile(
-                  title: Text(face['name'] ?? l10n.noName),
+                  title: Text(face['name'] ?? 'No Name'),
                   subtitle: Text('ID: ${face['faceId']}'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
@@ -99,7 +98,7 @@ class _FacePageState extends State<FacePage> {
                       position: const RelativeRect.fromLTRB(100, 400, 100, 100),
                       items: [
                         PopupMenuItem(
-                          child: Text(l10n.rename),
+                          child: const Text('Rename'),
                           onTap: () {
                             if (!mounted) return;
                             _showRenameDialog(context, widget.lockId,
@@ -107,7 +106,7 @@ class _FacePageState extends State<FacePage> {
                           },
                         ),
                         PopupMenuItem(
-                          child: Text(l10n.changePeriod),
+                          child: const Text('Change Period'),
                           onTap: () {
                             if (!mounted) return;
                             _showChangePeriodDialog(
@@ -122,19 +121,24 @@ class _FacePageState extends State<FacePage> {
             );
           }
           if (state is FaceOperationFailure) {
-            return Center(child: Text(l10n.errorWithMsg(state.error)));
+            return Center(child: Text('Error: ${state.error}'));
           }
-          return Center(child: const CircularProgressIndicator());
+          return Center(
+              child: Text('Face management for lock ${widget.lockId}'));
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final bloc = context.read<FaceBloc>();
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => AddFacePage(lockId: widget.lockId),
             ),
           );
+          if (result == true) {
+            bloc.add(LoadFaces(widget.lockId));
+          }
         },
         child: const Icon(Icons.add),
       ),
@@ -143,20 +147,19 @@ class _FacePageState extends State<FacePage> {
 
   void _showRenameDialog(
       BuildContext context, int lockId, int faceId, String currentName) {
-    final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController(text: currentName);
-    showDialog<void>(
+    showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.rename),
+        title: const Text('Rename Face'),
         content: TextField(
           controller: nameController,
-          decoration: InputDecoration(labelText: l10n.nameLabel),
+          decoration: const InputDecoration(labelText: 'New Name'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -167,32 +170,31 @@ class _FacePageState extends State<FacePage> {
                   ));
               Navigator.pop(context);
             },
-            child: Text(l10n.rename),
+            child: const Text('Rename'),
           ),
         ],
       ),
-    ).then((_) => nameController.dispose());
+    );
   }
 
   void _showChangePeriodDialog(BuildContext context, int lockId, int faceId) {
-    final l10n = AppLocalizations.of(context)!;
     final startDateController = TextEditingController();
     final endDateController = TextEditingController();
-    showDialog<void>(
+    showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.changePeriod),
+        title: const Text('Change Period'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: startDateController,
-              decoration: InputDecoration(labelText: l10n.startTime),
+              decoration: const InputDecoration(labelText: 'Start Date (ms)'),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: endDateController,
-              decoration: InputDecoration(labelText: l10n.endTime),
+              decoration: const InputDecoration(labelText: 'End Date (ms)'),
               keyboardType: TextInputType.number,
             ),
           ],
@@ -200,28 +202,22 @@ class _FacePageState extends State<FacePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
-              final start = int.tryParse(startDateController.text);
-              final end = int.tryParse(endDateController.text);
-              if (start == null || end == null) return;
               context.read<FaceBloc>().add(ChangeFacePeriod(
                     lockId: lockId,
                     faceId: faceId,
-                    startDate: start,
-                    endDate: end,
+                    startDate: int.parse(startDateController.text),
+                    endDate: int.parse(endDateController.text),
                   ));
               Navigator.pop(context);
             },
-            child: Text(l10n.changePeriod),
+            child: const Text('Change'),
           ),
         ],
       ),
-    ).then((_) {
-      startDateController.dispose();
-      endDateController.dispose();
-    });
+    );
   }
 }

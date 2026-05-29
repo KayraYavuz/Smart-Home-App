@@ -1459,7 +1459,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get timePeriod => 'Zaman Dilimi';
+  String get timePeriod => 'Zaman dilimi';
 
   @override
   String get add => 'Ekle';
@@ -2717,96 +2717,4 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get iosNfcWarning =>
       'Apple cihazlar standart (Mifare Classic) IC kartlarını okumayı desteklemez. Kart telefonunuzda okunmuyorsa lütfen Bluetooth seçeneğini kullanın.';
-
-  @override
-  String get validityStart => 'Geçerlilik Başlangıcı';
-
-  @override
-  String get validityEnd => 'Geçerlilik Bitişi';
-
-  @override
-  String get noName => 'İsimsiz';
-
-  @override
-  String get facesTitle => 'Yüzler';
-
-  @override
-  String get fingerprintsTitle => 'Parmak İzleri';
-
-  @override
-  String get noFacesFound => 'Yüz bulunamadı.';
-
-  @override
-  String get noFingerprintsFound => 'Parmak izi bulunamadı.';
-
-  @override
-  String get clearAllFacesTitle => 'Tüm Yüzleri Sil';
-
-  @override
-  String get clearAllFacesConfirm =>
-      'Tüm yüzleri silmek istediğinizden emin misiniz?';
-
-  @override
-  String get clearAllFingerprintsTitle => 'Tüm Parmak İzlerini Sil';
-
-  @override
-  String get clearAllFingerprintsConfirm =>
-      'Tüm parmak izlerini silmek istediğinizden emin misiniz?';
-
-  @override
-  String get addFaceTitle => 'Yüz Ekle';
-
-  @override
-  String get pickImage => 'Resim Seç';
-
-  @override
-  String get faceFeatureDataSuccess => 'Yüz özellik verisi başarıyla alındı.';
-
-  @override
-  String faceFeatureDataFailed(Object error) {
-    return 'Özellik verisi alınamadı: $error';
-  }
-
-  @override
-  String get faceAddedSuccessfully => 'Yüz başarıyla eklendi.';
-
-  @override
-  String faceAddFailed(Object error) {
-    return 'Yüz eklenemedi: $error';
-  }
-
-  @override
-  String get faceSelectImageFirst =>
-      'Lütfen önce bir resim seçin ve özellik verisi alın.';
-
-  @override
-  String get faceName => 'Yüz Adı';
-
-  @override
-  String locksForGateway(Object gatewayName) {
-    return '$gatewayName için Kilitler';
-  }
-
-  @override
-  String get tc2Scanning => 'TC2 taranıyor...';
-
-  @override
-  String get db2Scanning => 'DB2 taranıyor...';
-
-  @override
-  String get sensorScanning => 'Sensör taranıyor...';
-
-  @override
-  String get electricMeterScanning => 'Elektrik sayacı taranıyor...';
-
-  @override
-  String get waterMeterScanning => 'Su sayacı taranıyor...';
-
-  @override
-  String bluetoothFailed(Object btError, Object gwError) {
-    return 'Bluetooth ile başarısız: $btError\n\nGateway ile başarısız: $gwError';
-  }
-
-  @override
-  String get bluetoothTimeout => 'Bluetooth işlemi zaman aşımına uğradı.';
 }

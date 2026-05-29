@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/repositories/ttlock_repository.dart';
 
 class AddFacePage extends StatefulWidget {
@@ -56,18 +55,16 @@ class _AddFacePageState extends State<AddFacePage> {
           _isProcessing = false;
         });
         if (!mounted) return;
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.faceFeatureDataSuccess)));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Face feature data obtained successfully.')));
       } catch (e) {
         if (!mounted) return;
         setState(() {
           _isProcessing = false;
         });
         if (!mounted) return;
-        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.faceFeatureDataFailed(e.toString()))));
+            SnackBar(content: Text('Failed to get feature data: $e')));
       }
     }
   }
@@ -86,21 +83,16 @@ class _AddFacePageState extends State<AddFacePage> {
           featureData: _featureData!,
           addType: 2, // 2 for remote adding via gateway
           name: _nameController.text,
-          startDate: int.tryParse(_startDateController.text) ??
-              DateTime.now().millisecondsSinceEpoch,
-          endDate: int.tryParse(_endDateController.text) ??
-              DateTime.now()
-                  .add(const Duration(days: 365))
-                  .millisecondsSinceEpoch,
+          startDate: int.parse(_startDateController.text),
+          endDate: int.parse(_endDateController.text),
         );
         if (!mounted) return;
         setState(() {
           _isProcessing = false;
         });
         if (!mounted) return;
-        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.faceAddedSuccessfully)));
+            const SnackBar(content: Text('Face added successfully.')));
         if (!mounted) return;
         Navigator.pop(context, true);
       } catch (e) {
@@ -109,24 +101,21 @@ class _AddFacePageState extends State<AddFacePage> {
           _isProcessing = false;
         });
         if (!mounted) return;
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.faceAddFailed(e.toString()))));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed to add face: $e')));
       }
     } else {
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.faceSelectImageFirst)));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Please select an image and get feature data first.')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.addFaceTitle),
+        title: const Text('Add Face'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -140,27 +129,28 @@ class _AddFacePageState extends State<AddFacePage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _pickImage,
-                  child: Text(l10n.pickImage),
+                  child: const Text('Pick Image'),
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _nameController,
-                  decoration: InputDecoration(labelText: l10n.faceName),
+                  decoration: const InputDecoration(labelText: 'Face Name'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return l10n.nameRequired;
+                      return 'Please enter a name';
                     }
                     return null;
                   },
                 ),
                 TextFormField(
                   controller: _startDateController,
-                  decoration: InputDecoration(labelText: l10n.startTime),
+                  decoration:
+                      const InputDecoration(labelText: 'Start Date (ms)'),
                   keyboardType: TextInputType.number,
                 ),
                 TextFormField(
                   controller: _endDateController,
-                  decoration: InputDecoration(labelText: l10n.endTime),
+                  decoration: const InputDecoration(labelText: 'End Date (ms)'),
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 20),
@@ -174,7 +164,7 @@ class _AddFacePageState extends State<AddFacePage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _isProcessing ? null : _addFace,
-                  child: Text(l10n.addFaceTitle),
+                  child: const Text('Add Face'),
                 ),
               ],
             ),

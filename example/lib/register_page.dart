@@ -28,14 +28,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final _auth = FirebaseAuth.instance;
 
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
   Future<void> _registerAndSendVerification() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
@@ -64,7 +56,6 @@ class _RegisterPageState extends State<RegisterPage> {
       // 2. Doğrulama Maili Gönder
       await user?.sendEmailVerification();
 
-      if (!mounted) return;
       setState(() {
         _verificationEmailSent = true;
         _isLoading = false;
@@ -79,7 +70,6 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       );
     } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
       setState(() => _isLoading = false);
       String message = l10n.errorLabel;
       if (e.code == 'email-already-in-use') message = l10n.emailAlreadyInUse;
@@ -330,18 +320,15 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscurePassword,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty)
                             return l10n.passwordRequired;
-                          }
 
                           if (value.length < 8) return l10n.passwordMinLength;
-                          if (!RegExp(r'[0-9]').hasMatch(value)) {
+                          if (!RegExp(r'[0-9]').hasMatch(value))
                             return l10n.passwordDigitRequired;
-                          }
                           if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                              .hasMatch(value)) {
+                              .hasMatch(value))
                             return l10n.passwordSymbolRequired;
-                          }
                           return null;
                         },
                       ),
@@ -366,9 +353,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscureConfirmPassword,
                         validator: (value) {
-                          if (value != _passwordController.text) {
+                          if (value != _passwordController.text)
                             return l10n.passwordMismatch;
-                          }
                           return null;
                         },
                       ),

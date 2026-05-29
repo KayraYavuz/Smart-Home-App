@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart'; // Provider import
@@ -25,16 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _secureStorage = const FlutterSecureStorage();
   bool _rememberMe = false;
   bool _obscurePassword = true;
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -43,17 +34,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loadSavedCredentials() async {
+    // ... (Mevcut kod aynı)
     final prefs = await SharedPreferences.getInstance();
     final rememberMe = prefs.getBool('remember_me') ?? false;
     if (rememberMe) {
       final savedUsername = prefs.getString('saved_username');
-      // Migrate legacy plaintext password to secure storage if present
-      final legacyPassword = prefs.getString('saved_password');
-      if (legacyPassword != null) {
-        await _secureStorage.write(key: 'saved_password', value: legacyPassword);
-        await prefs.remove('saved_password');
-      }
-      final savedPassword = await _secureStorage.read(key: 'saved_password');
+      final savedPassword = prefs.getString('saved_password');
       if (savedUsername != null && savedPassword != null) {
         setState(() {
           _usernameController.text = savedUsername;
@@ -66,16 +52,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _saveCredentials() async {
+    // ... (Mevcut kod aynı)
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('saved_username', _usernameController.text);
 
     if (_rememberMe) {
       await prefs.setBool('remember_me', true);
-      await _secureStorage.write(
-          key: 'saved_password', value: _passwordController.text);
+      await prefs.setString('saved_password', _passwordController.text);
     } else {
       await prefs.setBool('remember_me', false);
-      await _secureStorage.delete(key: 'saved_password');
+      await prefs.remove('saved_password');
     }
   }
 

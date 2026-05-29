@@ -41,15 +41,11 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
   }
 
   Future<void> _initAccessToken() async {
-    try {
-      await _apiService.getAccessToken();
-      if (mounted) {
-        setState(() {
-          _accessToken = _apiService.accessToken;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error initializing access token: $e');
+    await _apiService.getAccessToken();
+    if (mounted) {
+      setState(() {
+        _accessToken = _apiService.accessToken;
+      });
     }
   }
 
@@ -315,8 +311,8 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
 
   String _formatDate(dynamic timestamp) {
     if (timestamp == null) return 'N/A';
-    final ms = timestamp is int ? timestamp : (timestamp as num).toInt();
-    final date = DateTime.fromMillisecondsSinceEpoch(ms);
+    // Timestamp is in milliseconds
+    final date = DateTime.fromMillisecondsSinceEpoch(timestamp as int);
     return '${date.day}.${date.month}.${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
 
@@ -352,7 +348,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     } catch (e) {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.errorWithMsg(e.toString())), backgroundColor: Colors.red),
+        SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) {
@@ -396,7 +392,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     } catch (e) {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.errorWithMsg(e.toString())), backgroundColor: Colors.red),
+        SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) {
@@ -517,7 +513,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
           } catch (e) {
             if (!mounted) return;
             scaffoldMessenger.showSnackBar(
-              SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red),
+              SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
             );
           }
         },
@@ -533,7 +529,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
-    showDialog<void>(
+    showDialog(
       context: context,
       builder: (context) {
         bool remoteEnabled = remoteInfo;
@@ -600,7 +596,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                     if (!mounted) return;
                     scaffoldMessenger.showSnackBar(
                       SnackBar(
-                          content: Text(l10n.errorWithMsg(e.toString())),
+                          content: Text('Hata: $e'),
                           backgroundColor: Colors.red),
                     );
                   }
@@ -612,7 +608,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
           );
         });
       },
-    ).then((_) => nameController.dispose());
+    );
   }
 
   void _confirmDelete() {
@@ -651,8 +647,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
                 if (!mounted) return;
                 scaffoldMessenger.showSnackBar(
                   SnackBar(
-                      content: Text(l10n.errorWithMsg(e.toString())),
-                      backgroundColor: Colors.red),
+                      content: Text('Hata: $e'), backgroundColor: Colors.red),
                 );
               }
             },

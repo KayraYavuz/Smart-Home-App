@@ -33,7 +33,6 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
     // Mock API çağrısı - gerçek uygulamada API'den gelecek
     await Future.delayed(const Duration(seconds: 1));
 
-    if (!mounted) return;
     setState(() {
       _gateways = []; // Veri yok durumu için boş liste
       _isLoading = false;
@@ -147,12 +146,6 @@ class _GatewayManagementPageState extends State<GatewayManagementPage> {
       final mac = gateway['mac'].toString().toLowerCase();
       return name.contains(searchTerm) || mac.contains(searchTerm);
     }).toList();
-
-    if (filteredGateways.isEmpty) {
-      return Center(
-          child: Text(l10n.noGatewayFound,
-              style: const TextStyle(color: Colors.grey)));
-    }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),

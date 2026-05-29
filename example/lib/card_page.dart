@@ -93,9 +93,8 @@ class _CardPageState extends State<CardPage> {
           completer.complete();
         }, (errorCode, errorMsg) {
           // Failure
-          if (!completer.isCompleted) {
+          if (!completer.isCompleted)
             completer.completeError(Exception("$errorCode: $errorMsg"));
-          }
         });
 
         // Wait for result with a timeout (e.g., 5 seconds)
@@ -139,7 +138,6 @@ class _CardPageState extends State<CardPage> {
         TextEditingController(text: card['cardName'] ?? '');
     DateTime startDate = DateTime.fromMillisecondsSinceEpoch(card['startDate']);
     DateTime endDate = DateTime.fromMillisecondsSinceEpoch(card['endDate']);
-    try {
 
     final bool? save = await showDialog<bool>(
       context: context,
@@ -166,9 +164,8 @@ class _CardPageState extends State<CardPage> {
                           initialDate: startDate,
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100));
-                      if (picked != null) {
+                      if (picked != null)
                         setDialogState(() => startDate = picked);
-                      }
                     },
                   ),
                   ListTile(
@@ -181,9 +178,8 @@ class _CardPageState extends State<CardPage> {
                           initialDate: endDate,
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100));
-                      if (picked != null) {
+                      if (picked != null)
                         setDialogState(() => endDate = picked);
-                      }
                     },
                   ),
                 ],
@@ -242,9 +238,6 @@ class _CardPageState extends State<CardPage> {
         setState(() => _isLoading = false);
       }
     }
-    } finally {
-      nameController.dispose();
-    }
   }
 
   Future<void> _clearAllCards() async {
@@ -291,7 +284,6 @@ class _CardPageState extends State<CardPage> {
     final TextEditingController cardNumberController = TextEditingController();
     DateTime startDate = DateTime.now();
     DateTime endDate = DateTime.now().add(const Duration(days: 365));
-    try {
 
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -337,9 +329,8 @@ class _CardPageState extends State<CardPage> {
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null) {
+                      if (picked != null)
                         setDialogState(() => startDate = picked);
-                      }
                     },
                   ),
                   ListTile(
@@ -356,9 +347,8 @@ class _CardPageState extends State<CardPage> {
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null) {
+                      if (picked != null)
                         setDialogState(() => endDate = picked);
-                      }
                     },
                   ),
                 ],
@@ -421,9 +411,6 @@ class _CardPageState extends State<CardPage> {
         );
         setState(() => _isLoading = false);
       }
-    }
-    } finally {
-      cardNumberController.dispose();
     }
   }
 

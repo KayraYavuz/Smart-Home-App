@@ -52,7 +52,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         _isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.errorWithMsg(e.toString())), backgroundColor: AppColors.error),
+        SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
       );
     }
   }
@@ -96,9 +96,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
     final l10n = AppLocalizations.of(context)!;
     final usernameController = TextEditingController();
     final passwordController = TextEditingController();
-    var busy = false;
 
-    showDialog<void>(
+    showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
@@ -134,10 +133,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   style: const TextStyle(color: Colors.grey))),
           TextButton(
             onPressed: () async {
-              if (busy) return;
               if (usernameController.text.isNotEmpty &&
                   passwordController.text.isNotEmpty) {
-                busy = true;
                 try {
                   await _apiService.registerUser(
                     username: usernameController.text,
@@ -152,7 +149,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         backgroundColor: AppColors.success),
                   );
                 } catch (e) {
-                  busy = false;
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -167,10 +163,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           ),
         ],
       ),
-    ).then((_) {
-      usernameController.dispose();
-      passwordController.dispose();
-    });
+    );
   }
 
   void _deleteUser(Map<String, dynamic> user) {
@@ -325,15 +318,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
   }
 
   Widget _buildKeyFreezeTab(AppLocalizations l10n) {
-    if (_isLoadingKeys) {
+    if (_isLoadingKeys)
       return const Center(
           child: CircularProgressIndicator(color: AppColors.primary));
-    }
-    if (_allKeys.isEmpty) {
+    if (_allKeys.isEmpty)
       return Center(
           child: Text(l10n.noSharedKeys,
               style: const TextStyle(color: Colors.grey)));
-    }
 
     return RefreshIndicator(
       onRefresh: _loadKeys,
@@ -388,19 +379,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
   }
 
   Widget _buildUserList() {
-    final l10n = AppLocalizations.of(context)!;
     final filteredUsers = _users.where((user) {
       final searchTerm = _searchController.text.toLowerCase();
       final username = user['username'].toString().toLowerCase();
       final email = (user['email'] ?? '').toString().toLowerCase();
       return username.contains(searchTerm) || email.contains(searchTerm);
     }).toList();
-
-    if (filteredUsers.isEmpty) {
-      return Center(
-          child: Text(l10n.noData,
-              style: const TextStyle(color: Colors.grey)));
-    }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),

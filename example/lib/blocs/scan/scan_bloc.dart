@@ -34,8 +34,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
       }
     });
 
-    final btState = await btStateCompleter.future
-        .timeout(const Duration(seconds: 5));
+    final btState = await btStateCompleter.future;
     if (emit.isDone) return;
 
     if (btState != TTBluetoothState.turnOn) {

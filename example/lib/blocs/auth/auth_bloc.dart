@@ -14,7 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoggedOut>(_onLoggedOut);
   }
 
-  Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
+  void _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
       // Initialize ApiService tokens and region from storage
@@ -35,7 +35,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onLoggedIn(LoggedIn event, Emitter<AuthState> emit) async {
+  void _onLoggedIn(LoggedIn event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
       // Tokens are already saved by ApiService, just emit authenticated state
@@ -45,7 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onLoggedOut(LoggedOut event, Emitter<AuthState> emit) async {
+  void _onLoggedOut(LoggedOut event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
       // Clear memory tokens in ApiService

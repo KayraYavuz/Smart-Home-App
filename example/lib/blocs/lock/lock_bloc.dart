@@ -14,7 +14,7 @@ class LockBloc extends Bloc<LockEvent, AppLockState> {
     on<FetchLocks>(_onFetchLocks);
   }
 
-  Future<void> _onFetchLocks(FetchLocks event, Emitter<AppLockState> emit) async {
+  void _onFetchLocks(FetchLocks event, Emitter<AppLockState> emit) async {
     emit(LockLoading());
     try {
       if (_accessToken != null) {
