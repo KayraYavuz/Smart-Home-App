@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_event.dart';
-import 'package:yavuz_lock/blocs/auth/auth_state.dart'; // Import AuthState
+import 'package:yavuz_lock/blocs/auth/auth_state.dart';
 import 'package:yavuz_lock/blocs/lock/lock_bloc.dart';
 import 'package:yavuz_lock/blocs/lock/app_lock_state.dart';
 import 'package:yavuz_lock/blocs/lock/lock_event.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/ui/pages/add_device_page.dart';
 import 'package:yavuz_lock/ui/pages/lock_detail_page.dart';
@@ -32,7 +33,7 @@ class HomePage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('My Locks'),
+          title: Text(AppLocalizations.of(context)!.myLocks),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
@@ -44,6 +45,7 @@ class HomePage extends StatelessWidget {
         ),
         body: BlocBuilder<LockBloc, AppLockState>(
           builder: (context, state) {
+            final l10n = AppLocalizations.of(context)!;
             if (state is LockLoading) {
               return const Center(child: CircularProgressIndicator());
             }
@@ -51,7 +53,7 @@ class HomePage extends StatelessWidget {
               final items = [...state.gateways, ...state.locks];
 
               if (items.isEmpty) {
-                return const Center(child: Text('No devices found.'));
+                return Center(child: Text(l10n.noDevicesFound));
               }
 
               return ListView.builder(
@@ -64,9 +66,9 @@ class HomePage extends StatelessWidget {
                   if (isGateway) {
                     return Card(
                       child: ListTile(
-                        title: Text(item['gatewayName'] ?? 'Gateway'),
-                        subtitle:
-                            Text(item['isOnline'] == 1 ? 'Online' : 'Offline'),
+                        title: Text(item['gatewayName'] ?? l10n.gateways),
+                        subtitle: Text(
+                            item['isOnline'] == 1 ? l10n.online : l10n.offline),
                         leading: const Icon(Icons.router),
                         onTap: () {
                           Navigator.push(
@@ -85,7 +87,7 @@ class HomePage extends StatelessWidget {
                   return Card(
                     child: ListTile(
                       title: Text(
-                          lock['name'] ?? lock['lockAlias'] ?? 'Unknown Lock'),
+                          lock['name'] ?? lock['lockAlias'] ?? l10n.unknownLock),
                       subtitle: Text(lock['status'] ?? ''),
                       leading: const Icon(Icons.lock),
                       trailing: FittedBox(
@@ -97,7 +99,9 @@ class HomePage extends StatelessWidget {
                             const SizedBox(width: 4),
                             const Icon(Icons.wifi),
                             const SizedBox(width: 4),
-                            Text('${lock['battery'] ?? 0}%'),
+                            Text(lock['battery'] != null
+                                ? '${lock['battery']}%'
+                                : '--'),
                           ],
                         ),
                       ),
@@ -116,9 +120,9 @@ class HomePage extends StatelessWidget {
             }
             if (state is LockFailure) {
               return Center(
-                  child: Text('Failed to load devices: ${state.error}'));
+                  child: Text(l10n.errorWithMsg(state.error)));
             }
-            return const Center(child: Text('No devices found.'));
+            return Center(child: Text(l10n.noDevicesFound));
           },
         ),
         floatingActionButton: FloatingActionButton(

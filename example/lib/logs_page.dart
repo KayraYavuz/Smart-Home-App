@@ -234,18 +234,20 @@ class _LogsPageState extends State<LogsPage> {
           'color': Colors.redAccent
         };
       default:
-        if (recordType == 11)
+        if (recordType == 11) {
           return {
             'label': l10n.recordLocked,
             'icon': Icons.lock,
             'color': Colors.redAccent
           };
-        if (recordType == 12)
+        }
+        if (recordType == 12) {
           return {
             'label': l10n.recordUnlocked,
             'icon': Icons.lock_open,
             'color': Colors.greenAccent
           };
+        }
         return {
           'label': l10n.recordOtherOperation(typeFromLock.toString()),
           'icon': Icons.history,

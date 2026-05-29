@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_bloc.dart';
 import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_event.dart';
-import 'package:yavuz_lock/blocs/ttlock_webhook/ttlock_webhook_state.dart';
 
 class TTLockWebhookService {
   static final TTLockWebhookService _instance =
@@ -23,14 +22,6 @@ class TTLockWebhookService {
 
   void setBloc(TTLockWebhookBloc bloc) {
     _bloc = bloc;
-    // When the BLoC is set, start listening to its events to dispatch through the service
-    _bloc?.stream.listen((state) {
-      if (state is TTLockWebhookEventReceivedState) {
-        // This is a bit circular if the service dispatches to the bloc, then listens to the bloc
-        // A direct communication from backend to service, then service to bloc is more typical.
-        // For simulation purposes or if backend pushes to this service's method, it works.
-      }
-    });
   }
 
   void startListening(String webhookUrl) {

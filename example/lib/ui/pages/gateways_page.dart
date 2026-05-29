@@ -36,11 +36,13 @@ class _GatewaysPageState extends State<GatewaysPage> {
       try {
         final apiService = ApiService(context.read<AuthRepository>());
         final gateways = await apiService.getGatewayList();
+        if (!mounted) return;
         setState(() {
           _gateways = gateways;
           _isLoading = false;
         });
       } catch (e) {
+        if (!mounted) return;
         setState(() {
           _errorMessage = e.toString();
           _isLoading = false;

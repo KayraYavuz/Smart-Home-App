@@ -213,7 +213,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showDialog(
+    var busy = false;
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.renameLock),
@@ -226,8 +227,10 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               onPressed: () => navigator.pop(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () async {
+              if (busy) return;
               final newName = controller.text;
               if (newName.isNotEmpty) {
+                busy = true;
                 try {
                   await _apiService.renameLock(
                       lockId: widget.lock['lockId'].toString(),
@@ -236,6 +239,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   setState(() => _lockName = newName);
                   navigator.pop();
                 } catch (e) {
+                  busy = false;
                   if (!mounted) return;
                   scaffoldMessenger.showSnackBar(
                     SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
@@ -247,7 +251,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
           ),
         ],
       ),
-    );
+    ).then((_) => controller.dispose());
   }
 
   // ignore: unused_element - Reserved for future use (group assignment feature)
@@ -368,7 +372,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.autoLockTime),
@@ -446,8 +450,9 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               TTLock.setLockAutomaticLockingPeriodicTime(seconds, lockData, () {
                 if (!completer.isCompleted) completer.complete();
               }, (errorCode, errorMsg) {
-                if (!completer.isCompleted)
+                if (!completer.isCompleted) {
                   completer.completeError('$errorMsg (Code: $errorCode)');
+                }
               });
 
               try {
@@ -514,13 +519,13 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text("Error"),
+                          title: Text(l10n.errorLabel),
                           content: Text(
-                              "Failed via Bluetooth: $bluetoothError\n\nFailed via Gateway: $e"),
+                              l10n.bluetoothFailed(bluetoothError, e.toString())),
                           actions: [
                             TextButton(
                                 onPressed: () => navigator.pop(),
-                                child: const Text("OK"))
+                                child: Text(l10n.ok))
                           ],
                         ),
                       );
@@ -528,22 +533,19 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   }
                 } else {
                   if (mounted) {
-                    String errorMsg = l10n.errorLabel;
-                    if (bluetoothError.contains("Timeout")) {
-                      errorMsg = "Bluetooth operation timed out.";
-                    } else {
-                      errorMsg = bluetoothError;
-                    }
+                    String errorMsg = bluetoothError.contains("Timeout")
+                        ? l10n.bluetoothTimeout
+                        : bluetoothError;
 
                     showDialog(
                       context: context,
                       builder: (dialogCtx) => AlertDialog(
-                        title: const Text("Error"),
+                        title: Text(l10n.errorLabel),
                         content: Text(errorMsg),
                         actions: [
                           TextButton(
                               onPressed: () => Navigator.of(dialogCtx).pop(),
-                              child: const Text("OK")),
+                              child: Text(l10n.ok)),
                           TextButton(
                             onPressed: () async {
                               Navigator.of(dialogCtx)
@@ -598,7 +600,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
           ),
         ],
       ),
-    );
+    ).then((_) => controller.dispose());
   }
 
   void _openPassageModePage() async {
@@ -673,7 +675,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showDialog(
+    var busy = false;
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.changeAdminPasscodeTitle),
@@ -687,29 +690,30 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               onPressed: () => navigator.pop(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () async {
-              if (controller.text.isNotEmpty) {
-                try {
-                  await _apiService.changeAdminKeyboardPwd(
-                    lockId: widget.lock['lockId'].toString(),
-                    password: controller.text,
-                  );
-                  if (!mounted) return;
-                  navigator.pop();
-                  scaffoldMessenger.showSnackBar(
-                      SnackBar(content: Text(l10n.operationSuccessful)));
-                } catch (e) {
-                  if (!mounted) return;
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
-                  );
-                }
+              if (busy || controller.text.isEmpty) return;
+              busy = true;
+              try {
+                await _apiService.changeAdminKeyboardPwd(
+                  lockId: widget.lock['lockId'].toString(),
+                  password: controller.text,
+                );
+                if (!mounted) return;
+                navigator.pop();
+                scaffoldMessenger.showSnackBar(
+                    SnackBar(content: Text(l10n.operationSuccessful)));
+              } catch (e) {
+                busy = false;
+                if (!mounted) return;
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
+                );
               }
             },
             child: Text(l10n.update),
           ),
         ],
       ),
-    );
+    ).then((_) => controller.dispose());
   }
 
   void _transferLock() {
@@ -717,7 +721,8 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showDialog(
+    var busy = false;
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.transferLockToUser),
@@ -730,30 +735,31 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               onPressed: () => navigator.pop(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () async {
-              if (controller.text.isNotEmpty) {
-                try {
-                  await _apiService.transferLock(
-                    lockIdList: [int.parse(widget.lock['lockId'].toString())],
-                    receiverUsername: controller.text,
-                  );
-                  if (!mounted) return;
-                  navigator.pop();
-                  navigator.pop(); // Close settings page
-                  scaffoldMessenger.showSnackBar(
-                      SnackBar(content: Text(l10n.transferInitiated)));
-                } catch (e) {
-                  if (!mounted) return;
-                  scaffoldMessenger.showSnackBar(
-                    SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
-                  );
-                }
+              if (busy || controller.text.isEmpty) return;
+              busy = true;
+              try {
+                await _apiService.transferLock(
+                  lockIdList: [int.parse(widget.lock['lockId'].toString())],
+                  receiverUsername: controller.text,
+                );
+                if (!mounted) return;
+                navigator.pop();
+                navigator.pop(); // Close settings page
+                scaffoldMessenger.showSnackBar(
+                    SnackBar(content: Text(l10n.transferInitiated)));
+              } catch (e) {
+                busy = false;
+                if (!mounted) return;
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(content: Text(l10n.errorWithMsg(e.toString()))),
+                );
               }
             },
             child: Text(l10n.transferAction),
           ),
         ],
       ),
-    );
+    ).then((_) => controller.dispose());
   }
 
   void _deleteLock() {
@@ -838,8 +844,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
           _lockName ??
           'Lock';
 
+      await _apiService.getAccessToken();
+      final token = _apiService.accessToken;
+      if (token == null) throw Exception('Not authenticated');
       final records = await _apiService.getLockRecords(
-        accessToken: _apiService.accessToken!,
+        accessToken: token,
         lockId: lockId,
         startDate: picked.start.millisecondsSinceEpoch,
         endDate: picked.end.millisecondsSinceEpoch,

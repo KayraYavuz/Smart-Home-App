@@ -482,7 +482,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get usernameRequired => 'Benutzername erforderlich';
 
   @override
-  String get passwordRequired => 'Password required';
+  String get passwordRequired => 'Passwort erforderlich';
 
   @override
   String get codeRequired => 'Code eingeben';
@@ -526,51 +526,51 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String lockOpened(String lockName) {
-    return '$lockName opened';
+    return '$lockName geöffnet';
   }
 
   @override
   String lockClosed(String lockName) {
-    return '$lockName locked';
+    return '$lockName gesperrt';
   }
 
   @override
   String lockOpenedApp(String lockName) {
-    return '$lockName opened from app';
+    return '$lockName über App geöffnet';
   }
 
   @override
   String lockOpenedKeypad(String lockName) {
-    return '$lockName opened with keypad';
+    return '$lockName mit Tastenfeld geöffnet';
   }
 
   @override
   String lockOpenedFingerprint(String lockName) {
-    return '$lockName opened with fingerprint';
+    return '$lockName mit Fingerabdruck geöffnet';
   }
 
   @override
   String lockOpenedCard(String lockName) {
-    return '$lockName opened with card';
+    return '$lockName mit Karte geöffnet';
   }
 
   @override
   String lowBatteryWarning(String lockName) {
-    return '$lockName low battery';
+    return '$lockName niedriger Akkustand';
   }
 
   @override
   String lockTamperedWarning(String lockName) {
-    return '$lockName security warning!';
+    return '$lockName Sicherheitswarnung!';
   }
 
   @override
   String lockStatusUpdated(String lockName) {
-    return '$lockName status updated';
+    return '$lockName Status aktualisiert';
   }
 
   @override
-  String get unknownLock => 'Unknown Lock';
+  String get unknownLock => 'Unbekanntes Schloss';
 
   @override
   String get defaultLockName => 'Yavuz Lock';
@@ -583,7 +583,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String seamDevicesAdded(int count) {
-    return '$count Seam devices added';
+    return '$count Seam-Geräte hinzugefügt';
   }
 
   @override
@@ -591,22 +591,23 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String deviceTypeLabel(String type) {
-    return 'Type: $type';
+    return 'Typ: $type';
   }
 
   @override
   String shareCancelError(String error) {
-    return 'Share cancellation error: $error';
+    return 'Fehler beim Abbrechen der Freigabe: $error';
   }
 
   @override
-  String get errorDevicesLoading => 'Error loading devices';
+  String get errorDevicesLoading => 'Fehler beim Laden der Geräte';
 
   @override
-  String get errorInternetConnection => 'Check your internet connection';
+  String get errorInternetConnection =>
+      'Überprüfen Sie Ihre Internetverbindung';
 
   @override
-  String get errorServerTimeout => 'Server timeout, please try again';
+  String get errorServerTimeout => 'Server-Timeout, bitte erneut versuchen';
 
   @override
   String get retry => 'Retry';
@@ -788,16 +789,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deviceCameraSurveillance => 'Überwachungskamera';
 
   @override
-  String get lockCylinder => 'Lock Cylinder';
+  String get lockCylinder => 'Schlosszylinder';
 
   @override
-  String get parkingLock => 'Parking Lock';
+  String get parkingLock => 'Parkplatzsperre';
 
   @override
-  String get cabinetLock => 'Cabinet Lock';
+  String get cabinetLock => 'Schließfachschloss';
 
   @override
-  String get bicycleLock => 'Bicycle Lock';
+  String get bicycleLock => 'Fahrradschloss';
 
   @override
   String get scanBluetoothLock => 'Bluetooth-Schlösser scannen';
@@ -1374,7 +1375,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get electronicKeysMenu => 'Elektronische\nSchlüssel';
 
   @override
-  String get passcodesMenu => 'Passcodes';
+  String get passcodesMenu => 'Zugangscodes';
 
   @override
   String get cardsMenu => 'Karten';
@@ -1757,7 +1758,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get customerService => 'Kundendienst';
 
   @override
-  String get support247 => '24/7 Support';
+  String get support247 => '24/7-Support';
 
   @override
   String get contactUsOnIssues =>
@@ -1820,15 +1821,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wifiOrPasswordEmpty => 'Wi-Fi network or password cannot be empty';
 
   @override
-  String get enterGatewayNameAlt => 'Please enter a gateway name';
+  String get enterGatewayNameAlt => 'Bitte einen Gateway-Namen eingeben';
 
   @override
   String get userInfoNotFoundReLogin =>
-      'User information not found. Please log in again.';
+      'Benutzerinformationen nicht gefunden. Bitte erneut anmelden.';
 
   @override
   String get gatewayConnectionTimeout =>
-      'Connection timed out. Please reset the gateway and check the network.';
+      'Verbindungszeit überschritten. Bitte den Gateway zurücksetzen und das Netzwerk überprüfen.';
 
   @override
   String get gatewayAddedSuccessServer =>
@@ -1845,12 +1846,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String gatewayError(String errorCode, String errorMsg) {
-    return 'Error: $errorCode - $errorMsg';
+    return 'Fehler: $errorCode - $errorMsg';
   }
 
   @override
   String get gatewayRestartAndReconnect =>
-      'Please restart the gateway and connect again.';
+      'Bitte den Gateway neu starten und erneut verbinden.';
 
   @override
   String get gatewayCheckWifiAndPermissions =>
@@ -1860,7 +1861,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get addGatewayTitleAlt => 'Add Gateway';
 
   @override
-  String get gatewayInitializingWait => 'Initializing gateway, please wait...';
+  String get gatewayInitializingWait =>
+      'Gateway wird initialisiert, bitte warten...';
 
   @override
   String get gatewayNameHintAlt => 'Gateway Name (e.g., Home)';
@@ -1872,14 +1874,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get enterWifiPasswordHint => 'Enter Wi-Fi Password';
 
   @override
-  String get connectAndAdd => 'Connect and Add';
+  String get connectAndAdd => 'Verbinden und Hinzufügen';
 
   @override
-  String get nameRequired => 'Please enter a name.';
+  String get nameRequired => 'Bitte einen Namen eingeben.';
 
   @override
   String get invalidPasscodeLengthAlt =>
-      'Enter a valid passcode (4-9 digits). Or leave it blank for a randomly generated one.';
+      'Geben Sie einen gültigen Code ein (4-9 Ziffern). Oder leer lassen für einen automatisch generierten.';
 
   @override
   String cannotReachLockBluetooth(String error) {
@@ -1887,103 +1889,103 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get passcodeCreatedTitleAlt => 'Passcode Created!';
+  String get passcodeCreatedTitleAlt => 'Code erstellt!';
 
   @override
-  String get yourLockPasscode => 'Your lock passcode:';
+  String get yourLockPasscode => 'Ihr Schloss-Code:';
 
   @override
   String get passcodeReadyToUse =>
-      'This passcode is ready to use. To open the door, simply type the passcode and add # (or lock icon) at the end.';
+      'Dieser Code ist einsatzbereit. Um die Tür zu öffnen, geben Sie einfach den Code ein und fügen # (oder das Schloss-Symbol) am Ende hinzu.';
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'Fehler: $error';
   }
 
   @override
   String get infoPermanent =>
-      'Permanent passcodes are valid indefinitely until deleted from the lock. If left blank, the system will generate one automatically.';
+      'Dauerhafte Codes sind unbegrenzt gültig, bis sie vom Schloss gelöscht werden. Wenn leer gelassen, generiert das System automatisch einen.';
 
   @override
   String get infoTimed =>
-      'Timed passcodes are valid within the specified date range. If left blank, the system will generate one automatically.';
+      'Zeitgesteuerte Codes sind innerhalb des angegebenen Datumsbereichs gültig. Wenn leer gelassen, generiert das System automatisch einen.';
 
   @override
   String get infoOneTime =>
-      'One-time passcodes are valid for 6 hours from the start time and are deleted after use. They are generated automatically by the system.';
+      'Einmalcodes sind 6 Stunden ab der Startzeit gültig und werden nach der Verwendung gelöscht. Sie werden automatisch vom System generiert.';
 
   @override
   String get infoRecurring =>
-      'Recurring passcodes are only active on the specified days. They are generated automatically by the system.';
+      'Wiederkehrende Codes sind nur an den angegebenen Tagen aktiv. Sie werden automatisch vom System generiert.';
 
   @override
-  String get recurringMode => 'Recurring Mode';
+  String get recurringMode => 'Wiederkehrender Modus';
 
   @override
-  String get everyDay => 'Every Day';
+  String get everyDay => 'Jeden Tag';
 
   @override
-  String get workdays => 'Workdays (Mon-Fri)';
+  String get workdays => 'Werktage (Mo-Fr)';
 
   @override
-  String get onlyMonday => 'Only Monday';
+  String get onlyMonday => 'Nur Montag';
 
   @override
-  String get onlyTuesday => 'Only Tuesday';
+  String get onlyTuesday => 'Nur Dienstag';
 
   @override
-  String get onlyWednesday => 'Only Wednesday';
+  String get onlyWednesday => 'Nur Mittwoch';
 
   @override
-  String get onlyThursday => 'Only Thursday';
+  String get onlyThursday => 'Nur Donnerstag';
 
   @override
-  String get onlyFriday => 'Only Friday';
+  String get onlyFriday => 'Nur Freitag';
 
   @override
-  String get onlySaturday => 'Only Saturday';
+  String get onlySaturday => 'Nur Samstag';
 
   @override
-  String get onlySunday => 'Only Sunday';
+  String get onlySunday => 'Nur Sonntag';
 
   @override
-  String get passcodeNameHint => 'Enter passcode name...';
+  String get passcodeNameHint => 'Code-Name eingeben...';
 
   @override
-  String get passcodeOptional => 'Passcode (Optional)';
+  String get passcodeOptional => 'Code (Optional)';
 
   @override
-  String get passcodeLengthHint => '4-9 digits or blank';
+  String get passcodeLengthHint => '4-9 Ziffern oder leer lassen';
 
   @override
-  String get createButtonAlt => 'Create';
+  String get createButtonAlt => 'Erstellen';
 
   @override
   String get lockReadyScanCard =>
-      'Lock is ready! Please SCAN your IC card on the lock\'s keypad.';
+      'Schloss bereit! Bitte scannen Sie Ihre IC-Karte auf dem Tastenfeld des Schlosses.';
 
   @override
   String get nfcNotAvailable => 'NFC is not available on this device';
 
   @override
-  String get cardAddedSuccessfully => '✅ Card added successfully!';
+  String get cardAddedSuccessfully => '✅ Karte erfolgreich hinzugefügt!';
 
   @override
   String failedToAddCard(String error) {
-    return 'Failed: $error';
+    return 'Fehlgeschlagen: $error';
   }
 
   @override
   String cardSaving(String cardNumber) {
-    return 'Card: $cardNumber\nSaving...';
+    return 'Karte: $cardNumber\nSpeichern...';
   }
 
   @override
-  String get cycleOn => 'Cycle on';
+  String get cycleOn => 'Zyklus aktiv';
 
   @override
-  String get holdCardNearPhoneNfc => 'Hold your IC card near the phone';
+  String get holdCardNearPhoneNfc => 'Halten Sie Ihre IC-Karte nah ans Telefon';
 
   @override
   String get locationPermissionRequiredForWifi =>
@@ -1997,37 +1999,38 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get fingerprintInstruction4Times =>
-      'Please press your finger on the lock 4 times.';
+      'Bitte drücken Sie Ihren Finger 4 Mal auf das Schloss.';
 
   @override
   String fingerprintInstructionCount(int current, int total) {
-    return 'Please press your finger on the lock ($current/$total).';
+    return 'Bitte drücken Sie Ihren Finger auf das Schloss ($current/$total).';
   }
 
   @override
-  String get fingerprintReadSaving => 'Fingerprint read! Saving to server...';
+  String get fingerprintReadSaving =>
+      'Fingerabdruck gelesen! Wird auf dem Server gespeichert...';
 
   @override
   String get fingerprintAddedSuccessfully =>
-      '✅ Fingerprint added successfully!';
+      '✅ Fingerabdruck erfolgreich hinzugefügt!';
 
   @override
   String fingerprintSaveFailed(String error) {
-    return 'Error saving to server: $error';
+    return 'Fehler beim Speichern auf dem Server: $error';
   }
 
   @override
   String fingerprintAddFailed(String error) {
-    return 'Failed: $error';
+    return 'Fehlgeschlagen: $error';
   }
 
   @override
   String fingerprintError(String error) {
-    return 'Error: $error';
+    return 'Fehler: $error';
   }
 
   @override
-  String get addFingerprintTitle => 'Add Fingerprint';
+  String get addFingerprintTitle => 'Fingerabdruck hinzufügen';
 
   @override
   String get create => 'Erstellen';
@@ -2070,28 +2073,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scanGatewayTitle => 'Scan Gateway';
 
   @override
-  String get scanLockTitle => 'Scan Lock';
+  String get scanLockTitle => 'Schloss scannen';
 
   @override
-  String get stopScan => 'Stop Scan';
+  String get stopScan => 'Scan stoppen';
 
   @override
-  String get reScan => 'Re-Scan';
+  String get reScan => 'Erneut scannen';
 
   @override
-  String get deviceAddedSuccess => 'Device successfully added';
+  String get deviceAddedSuccess => 'Gerät erfolgreich hinzugefügt';
 
   @override
-  String get scanningGatewayStatus => 'Connecting to gateway...';
+  String get scanningGatewayStatus =>
+      'Verbindung mit Gateway wird hergestellt...';
 
   @override
-  String get scanningLockStatus => 'Please stay close to the lock...';
+  String get scanningLockStatus =>
+      'Bitte bleiben Sie in der Nähe des Schlosses...';
 
   @override
-  String get scanningGateways => 'Scanning for gateways...';
+  String get scanningGateways => 'Suche nach Gateways...';
 
   @override
-  String get scanningLocks => 'Scanning for locks...';
+  String get scanningLocks => 'Suche nach Schlössern...';
 
   @override
   String get ensureBluetooth => 'Please ensure Bluetooth is on';
@@ -2100,18 +2105,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get gatewayNotFound => 'Gateway not found';
 
   @override
-  String get lockNotFound => 'Lock not found';
+  String get lockNotFound => 'Schloss nicht gefunden';
 
   @override
-  String get scanNotFoundMessage =>
-      'Scanned surrounding devices but nothing found.';
+  String get scanNotFoundMessage => 'Umgebung gescannt, aber nichts gefunden.';
 
   @override
   String get gatewaySetupNotAdded => 'Gateway setup not added yet';
 
   @override
   String foundDevices(int count) {
-    return '$count devices found';
+    return '$count Geräte gefunden';
   }
 
   @override
@@ -2120,7 +2124,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get unnamedLock => 'Unnamed Lock';
+  String get unnamedLock => 'Unbenanntes Schloss';
 
   @override
   String get unknownGateway => 'Unbekanntes Gateway';
@@ -2227,7 +2231,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get roleNormal => 'Normal';
 
   @override
-  String get roleObserver => 'Observer';
+  String get roleObserver => 'Beobachter';
 
   @override
   String get accessTokenNotFound => 'Zugriffstoken nicht gefunden';
@@ -2259,80 +2263,80 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unknown => 'Unbekannt';
 
   @override
-  String get admins => 'Admins';
+  String get admins => 'Administratoren';
 
   @override
   String get all => 'All';
 
   @override
-  String get validityType => 'Validity Type';
+  String get validityType => 'Gültigkeitstyp';
 
   @override
-  String get scanCard => 'Scan Card';
+  String get scanCard => 'Karte scannen';
 
   @override
-  String get connectAndScan => 'Connect to lock and scan card';
+  String get connectAndScan => 'Mit Schloss verbinden und Karte scannen';
 
   @override
-  String get cardNameRequired => 'Card name is required';
+  String get cardNameRequired => 'Kartenname ist erforderlich';
 
   @override
   String get bluetoothRequired => 'Bluetooth connection required';
 
   @override
-  String get selectDays => 'Select Days';
+  String get selectDays => 'Tage auswählen';
 
   @override
-  String get startTime => 'Start Time';
+  String get startTime => 'Startzeit';
 
   @override
-  String get endTime => 'End Time';
+  String get endTime => 'Endzeit';
 
   @override
-  String get weekend => 'Weekend';
+  String get weekend => 'Wochenende';
 
   @override
   String get daily => 'Daily';
 
   @override
-  String get workday => 'Workday';
+  String get workday => 'Werktag';
 
   @override
-  String get monday => 'Monday';
+  String get monday => 'Montag';
 
   @override
-  String get tuesday => 'Tuesday';
+  String get tuesday => 'Dienstag';
 
   @override
-  String get wednesday => 'Wednesday';
+  String get wednesday => 'Mittwoch';
 
   @override
-  String get thursday => 'Thursday';
+  String get thursday => 'Donnerstag';
 
   @override
-  String get friday => 'Friday';
+  String get friday => 'Freitag';
 
   @override
-  String get saturday => 'Saturday';
+  String get saturday => 'Samstag';
 
   @override
-  String get sunday => 'Sunday';
+  String get sunday => 'Sonntag';
 
   @override
   String get scanLockDescription =>
       'Suchen Sie über Bluetooth nach Yavuz Lock-Schlössern in der Nähe und fügen Sie sie Ihrer App hinzu.';
 
   @override
-  String get notificationsTitle => 'Notifications';
+  String get notificationsTitle => 'Benachrichtigungen';
 
   @override
-  String get noNotifications => 'No notifications yet';
+  String get noNotifications => 'Noch keine Benachrichtigungen';
 
   @override
-  String get clearAll => 'Clear All';
+  String get clearAll => 'Alle löschen';
 
   @override
-  String get markAsRead => 'Mark as Read';
+  String get markAsRead => 'Als gelesen markieren';
 
   @override
   String get addCard => 'Karte hinzufügen';
@@ -2350,36 +2354,36 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scanCardWithPhone => 'Mit Telefon scannen';
 
   @override
-  String get automatic => 'Automatic';
+  String get automatic => 'Automatisch';
 
   @override
   String cardsLoadError(Object error) {
-    return 'Cards could not be loaded: $error';
+    return 'Karten konnten nicht geladen werden: $error';
   }
 
   @override
-  String get deleteCardTitle => 'Delete Card';
+  String get deleteCardTitle => 'Karte löschen';
 
   @override
   String deleteCardConfirm(Object cardNumber) {
-    return 'Are you sure you want to delete card \'$cardNumber\'?';
+    return 'Möchten Sie die Karte \'$cardNumber\' wirklich löschen?';
   }
 
   @override
   String cardDeletedSuccess(Object cardNumber, Object method) {
-    return 'Card \'$cardNumber\' successfully deleted ($method)';
+    return 'Karte \'$cardNumber\' erfolgreich gelöscht ($method)';
   }
 
   @override
   String cardDeleteError(Object error) {
-    return 'Card could not be deleted: $error';
+    return 'Karte konnte nicht gelöscht werden: $error';
   }
 
   @override
-  String get editCardTitle => 'Edit Card';
+  String get editCardTitle => 'Karte bearbeiten';
 
   @override
-  String get cardNameLabel => 'Card Name';
+  String get cardNameLabel => 'Kartenname';
 
   @override
   String get startDatePrefix => 'Start: ';
@@ -2388,55 +2392,55 @@ class AppLocalizationsDe extends AppLocalizations {
   String get endDatePrefix => 'End: ';
 
   @override
-  String get cardUpdatedSuccess => 'Card updated successfully.';
+  String get cardUpdatedSuccess => 'Karte erfolgreich aktualisiert.';
 
   @override
   String cardUpdateError(Object error) {
-    return 'Card could not be updated: $error';
+    return 'Karte konnte nicht aktualisiert werden: $error';
   }
 
   @override
-  String get clearAllCardsTitle => 'Clear All Cards';
+  String get clearAllCardsTitle => 'Alle Karten löschen';
 
   @override
   String get clearAllCardsConfirm =>
-      'Are you sure you want to delete all cards from the server?\\n\\nWarning: This action cannot be undone and per API documentation, the lock memory should be cleared via SDK first.';
+      'Möchten Sie wirklich alle Karten vom Server löschen?\\n\\nWarnung: Diese Aktion kann nicht rückgängig gemacht werden. Gemäß API-Dokumentation sollte der Schloss-Speicher zuerst über SDK geleert werden.';
 
   @override
   String get clear => 'Clear';
 
   @override
   String get allCardsClearedSuccess =>
-      'All cards successfully cleared from server.';
+      'Alle Karten erfolgreich vom Server gelöscht.';
 
   @override
   String cardsClearError(Object error) {
-    return 'Cards could not be cleared: $error';
+    return 'Karten konnten nicht gelöscht werden: $error';
   }
 
   @override
-  String get recoverCardTitle => 'Recover Card';
+  String get recoverCardTitle => 'Karte wiederherstellen';
 
   @override
   String get recoverCardInstruction =>
       'A Bluetooth connection to the lock is required to recover a previously deleted card.';
 
   @override
-  String get cardNumberLabel => 'Card Number';
+  String get cardNumberLabel => 'Kartennummer';
 
   @override
-  String get recover => 'Recover';
+  String get recover => 'Wiederherstellen';
 
   @override
-  String get cardRecoveredSuccess => '✅ Card successfully recovered.';
+  String get cardRecoveredSuccess => '✅ Karte erfolgreich wiederhergestellt.';
 
   @override
   String cardRecoverError(Object error) {
-    return 'Card could not be recovered: $error';
+    return 'Karte konnte nicht wiederhergestellt werden: $error';
   }
 
   @override
-  String get howToAddCard => 'How would you like to add?';
+  String get howToAddCard => 'Wie möchten Sie hinzufügen?';
 
   @override
   String get addViaBluetooth => 'Add via Lock (Bluetooth)';
@@ -2448,131 +2452,133 @@ class AppLocalizationsDe extends AppLocalizations {
   String get savedViaGateway => 'Saved via Gateway';
 
   @override
-  String get icCardsTitle => 'IC Cards';
+  String get icCardsTitle => 'IC-Karten';
 
   @override
-  String get remoteCardCreation => 'Remote Card Creation';
+  String get remoteCardCreation => 'Fernkartenerstellung';
 
   @override
-  String get addCardViaLockMenu => 'Add Card via Lock';
+  String get addCardViaLockMenu => 'Karte über Schloss hinzufügen';
 
   @override
-  String get noCardsFound => 'No IC cards found.';
+  String get noCardsFound => 'Keine IC-Karten gefunden.';
 
   @override
-  String get unnamedCard => 'Unnamed Card';
+  String get unnamedCard => 'Unbenannte Karte';
 
   @override
   String cardNumberPrefix(Object cardNumber) {
-    return 'No: $cardNumber';
+    return 'Nr: $cardNumber';
   }
 
   @override
   String validityPrefix(Object endDate, Object startDate) {
-    return 'Validity: $startDate - $endDate';
+    return 'Gültigkeit: $startDate - $endDate';
   }
 
   @override
-  String get passcodesTitle => 'Passcodes';
+  String get passcodesTitle => 'Zugangscodes';
 
   @override
-  String get noPasscodesFound => 'No passcodes found.';
+  String get noPasscodesFound => 'Keine Zugangscodes gefunden.';
 
   @override
   String get typePrefix => 'Type';
 
   @override
-  String get unknownType => 'Unknown Type';
+  String get unknownType => 'Unbekannter Typ';
 
   @override
-  String get startingMessage => 'Starting...';
+  String get startingMessage => 'Starte...';
 
   @override
-  String get recordPasscode => 'Passcode';
+  String get recordPasscode => 'Zugangscode';
 
   @override
   String get recordCard => 'Card';
 
   @override
-  String get recordFingerprint => 'Fingerprint';
+  String get recordFingerprint => 'Fingerabdruck';
 
   @override
   String get recordAppBt => 'App (BT)';
 
   @override
-  String get recordRemoteUnlock => 'Remote Unlock';
+  String get recordRemoteUnlock => 'Fernöffnung';
 
   @override
-  String get recordLocked => 'Locked';
+  String get recordLocked => 'Gesperrt';
 
   @override
-  String get recordMechanicalKey => 'Mechanical Key';
+  String get recordMechanicalKey => 'Mechanischer Schlüssel';
 
   @override
-  String get recordWristband => 'Wristband';
+  String get recordWristband => 'Armband';
 
   @override
-  String get recordRemoteControl => 'Remote Control';
+  String get recordRemoteControl => 'Fernbedienung';
 
   @override
-  String get recordAppRemote => 'App (Remote)';
+  String get recordAppRemote => 'App (Fern)';
 
   @override
   String get recordGatewayUnlock => 'Unlocked via Gateway';
 
   @override
-  String get recordAutoLock => 'Auto Lock';
+  String get recordAutoLock => 'Automatische Sperrung';
 
   @override
-  String get recordUnlocked => 'Unlocked';
+  String get recordUnlocked => 'Entsperrt';
 
   @override
   String recordOtherOperation(Object type) {
-    return 'Other Operation ($type)';
+    return 'Andere Operation ($type)';
   }
 
   @override
-  String get clearAllRecordsConfirmWarning => '(This action cannot be undone)';
+  String get clearAllRecordsConfirmWarning =>
+      '(Diese Aktion kann nicht rückgängig gemacht werden)';
 
   @override
-  String get ungrouped => 'Ungrouped';
+  String get ungrouped => 'Nicht gruppiert';
 
   @override
-  String get unassignedLocksAndUsers => 'Unassigned locks and users';
+  String get unassignedLocksAndUsers =>
+      'Nicht zugewiesene Schlösser und Benutzer';
 
   @override
   String get manageLockAccessAndBlockUsers =>
-      'Manage lock access and block users';
+      'Schloss-Zugang verwalten und Benutzer sperren';
 
   @override
   String get transferLockOwnership =>
-      'Transfer lock ownership to another account';
+      'Schloss-Eigentümerschaft auf ein anderes Konto übertragen';
 
   @override
   String get transferGatewayOwnership =>
-      'Transfer gateway ownership to another account';
+      'Gateway-Eigentümerschaft auf ein anderes Konto übertragen';
 
   @override
-  String get exportDataDesc => 'Export data or backup';
+  String get exportDataDesc => 'Daten exportieren oder sichern';
 
   @override
   String membersAndLocksCount(Object locks, Object members) {
-    return '$members members, $locks locks';
+    return '$members Mitglieder, $locks Schlösser';
   }
 
   @override
-  String get searchGateway => 'Search gateway...';
+  String get searchGateway => 'Gateway suchen...';
 
   @override
-  String get noGatewayFound => 'No gateway found yet';
+  String get noGatewayFound => 'Noch kein Gateway gefunden';
 
   @override
   String actionsFor(Object name) {
-    return 'Actions for $name';
+    return 'Aktionen für $name';
   }
 
   @override
-  String get gatewayConnectedSuccess => 'Successfully connected to gateway';
+  String get gatewayConnectedSuccess => 'Erfolgreich mit Gateway verbunden';
 
   @override
   String gatewayConnectError(Object error) {
@@ -2591,13 +2597,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get gatewayDetails => 'Gateway Details';
 
   @override
-  String get networkLabel => 'Network';
+  String get networkLabel => 'Netzwerk';
 
   @override
   String get statusLabel => 'Status';
 
   @override
-  String get connectedLocks => 'Connected Locks';
+  String get connectedLocks => 'Verbundene Schlösser';
 
   @override
   String gatewayDetailError(Object error) {
@@ -2619,25 +2625,25 @@ class AppLocalizationsDe extends AppLocalizations {
   String get detailsButton => 'Details';
 
   @override
-  String get connectButton => 'Connect';
+  String get connectButton => 'Verbinden';
 
   @override
   String get closeButton => 'Close';
 
   @override
-  String get shareFailed => 'Share failed';
+  String get shareFailed => 'Freigabe fehlgeschlagen';
 
   @override
   String get passwordUpdatedButLoginFailed =>
-      'Password updated but login failed.';
+      'Passwort aktualisiert, aber Anmeldung fehlgeschlagen.';
 
   @override
   String get loginSuccessButNoToken =>
-      'Login successful but no token received.';
+      'Anmeldung erfolgreich, aber kein Token erhalten.';
 
   @override
   String get loginFailedCheckCredentials =>
-      'Login failed. Please check your credentials.';
+      'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Zugangsdaten.';
 
   @override
   String get bluetoothDisabledError =>
@@ -2645,11 +2651,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get lockNotInSettingMode =>
-      'Lock is not in setting mode. Please touch the keypad to wake it up and try again.';
+      'Schloss befindet sich nicht im Einrichtungsmodus. Bitte berühren Sie das Tastenfeld, um es aufzuwecken, und versuchen Sie es erneut.';
 
   @override
   String get lockAlreadyRegistered =>
-      'This lock is already registered to another account or this account. You must reset the lock first.';
+      'Dieses Schloss ist bereits bei einem anderen Konto oder diesem Konto registriert. Sie müssen das Schloss zuerst zurücksetzen.';
 
   @override
   String get bluetoothConnectionRejected =>
@@ -2661,71 +2667,167 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get lockNotResponding =>
-      'The lock is not responding. Please get closer and wake up the lock.';
+      'Das Schloss antwortet nicht. Bitte näher herangehen und das Schloss aufwecken.';
 
   @override
   String cloudRegistrationError(Object error) {
-    return 'Cloud Registration Error: $error';
+    return 'Cloud-Registrierungsfehler: $error';
   }
 
   @override
   String btErrorPrefix(Object code, Object details) {
-    return 'BT Error (Code: $code): $details';
+    return 'BT-Fehler (Code: $code): $details';
   }
 
   @override
   String get apiLockRegisteredToAnother =>
-      'This lock is already registered to another user. Please delete it from the previous account first.';
+      'Dieses Schloss ist bereits bei einem anderen Benutzer registriert. Bitte zuerst aus dem vorherigen Konto löschen.';
 
   @override
   String get apiNotAuthorized =>
-      'You are not authorized for this operation (Not an Admin).';
+      'Sie sind für diese Operation nicht autorisiert (kein Administrator).';
 
   @override
   String get apiSessionExpired =>
-      'Your session has expired. Please log out and log in again.';
+      'Ihre Sitzung ist abgelaufen. Bitte ab- und erneut anmelden.';
 
   @override
-  String get apiLockFrozen => 'Lock is frozen. Operations cannot be performed.';
+  String get apiLockFrozen =>
+      'Schloss ist eingefroren. Operationen können nicht ausgeführt werden.';
 
   @override
   String get apiTimestampError =>
-      'Timestamp error. Please check your phone\'s time and date settings.';
+      'Zeitstempelfehler. Bitte überprüfen Sie die Uhrzeit- und Datumseinstellungen Ihres Telefons.';
 
   @override
   String get apiDeletePreviousLocks =>
-      'Please delete this lock or your other locks from your account first.';
+      'Bitte löschen Sie zuerst dieses Schloss oder Ihre anderen Schlösser aus Ihrem Konto.';
 
   @override
   String get apiClientAuthError =>
-      'App authentication error (Invalid Client ID/Secret).';
+      'App-Authentifizierungsfehler (Ungültige Client-ID/Geheimnis).';
 
   @override
   String get apiServerError =>
-      'A server error occurred. Please try again later.';
+      'Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.';
 
   @override
-  String get apiOperationRejected => 'Operation rejected by the server.';
+  String get apiOperationRejected => 'Operation vom Server abgelehnt.';
 
   @override
   String unexpectedErrorPrefix(Object error) {
-    return 'Unexpected error: $error';
+    return 'Unerwarteter Fehler: $error';
   }
 
   @override
-  String get apiUsernameAlreadyTaken => 'This username is already taken.';
+  String get apiUsernameAlreadyTaken =>
+      'Dieser Benutzername ist bereits vergeben.';
 
   @override
-  String get registrationFailed => 'Registration failed';
+  String get registrationFailed => 'Registrierung fehlgeschlagen';
 
   @override
   String get apiRegistrationUnexpectedResponse =>
-      'Registration failed: Unexpected response format';
+      'Registrierung fehlgeschlagen: Unerwartetes Antwortformat';
 
   @override
-  String get apiResetPasswordFailed => 'Password reset failed';
+  String get apiResetPasswordFailed => 'Passwort-Zurücksetzen fehlgeschlagen';
 
   @override
   String get iosNfcWarning =>
       'Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.';
+
+  @override
+  String get validityStart => 'Beginn der Gültigkeit';
+
+  @override
+  String get validityEnd => 'Ende der Gültigkeit';
+
+  @override
+  String get noName => 'Kein Name';
+
+  @override
+  String get facesTitle => 'Gesichter';
+
+  @override
+  String get fingerprintsTitle => 'Fingerabdrücke';
+
+  @override
+  String get noFacesFound => 'Keine Gesichter gefunden.';
+
+  @override
+  String get noFingerprintsFound => 'Keine Fingerabdrücke gefunden.';
+
+  @override
+  String get clearAllFacesTitle => 'Alle Gesichter löschen';
+
+  @override
+  String get clearAllFacesConfirm =>
+      'Möchten Sie wirklich alle Gesichter löschen?';
+
+  @override
+  String get clearAllFingerprintsTitle => 'Alle Fingerabdrücke löschen';
+
+  @override
+  String get clearAllFingerprintsConfirm =>
+      'Möchten Sie wirklich alle Fingerabdrücke löschen?';
+
+  @override
+  String get addFaceTitle => 'Gesicht hinzufügen';
+
+  @override
+  String get pickImage => 'Bild auswählen';
+
+  @override
+  String get faceFeatureDataSuccess =>
+      'Gesichtsmerkmaldaten erfolgreich abgerufen.';
+
+  @override
+  String faceFeatureDataFailed(Object error) {
+    return 'Merkmaldaten konnten nicht abgerufen werden: $error';
+  }
+
+  @override
+  String get faceAddedSuccessfully => 'Gesicht erfolgreich hinzugefügt.';
+
+  @override
+  String faceAddFailed(Object error) {
+    return 'Gesicht konnte nicht hinzugefügt werden: $error';
+  }
+
+  @override
+  String get faceSelectImageFirst =>
+      'Bitte wählen Sie zuerst ein Bild aus und rufen Sie die Merkmaldaten ab.';
+
+  @override
+  String get faceName => 'Gesichtsname';
+
+  @override
+  String locksForGateway(Object gatewayName) {
+    return 'Schlösser für $gatewayName';
+  }
+
+  @override
+  String get tc2Scanning => 'TC2 wird gescannt...';
+
+  @override
+  String get db2Scanning => 'DB2 wird gescannt...';
+
+  @override
+  String get sensorScanning => 'Sensor wird gescannt...';
+
+  @override
+  String get electricMeterScanning => 'Stromzähler wird gescannt...';
+
+  @override
+  String get waterMeterScanning => 'Wasserzähler wird gescannt...';
+
+  @override
+  String bluetoothFailed(Object btError, Object gwError) {
+    return 'Bluetooth fehlgeschlagen: $btError\n\nGateway fehlgeschlagen: $gwError';
+  }
+
+  @override
+  String get bluetoothTimeout =>
+      'Bluetooth-Vorgang hat das Zeitlimit überschritten.';
 }

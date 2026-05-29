@@ -118,7 +118,7 @@ class _CreatePasscodePageState extends State<CreatePasscodePage>
           'Kilide ulaşılamadı. Bluetooth açık ve yakında olduğunuzdan emin olun. Hata: $errorMsg');
     });
 
-    await completer.future;
+    await completer.future.timeout(const Duration(seconds: 30));
 
     // Now upload to Cloud
     await apiService.addPasscode(

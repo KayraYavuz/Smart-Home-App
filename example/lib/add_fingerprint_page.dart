@@ -619,8 +619,8 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                   _buildDivider(),
                   Container(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-                    child: const Text('Cycle on',
-                        style: TextStyle(
+                    child: Text(l10n?.cycleOn ?? 'Cycle on',
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold)),

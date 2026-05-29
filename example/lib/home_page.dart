@@ -33,6 +33,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   // Start with empty list, will be populated by API data
   List<Map<String, dynamic>> _locks = [];
   Timer? _syncTimer;
+  StreamSubscription? _webhookSubscription;
+  bool _navigating = false;
 
   @override
   void initState() {
@@ -82,6 +84,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _syncTimer?.cancel();
+    _webhookSubscription?.cancel();
     super.dispose();
   }
 
@@ -138,9 +141,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void _initializeWebhookConnection() {
-    // TTLock webhook olaylarını dinle (şimdilik sadece TTLock)
-    // Not: Webhook server çalışmadığı için şu anda sadece loglama yapılacak
-    context.read<TTLockWebhookBloc>().stream.listen((state) {
+    _webhookSubscription =
+        context.read<TTLockWebhookBloc>().stream.listen((state) {
       if (state is TTLockWebhookEventReceivedState) {
         _handleTTLockWebhookEvent(state.ttlockEvent);
       }
@@ -334,7 +336,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           'name': lockAlias,
           'status': status,
           'isLocked': isLocked,
-          'battery': electricQuantity > 0 ? electricQuantity : 85,
+          'battery': electricQuantity > 0 ? electricQuantity : null,
           'lockData': lock['lockData'] ?? '',
           'lockMac': lock['lockMac'] ?? '',
           'lockId': lockId,
@@ -367,7 +369,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           'name': lockAlias,
           'status': status,
           'isLocked': isLocked,
-          'battery': electricQuantity > 0 ? electricQuantity : 85,
+          'battery': electricQuantity > 0 ? electricQuantity : null,
           'lockData': lock['lockData'] ?? '',
           'lockMac': lock['lockMac'] ?? '',
           'lockId': lockId,
@@ -762,15 +764,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             color: Colors.transparent,
             child: InkWell(
               onTap: () async {
+                if (_navigating) return;
+                _navigating = true;
+                try {
                 if (isGateway) {
-                  Navigator.push(
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
                           GatewayDetailPage(gateway: lock['gatewayDetails']),
                     ),
-                  ).then(
-                      (_) => _fetchAndSetLocks()); // Refresh when we come back
+                  );
+                  if (mounted) _fetchAndSetLocks();
                   return;
                 }
 
@@ -812,6 +817,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       );
                     }
                   }
+                }
+                } finally {
+                  _navigating = false;
                 }
               },
               onLongPress: () async {
@@ -890,20 +898,27 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 6, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: _getBatteryColor(lock['battery'] ?? 0),
+                                  color: lock['battery'] != null
+                                      ? _getBatteryColor(lock['battery'] as int)
+                                      : Colors.grey,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
-                                      _getBatteryIcon(lock['battery'] ?? 0),
+                                      lock['battery'] != null
+                                          ? _getBatteryIcon(
+                                              lock['battery'] as int)
+                                          : Icons.battery_unknown,
                                       color: Colors.white,
                                       size: 13,
                                     ),
                                     const SizedBox(width: 2),
                                     Text(
-                                      '${lock['battery'] ?? 0}%',
+                                      lock['battery'] != null
+                                          ? '${lock['battery']}%'
+                                          : '--',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 10,

@@ -178,7 +178,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -225,7 +225,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
           ],
         );
       },
-    );
+    ).then((_) => nameController.dispose());
   }
 
   void _deleteGateway() {
@@ -307,7 +307,13 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
                         ApiService(this.context.read<AuthRepository>());
                     await apiService.transferGateway(
                       receiverUsername: usernameController.text,
-                      gatewayIdList: [widget.gateway['gatewayId'] as int],
+                      gatewayIdList: [
+                        widget.gateway['gatewayId'] is int
+                            ? widget.gateway['gatewayId'] as int
+                            : int.tryParse(
+                                    widget.gateway['gatewayId'].toString()) ??
+                                0
+                      ],
                     );
                     if (!mounted) return;
                     navigator.pop();
@@ -331,7 +337,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
           ],
         );
       },
-    );
+    ).then((_) => usernameController.dispose());
   }
 
   void _checkUpgrade() async {

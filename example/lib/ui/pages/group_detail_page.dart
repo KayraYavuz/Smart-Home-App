@@ -133,9 +133,20 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                 TextButton(
                   onPressed: () async {
                     navigator.pop();
-                    await _saveGroupLocks(widget.group['groupId'].toString(),
-                        groupLockIds, selectedLockIds);
-                    _fetchGroupLocks(); // Refresh list
+                    try {
+                      await _saveGroupLocks(widget.group['groupId'].toString(),
+                          groupLockIds, selectedLockIds);
+                      _fetchGroupLocks(); // Refresh list
+                    } catch (e) {
+                      if (mounted) {
+                        scaffoldMessenger.showSnackBar(
+                          SnackBar(
+                              content:
+                                  Text(l10n.errorWithMsg(e.toString())),
+                              backgroundColor: Colors.red),
+                        );
+                      }
+                    }
                   },
                   child: Text(l10n.save,
                       style: const TextStyle(color: AppColors.primary)),
@@ -216,6 +227,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
 
+    try {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -267,6 +279,9 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         ],
       ),
     );
+    } finally {
+      usernameController.dispose();
+    }
   }
 
   Future<void> _processGroupShare(String groupId, String receiverUsername,
@@ -391,7 +406,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       if (mounted) navigator.pop();
       if (mounted) {
         scaffoldMessenger.showSnackBar(
-            SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
+            SnackBar(content: Text(AppLocalizations.of(context)!.errorWithMsg(e.toString())), backgroundColor: Colors.red));
       }
     }
   }

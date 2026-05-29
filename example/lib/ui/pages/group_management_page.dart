@@ -50,6 +50,7 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final controller = TextEditingController();
+    try {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -101,6 +102,9 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         ],
       ),
     );
+    } finally {
+      controller.dispose();
+    }
   }
 
   Future<void> _editGroup(Map<String, dynamic> group) async {
@@ -108,6 +112,7 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final controller = TextEditingController(text: group['name']);
+    try {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -163,6 +168,9 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         ],
       ),
     );
+    } finally {
+      controller.dispose();
+    }
   }
 
   Future<void> _deleteGroup(Map<String, dynamic> group) async {

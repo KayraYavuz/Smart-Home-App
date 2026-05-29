@@ -523,7 +523,7 @@
   "ttlockWebSyncMsg": "Bu hesap TTLock resmi uygulamasıyla oluşturulmuş. Şifre senkronizasyonu için lütfen TTLock Web Portalını kullanarak şifrenizi güncelleyin.",
   "openPortal": "Portalı Aç",
   "urlOpenError": "URL açılamadı: {url}",
-  "timePeriod": "Zaman dilimi",
+  "timePeriod": "Zaman Dilimi",
   "add": "Ekle",
   "transferAction": "Transfer Et",
   "timeSet": "Süre ayarlandı",
@@ -1135,5 +1135,30 @@
         "type": "String"
       }
     }
-  }
+  },
+  "noName": "İsimsiz",
+  "facesTitle": "Yüzler",
+  "fingerprintsTitle": "Parmak İzleri",
+  "noFacesFound": "Yüz bulunamadı.",
+  "noFingerprintsFound": "Parmak izi bulunamadı.",
+  "clearAllFacesTitle": "Tüm Yüzleri Sil",
+  "clearAllFacesConfirm": "Tüm yüzleri silmek istediğinizden emin misiniz?",
+  "clearAllFingerprintsTitle": "Tüm Parmak İzlerini Sil",
+  "clearAllFingerprintsConfirm": "Tüm parmak izlerini silmek istediğinizden emin misiniz?",
+  "addFaceTitle": "Yüz Ekle",
+  "pickImage": "Resim Seç",
+  "faceFeatureDataSuccess": "Yüz özellik verisi başarıyla alındı.",
+  "faceFeatureDataFailed": "Özellik verisi alınamadı: {error}",
+  "faceAddedSuccessfully": "Yüz başarıyla eklendi.",
+  "faceAddFailed": "Yüz eklenemedi: {error}",
+  "faceSelectImageFirst": "Lütfen önce bir resim seçin ve özellik verisi alın.",
+  "faceName": "Yüz Adı",
+  "locksForGateway": "{gatewayName} için Kilitler",
+  "tc2Scanning": "TC2 taranıyor...",
+  "db2Scanning": "DB2 taranıyor...",
+  "sensorScanning": "Sensör taranıyor...",
+  "electricMeterScanning": "Elektrik sayacı taranıyor...",
+  "waterMeterScanning": "Su sayacı taranıyor...",
+  "bluetoothFailed": "Bluetooth ile başarısız: {btError}\n\nGateway ile başarısız: {gwError}",
+  "bluetoothTimeout": "Bluetooth işlemi zaman aşımına uğradı."
 }

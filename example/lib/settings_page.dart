@@ -32,6 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     setState(() {
       _soundEnabled = prefs.getBool('sound_enabled') ?? true;
       _touchToUnlockEnabled = prefs.getBool('touch_to_unlock_enabled') ?? false;

@@ -3,6 +3,9 @@ import 'package:yavuz_lock/fingerprint_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'package:bmprogresshud/progresshud.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yavuz_lock/api_service.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/services/ttlock_webhook_service.dart';
 
 class LockPage extends StatefulWidget {
@@ -381,11 +384,16 @@ class _LockPageState extends State<LockPage> {
 
       case Command.resetPasscode:
         TTLock.resetPasscode(lockData, (newLockData) {
-          // CRITICAL: Update cloud with new lockData after reset
-          // This syncs the new passcode key data with the server
-          // TODO: Replace 'lockId' with actual lock ID from your data model
-          // ApiService().updateLockData(lockId: 'YOUR_LOCK_ID', lockData: newLockData);
-          lockData = newLockData; // Update local lockData
+          lockData = newLockData;
+          ApiService(context.read<AuthRepository>())
+              .updateLockData(
+                lockId: widget.title.split("-")[1],
+                lockData: newLockData,
+              )
+              .catchError((e) {
+            debugPrint('updateLockData failed: $e');
+            return false;
+          });
           _showSuccessAndDismiss("Success - LockData güncellendi");
           TTLockWebhookService().sendEvent(eventType: 'passcodeReset', data: {
             'lockMac': widget.lockMac,
