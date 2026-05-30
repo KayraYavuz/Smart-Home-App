@@ -105,6 +105,7 @@ echo "Yerelleştirme dosyaları oluşturuluyor..."
 flutter gen-l10n
 
 echo "iOS konfigürasyonu hazırlanıyor..."
+flutter config --no-swift-package-manager
 flutter build ios --config-only --no-codesign
 
 # 4. iOS Pod Kurulumu
