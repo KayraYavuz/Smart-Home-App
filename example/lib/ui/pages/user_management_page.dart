@@ -92,12 +92,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
     }
   }
 
-  void _showAddUserDialog() {
+  Future<void> _showAddUserDialog() async {
     final l10n = AppLocalizations.of(context)!;
     final usernameController = TextEditingController();
     final passwordController = TextEditingController();
 
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
@@ -164,6 +164,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
         ],
       ),
     );
+    usernameController.dispose();
+    passwordController.dispose();
   }
 
   void _deleteUser(Map<String, dynamic> user) {

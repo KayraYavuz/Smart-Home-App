@@ -735,7 +735,7 @@ class _LockDetailPageState extends State<LockDetailPage>
       context,
       MaterialPageRoute(
         builder: (context) => FingerprintPage(
-          lockId: int.parse(widget.lock['lockId'].toString()),
+          lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0,
           lockData: widget.lock['lockData'],
         ),
       ),
@@ -747,7 +747,7 @@ class _LockDetailPageState extends State<LockDetailPage>
       context,
       MaterialPageRoute(
         builder: (context) => FacePage(
-          lockId: int.parse(widget.lock['lockId'].toString()),
+          lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0,
         ),
       ),
     );
@@ -758,7 +758,7 @@ class _LockDetailPageState extends State<LockDetailPage>
       context,
       MaterialPageRoute(
         builder: (context) =>
-            RemoteListPage(lockId: int.parse(widget.lock['lockId'].toString())),
+            RemoteListPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
       ),
     );
   }
@@ -768,7 +768,7 @@ class _LockDetailPageState extends State<LockDetailPage>
       context,
       MaterialPageRoute(
         builder: (context) => WirelessKeypadPage(
-            lockId: int.parse(widget.lock['lockId'].toString())),
+            lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
       ),
     );
   }
@@ -778,7 +778,7 @@ class _LockDetailPageState extends State<LockDetailPage>
       context,
       MaterialPageRoute(
         builder: (context) =>
-            DoorSensorPage(lockId: int.parse(widget.lock['lockId'].toString())),
+            DoorSensorPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
       ),
     );
   }
@@ -788,7 +788,7 @@ class _LockDetailPageState extends State<LockDetailPage>
       context,
       MaterialPageRoute(
         builder: (context) =>
-            QrCodePage(lockId: int.parse(widget.lock['lockId'].toString())),
+            QrCodePage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
       ),
     );
   }
@@ -798,7 +798,7 @@ class _LockDetailPageState extends State<LockDetailPage>
       context,
       MaterialPageRoute(
         builder: (context) =>
-            PalmVeinPage(lockId: int.parse(widget.lock['lockId'].toString())),
+            PalmVeinPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
       ),
     );
   }

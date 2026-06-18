@@ -357,6 +357,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
         ],
       ),
     );
+    controller.dispose();
 
     if (newValue != null && newValue.isNotEmpty && newValue != currentValue) {
       final prefs = await SharedPreferences.getInstance();

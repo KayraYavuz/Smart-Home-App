@@ -29,6 +29,13 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
 
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _remarksController.dispose();
+    super.dispose();
+  }
+
   Map<int, String> _getPermissionOptions(AppLocalizations l10n) => {
         1: l10n.adminPermission,
         2: l10n.normalUserPermission,

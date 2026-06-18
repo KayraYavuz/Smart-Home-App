@@ -101,6 +101,7 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         ],
       ),
     );
+    controller.dispose();
   }
 
   Future<void> _editGroup(Map<String, dynamic> group) async {
@@ -163,6 +164,7 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
         ],
       ),
     );
+    controller.dispose();
   }
 
   Future<void> _deleteGroup(Map<String, dynamic> group) async {

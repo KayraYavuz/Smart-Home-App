@@ -338,6 +338,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           'lockData': lock['lockData'] ?? '',
           'lockMac': lock['lockMac'] ?? '',
           'lockId': lockId,
+          'keyId': lock['keyId']?.toString() ?? '',
           'deviceType': 'ttlock',
           'source': 'ttlock',
           'shared': false,
@@ -371,6 +372,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           'lockData': lock['lockData'] ?? '',
           'lockMac': lock['lockMac'] ?? '',
           'lockId': lockId,
+          'keyId': lock['keyId']?.toString() ?? '',
           'deviceType': 'ttlock',
           'source': 'ttlock_shared',
           'shared': true,
@@ -1069,10 +1071,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         throw Exception('Access token not available');
       }
 
-      // Paylaşımı iptal etmek için e-key'i sil
+      final keyId = lock['keyId']?.toString() ?? '';
+      if (keyId.isEmpty) throw Exception('keyId not found');
       await apiService.deleteEKey(
         accessToken: accessToken,
-        keyId: lock['keyId'].toString(),
+        keyId: keyId,
       );
 
       // Listeden kaldır
