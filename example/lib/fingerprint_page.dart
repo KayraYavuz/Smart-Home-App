@@ -173,49 +173,30 @@ class _FingerprintPageState extends State<FingerprintPage> {
     );
   }
 
-  void _showChangePeriodDialog(
-      BuildContext context, int lockId, int fingerprintId) {
-    final l10n = AppLocalizations.of(context)!;
-    final startDateController = TextEditingController();
-    final endDateController = TextEditingController();
-    showDialog(
+  Future<void> _showChangePeriodDialog(
+      BuildContext context, int lockId, int fingerprintId) async {
+    final bloc = context.read<FingerprintBloc>();
+    final now = DateTime.now();
+    final start = await showDatePicker(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.changePeriod),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: startDateController,
-              decoration: InputDecoration(labelText: l10n.startDateMsLabel),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: endDateController,
-              decoration: InputDecoration(labelText: l10n.endDateMsLabel),
-              keyboardType: TextInputType.number,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              context.read<FingerprintBloc>().add(ChangeFingerprintPeriod(
-                    lockId: lockId,
-                    fingerprintId: fingerprintId,
-                    startDate: int.parse(startDateController.text),
-                    endDate: int.parse(endDateController.text),
-                  ));
-              Navigator.pop(dialogContext);
-            },
-            child: Text(l10n.change),
-          ),
-        ],
-      ),
+      initialDate: now,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 5),
     );
+    if (start == null || !context.mounted) return;
+    final end = await showDatePicker(
+      context: context,
+      initialDate: DateTime(now.year + 1, now.month, now.day),
+      firstDate: start,
+      lastDate: DateTime(now.year + 10),
+    );
+    if (end == null) return;
+
+    bloc.add(ChangeFingerprintPeriod(
+      lockId: lockId,
+      fingerprintId: fingerprintId,
+      startDate: start.millisecondsSinceEpoch,
+      endDate: end.millisecondsSinceEpoch,
+    ));
   }
 }
