@@ -134,11 +134,16 @@ class ApiService {
     debugPrint('🔐 Şifre sıfırlanıyor (Cloud API): $username');
 
     final passwordMd5 = _generateMd5(newPassword);
-    // The stored TTLock username may be an alphanumeric-stripped form of the
-    // email (see registration), and the account may live on either region
-    // server. Mirror the login flow: try every username variant on every
-    // region until one succeeds.
-    final candidates = _usernameVariants(username);
+    // TTLock stores Open-API-registered usernames in the canonical form
+    // "<clientId>_<username>". Login (oauth) accepts the bare form because it
+    // auto-scopes by client_id, but resetPassword needs the canonical name.
+    // Try the clientId-prefixed variants first, then the bare ones as a
+    // fallback, across both region servers; stop on the first success.
+    final base = _usernameVariants(username);
+    final candidates = <String>{
+      ...base.map((u) => '${ApiConfig.clientId}_$u'),
+      ...base,
+    };
     final regions = [ApiConfig.baseUrl, 'https://api.ttlock.com'];
 
     Object? lastError;
