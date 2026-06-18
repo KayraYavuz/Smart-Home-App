@@ -49,6 +49,9 @@ ios/GoogleService-Info.plist
 android/app/google-services.json
 .env
 
+# Credentials — keep out of git. Use env.dart.example as a template.
+lib/env/env.dart
+
 # Yerel ve Geçici Dosyalar (O 1045 dosyanın çoğu burasıdır)
 ios/Pods/
 
