@@ -17,23 +17,40 @@ class AddFacePage extends StatefulWidget {
 class _AddFacePageState extends State<AddFacePage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _startDateController = TextEditingController();
-  final _endDateController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
 
   XFile? _imageFile;
   String? _featureData;
   bool _isProcessing = false;
+  DateTime _startDate = DateTime.now();
+  DateTime _endDate = DateTime.now().add(const Duration(days: 365));
 
   @override
-  void initState() {
-    super.initState();
-    _startDateController.text =
-        DateTime.now().millisecondsSinceEpoch.toString();
-    _endDateController.text = DateTime.now()
-        .add(const Duration(days: 365))
-        .millisecondsSinceEpoch
-        .toString();
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  String _formatDate(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  Future<void> _pickDate({required bool isStart}) async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: isStart ? _startDate : _endDate,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 10),
+    );
+    if (picked == null || !mounted) return;
+    setState(() {
+      if (isStart) {
+        _startDate = picked;
+        if (_endDate.isBefore(_startDate)) _endDate = _startDate;
+      } else {
+        _endDate = picked;
+      }
+    });
   }
 
   Future<void> _pickImage() async {
@@ -86,8 +103,8 @@ class _AddFacePageState extends State<AddFacePage> {
           featureData: _featureData!,
           addType: 2, // 2 for remote adding via gateway
           name: _nameController.text,
-          startDate: int.parse(_startDateController.text),
-          endDate: int.parse(_endDateController.text),
+          startDate: _startDate.millisecondsSinceEpoch,
+          endDate: _endDate.millisecondsSinceEpoch,
         );
         if (!mounted) return;
         setState(() {
@@ -146,16 +163,19 @@ class _AddFacePageState extends State<AddFacePage> {
                     return null;
                   },
                 ),
-                TextFormField(
-                  controller: _startDateController,
-                  decoration:
-                      InputDecoration(labelText: l10n.startDateMsLabel),
-                  keyboardType: TextInputType.number,
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.calendar_today),
+                  title: Text(l10n.startDate),
+                  subtitle: Text(_formatDate(_startDate)),
+                  onTap: () => _pickDate(isStart: true),
                 ),
-                TextFormField(
-                  controller: _endDateController,
-                  decoration: InputDecoration(labelText: l10n.endDateMsLabel),
-                  keyboardType: TextInputType.number,
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event),
+                  title: Text(l10n.endDate),
+                  subtitle: Text(_formatDate(_endDate)),
+                  onTap: () => _pickDate(isStart: false),
                 ),
                 const SizedBox(height: 20),
                 if (_isProcessing) const CircularProgressIndicator(),

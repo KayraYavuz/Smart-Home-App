@@ -33,6 +33,13 @@ class _LoginPageState extends State<LoginPage> {
     _loadSavedCredentials();
   }
 
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _loadSavedCredentials() async {
     // ... (Mevcut kod aynı)
     final prefs = await SharedPreferences.getInstance();
