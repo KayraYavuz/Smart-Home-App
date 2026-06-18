@@ -1251,6 +1251,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get firmwareTitle => 'Firmware';
+
+  @override
+  String get firmwareSubtitle => 'Check for firmware updates';
+
+  @override
+  String get firmwareUpToDate => 'The firmware is up to date.';
+
+  @override
+  String get firmwareUpdateAvailable => 'A firmware update is available.';
+
+  @override
+  String get firmwareUnknown =>
+      'Update status unknown. Connect to the lock via Bluetooth and try again.';
+
+  @override
+  String get firmwareUseOfficialApp =>
+      'To install the update, use the official TTLock app while near the lock.';
+
+  @override
   String get autoLockTitle => 'Auto Lock';
 
   @override

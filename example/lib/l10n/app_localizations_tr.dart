@@ -1260,6 +1260,26 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get firmwareTitle => 'Yazılım (Firmware)';
+
+  @override
+  String get firmwareSubtitle => 'Firmware güncellemesi kontrol et';
+
+  @override
+  String get firmwareUpToDate => 'Firmware güncel.';
+
+  @override
+  String get firmwareUpdateAvailable => 'Bir firmware güncellemesi mevcut.';
+
+  @override
+  String get firmwareUnknown =>
+      'Güncelleme durumu bilinmiyor. Bluetooth ile kilide bağlanıp tekrar deneyin.';
+
+  @override
+  String get firmwareUseOfficialApp =>
+      'Güncellemeyi kurmak için kilidin yakınındayken resmi TTLock uygulamasını kullanın.';
+
+  @override
   String get autoLockTitle => 'Otomatik Kilitlenme';
 
   @override

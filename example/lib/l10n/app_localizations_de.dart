@@ -1269,6 +1269,26 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get firmwareTitle => 'Firmware';
+
+  @override
+  String get firmwareSubtitle => 'Nach Firmware-Updates suchen';
+
+  @override
+  String get firmwareUpToDate => 'Die Firmware ist aktuell.';
+
+  @override
+  String get firmwareUpdateAvailable => 'Ein Firmware-Update ist verfügbar.';
+
+  @override
+  String get firmwareUnknown =>
+      'Update-Status unbekannt. Verbinden Sie sich per Bluetooth mit dem Schloss und versuchen Sie es erneut.';
+
+  @override
+  String get firmwareUseOfficialApp =>
+      'Verwenden Sie zum Installieren des Updates die offizielle TTLock-App in der Nähe des Schlosses.';
+
+  @override
   String get autoLockTitle => 'Automatisches Sperren';
 
   @override

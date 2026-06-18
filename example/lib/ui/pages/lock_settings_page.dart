@@ -153,6 +153,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   subtitle: l10n.calibrateTimeSubtitle,
                   onTap: _calibrateTime,
                 ),
+                _buildSettingTile(
+                  icon: Icons.system_update,
+                  title: l10n.firmwareTitle,
+                  subtitle: l10n.firmwareSubtitle,
+                  onTap: _checkFirmware,
+                ),
 
                 const SizedBox(height: 24),
                 _buildSectionHeader(l10n.dataManagement),
@@ -533,6 +539,62 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       scaffoldMessenger
           .showSnackBar(SnackBar(content: Text(l10n.timeCalibrated)));
     }
+  }
+
+  /// Cloud-side firmware check. Reports whether an update is available;
+  /// the actual flashing (DFU) is not implemented here, so the user is
+  /// directed to the official app when an update exists.
+  Future<void> _checkFirmware() async {
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final lockId = int.tryParse(widget.lock['lockId'].toString()) ?? 0;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    Map<String, dynamic>? res;
+    String? error;
+    try {
+      res = await _apiService.upgradeCheck(lockId: lockId);
+    } catch (e) {
+      error = e.toString();
+    }
+
+    if (mounted) navigator.pop(); // close loading
+    if (!mounted) return;
+
+    if (error != null) {
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(error))));
+      return;
+    }
+
+    final needUpgrade = res?['needUpgrade'];
+    final String message;
+    if (needUpgrade == 1) {
+      message = '${l10n.firmwareUpdateAvailable}\n\n${l10n.firmwareUseOfficialApp}';
+    } else if (needUpgrade == 0) {
+      message = l10n.firmwareUpToDate;
+    } else {
+      message = l10n.firmwareUnknown;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.firmwareTitle),
+        content: Text(message),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.ok)),
+        ],
+      ),
+    );
   }
 
   // ignore: unused_element - Reserved for future use (group assignment feature)

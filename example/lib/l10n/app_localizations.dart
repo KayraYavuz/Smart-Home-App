@@ -2434,6 +2434,42 @@ abstract class AppLocalizations {
   /// **'Bluetooth operation failed: {error}'**
   String bluetoothOperationFailed(Object error);
 
+  /// No description provided for @firmwareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Firmware'**
+  String get firmwareTitle;
+
+  /// No description provided for @firmwareSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for firmware updates'**
+  String get firmwareSubtitle;
+
+  /// No description provided for @firmwareUpToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'The firmware is up to date.'**
+  String get firmwareUpToDate;
+
+  /// No description provided for @firmwareUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'A firmware update is available.'**
+  String get firmwareUpdateAvailable;
+
+  /// No description provided for @firmwareUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Update status unknown. Connect to the lock via Bluetooth and try again.'**
+  String get firmwareUnknown;
+
+  /// No description provided for @firmwareUseOfficialApp.
+  ///
+  /// In en, this message translates to:
+  /// **'To install the update, use the official TTLock app while near the lock.'**
+  String get firmwareUseOfficialApp;
+
   /// No description provided for @autoLockTitle.
   ///
   /// In en, this message translates to:
