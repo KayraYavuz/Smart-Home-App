@@ -452,6 +452,41 @@ class AppLocalizationsDe extends AppLocalizations {
   String get forgotPasswordTitle => 'Passwort vergessen';
 
   @override
+  String get forgotPasswordSubtitle =>
+      'Geben Sie Ihre Konto-E-Mail ein, um einen Bestätigungscode zu erhalten.';
+
+  @override
+  String get enterCodeAndNewPassword =>
+      'Geben Sie den gesendeten Code ein und wählen Sie ein neues Passwort.';
+
+  @override
+  String get sendResetCode => 'Code senden';
+
+  @override
+  String codeSentTo(Object email) {
+    return 'Ein Bestätigungscode wurde an $email gesendet.';
+  }
+
+  @override
+  String get verificationCode => 'Bestätigungscode';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwörter stimmen nicht überein';
+
+  @override
+  String get resetPasswordSuccess =>
+      'Passwort erfolgreich zurückgesetzt. Bitte melden Sie sich an.';
+
+  @override
+  String get resendCode => 'Code erneut senden';
+
+  @override
+  String get invalidEmail => 'Bitte geben Sie eine gültige E-Mail ein';
+
+  @override
+  String get passwordTooShort => 'Passwort muss mindestens 6 Zeichen lang sein';
+
+  @override
   String get emailOrPhone => 'E-Mail oder Telefon';
 
   @override

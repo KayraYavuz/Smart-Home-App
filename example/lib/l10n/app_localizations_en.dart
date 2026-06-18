@@ -448,6 +448,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgotPasswordTitle => 'Forgot Password';
 
   @override
+  String get forgotPasswordSubtitle =>
+      'Enter your account email to receive a verification code.';
+
+  @override
+  String get enterCodeAndNewPassword =>
+      'Enter the code we sent and choose a new password.';
+
+  @override
+  String get sendResetCode => 'Send Code';
+
+  @override
+  String codeSentTo(Object email) {
+    return 'A verification code was sent to $email.';
+  }
+
+  @override
+  String get verificationCode => 'Verification Code';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get resetPasswordSuccess =>
+      'Password reset successfully. Please sign in.';
+
+  @override
+  String get resendCode => 'Resend code';
+
+  @override
+  String get invalidEmail => 'Please enter a valid email';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 6 characters';
+
+  @override
   String get emailOrPhone => 'Email or Phone';
 
   @override

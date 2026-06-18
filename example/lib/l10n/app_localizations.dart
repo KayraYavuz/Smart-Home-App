@@ -958,6 +958,66 @@ abstract class AppLocalizations {
   /// **'Forgot Password'**
   String get forgotPasswordTitle;
 
+  /// No description provided for @forgotPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your account email to receive a verification code.'**
+  String get forgotPasswordSubtitle;
+
+  /// No description provided for @enterCodeAndNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code we sent and choose a new password.'**
+  String get enterCodeAndNewPassword;
+
+  /// No description provided for @sendResetCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Code'**
+  String get sendResetCode;
+
+  /// No description provided for @codeSentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'A verification code was sent to {email}.'**
+  String codeSentTo(Object email);
+
+  /// No description provided for @verificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Code'**
+  String get verificationCode;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @resetPasswordSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successfully. Please sign in.'**
+  String get resetPasswordSuccess;
+
+  /// No description provided for @resendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get resendCode;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get invalidEmail;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordTooShort;
+
   /// No description provided for @emailOrPhone.
   ///
   /// In en, this message translates to:

@@ -450,6 +450,41 @@ class AppLocalizationsTr extends AppLocalizations {
   String get forgotPasswordTitle => 'Şifremi Unuttum';
 
   @override
+  String get forgotPasswordSubtitle =>
+      'Doğrulama kodu almak için hesap e-postanı gir.';
+
+  @override
+  String get enterCodeAndNewPassword =>
+      'Gönderdiğimiz kodu gir ve yeni bir şifre belirle.';
+
+  @override
+  String get sendResetCode => 'Kod Gönder';
+
+  @override
+  String codeSentTo(Object email) {
+    return '$email adresine bir doğrulama kodu gönderildi.';
+  }
+
+  @override
+  String get verificationCode => 'Doğrulama Kodu';
+
+  @override
+  String get passwordsDoNotMatch => 'Şifreler eşleşmiyor';
+
+  @override
+  String get resetPasswordSuccess =>
+      'Şifre başarıyla sıfırlandı. Lütfen giriş yap.';
+
+  @override
+  String get resendCode => 'Kodu tekrar gönder';
+
+  @override
+  String get invalidEmail => 'Lütfen geçerli bir e-posta gir';
+
+  @override
+  String get passwordTooShort => 'Şifre en az 6 karakter olmalı';
+
+  @override
   String get emailOrPhone => 'E-posta veya Telefon';
 
   @override
