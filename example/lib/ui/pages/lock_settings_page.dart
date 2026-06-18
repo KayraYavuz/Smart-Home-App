@@ -241,12 +241,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
   }
 
   // Action Methods
-  void _renameLock() {
+  Future<void> _renameLock() async {
     final controller = TextEditingController(text: _lockName);
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.renameLock),
@@ -281,6 +281,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         ],
       ),
     );
+    controller.dispose();
   }
 
   /// Resets all passcodes on the lock via Bluetooth, then syncs the renewed
@@ -710,12 +711,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     }
   }
 
-  void _showAutoLockDialog() {
+  Future<void> _showAutoLockDialog() async {
     final controller = TextEditingController(text: _autoLockSeconds.toString());
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showDialog(
+    await showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.autoLockTime),
@@ -947,6 +948,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         ],
       ),
     );
+    controller.dispose();
   }
 
   void _openPassageModePage() async {
@@ -1016,12 +1018,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     }
   }
 
-  void _changeAdminPasscode() {
+  Future<void> _changeAdminPasscode() async {
     final controller = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.changeAdminPasscodeTitle),
@@ -1058,14 +1060,15 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         ],
       ),
     );
+    controller.dispose();
   }
 
-  void _transferLock() {
+  Future<void> _transferLock() async {
     final controller = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.transferLockToUser),
@@ -1102,6 +1105,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         ],
       ),
     );
+    controller.dispose();
   }
 
   void _deleteLock() {

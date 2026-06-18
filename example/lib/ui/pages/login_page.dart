@@ -601,20 +601,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   String _getLocalizedErrorMessage(String error, AppLocalizations l10n) {
-    if (error == 'passwordUpdatedButLoginFailed') {
-      return l10n.passwordUpdatedButLoginFailed;
-    } else if (error == 'loginSuccessButNoToken') {
+    if (error == 'loginSuccessButNoToken') {
       return l10n.loginSuccessButNoToken;
     } else if (error == 'loginFailedCheckCredentials') {
       return l10n.loginFailedCheckCredentials;
-    } else if (error.startsWith('VERIFICATION_FAILED:')) {
-      final details = error.replaceFirst('VERIFICATION_FAILED:', '');
-      if (details.startsWith('apiResetPasswordFailed:')) {
-        return '${l10n.apiResetPasswordFailed}: ${details.replaceFirst('apiResetPasswordFailed:', '')}';
-      }
-      return '${l10n.errorLabel}: $details';
     }
-    return error; // Fallback
+    return error;
   }
 
   InputDecoration _buildInputDecoration(String label,

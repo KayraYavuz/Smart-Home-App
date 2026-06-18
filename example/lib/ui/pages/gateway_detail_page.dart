@@ -172,13 +172,13 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
     );
   }
 
-  void _renameGateway() {
+  Future<void> _renameGateway() async {
     final TextEditingController nameController = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -226,6 +226,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
         );
       },
     );
+    nameController.dispose();
   }
 
   void _deleteGateway() {
@@ -279,12 +280,12 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
     );
   }
 
-  void _transferGateway() {
+  Future<void> _transferGateway() async {
     final TextEditingController usernameController = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -332,6 +333,7 @@ class _GatewayDetailPageState extends State<GatewayDetailPage> {
         );
       },
     );
+    usernameController.dispose();
   }
 
   void _checkUpgrade() async {
