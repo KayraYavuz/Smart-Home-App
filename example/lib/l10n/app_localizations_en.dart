@@ -1476,6 +1476,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPalmVeinsFound => 'No palm veins found.';
 
   @override
+  String get faces => 'Faces';
+
+  @override
+  String get noFacesFound => 'No faces found.';
+
+  @override
+  String get clearAllFaces => 'Clear All Faces';
+
+  @override
+  String get renameFace => 'Rename Face';
+
+  @override
+  String get addFace => 'Add Face';
+
+  @override
+  String get pickImage => 'Pick Image';
+
+  @override
+  String get faceAddedSuccess => 'Face added successfully.';
+
+  @override
+  String get faceFeatureObtained => 'Face feature data obtained successfully.';
+
+  @override
+  String get selectImageFirst =>
+      'Please select an image and get feature data first.';
+
+  @override
+  String get fingerprints => 'Fingerprints';
+
+  @override
+  String get noFingerprintsFound => 'No fingerprints found.';
+
+  @override
+  String get clearAllFingerprints => 'Clear All Fingerprints';
+
+  @override
+  String get renameFingerprint => 'Rename Fingerprint';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get startDateMsLabel => 'Start Date (ms)';
+
+  @override
+  String get endDateMsLabel => 'End Date (ms)';
+
+  @override
+  String get faceName => 'Face Name';
+
+  @override
+  String get pleaseEnterName => 'Please enter a name';
+
+  @override
   String get confirmClearAll => 'Are you sure you want to clear all entries?';
 
   @override

@@ -1497,6 +1497,62 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noPalmVeinsFound => 'Keine Handvenen gefunden.';
 
   @override
+  String get faces => 'Gesichter';
+
+  @override
+  String get noFacesFound => 'Keine Gesichter gefunden.';
+
+  @override
+  String get clearAllFaces => 'Alle Gesichter löschen';
+
+  @override
+  String get renameFace => 'Gesicht umbenennen';
+
+  @override
+  String get addFace => 'Gesicht hinzufügen';
+
+  @override
+  String get pickImage => 'Bild auswählen';
+
+  @override
+  String get faceAddedSuccess => 'Gesicht erfolgreich hinzugefügt.';
+
+  @override
+  String get faceFeatureObtained =>
+      'Gesichtsmerkmaldaten erfolgreich abgerufen.';
+
+  @override
+  String get selectImageFirst =>
+      'Bitte zuerst ein Bild auswählen und die Merkmaldaten abrufen.';
+
+  @override
+  String get fingerprints => 'Fingerabdrücke';
+
+  @override
+  String get noFingerprintsFound => 'Keine Fingerabdrücke gefunden.';
+
+  @override
+  String get clearAllFingerprints => 'Alle Fingerabdrücke löschen';
+
+  @override
+  String get renameFingerprint => 'Fingerabdruck umbenennen';
+
+  @override
+  String get change => 'Ändern';
+
+  @override
+  String get startDateMsLabel => 'Startdatum (ms)';
+
+  @override
+  String get endDateMsLabel => 'Enddatum (ms)';
+
+  @override
+  String get faceName => 'Gesichtsname';
+
+  @override
+  String get pleaseEnterName => 'Bitte geben Sie einen Namen ein';
+
+  @override
   String get confirmClearAll => 'Möchten Sie wirklich alle Einträge löschen?';
 
   @override

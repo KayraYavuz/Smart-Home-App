@@ -2854,6 +2854,114 @@ abstract class AppLocalizations {
   /// **'No palm veins found.'**
   String get noPalmVeinsFound;
 
+  /// No description provided for @faces.
+  ///
+  /// In en, this message translates to:
+  /// **'Faces'**
+  String get faces;
+
+  /// No description provided for @noFacesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No faces found.'**
+  String get noFacesFound;
+
+  /// No description provided for @clearAllFaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All Faces'**
+  String get clearAllFaces;
+
+  /// No description provided for @renameFace.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Face'**
+  String get renameFace;
+
+  /// No description provided for @addFace.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Face'**
+  String get addFace;
+
+  /// No description provided for @pickImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Image'**
+  String get pickImage;
+
+  /// No description provided for @faceAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Face added successfully.'**
+  String get faceAddedSuccess;
+
+  /// No description provided for @faceFeatureObtained.
+  ///
+  /// In en, this message translates to:
+  /// **'Face feature data obtained successfully.'**
+  String get faceFeatureObtained;
+
+  /// No description provided for @selectImageFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an image and get feature data first.'**
+  String get selectImageFirst;
+
+  /// No description provided for @fingerprints.
+  ///
+  /// In en, this message translates to:
+  /// **'Fingerprints'**
+  String get fingerprints;
+
+  /// No description provided for @noFingerprintsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No fingerprints found.'**
+  String get noFingerprintsFound;
+
+  /// No description provided for @clearAllFingerprints.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All Fingerprints'**
+  String get clearAllFingerprints;
+
+  /// No description provided for @renameFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Fingerprint'**
+  String get renameFingerprint;
+
+  /// No description provided for @change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// No description provided for @startDateMsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date (ms)'**
+  String get startDateMsLabel;
+
+  /// No description provided for @endDateMsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date (ms)'**
+  String get endDateMsLabel;
+
+  /// No description provided for @faceName.
+  ///
+  /// In en, this message translates to:
+  /// **'Face Name'**
+  String get faceName;
+
+  /// No description provided for @pleaseEnterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name'**
+  String get pleaseEnterName;
+
   /// No description provided for @confirmClearAll.
   ///
   /// In en, this message translates to:

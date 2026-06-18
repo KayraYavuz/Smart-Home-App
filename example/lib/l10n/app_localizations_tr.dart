@@ -1486,6 +1486,61 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noPalmVeinsFound => 'Avuç içi damar bulunamadı.';
 
   @override
+  String get faces => 'Yüzler';
+
+  @override
+  String get noFacesFound => 'Yüz bulunamadı.';
+
+  @override
+  String get clearAllFaces => 'Tüm Yüzleri Temizle';
+
+  @override
+  String get renameFace => 'Yüzü Yeniden Adlandır';
+
+  @override
+  String get addFace => 'Yüz Ekle';
+
+  @override
+  String get pickImage => 'Resim Seç';
+
+  @override
+  String get faceAddedSuccess => 'Yüz başarıyla eklendi.';
+
+  @override
+  String get faceFeatureObtained => 'Yüz öznitelik verisi başarıyla alındı.';
+
+  @override
+  String get selectImageFirst =>
+      'Lütfen önce bir resim seçip öznitelik verisini alın.';
+
+  @override
+  String get fingerprints => 'Parmak İzleri';
+
+  @override
+  String get noFingerprintsFound => 'Parmak izi bulunamadı.';
+
+  @override
+  String get clearAllFingerprints => 'Tüm Parmak İzlerini Temizle';
+
+  @override
+  String get renameFingerprint => 'Parmak İzini Yeniden Adlandır';
+
+  @override
+  String get change => 'Değiştir';
+
+  @override
+  String get startDateMsLabel => 'Başlangıç Tarihi (ms)';
+
+  @override
+  String get endDateMsLabel => 'Bitiş Tarihi (ms)';
+
+  @override
+  String get faceName => 'Yüz Adı';
+
+  @override
+  String get pleaseEnterName => 'Lütfen bir ad girin';
+
+  @override
   String get confirmClearAll =>
       'Tüm kayıtları silmek istediğinize emin misiniz?';
 

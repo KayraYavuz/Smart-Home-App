@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/add_face_page.dart';
 import 'package:yavuz_lock/blocs/face/face_bloc.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class FacePage extends StatefulWidget {
   final int lockId;
@@ -20,32 +21,32 @@ class _FacePageState extends State<FacePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Faces'),
+        title: Text(l10n.faces),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Clear All Faces'),
-                  content:
-                      const Text('Are you sure you want to clear all faces?'),
+                builder: (dialogContext) => AlertDialog(
+                  title: Text(l10n.clearAllFaces),
+                  content: Text(l10n.confirmClearAll),
                   actions: [
                     TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.pop(dialogContext),
+                      child: Text(l10n.cancel),
                     ),
                     TextButton(
                       onPressed: () {
                         context
                             .read<FaceBloc>()
                             .add(ClearAllFaces(widget.lockId));
-                        Navigator.pop(context);
+                        Navigator.pop(dialogContext);
                       },
-                      child: const Text('Clear'),
+                      child: Text(l10n.clear),
                     ),
                   ],
                 ),
@@ -75,7 +76,7 @@ class _FacePageState extends State<FacePage> {
           if (state is FacesLoaded) {
             final faces = state.faces;
             if (faces.isEmpty) {
-              return const Center(child: Text('No faces found.'));
+              return Center(child: Text(l10n.noFacesFound));
             }
             return ListView.builder(
               itemCount: faces.length,
@@ -98,7 +99,7 @@ class _FacePageState extends State<FacePage> {
                       position: const RelativeRect.fromLTRB(100, 400, 100, 100),
                       items: [
                         PopupMenuItem(
-                          child: const Text('Rename'),
+                          child: Text(l10n.rename),
                           onTap: () {
                             if (!mounted) return;
                             _showRenameDialog(context, widget.lockId,
@@ -106,7 +107,7 @@ class _FacePageState extends State<FacePage> {
                           },
                         ),
                         PopupMenuItem(
-                          child: const Text('Change Period'),
+                          child: Text(l10n.changePeriod),
                           onTap: () {
                             if (!mounted) return;
                             _showChangePeriodDialog(
@@ -121,10 +122,9 @@ class _FacePageState extends State<FacePage> {
             );
           }
           if (state is FaceOperationFailure) {
-            return Center(child: Text('Error: ${state.error}'));
+            return Center(child: Text('${l10n.errorLabel}: ${state.error}'));
           }
-          return Center(
-              child: Text('Face management for lock ${widget.lockId}'));
+          return Center(child: Text(l10n.faces));
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -147,19 +147,20 @@ class _FacePageState extends State<FacePage> {
 
   void _showRenameDialog(
       BuildContext context, int lockId, int faceId, String currentName) {
+    final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController(text: currentName);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rename Face'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.renameFace),
         content: TextField(
           controller: nameController,
-          decoration: const InputDecoration(labelText: 'New Name'),
+          decoration: InputDecoration(labelText: l10n.newName),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -168,9 +169,9 @@ class _FacePageState extends State<FacePage> {
                     faceId: faceId,
                     name: nameController.text,
                   ));
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
             },
-            child: const Text('Rename'),
+            child: Text(l10n.rename),
           ),
         ],
       ),
@@ -178,31 +179,32 @@ class _FacePageState extends State<FacePage> {
   }
 
   void _showChangePeriodDialog(BuildContext context, int lockId, int faceId) {
+    final l10n = AppLocalizations.of(context)!;
     final startDateController = TextEditingController();
     final endDateController = TextEditingController();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Change Period'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.changePeriod),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: startDateController,
-              decoration: const InputDecoration(labelText: 'Start Date (ms)'),
+              decoration: InputDecoration(labelText: l10n.startDateMsLabel),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: endDateController,
-              decoration: const InputDecoration(labelText: 'End Date (ms)'),
+              decoration: InputDecoration(labelText: l10n.endDateMsLabel),
               keyboardType: TextInputType.number,
             ),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -212,9 +214,9 @@ class _FacePageState extends State<FacePage> {
                     startDate: int.parse(startDateController.text),
                     endDate: int.parse(endDateController.text),
                   ));
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
             },
-            child: const Text('Change'),
+            child: Text(l10n.change),
           ),
         ],
       ),
