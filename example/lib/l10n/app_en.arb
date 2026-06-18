@@ -197,7 +197,7 @@
   "deviceRemoved": "device removed",
   "undo": "Undo",
   "forgotPasswordTitle": "Forgot Password",
-  "forgotPasswordSubtitle": "Enter your account email to receive a verification code.",
+  "forgotPasswordSubtitle": "Enter your account email and choose a new password.",
   "enterCodeAndNewPassword": "Enter the code we sent and choose a new password.",
   "sendResetCode": "Send Code",
   "codeSentTo": "A verification code was sent to {email}.",

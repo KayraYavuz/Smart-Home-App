@@ -453,7 +453,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgotPasswordSubtitle =>
-      'Geben Sie Ihre Konto-E-Mail ein, um einen Bestätigungscode zu erhalten.';
+      'Geben Sie Ihre Konto-E-Mail ein und wählen Sie ein neues Passwort.';
 
   @override
   String get enterCodeAndNewPassword =>

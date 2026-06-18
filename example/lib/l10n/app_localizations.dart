@@ -961,7 +961,7 @@ abstract class AppLocalizations {
   /// No description provided for @forgotPasswordSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enter your account email to receive a verification code.'**
+  /// **'Enter your account email and choose a new password.'**
   String get forgotPasswordSubtitle;
 
   /// No description provided for @enterCodeAndNewPassword.

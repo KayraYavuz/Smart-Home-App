@@ -451,7 +451,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get forgotPasswordSubtitle =>
-      'Doğrulama kodu almak için hesap e-postanı gir.';
+      'Hesap e-postanı gir ve yeni bir şifre belirle.';
 
   @override
   String get enterCodeAndNewPassword =>

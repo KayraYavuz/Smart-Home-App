@@ -143,7 +143,7 @@
   "deviceRemoved": "Gerät entfernt",
   "undo": "Rückgängig",
   "forgotPasswordTitle": "Passwort vergessen",
-  "forgotPasswordSubtitle": "Geben Sie Ihre Konto-E-Mail ein, um einen Bestätigungscode zu erhalten.",
+  "forgotPasswordSubtitle": "Geben Sie Ihre Konto-E-Mail ein und wählen Sie ein neues Passwort.",
   "enterCodeAndNewPassword": "Geben Sie den gesendeten Code ein und wählen Sie ein neues Passwort.",
   "sendResetCode": "Code senden",
   "codeSentTo": "Ein Bestätigungscode wurde an {email} gesendet.",

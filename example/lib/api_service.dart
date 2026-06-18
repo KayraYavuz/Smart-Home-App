@@ -235,7 +235,10 @@ class ApiService {
   }) async {
     debugPrint('🔐 Şifre sıfırlanıyor (Cloud API): $username');
 
-    final url = Uri.parse('https://api.ttlock.com/v3/user/resetPassword');
+    // Use the active region server (_baseUrl, e.g. euapi.ttlock.com) — the
+    // account lives in the region it was registered in. Hardcoding
+    // api.ttlock.com fails for EU-region accounts.
+    final url = Uri.parse('$_baseUrl/v3/user/resetPassword');
     final String passwordMd5 = _generateMd5(newPassword);
 
     final Map<String, String> body = {

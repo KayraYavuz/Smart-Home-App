@@ -449,7 +449,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgotPasswordSubtitle =>
-      'Enter your account email to receive a verification code.';
+      'Enter your account email and choose a new password.';
 
   @override
   String get enterCodeAndNewPassword =>

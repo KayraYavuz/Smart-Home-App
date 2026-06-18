@@ -143,7 +143,7 @@
   "deviceRemoved": "cihazı kaldırıldı",
   "undo": "Geri Al",
   "forgotPasswordTitle": "Şifremi Unuttum",
-  "forgotPasswordSubtitle": "Doğrulama kodu almak için hesap e-postanı gir.",
+  "forgotPasswordSubtitle": "Hesap e-postanı gir ve yeni bir şifre belirle.",
   "enterCodeAndNewPassword": "Gönderdiğimiz kodu gir ve yeni bir şifre belirle.",
   "sendResetCode": "Kod Gönder",
   "codeSentTo": "{email} adresine bir doğrulama kodu gönderildi.",
