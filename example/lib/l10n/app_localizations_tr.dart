@@ -454,6 +454,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Hesap e-postanı gir ve yeni bir şifre belirle.';
 
   @override
+  String get resetCouldNotAuto =>
+      'Bu şifre otomatik olarak sıfırlanamadı. Bu, TTLock sitesinden sıfırlanması gereken bir TTLock hesabı olabilir. Şimdi açılsın mı?';
+
+  @override
+  String get openTtlockResetBtn => 'TTLock\'ta sıfırla';
+
+  @override
   String get enterCodeAndNewPassword =>
       'Gönderdiğimiz kodu gir ve yeni bir şifre belirle.';
 

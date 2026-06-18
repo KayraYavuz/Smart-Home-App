@@ -452,6 +452,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter your account email and choose a new password.';
 
   @override
+  String get resetCouldNotAuto =>
+      'We couldn\'t reset this password automatically. It may be a TTLock account that must be reset on TTLock\'s site. Open it now?';
+
+  @override
+  String get openTtlockResetBtn => 'Reset on TTLock';
+
+  @override
   String get enterCodeAndNewPassword =>
       'Enter the code we sent and choose a new password.';
 

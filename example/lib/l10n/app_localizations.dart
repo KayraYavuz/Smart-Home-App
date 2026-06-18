@@ -964,6 +964,18 @@ abstract class AppLocalizations {
   /// **'Enter your account email and choose a new password.'**
   String get forgotPasswordSubtitle;
 
+  /// No description provided for @resetCouldNotAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t reset this password automatically. It may be a TTLock account that must be reset on TTLock\'s site. Open it now?'**
+  String get resetCouldNotAuto;
+
+  /// No description provided for @openTtlockResetBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset on TTLock'**
+  String get openTtlockResetBtn;
+
   /// No description provided for @enterCodeAndNewPassword.
   ///
   /// In en, this message translates to:

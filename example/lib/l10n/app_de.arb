@@ -144,6 +144,8 @@
   "undo": "Rückgängig",
   "forgotPasswordTitle": "Passwort vergessen",
   "forgotPasswordSubtitle": "Geben Sie Ihre Konto-E-Mail ein und wählen Sie ein neues Passwort.",
+  "resetCouldNotAuto": "Dieses Passwort konnte nicht automatisch zurückgesetzt werden. Möglicherweise ist es ein TTLock-Konto, das auf der TTLock-Website zurückgesetzt werden muss. Jetzt öffnen?",
+  "openTtlockResetBtn": "Bei TTLock zurücksetzen",
   "enterCodeAndNewPassword": "Geben Sie den gesendeten Code ein und wählen Sie ein neues Passwort.",
   "sendResetCode": "Code senden",
   "codeSentTo": "Ein Bestätigungscode wurde an {email} gesendet.",

@@ -456,6 +456,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Geben Sie Ihre Konto-E-Mail ein und wählen Sie ein neues Passwort.';
 
   @override
+  String get resetCouldNotAuto =>
+      'Dieses Passwort konnte nicht automatisch zurückgesetzt werden. Möglicherweise ist es ein TTLock-Konto, das auf der TTLock-Website zurückgesetzt werden muss. Jetzt öffnen?';
+
+  @override
+  String get openTtlockResetBtn => 'Bei TTLock zurücksetzen';
+
+  @override
   String get enterCodeAndNewPassword =>
       'Geben Sie den gesendeten Code ein und wählen Sie ein neues Passwort.';
 

@@ -12,6 +12,7 @@ import 'package:yavuz_lock/blocs/login/login_state.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart'; // l10n import
 import 'package:yavuz_lock/providers/language_provider.dart'; // LanguageProvider import
 import 'package:yavuz_lock/register_page.dart';
+import 'package:yavuz_lock/ui/pages/forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -149,33 +150,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
       }
-    }
-  }
-
-  /// Opens TTLock's password-reset page in an in-app browser
-  /// (SFSafariViewController on iOS / Custom Tab on Android), not an external
-  /// browser. The TTLock Open API has no logged-out reset endpoint, so a
-  /// forgotten password must be reset through TTLock's own web portal.
-  Future<void> _openPasswordReset() async {
-    final l10n = AppLocalizations.of(context)!;
-    final uri = Uri.parse('https://lock2.ttlock.com/');
-    try {
-      final ok = await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
-      if (ok) return;
-      await launchUrl(uri); // platform default fallback
-    } catch (_) {
-      if (!mounted) return;
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(l10n.errorLabel),
-          content: Text(l10n.urlOpenError(uri.toString())),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context), child: Text(l10n.ok)),
-          ],
-        ),
-      );
     }
   }
 
@@ -508,7 +482,15 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   Flexible(
                                     child: TextButton(
-                                      onPressed: _openPasswordReset,
+                                      onPressed: () =>
+                                          Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => ForgotPasswordPage(
+                                            initialEmail:
+                                                _usernameController.text.trim(),
+                                          ),
+                                        ),
+                                      ),
                                       style: TextButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 4),
