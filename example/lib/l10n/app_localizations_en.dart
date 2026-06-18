@@ -1240,6 +1240,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateSuperPasscode => 'Update Super Passcode';
 
   @override
+  String get resetPasscodesTitle => 'Reset Passcodes';
+
+  @override
+  String get resetPasscodesSubtitle => 'Invalidate all existing passcodes';
+
+  @override
+  String get resetPasscodesConfirmation =>
+      'This will invalidate ALL existing passcodes on this lock, including custom and gateway-created ones. You must be near the lock via Bluetooth. Continue?';
+
+  @override
+  String get resetPasscodesSuccess => 'All passcodes have been reset.';
+
+  @override
+  String resetPasscodesError(Object error) {
+    return 'Failed to reset passcodes: $error';
+  }
+
+  @override
+  String get lockDataNotFound => 'Lock data not found.';
+
+  @override
   String get transferLockToUser => 'Transfer to another user';
 
   @override
@@ -2456,6 +2477,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPasscodesFound => 'No passcodes found.';
+
+  @override
+  String get deletePasscodeTitle => 'Delete Passcode';
+
+  @override
+  String deletePasscodeConfirm(Object name) {
+    return 'Are you sure you want to delete passcode \'$name\'?';
+  }
+
+  @override
+  String get passcodeDeletedSuccess => 'Passcode deleted successfully.';
+
+  @override
+  String get passcodeDeleteFailed => 'Failed to delete passcode.';
 
   @override
   String get typePrefix => 'Type';

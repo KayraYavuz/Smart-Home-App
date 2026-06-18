@@ -93,8 +93,9 @@ class _CardPageState extends State<CardPage> {
           completer.complete();
         }, (errorCode, errorMsg) {
           // Failure
-          if (!completer.isCompleted)
+          if (!completer.isCompleted) {
             completer.completeError(Exception("$errorCode: $errorMsg"));
+          }
         });
 
         // Wait for result with a timeout (e.g., 5 seconds)
@@ -164,8 +165,9 @@ class _CardPageState extends State<CardPage> {
                           initialDate: startDate,
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100));
-                      if (picked != null)
+                      if (picked != null) {
                         setDialogState(() => startDate = picked);
+                      }
                     },
                   ),
                   ListTile(
@@ -178,8 +180,9 @@ class _CardPageState extends State<CardPage> {
                           initialDate: endDate,
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100));
-                      if (picked != null)
+                      if (picked != null) {
                         setDialogState(() => endDate = picked);
+                      }
                     },
                   ),
                 ],
@@ -329,8 +332,9 @@ class _CardPageState extends State<CardPage> {
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null)
+                      if (picked != null) {
                         setDialogState(() => startDate = picked);
+                      }
                     },
                   ),
                   ListTile(
@@ -347,8 +351,9 @@ class _CardPageState extends State<CardPage> {
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null)
+                      if (picked != null) {
                         setDialogState(() => endDate = picked);
+                      }
                     },
                   ),
                 ],

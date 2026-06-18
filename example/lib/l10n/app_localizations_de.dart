@@ -1255,6 +1255,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get updateSuperPasscode => 'Super-Passcode aktualisieren';
 
   @override
+  String get resetPasscodesTitle => 'Passcodes zurücksetzen';
+
+  @override
+  String get resetPasscodesSubtitle =>
+      'Alle vorhandenen Passcodes ungültig machen';
+
+  @override
+  String get resetPasscodesConfirmation =>
+      'Dadurch werden ALLE vorhandenen Passcodes dieses Schlosses ungültig, einschließlich benutzerdefinierter und über das Gateway erstellter. Sie müssen sich per Bluetooth in der Nähe des Schlosses befinden. Fortfahren?';
+
+  @override
+  String get resetPasscodesSuccess => 'Alle Passcodes wurden zurückgesetzt.';
+
+  @override
+  String resetPasscodesError(Object error) {
+    return 'Passcodes konnten nicht zurückgesetzt werden: $error';
+  }
+
+  @override
+  String get lockDataNotFound => 'Schlossdaten nicht gefunden.';
+
+  @override
   String get transferLockToUser => 'An einen anderen Benutzer übertragen';
 
   @override
@@ -2477,6 +2499,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noPasscodesFound => 'No passcodes found.';
+
+  @override
+  String get deletePasscodeTitle => 'Passcode löschen';
+
+  @override
+  String deletePasscodeConfirm(Object name) {
+    return 'Möchten Sie den Passcode \'$name\' wirklich löschen?';
+  }
+
+  @override
+  String get passcodeDeletedSuccess => 'Passcode erfolgreich gelöscht.';
+
+  @override
+  String get passcodeDeleteFailed => 'Passcode konnte nicht gelöscht werden.';
 
   @override
   String get typePrefix => 'Type';

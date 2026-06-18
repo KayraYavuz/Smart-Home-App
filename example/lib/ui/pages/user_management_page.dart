@@ -318,13 +318,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
   }
 
   Widget _buildKeyFreezeTab(AppLocalizations l10n) {
-    if (_isLoadingKeys)
+    if (_isLoadingKeys) {
       return const Center(
           child: CircularProgressIndicator(color: AppColors.primary));
-    if (_allKeys.isEmpty)
+    }
+    if (_allKeys.isEmpty) {
       return Center(
           child: Text(l10n.noSharedKeys,
               style: const TextStyle(color: Colors.grey)));
+    }
 
     return RefreshIndicator(
       onRefresh: _loadKeys,

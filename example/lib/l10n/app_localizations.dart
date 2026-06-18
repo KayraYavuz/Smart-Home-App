@@ -2416,6 +2416,42 @@ abstract class AppLocalizations {
   /// **'Update Super Passcode'**
   String get updateSuperPasscode;
 
+  /// No description provided for @resetPasscodesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Passcodes'**
+  String get resetPasscodesTitle;
+
+  /// No description provided for @resetPasscodesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalidate all existing passcodes'**
+  String get resetPasscodesSubtitle;
+
+  /// No description provided for @resetPasscodesConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'This will invalidate ALL existing passcodes on this lock, including custom and gateway-created ones. You must be near the lock via Bluetooth. Continue?'**
+  String get resetPasscodesConfirmation;
+
+  /// No description provided for @resetPasscodesSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'All passcodes have been reset.'**
+  String get resetPasscodesSuccess;
+
+  /// No description provided for @resetPasscodesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reset passcodes: {error}'**
+  String resetPasscodesError(Object error);
+
+  /// No description provided for @lockDataNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock data not found.'**
+  String get lockDataNotFound;
+
   /// No description provided for @transferLockToUser.
   ///
   /// In en, this message translates to:
@@ -4551,6 +4587,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No passcodes found.'**
   String get noPasscodesFound;
+
+  /// No description provided for @deletePasscodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Passcode'**
+  String get deletePasscodeTitle;
+
+  /// No description provided for @deletePasscodeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete passcode \'{name}\'?'**
+  String deletePasscodeConfirm(Object name);
+
+  /// No description provided for @passcodeDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode deleted successfully.'**
+  String get passcodeDeletedSuccess;
+
+  /// No description provided for @passcodeDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete passcode.'**
+  String get passcodeDeleteFailed;
 
   /// No description provided for @typePrefix.
   ///

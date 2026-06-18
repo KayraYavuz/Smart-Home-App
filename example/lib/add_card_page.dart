@@ -224,8 +224,9 @@ class _AddCardPageState extends State<AddCardPage>
         }, (cardNumber) {
           if (!completer.isCompleted) completer.complete(cardNumber);
         }, (errorCode, errorMsg) {
-          if (!completer.isCompleted)
+          if (!completer.isCompleted) {
             completer.completeError(Exception('$errorCode: $errorMsg'));
+          }
         });
       } else {
         if (Platform.isIOS) {

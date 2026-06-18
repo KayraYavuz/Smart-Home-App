@@ -209,7 +209,7 @@ class _SendEKeyPageState extends State<SendEKeyPage>
             cyclicConfig: cyclicConfig,
             createUser: 2,
           );
-          if (result != null) break; // Success!
+          break; // Success!
         } catch (e) {
           lastError = e.toString();
           debugPrint("Failed with $userToTry: $lastError");
@@ -232,7 +232,7 @@ class _SendEKeyPageState extends State<SendEKeyPage>
                 cyclicConfig: cyclicConfig,
                 createUser: 1,
               );
-              if (result != null) break; // Success!
+              break; // Success!
             } catch (e2) {
               lastError = e2.toString();
               debugPrint("Retry failed with $userToTry: $lastError");
@@ -272,10 +272,11 @@ class _SendEKeyPageState extends State<SendEKeyPage>
             if (retryCount >= maxRetries) {
               if (e.toString().contains('20002') ||
                   e.toString().contains('Not lock admin')) {
-                if (mounted)
+                if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(l10n.adminOnlyLinkWarning),
                       backgroundColor: Colors.orange));
+                }
               }
             }
           }
@@ -432,9 +433,10 @@ class _SendEKeyPageState extends State<SendEKeyPage>
         throw 'Could not launch email';
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(l10n.emailAppNotFound)));
+      }
     }
   }
 
@@ -456,9 +458,10 @@ class _SendEKeyPageState extends State<SendEKeyPage>
         throw 'Could not launch SMS';
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(l10n.smsAppNotFound)));
+      }
     }
   }
 

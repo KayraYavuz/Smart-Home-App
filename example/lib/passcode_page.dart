@@ -20,6 +20,44 @@ class PasscodePage extends StatelessWidget {
     required this.lock, // Added lock object
   });
 
+  /// Shows a confirmation dialog and, if confirmed, deletes the passcode via
+  /// the [PasscodeCubit]. The cubit refreshes the list automatically on success.
+  Future<void> _confirmDelete(
+      BuildContext context, Passcode passcode, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deletePasscodeTitle),
+        content: Text(l10n.deletePasscodeConfirm(passcode.keyboardPwdName)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.delete,
+                  style: const TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    // Capture before awaiting so we don't use a possibly-unmounted context.
+    final messenger = ScaffoldMessenger.of(context);
+    final success = await context.read<PasscodeCubit>().deletePasscode(
+          lockId: lockId,
+          clientId: clientId,
+          accessToken: accessToken,
+          keyboardPwdId: passcode.keyboardPwdId,
+        );
+
+    messenger.showSnackBar(SnackBar(
+        content: Text(success
+            ? l10n.passcodeDeletedSuccess
+            : l10n.passcodeDeleteFailed)));
+  }
+
   String _getPasscodeType(int type, AppLocalizations l10n) {
     switch (type) {
       case 1:
@@ -81,10 +119,8 @@ class PasscodePage extends StatelessWidget {
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline,
                           color: Colors.redAccent),
-                      onPressed: () {
-                        // TODO: Implement delete passcode functionality using Cubit
-                        debugPrint('Deleting ${passcode.keyboardPwd}');
-                      },
+                      onPressed: () =>
+                          _confirmDelete(context, passcode, l10n),
                     ),
                   );
                 },

@@ -320,15 +320,18 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscurePassword,
                         validator: (value) {
-                          if (value == null || value.isEmpty)
+                          if (value == null || value.isEmpty) {
                             return l10n.passwordRequired;
+                          }
 
                           if (value.length < 8) return l10n.passwordMinLength;
-                          if (!RegExp(r'[0-9]').hasMatch(value))
+                          if (!RegExp(r'[0-9]').hasMatch(value)) {
                             return l10n.passwordDigitRequired;
+                          }
                           if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]')
-                              .hasMatch(value))
+                              .hasMatch(value)) {
                             return l10n.passwordSymbolRequired;
+                          }
                           return null;
                         },
                       ),
@@ -353,8 +356,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: const TextStyle(color: Colors.white),
                         obscureText: _obscureConfirmPassword,
                         validator: (value) {
-                          if (value != _passwordController.text)
+                          if (value != _passwordController.text) {
                             return l10n.passwordMismatch;
+                          }
                           return null;
                         },
                       ),

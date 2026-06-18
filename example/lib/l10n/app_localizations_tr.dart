@@ -1248,6 +1248,27 @@ class AppLocalizationsTr extends AppLocalizations {
   String get updateSuperPasscode => 'Super Passcode güncelle';
 
   @override
+  String get resetPasscodesTitle => 'Şifreleri Sıfırla';
+
+  @override
+  String get resetPasscodesSubtitle => 'Mevcut tüm şifreleri geçersiz kıl';
+
+  @override
+  String get resetPasscodesConfirmation =>
+      'Bu işlem, özel ve gateway ile oluşturulanlar dahil bu kilitteki TÜM mevcut şifreleri geçersiz kılar. Bluetooth ile kilidin yakınında olmalısınız. Devam edilsin mi?';
+
+  @override
+  String get resetPasscodesSuccess => 'Tüm şifreler sıfırlandı.';
+
+  @override
+  String resetPasscodesError(Object error) {
+    return 'Şifreler sıfırlanamadı: $error';
+  }
+
+  @override
+  String get lockDataNotFound => 'Kilit verisi bulunamadı.';
+
+  @override
   String get transferLockToUser => 'Başka bir kullanıcıya devret';
 
   @override
@@ -2466,6 +2487,20 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noPasscodesFound => 'Hiç şifre bulunamadı.';
+
+  @override
+  String get deletePasscodeTitle => 'Şifreyi Sil';
+
+  @override
+  String deletePasscodeConfirm(Object name) {
+    return '\'$name\' adlı şifreyi silmek istediğinize emin misiniz?';
+  }
+
+  @override
+  String get passcodeDeletedSuccess => 'Şifre başarıyla silindi.';
+
+  @override
+  String get passcodeDeleteFailed => 'Şifre silinemedi.';
 
   @override
   String get typePrefix => 'Tip';

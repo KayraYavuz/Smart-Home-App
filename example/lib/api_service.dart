@@ -3144,7 +3144,9 @@ class ApiService {
         debugPrint('📨 Response [${response.statusCode}]: ${response.body}');
 
         if (response.statusCode != 200 ||
-            response.body.trimLeft().startsWith('<')) return null; // HTML error
+            response.body.trimLeft().startsWith('<')) {
+          return null; // HTML error
+        }
 
         final data = json.decode(response.body);
         if (data is Map<String, dynamic>) {

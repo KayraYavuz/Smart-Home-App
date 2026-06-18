@@ -151,6 +151,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   onTap: _changeAdminPasscode,
                 ),
                 _buildSettingTile(
+                  icon: Icons.lock_reset,
+                  title: l10n.resetPasscodesTitle,
+                  subtitle: l10n.resetPasscodesSubtitle,
+                  onTap: _resetPasscodes,
+                ),
+                _buildSettingTile(
                   icon: Icons.swap_horiz,
                   title: l10n.transferLockToUser,
                   subtitle: l10n.transferLockSubtitle,
@@ -248,6 +254,95 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
         ],
       ),
     );
+  }
+
+  /// Resets all passcodes on the lock via Bluetooth, then syncs the renewed
+  /// lockData to the cloud. After a reset, every previously issued passcode
+  /// (including custom and gateway-created ones) becomes invalid, so we ask
+  /// for explicit confirmation first.
+  Future<void> _resetPasscodes() async {
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.resetPasscodesTitle),
+        content: Text(l10n.resetPasscodesConfirmation),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.resetPasscodesTitle,
+                  style: const TextStyle(color: AppColors.error))),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final lockData = _lockData;
+    final lockId = widget.lock['lockId'].toString();
+
+    if (lockData.isEmpty) {
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text(l10n.lockDataNotFound)));
+      return;
+    }
+
+    // Show non-dismissible loading dialog while the Bluetooth operation runs.
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (loadingContext) =>
+          const Center(child: CircularProgressIndicator()),
+    );
+
+    final completer = Completer<String>();
+    TTLock.resetPasscode(lockData, (newLockData) {
+      if (!completer.isCompleted) completer.complete(newLockData);
+    }, (errorCode, errorMsg) {
+      if (!completer.isCompleted) {
+        completer.completeError('$errorMsg (Code: $errorCode)');
+      }
+    });
+
+    String? newLockData;
+    String? error;
+    try {
+      // Reset can take longer than a simple setting change; allow more time.
+      newLockData = await completer.future.timeout(const Duration(seconds: 15));
+    } catch (e) {
+      error = e.toString();
+    }
+
+    // Always close the loading dialog.
+    if (mounted) navigator.pop();
+
+    if (newLockData == null) {
+      if (mounted) {
+        scaffoldMessenger.showSnackBar(
+            SnackBar(content: Text(l10n.resetPasscodesError(error ?? ''))));
+      }
+      return;
+    }
+
+    // Persist the renewed lockData locally and sync to the cloud so the new
+    // passcode key data stays consistent with the server.
+    _lockData = newLockData;
+    try {
+      await _apiService.updateLockData(lockId: lockId, lockData: newLockData);
+    } catch (e) {
+      debugPrint('Cloud sync of reset lockData failed: $e');
+    }
+
+    if (mounted) {
+      scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text(l10n.resetPasscodesSuccess)));
+    }
   }
 
   // ignore: unused_element - Reserved for future use (group assignment feature)
@@ -446,8 +541,9 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               TTLock.setLockAutomaticLockingPeriodicTime(seconds, lockData, () {
                 if (!completer.isCompleted) completer.complete();
               }, (errorCode, errorMsg) {
-                if (!completer.isCompleted)
+                if (!completer.isCompleted) {
                   completer.completeError('$errorMsg (Code: $errorCode)');
+                }
               });
 
               try {

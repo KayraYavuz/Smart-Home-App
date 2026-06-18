@@ -153,8 +153,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                       value: 1,
                       groupValue: _selectedPermission,
                       onChanged: (value) {
-                        if (value != null)
+                        if (value != null) {
                           setState(() => _selectedPermission = value);
+                        }
                       },
                       activeColor: Colors.blue,
                       contentPadding: EdgeInsets.zero,
@@ -170,8 +171,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                       value: 2,
                       groupValue: _selectedPermission,
                       onChanged: (value) {
-                        if (value != null)
+                        if (value != null) {
                           setState(() => _selectedPermission = value);
+                        }
                       },
                       activeColor: Colors.blue,
                       contentPadding: EdgeInsets.zero,
@@ -187,8 +189,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
                       value: 3,
                       groupValue: _selectedPermission,
                       onChanged: (value) {
-                        if (value != null)
+                        if (value != null) {
                           setState(() => _selectedPermission = value);
+                        }
                       },
                       activeColor: Colors.blue,
                       contentPadding: EdgeInsets.zero,

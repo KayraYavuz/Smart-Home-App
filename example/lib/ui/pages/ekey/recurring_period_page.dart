@@ -50,8 +50,9 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
       setState(() {
         if (isStart) {
           _startDate = picked;
-          if (_endDate.isBefore(_startDate))
+          if (_endDate.isBefore(_startDate)) {
             _endDate = _startDate.add(const Duration(days: 1));
+          }
         } else {
           _endDate = picked;
         }

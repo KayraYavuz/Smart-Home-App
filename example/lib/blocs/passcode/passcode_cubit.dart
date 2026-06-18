@@ -24,4 +24,28 @@ class PasscodeCubit extends Cubit<PasscodeState> {
       emit(PasscodeLoadFailure("Failed to load passcodes: $e"));
     }
   }
+
+  /// Deletes a passcode and refreshes the list on success.
+  /// Returns `true` when the deletion succeeded.
+  Future<bool> deletePasscode({
+    required int lockId,
+    required String clientId,
+    required String accessToken,
+    required int keyboardPwdId,
+  }) async {
+    try {
+      final success = await _repository.deletePasscode(
+        clientId: clientId,
+        accessToken: accessToken,
+        lockId: lockId,
+        keyboardPwdId: keyboardPwdId,
+      );
+      if (success) {
+        await fetchPasscodes(lockId, clientId, accessToken);
+      }
+      return success;
+    } catch (e) {
+      return false;
+    }
+  }
 }
