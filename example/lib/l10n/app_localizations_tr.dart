@@ -451,7 +451,14 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get forgotPasswordSubtitle =>
-      'Hesap e-postanı gir ve yeni bir şifre belirle.';
+      'Doğrulama kodu almak için hesap e-postanı gir.';
+
+  @override
+  String get invalidCode => 'Geçersiz doğrulama kodu';
+
+  @override
+  String get codeSendFailed =>
+      'Doğrulama kodu gönderilemedi. Bunun yerine TTLock sitesinden sıfırlayabilirsin.';
 
   @override
   String get resetCouldNotAuto =>

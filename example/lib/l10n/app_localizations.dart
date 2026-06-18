@@ -961,8 +961,20 @@ abstract class AppLocalizations {
   /// No description provided for @forgotPasswordSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enter your account email and choose a new password.'**
+  /// **'Enter your account email to receive a verification code.'**
   String get forgotPasswordSubtitle;
+
+  /// No description provided for @invalidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid verification code'**
+  String get invalidCode;
+
+  /// No description provided for @codeSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send the verification code. You can reset on TTLock\'s site instead.'**
+  String get codeSendFailed;
 
   /// No description provided for @resetCouldNotAuto.
   ///

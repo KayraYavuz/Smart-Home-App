@@ -8,9 +8,11 @@ class ApiConfig {
   static String username = ''; // Boş bırakıldı
   static String password = ''; // Boş bırakıldı
 
-  // Email Config for Verification Codes
-  static String smtpUser = 'your_email@gmail.com';
-  static String smtpPassword = 'your_app_password';
+  // Email config for verification codes — kept out of git via env.dart.
+  // Fill smtpUser/smtpPassword in lib/env/env.dart (gitignored). Empty =
+  // app-sent email disabled.
+  static String smtpUser = Env.smtpUser;
+  static String smtpPassword = Env.smtpPassword;
 }
 // DEBUG: Test credentials (TTLock test account)
 // Uncomment to test with TTLock test account

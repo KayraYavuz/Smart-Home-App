@@ -453,7 +453,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get forgotPasswordSubtitle =>
-      'Geben Sie Ihre Konto-E-Mail ein und wählen Sie ein neues Passwort.';
+      'Geben Sie Ihre Konto-E-Mail ein, um einen Bestätigungscode zu erhalten.';
+
+  @override
+  String get invalidCode => 'Ungültiger Bestätigungscode';
+
+  @override
+  String get codeSendFailed =>
+      'Der Bestätigungscode konnte nicht gesendet werden. Sie können stattdessen auf der TTLock-Website zurücksetzen.';
 
   @override
   String get resetCouldNotAuto =>

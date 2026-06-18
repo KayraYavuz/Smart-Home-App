@@ -16,9 +16,12 @@ class EmailService {
     String username = ApiConfig.smtpUser;
     String password = ApiConfig.smtpPassword;
 
-    if (username == 'your_email@gmail.com' || password == 'your_app_password') {
+    if (username.isEmpty ||
+        password.isEmpty ||
+        username == 'your_email@gmail.com' ||
+        password == 'your_app_password') {
       debugPrint(
-          '⚠️ UYARI: E-posta ayarları yapılandırılmamış (lib/config.dart). Mail gönderilemedi.');
+          '⚠️ UYARI: E-posta (SMTP) ayarları yapılandırılmamış (lib/env/env.dart). Mail gönderilemedi.');
       return false;
     }
 

@@ -449,7 +449,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forgotPasswordSubtitle =>
-      'Enter your account email and choose a new password.';
+      'Enter your account email to receive a verification code.';
+
+  @override
+  String get invalidCode => 'Invalid verification code';
+
+  @override
+  String get codeSendFailed =>
+      'Couldn\'t send the verification code. You can reset on TTLock\'s site instead.';
 
   @override
   String get resetCouldNotAuto =>
