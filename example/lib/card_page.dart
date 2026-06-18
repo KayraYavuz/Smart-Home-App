@@ -376,7 +376,10 @@ class _CardPageState extends State<CardPage> {
       },
     );
 
-    if (confirm == true && cardNumberController.text.isNotEmpty) {
+    final cardNumber = cardNumberController.text;
+    cardNumberController.dispose();
+
+    if (confirm == true && cardNumber.isNotEmpty) {
       if (!mounted) return;
       setState(() => _isLoading = true);
 
@@ -384,7 +387,7 @@ class _CardPageState extends State<CardPage> {
         final completer = Completer<void>();
 
         TTLock.recoverCard(
-          cardNumberController.text.trim(),
+          cardNumber.trim(),
           startDate.millisecondsSinceEpoch,
           endDate.millisecondsSinceEpoch,
           widget.lockData,
