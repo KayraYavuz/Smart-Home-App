@@ -521,7 +521,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     );
   }
 
-  void _showUpdateDialog() {
+  Future<void> _showUpdateDialog() async {
     final nameController = TextEditingController(text: _eKey['keyName']);
     // remoteEnable: 1-yes, 2-no
     bool remoteInfo = _eKey['remoteEnable'] == 1;
@@ -529,7 +529,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) {
         bool remoteEnabled = remoteInfo;
@@ -609,6 +609,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
         });
       },
     );
+    nameController.dispose();
   }
 
   void _confirmDelete() {

@@ -1081,7 +1081,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               if (controller.text.isNotEmpty) {
                 try {
                   await _apiService.transferLock(
-                    lockIdList: [int.parse(widget.lock['lockId'].toString())],
+                    lockIdList: [int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0],
                     receiverUsername: controller.text,
                   );
                   if (!mounted) return;
@@ -1143,7 +1143,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       context,
       MaterialPageRoute(
         builder: (context) =>
-            WifiLockPage(lockId: int.parse(widget.lock['lockId'].toString())),
+            WifiLockPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
       ),
     );
   }
