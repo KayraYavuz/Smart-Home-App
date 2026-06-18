@@ -373,8 +373,15 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                              const Icon(Icons.lock,
-                                  color: Color(0xFF1E90FF), size: 80),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(22),
+                                child: Image.asset(
+                                  'assets/icon/icon.png',
+                                  width: 96,
+                                  height: 96,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                               const SizedBox(height: 20),
                               const Text(
                                 'Yavuz Lock', // App Title (l10n.appTitle kullanılabilir)
@@ -388,9 +395,12 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(height: 40),
                               TextFormField(
                                 controller: _usernameController,
-                                decoration:
-                                    _buildInputDecoration(l10n.emailOrPhone),
+                                decoration: _buildInputDecoration(
+                                    l10n.emailOrPhone,
+                                    prefixIcon: Icons.email_outlined),
                                 keyboardType: TextInputType.emailAddress,
+                                textInputAction: TextInputAction.next,
+                                autofillHints: const [AutofillHints.username],
                                 style: const TextStyle(color: Colors.white),
                                 validator: (value) => value!.isEmpty
                                     ? l10n.usernameRequired
@@ -401,6 +411,7 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: _passwordController,
                                 decoration: _buildInputDecoration(
                                   l10n.password, // Localized "Password"
+                                  prefixIcon: Icons.lock_outline,
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _obscurePassword
@@ -416,6 +427,9 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 obscureText: _obscurePassword,
+                                textInputAction: TextInputAction.done,
+                                autofillHints: const [AutofillHints.password],
+                                onFieldSubmitted: (_) => _handleLogin(context),
                                 style: const TextStyle(color: Colors.white),
                                 validator: (value) => value!.isEmpty
                                     ? l10n.passwordRequired
