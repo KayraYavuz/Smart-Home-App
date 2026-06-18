@@ -133,42 +133,56 @@ class ApiService {
   }) async {
     debugPrint('🔐 Şifre sıfırlanıyor (Cloud API): $username');
 
-    // Use the active region server (_baseUrl, e.g. euapi.ttlock.com) — the
-    // account lives in the region it was registered in. Hardcoding
-    // api.ttlock.com fails for EU-region accounts.
-    final url = Uri.parse('$_baseUrl/v3/user/resetPassword');
-    final String passwordMd5 = _generateMd5(newPassword);
+    final passwordMd5 = _generateMd5(newPassword);
+    // The stored TTLock username may be an alphanumeric-stripped form of the
+    // email (see registration), and the account may live on either region
+    // server. Mirror the login flow: try every username variant on every
+    // region until one succeeds.
+    final candidates = _usernameVariants(username);
+    final regions = [ApiConfig.baseUrl, 'https://api.ttlock.com'];
 
-    final Map<String, String> body = {
-      'clientId': ApiConfig.clientId,
-      'clientSecret': ApiConfig.clientSecret,
-      'username': username,
-      'password': passwordMd5,
-      'date': _getApiTime(),
-    };
+    Object? lastError;
+    for (final user in candidates) {
+      for (final region in regions) {
+        try {
+          final body = {
+            'clientId': ApiConfig.clientId,
+            'clientSecret': ApiConfig.clientSecret,
+            'username': user,
+            'password': passwordMd5,
+            'date': _getApiTime(),
+          };
+          if (verifyCode != null && verifyCode.isNotEmpty) {
+            body['verifyCode'] = verifyCode;
+          }
 
-    if (verifyCode != null && verifyCode.isNotEmpty) {
-      body['verifyCode'] = verifyCode;
-    }
+          final response = await http.post(
+            Uri.parse('$region/v3/user/resetPassword'),
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: body,
+          );
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: body,
-    );
-
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      debugPrint('🔍 resetPassword response: $responseData');
-      if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
-        throw Exception('apiResetPasswordFailed:${responseData['errmsg']}');
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            if (data['errcode'] == 0 || data['errcode'] == null) {
+              debugPrint('✅ Şifre sıfırlandı (user="$user", region="$region")');
+              return;
+            }
+            debugPrint(
+                '↩️ reset denendi user="$user" region="$region": ${data['errmsg']} (${data['errcode']})');
+            lastError =
+                Exception('apiResetPasswordFailed:${data['errmsg']}');
+          } else {
+            lastError = Exception(
+                'apiResetPasswordFailed:HTTP ${response.statusCode}');
+          }
+        } catch (e) {
+          lastError = e;
+        }
       }
-      debugPrint('✅ Şifre başarıyla sıfırlandı');
-    } else {
-      debugPrint(
-          '❌ resetPassword HTTP Error: ${response.statusCode} - ${response.body}');
-      throw Exception('apiResetPasswordFailed:HTTP ${response.statusCode}');
     }
+
+    throw lastError ?? Exception('apiResetPasswordFailed:unknown');
   }
 
   /// Register a new user
@@ -4158,58 +4172,57 @@ class ApiService {
   }
 
   /// Request a new access token using username/password
+  /// Builds the set of username formats to try for a given login/account
+  /// input. TTLock accounts registered through this app are stored in an
+  /// alphanumeric-stripped form, so the raw email/phone alone is often not the
+  /// stored username — login and password-reset both must try these variants.
+  Set<String> _usernameVariants(String username) {
+    final Set<String> out = {};
+    final cleanInput = username.trim();
+
+    // 1. Raw input as typed
+    out.add(cleanInput);
+
+    // 2. Digits only (e.g. +49... -> 49...)
+    final digitsOnly = cleanInput.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.isNotEmpty) out.add(digitsOnly);
+
+    // 3. With leading +
+    if (!cleanInput.startsWith('+') && digitsOnly.isNotEmpty) {
+      out.add('+$digitsOnly');
+    }
+
+    // 4. Turkish phone-number guesses
+    if (digitsOnly.length == 10 && digitsOnly.startsWith('5')) {
+      out.add('90$digitsOnly');
+      out.add('+90$digitsOnly');
+    } else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
+      out.add('90${digitsOnly.substring(1)}');
+      out.add('+90${digitsOnly.substring(1)}');
+    }
+
+    // 5. Email variants
+    if (cleanInput.contains('@')) {
+      // b) Alphanumeric only (what register uses)
+      final alphanumeric = cleanInput.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      if (alphanumeric.isNotEmpty) out.add(alphanumeric);
+
+      // c) Name part before @, alphanumeric
+      final namePart =
+          cleanInput.split('@')[0].replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      if (namePart.isNotEmpty) out.add(namePart);
+    }
+
+    return out;
+  }
+
   Future<bool> _requestNewAccessToken({
     required String username,
     required String password,
   }) async {
     final regions = [ApiConfig.baseUrl, 'https://api.ttlock.com'];
 
-    // Denenecek kullanıcı adı formatlarını belirle
-    Set<String> usernamesToTry = {};
-    String cleanInput = username.trim();
-
-    // 1. Kullanıcının girdiği ham hali (boşluksuz) ekle
-    usernamesToTry.add(cleanInput);
-
-    // 2. Sadece rakamları ekle (örn: +49... -> 49...)
-    String digitsOnly = cleanInput.replaceAll(RegExp(r'[^0-9]'), '');
-    if (digitsOnly.isNotEmpty) {
-      usernamesToTry.add(digitsOnly);
-    }
-
-    // 3. Başında + olan hali ekle (eğer kullanıcı zaten + girdiyse bu adım 1 ile aynı olur)
-    if (!cleanInput.startsWith('+') && digitsOnly.isNotEmpty) {
-      usernamesToTry.add('+$digitsOnly');
-    }
-
-    // 4. TR numarası tahminleri
-    if (digitsOnly.length == 10 && digitsOnly.startsWith('5')) {
-      usernamesToTry.add('90$digitsOnly'); // 532... -> 90532...
-      usernamesToTry.add('+90$digitsOnly'); // 532... -> +90532...
-    } else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
-      usernamesToTry.add('90${digitsOnly.substring(1)}'); // 0532... -> 90532...
-      usernamesToTry.add('+90${digitsOnly.substring(1)}');
-    }
-
-    // 5. E-posta adresi için varyasyonlar
-    if (cleanInput.contains('@')) {
-      // a) Ham hali (bazı endpointler destekleyebilir)
-      usernamesToTry.add(cleanInput);
-
-      // b) Sadece alphanumeric (bizim register'da kullandığımız)
-      String alphanumeric = cleanInput.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-      if (alphanumeric.isNotEmpty) {
-        usernamesToTry.add(alphanumeric);
-      }
-
-      // c) Domain hariç partlar (Opsiyonel ama yararlı olabilir)
-      String namePart =
-          cleanInput.split('@')[0].replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-      if (namePart.isNotEmpty) {
-        usernamesToTry.add(namePart);
-      }
-    }
-
+    final usernamesToTry = _usernameVariants(username);
     debugPrint('👤 Giriş denenecek formatlar: $usernamesToTry');
 
     // Her bir format için her bölgeyi dene
