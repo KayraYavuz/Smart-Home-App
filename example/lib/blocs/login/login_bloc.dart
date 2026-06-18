@@ -14,45 +14,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   LoginBloc(this._apiService, this._authBloc) : super(LoginInitial()) {
     on<LoginButtonPressed>(_onLoginButtonPressed);
-    on<SyncPassword>(_onSyncPassword);
-  }
-
-  void _onSyncPassword(SyncPassword event, Emitter<LoginState> emit) async {
-    emit(LoginLoading());
-    try {
-      // 1. TTLock Şifresini Sıfırla (Kod ile)
-      await _apiService.resetPassword(
-        username: event.username,
-        newPassword: event.password,
-        verifyCode: event.code,
-      );
-      debugPrint('✅ [LoginBloc] TTLock şifresi kod ile başarıyla güncellendi.');
-
-      // 2. Yeni şifreyle giriş yap
-      final success = await _apiService.getAccessToken(
-        username: event.username,
-        password: event.password,
-      );
-
-      if (success) {
-        final accessToken = _apiService.accessToken;
-        _authBloc.add(LoggedIn(accessToken!));
-
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(
-            'saved_email',
-            event
-                .username); // Orijinal email'i kaydetmek isteriz ama burada username var. Neyse.
-
-        emit(LoginSuccess());
-      } else {
-        emit(const LoginFailure('passwordUpdatedButLoginFailed'));
-      }
-    } catch (e) {
-      debugPrint('❌ [LoginBloc] SyncPassword Hatası: $e');
-      emit(LoginFailure(
-          'VERIFICATION_FAILED:${e.toString().replaceAll('Exception: ', '')}'));
-    }
   }
 
   void _onLoginButtonPressed(

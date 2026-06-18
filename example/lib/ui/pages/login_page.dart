@@ -357,8 +357,13 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 } else if (state is LoginTTLockWebRedirect) {
-                  // Dialog removed as per request
-                  // _showWebPortalDialog(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.ttlockWebSyncMsg),
+                      backgroundColor: Colors.orange,
+                      duration: const Duration(seconds: 6),
+                    ),
+                  );
                 }
               },
               child: BlocBuilder<LoginBloc, LoginState>(
