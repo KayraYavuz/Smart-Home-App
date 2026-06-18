@@ -547,6 +547,12 @@ class _LockDetailPageState extends State<LockDetailPage>
                             ),
                             _buildGridMenuItem(
                               context,
+                              icon: Icons.back_hand,
+                              label: l10n.palmVeinMenu,
+                              onTap: () => _showPalmVein(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
                               icon: Icons.history,
                               label: l10n.recordsMenu,
                               onTap: () => _showRecords(context),
@@ -783,6 +789,16 @@ class _LockDetailPageState extends State<LockDetailPage>
       MaterialPageRoute(
         builder: (context) =>
             QrCodePage(lockId: int.parse(widget.lock['lockId'].toString())),
+      ),
+    );
+  }
+
+  void _showPalmVein(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            PalmVeinPage(lockId: int.parse(widget.lock['lockId'].toString())),
       ),
     );
   }

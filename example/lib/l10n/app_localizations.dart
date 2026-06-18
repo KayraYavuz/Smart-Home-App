@@ -2716,6 +2716,36 @@ abstract class AppLocalizations {
   /// **'QR\nCode'**
   String get qrCodeMenu;
 
+  /// No description provided for @palmVeinMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Palm\nVein'**
+  String get palmVeinMenu;
+
+  /// No description provided for @palmVeins.
+  ///
+  /// In en, this message translates to:
+  /// **'Palm Veins'**
+  String get palmVeins;
+
+  /// No description provided for @palmVein.
+  ///
+  /// In en, this message translates to:
+  /// **'Palm Vein'**
+  String get palmVein;
+
+  /// No description provided for @noPalmVeinsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No palm veins found.'**
+  String get noPalmVeinsFound;
+
+  /// No description provided for @confirmClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear all entries?'**
+  String get confirmClearAll;
+
   /// No description provided for @recordsMenu.
   ///
   /// In en, this message translates to:

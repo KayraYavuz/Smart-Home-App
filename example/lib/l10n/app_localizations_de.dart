@@ -1420,6 +1420,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get qrCodeMenu => 'QR-Code';
 
   @override
+  String get palmVeinMenu => 'Handvene';
+
+  @override
+  String get palmVeins => 'Handvenen';
+
+  @override
+  String get palmVein => 'Handvene';
+
+  @override
+  String get noPalmVeinsFound => 'Keine Handvenen gefunden.';
+
+  @override
+  String get confirmClearAll => 'Möchten Sie wirklich alle Einträge löschen?';
+
+  @override
   String get recordsMenu => 'Aufzeichnungen';
 
   @override

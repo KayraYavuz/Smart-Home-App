@@ -576,3 +576,254 @@ class _WifiLockPageState extends State<WifiLockPage> {
     );
   }
 }
+
+// --- Palm Vein Page ---
+// Cloud-side management of palm vein credentials (list / rename / change
+// period / delete / clear). New palm veins are enrolled on the device itself;
+// this plugin's Bluetooth SDK does not expose palm-vein enrollment, so the
+// "add" action only surfaces the on-device instructions.
+class PalmVeinPage extends StatefulWidget {
+  final int lockId;
+  const PalmVeinPage({super.key, required this.lockId});
+
+  @override
+  State<PalmVeinPage> createState() => _PalmVeinPageState();
+}
+
+class _PalmVeinPageState extends State<PalmVeinPage> {
+  List<dynamic> _palmVeins = [];
+  bool _isLoading = true;
+
+  ApiService get _api => ApiService(context.read<AuthRepository>());
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPalmVeins();
+  }
+
+  Future<void> _loadPalmVeins() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    if (mounted) setState(() => _isLoading = true);
+    try {
+      final result = await _api.getPalmVeinList(lockId: widget.lockId);
+      if (!mounted) return;
+      setState(() {
+        _palmVeins = result['list'] ?? [];
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
+    }
+  }
+
+  int _idOf(Map item) => (item['palmVeinId'] ?? item['id']) as int;
+  String _nameOf(Map item, String fallback) =>
+      (item['palmVeinName'] ?? item['name'] ?? fallback).toString();
+
+  Future<void> _delete(int palmVeinId) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await _api.deletePalmVein(palmVeinId: palmVeinId);
+      await _loadPalmVeins();
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _rename(int palmVeinId, String currentName) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: currentName);
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.rename),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(labelText: l10n.newName),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(controller.text.trim()),
+              child: Text(l10n.save)),
+        ],
+      ),
+    );
+    if (newName == null || newName.isEmpty || !mounted) return;
+
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      await _api.renamePalmVein(palmVeinId: palmVeinId, name: newName);
+      await _loadPalmVeins();
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
+    }
+  }
+
+  Future<void> _changePeriod(int palmVeinId) async {
+    final now = DateTime.now();
+    final start = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 5),
+    );
+    if (start == null || !mounted) return;
+    final end = await showDatePicker(
+      context: context,
+      initialDate: DateTime(now.year + 1, now.month, now.day),
+      firstDate: start,
+      lastDate: DateTime(now.year + 10),
+    );
+    if (end == null || !mounted) return;
+
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await _api.changePalmVeinPeriod(
+        palmVeinId: palmVeinId,
+        startDate: start.millisecondsSinceEpoch,
+        endDate: end.millisecondsSinceEpoch,
+      );
+      await _loadPalmVeins();
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
+    }
+  }
+
+  Future<void> _clearAll() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.clearAll),
+        content: Text(l10n.confirmClearAll),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.clearAll,
+                  style: const TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    try {
+      await _api.clearPalmVein(lockId: widget.lockId);
+      await _loadPalmVeins();
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
+    }
+  }
+
+  String _periodText(Map item, AppLocalizations l10n) {
+    final startMs = item['startDate'];
+    final endMs = item['endDate'];
+    if (startMs is! int || endMs is! int || startMs == 0 || endMs == 0) {
+      return l10n.validityPeriod;
+    }
+    String fmt(int ms) {
+      final d = DateTime.fromMillisecondsSinceEpoch(ms);
+      return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    }
+
+    return '${l10n.startDatePrefix}${fmt(startMs)}  ${l10n.endDatePrefix}${fmt(endMs)}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return FeatureBasePage(
+      title: l10n.palmVeins,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.delete_sweep),
+          tooltip: l10n.clearAll,
+          onPressed: _palmVeins.isEmpty ? null : _clearAll,
+        ),
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.bluetoothAddInstructions))),
+        ),
+      ],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _palmVeins.isEmpty
+              ? Center(
+                  child: Text(l10n.noPalmVeinsFound,
+                      style: const TextStyle(color: Colors.white70)))
+              : RefreshIndicator(
+                  onRefresh: _loadPalmVeins,
+                  child: ListView.builder(
+                    itemCount: _palmVeins.length,
+                    itemBuilder: (context, index) {
+                      final item = _palmVeins[index] as Map;
+                      final id = _idOf(item);
+                      final name = _nameOf(item, l10n.palmVein);
+                      return Card(
+                        color: const Color(0xFF1E1E1E),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: ListTile(
+                          leading: const Icon(Icons.back_hand,
+                              color: Color(0xFF1E90FF)),
+                          title: Text(name,
+                              style: const TextStyle(color: Colors.white)),
+                          subtitle: Text(_periodText(item, l10n),
+                              style: const TextStyle(color: Colors.grey)),
+                          trailing: PopupMenuButton<String>(
+                            icon: const Icon(Icons.more_vert,
+                                color: Colors.white70),
+                            onSelected: (value) {
+                              switch (value) {
+                                case 'rename':
+                                  _rename(id, name);
+                                  break;
+                                case 'period':
+                                  _changePeriod(id);
+                                  break;
+                                case 'delete':
+                                  _delete(id);
+                                  break;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                  value: 'rename', child: Text(l10n.rename)),
+                              PopupMenuItem(
+                                  value: 'period',
+                                  child: Text(l10n.changePeriod)),
+                              PopupMenuItem(
+                                  value: 'delete', child: Text(l10n.delete)),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+    );
+  }
+}

@@ -1402,6 +1402,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get qrCodeMenu => 'QR\nCode';
 
   @override
+  String get palmVeinMenu => 'Palm\nVein';
+
+  @override
+  String get palmVeins => 'Palm Veins';
+
+  @override
+  String get palmVein => 'Palm Vein';
+
+  @override
+  String get noPalmVeinsFound => 'No palm veins found.';
+
+  @override
+  String get confirmClearAll => 'Are you sure you want to clear all entries?';
+
+  @override
   String get recordsMenu => 'Records';
 
   @override

@@ -1411,6 +1411,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get qrCodeMenu => 'QR\nKod';
 
   @override
+  String get palmVeinMenu => 'Avuç İçi\nDamar';
+
+  @override
+  String get palmVeins => 'Avuç İçi Damarlar';
+
+  @override
+  String get palmVein => 'Avuç İçi Damar';
+
+  @override
+  String get noPalmVeinsFound => 'Avuç içi damar bulunamadı.';
+
+  @override
+  String get confirmClearAll =>
+      'Tüm kayıtları silmek istediğinize emin misiniz?';
+
+  @override
   String get recordsMenu => 'Kayıtlar';
 
   @override
