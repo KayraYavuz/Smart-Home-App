@@ -1217,6 +1217,49 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lockingSettings => 'Kilitlenme Ayarları';
 
   @override
+  String get deviceSettings => 'Cihaz Ayarları';
+
+  @override
+  String get lockSoundTitle => 'Kilit Sesi';
+
+  @override
+  String get lockSoundSubtitle => 'Tuş takımı/kilit sesini aç veya kapat';
+
+  @override
+  String get remoteUnlockTitle => 'Uzaktan Kilit Açma';
+
+  @override
+  String get remoteUnlockSubtitle =>
+      'Uzaktayken gateway ile kilit açmaya izin ver';
+
+  @override
+  String get calibrateTimeTitle => 'Saati Kalibre Et';
+
+  @override
+  String get calibrateTimeSubtitle => 'Kilit saatini telefonunla senkronla';
+
+  @override
+  String get calibrateTimeConfirmation =>
+      'Kilit saati telefonunun güncel saatine ayarlansın mı?';
+
+  @override
+  String get soundUpdated => 'Kilit sesi güncellendi.';
+
+  @override
+  String get remoteUnlockEnabled => 'Uzaktan kilit açma etkinleştirildi.';
+
+  @override
+  String get remoteUnlockDisabled => 'Uzaktan kilit açma devre dışı bırakıldı.';
+
+  @override
+  String get timeCalibrated => 'Kilit saati kalibre edildi.';
+
+  @override
+  String bluetoothOperationFailed(Object error) {
+    return 'Bluetooth işlemi başarısız: $error';
+  }
+
+  @override
   String get autoLockTitle => 'Otomatik Kilitlenme';
 
   @override

@@ -134,6 +134,27 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                 // Working Hours removed as per request (not supported/redundant)
 
                 const SizedBox(height: 24),
+                _buildSectionHeader(l10n.deviceSettings),
+                _buildSettingTile(
+                  icon: Icons.volume_up,
+                  title: l10n.lockSoundTitle,
+                  subtitle: l10n.lockSoundSubtitle,
+                  onTap: _showLockSoundDialog,
+                ),
+                _buildSettingTile(
+                  icon: Icons.lock_open,
+                  title: l10n.remoteUnlockTitle,
+                  subtitle: l10n.remoteUnlockSubtitle,
+                  onTap: _showRemoteUnlockDialog,
+                ),
+                _buildSettingTile(
+                  icon: Icons.schedule,
+                  title: l10n.calibrateTimeTitle,
+                  subtitle: l10n.calibrateTimeSubtitle,
+                  onTap: _calibrateTime,
+                ),
+
+                const SizedBox(height: 24),
                 _buildSectionHeader(l10n.dataManagement),
                 _buildSettingTile(
                   icon: Icons.file_download_outlined,
@@ -342,6 +363,175 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     if (mounted) {
       scaffoldMessenger.showSnackBar(
           SnackBar(content: Text(l10n.resetPasscodesSuccess)));
+    }
+  }
+
+  /// Runs a Bluetooth lock operation behind a non-dismissible loading dialog.
+  /// [start] gets a [Completer] it must complete (from the SDK success
+  /// callback) or completeError (from the failure callback). Returns the
+  /// completed value, or `null` on timeout/failure — in which case a snackbar
+  /// with the error is shown automatically. Bails out early if lockData is
+  /// missing.
+  Future<T?> _runBleOp<T>(void Function(Completer<T>) start) async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    if (_lockData.isEmpty) {
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text(l10n.lockDataNotFound)));
+      return null;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final completer = Completer<T>();
+    start(completer);
+
+    T? result;
+    String? error;
+    try {
+      result = await completer.future.timeout(const Duration(seconds: 10));
+    } catch (e) {
+      error = e.toString();
+    }
+
+    if (mounted) navigator.pop(); // always close the loading dialog
+
+    if (error != null && mounted) {
+      scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text(l10n.bluetoothOperationFailed(error))));
+    }
+    return result;
+  }
+
+  /// Asks the user for an on/off choice. Returns `true` (on), `false` (off),
+  /// or `null` if cancelled.
+  Future<bool?> _askOnOff(String title) {
+    final l10n = AppLocalizations.of(context)!;
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.off)),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.on)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showLockSoundDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final on = await _askOnOff(l10n.lockSoundTitle);
+    if (on == null || !mounted) return;
+
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.setLockSoundWithSoundVolume(
+        on ? TTSoundVolumeType.on : TTSoundVolumeType.off,
+        _lockData,
+        () {
+          if (!c.isCompleted) c.complete(true);
+        },
+        (errorCode, errorMsg) {
+          if (!c.isCompleted) c.completeError('$errorMsg ($errorCode)');
+        },
+      );
+    });
+
+    if (ok == true && mounted) {
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text(l10n.soundUpdated)));
+    }
+  }
+
+  Future<void> _showRemoteUnlockDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final enable = await _askOnOff(l10n.remoteUnlockTitle);
+    if (enable == null || !mounted) return;
+
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final lockId = widget.lock['lockId'].toString();
+
+    final newLockData = await _runBleOp<String>((c) {
+      TTLock.setLockRemoteUnlockSwitchState(
+        enable,
+        _lockData,
+        (updatedLockData) {
+          if (!c.isCompleted) c.complete(updatedLockData);
+        },
+        (errorCode, errorMsg) {
+          if (!c.isCompleted) c.completeError('$errorMsg ($errorCode)');
+        },
+      );
+    });
+
+    if (newLockData == null) return;
+
+    // Toggling remote unlock changes the lockData; sync it to the cloud so the
+    // server lets the gateway perform remote unlocks.
+    _lockData = newLockData;
+    try {
+      await _apiService.updateLockData(lockId: lockId, lockData: newLockData);
+    } catch (e) {
+      debugPrint('Cloud sync of remote-unlock lockData failed: $e');
+    }
+
+    if (mounted) {
+      scaffoldMessenger.showSnackBar(SnackBar(
+          content: Text(
+              enable ? l10n.remoteUnlockEnabled : l10n.remoteUnlockDisabled)));
+    }
+  }
+
+  Future<void> _calibrateTime() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.calibrateTimeTitle),
+        content: Text(l10n.calibrateTimeConfirmation),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.calibrateTimeTitle)),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.setLockTime(
+        DateTime.now().millisecondsSinceEpoch,
+        _lockData,
+        () {
+          if (!c.isCompleted) c.complete(true);
+        },
+        (errorCode, errorMsg) {
+          if (!c.isCompleted) c.completeError('$errorMsg ($errorCode)');
+        },
+      );
+    });
+
+    if (ok == true && mounted) {
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text(l10n.timeCalibrated)));
     }
   }
 

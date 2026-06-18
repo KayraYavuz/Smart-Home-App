@@ -2356,6 +2356,84 @@ abstract class AppLocalizations {
   /// **'Locking Settings'**
   String get lockingSettings;
 
+  /// No description provided for @deviceSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Settings'**
+  String get deviceSettings;
+
+  /// No description provided for @lockSoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Sound'**
+  String get lockSoundTitle;
+
+  /// No description provided for @lockSoundSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn the keypad/lock sound on or off'**
+  String get lockSoundSubtitle;
+
+  /// No description provided for @remoteUnlockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote Unlock'**
+  String get remoteUnlockTitle;
+
+  /// No description provided for @remoteUnlockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow unlocking via gateway when away'**
+  String get remoteUnlockSubtitle;
+
+  /// No description provided for @calibrateTimeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibrate Time'**
+  String get calibrateTimeTitle;
+
+  /// No description provided for @calibrateTimeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync the lock clock with your phone'**
+  String get calibrateTimeSubtitle;
+
+  /// No description provided for @calibrateTimeConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the lock clock to your phone\'s current time?'**
+  String get calibrateTimeConfirmation;
+
+  /// No description provided for @soundUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock sound updated.'**
+  String get soundUpdated;
+
+  /// No description provided for @remoteUnlockEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote unlock enabled.'**
+  String get remoteUnlockEnabled;
+
+  /// No description provided for @remoteUnlockDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote unlock disabled.'**
+  String get remoteUnlockDisabled;
+
+  /// No description provided for @timeCalibrated.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock time calibrated.'**
+  String get timeCalibrated;
+
+  /// No description provided for @bluetoothOperationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth operation failed: {error}'**
+  String bluetoothOperationFailed(Object error);
+
   /// No description provided for @autoLockTitle.
   ///
   /// In en, this message translates to:

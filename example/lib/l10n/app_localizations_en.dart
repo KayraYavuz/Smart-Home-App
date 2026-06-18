@@ -1209,6 +1209,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lockingSettings => 'Locking Settings';
 
   @override
+  String get deviceSettings => 'Device Settings';
+
+  @override
+  String get lockSoundTitle => 'Lock Sound';
+
+  @override
+  String get lockSoundSubtitle => 'Turn the keypad/lock sound on or off';
+
+  @override
+  String get remoteUnlockTitle => 'Remote Unlock';
+
+  @override
+  String get remoteUnlockSubtitle => 'Allow unlocking via gateway when away';
+
+  @override
+  String get calibrateTimeTitle => 'Calibrate Time';
+
+  @override
+  String get calibrateTimeSubtitle => 'Sync the lock clock with your phone';
+
+  @override
+  String get calibrateTimeConfirmation =>
+      'Set the lock clock to your phone\'s current time?';
+
+  @override
+  String get soundUpdated => 'Lock sound updated.';
+
+  @override
+  String get remoteUnlockEnabled => 'Remote unlock enabled.';
+
+  @override
+  String get remoteUnlockDisabled => 'Remote unlock disabled.';
+
+  @override
+  String get timeCalibrated => 'Lock time calibrated.';
+
+  @override
+  String bluetoothOperationFailed(Object error) {
+    return 'Bluetooth operation failed: $error';
+  }
+
+  @override
   String get autoLockTitle => 'Auto Lock';
 
   @override

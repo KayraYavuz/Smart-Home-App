@@ -1224,6 +1224,51 @@ class AppLocalizationsDe extends AppLocalizations {
   String get lockingSettings => 'Sperreinstellungen';
 
   @override
+  String get deviceSettings => 'Geräteeinstellungen';
+
+  @override
+  String get lockSoundTitle => 'Schloss-Ton';
+
+  @override
+  String get lockSoundSubtitle =>
+      'Tastenfeld-/Schlosston ein- oder ausschalten';
+
+  @override
+  String get remoteUnlockTitle => 'Fernentriegelung';
+
+  @override
+  String get remoteUnlockSubtitle =>
+      'Entriegeln per Gateway erlauben, wenn abwesend';
+
+  @override
+  String get calibrateTimeTitle => 'Uhrzeit kalibrieren';
+
+  @override
+  String get calibrateTimeSubtitle =>
+      'Schlossuhr mit dem Telefon synchronisieren';
+
+  @override
+  String get calibrateTimeConfirmation =>
+      'Schlossuhr auf die aktuelle Telefonzeit einstellen?';
+
+  @override
+  String get soundUpdated => 'Schloss-Ton aktualisiert.';
+
+  @override
+  String get remoteUnlockEnabled => 'Fernentriegelung aktiviert.';
+
+  @override
+  String get remoteUnlockDisabled => 'Fernentriegelung deaktiviert.';
+
+  @override
+  String get timeCalibrated => 'Schlossuhr kalibriert.';
+
+  @override
+  String bluetoothOperationFailed(Object error) {
+    return 'Bluetooth-Vorgang fehlgeschlagen: $error';
+  }
+
+  @override
   String get autoLockTitle => 'Automatisches Sperren';
 
   @override
