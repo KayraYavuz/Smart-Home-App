@@ -1259,5 +1259,7 @@
   "dayFri": "Fri",
   "daySat": "Sat",
   "userNotAuthenticated": "User not authenticated",
-  "recordsExportShareText": "Yavuz Lock Records Export"
+  "recordsExportShareText": "Yavuz Lock Records Export",
+  "noDaySelected": "No day selected",
+  "weekdays": "Weekdays"
 }

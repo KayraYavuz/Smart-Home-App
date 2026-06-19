@@ -2,6 +2,8 @@
 /// Represents a time period during which the lock remains in passage mode
 library;
 
+import 'package:yavuz_lock/l10n/app_localizations.dart';
+
 class TimePeriod {
   final String id;
   final List<int> selectedDays; // 0 = Sunday, 6 = Saturday
@@ -21,25 +23,15 @@ class TimePeriod {
     this.endMinute,
   });
 
-  /// Day names in Turkish
-  static const List<String> dayNamesShort = [
-    'Paz',
-    'Pzt',
-    'Sal',
-    'Çrş',
-    'Per',
-    'Cum',
-    'Cmt'
-  ];
-  static const List<String> dayNamesFull = [
-    'Pazar',
-    'Pazartesi',
-    'Salı',
-    'Çarşamba',
-    'Perşembe',
-    'Cuma',
-    'Cumartesi'
-  ];
+  static List<String> getShortDayNames(AppLocalizations l10n) => [
+        l10n.daySun,
+        l10n.dayMon,
+        l10n.dayTue,
+        l10n.dayWed,
+        l10n.dayThu,
+        l10n.dayFri,
+        l10n.daySat,
+      ];
 
   /// Create a copy with updated values
   TimePeriod copyWith({
@@ -64,38 +56,37 @@ class TimePeriod {
 
   /// Get formatted start time string
   String get startTimeFormatted {
-    if (isAllHours) return 'Tüm gün';
     if (startHour == null || startMinute == null) return '--:--';
     return '${startHour!.toString().padLeft(2, '0')}:${startMinute!.toString().padLeft(2, '0')}';
   }
 
   /// Get formatted end time string
   String get endTimeFormatted {
-    if (isAllHours) return 'Tüm gün';
     if (endHour == null || endMinute == null) return '--:--';
     return '${endHour!.toString().padLeft(2, '0')}:${endMinute!.toString().padLeft(2, '0')}';
   }
 
   /// Get selected days as formatted string
-  String get daysFormatted {
-    if (selectedDays.isEmpty) return 'Gün seçilmedi';
-    if (selectedDays.length == 7) return 'Her gün';
+  String daysFormatted(AppLocalizations l10n) {
+    if (selectedDays.isEmpty) return l10n.noDaySelected;
+    if (selectedDays.length == 7) return l10n.everyDay;
 
     // Check for weekdays (Monday-Friday)
     final weekdays = [1, 2, 3, 4, 5];
     if (selectedDays.length == 5 &&
         weekdays.every((d) => selectedDays.contains(d))) {
-      return 'Hafta içi';
+      return l10n.weekdays;
     }
 
     // Check for weekend
     if (selectedDays.length == 2 &&
         selectedDays.contains(0) &&
         selectedDays.contains(6)) {
-      return 'Hafta sonu';
+      return l10n.weekend;
     }
 
-    return selectedDays.map((d) => dayNamesShort[d]).join(', ');
+    final shortNames = getShortDayNames(l10n);
+    return selectedDays.map((d) => shortNames[d]).join(', ');
   }
 
   /// Convert to API cyclic config format

@@ -5493,6 +5493,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yavuz Lock Records Export'**
   String get recordsExportShareText;
+
+  /// No description provided for @noDaySelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No day selected'**
+  String get noDaySelected;
+
+  /// No description provided for @weekdays.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays'**
+  String get weekdays;
 }
 
 class _AppLocalizationsDelegate

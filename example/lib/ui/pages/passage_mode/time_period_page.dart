@@ -246,7 +246,7 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
             ),
             child: Center(
               child: Text(
-                TimePeriod.dayNamesShort[index],
+                TimePeriod.getShortDayNames(AppLocalizations.of(context)!)[index],
                 style: TextStyle(
                   color: isSelected ? Colors.black : AppColors.textSecondary,
                   fontSize: 12,

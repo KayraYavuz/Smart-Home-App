@@ -1235,5 +1235,7 @@
   "dayFri": "Fr",
   "daySat": "Sa",
   "userNotAuthenticated": "Benutzer nicht authentifiziert",
-  "recordsExportShareText": "Yavuz Lock Aufzeichnungen Export"
+  "recordsExportShareText": "Yavuz Lock Aufzeichnungen Export",
+  "noDaySelected": "Kein Tag ausgewählt",
+  "weekdays": "Wochentage"
 }

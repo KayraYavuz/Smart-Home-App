@@ -3005,4 +3005,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get recordsExportShareText => 'Yavuz Lock Kayıt Dışa Aktarma';
+
+  @override
+  String get noDaySelected => 'Gün seçilmedi';
+
+  @override
+  String get weekdays => 'Hafta içi';
 }

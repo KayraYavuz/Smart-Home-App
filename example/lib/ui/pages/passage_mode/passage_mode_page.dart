@@ -156,7 +156,7 @@ class _PassageModePageState extends State<PassageModePage> {
                 ...conflicts.map((c) => Padding(
                       padding: const EdgeInsets.only(bottom: 4),
                       child: Text(
-                        '• ${c.daysFormatted}: ${c.startTimeFormatted} - ${c.endTimeFormatted}',
+                        '• ${c.daysFormatted(l10n)}: ${c.isAllHours ? l10n.allDay : '${c.startTimeFormatted} - ${c.endTimeFormatted}'}',
                         style: const TextStyle(color: Colors.white),
                       ),
                     )),
@@ -561,7 +561,7 @@ class _PassageModePageState extends State<PassageModePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              period.daysFormatted,
+                              period.daysFormatted(AppLocalizations.of(context)!),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 15,

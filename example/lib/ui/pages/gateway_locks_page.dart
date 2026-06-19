@@ -19,6 +19,7 @@ class GatewayLocksPage extends StatefulWidget {
 
 class _GatewayLocksPageState extends State<GatewayLocksPage> {
   bool _isLoading = true;
+  bool _isUnauthenticated = false;
   List<Map<String, dynamic>> _locks = [];
   String _errorMessage = '';
 
@@ -32,6 +33,7 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
     setState(() {
       _isLoading = true;
       _errorMessage = '';
+      _isUnauthenticated = false;
     });
 
     final authState = context.read<AuthBloc>().state;
@@ -52,7 +54,7 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
       }
     } else {
       setState(() {
-        _errorMessage = "User not authenticated";
+        _isUnauthenticated = true;
         _isLoading = false;
       });
     }
@@ -74,6 +76,12 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
   Widget _buildBody(AppLocalizations l10n) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_isUnauthenticated) {
+      return Center(
+        child: Text(l10n.userNotAuthenticated, style: const TextStyle(color: Colors.red)),
+      );
     }
 
     if (_errorMessage.isNotEmpty) {

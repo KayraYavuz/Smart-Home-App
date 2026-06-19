@@ -3032,4 +3032,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get recordsExportShareText => 'Yavuz Lock Aufzeichnungen Export';
+
+  @override
+  String get noDaySelected => 'Kein Tag ausgewählt';
+
+  @override
+  String get weekdays => 'Wochentage';
 }
