@@ -3029,4 +3029,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get userNotAuthenticated => 'Benutzer nicht authentifiziert';
+
+  @override
+  String get recordsExportShareText => 'Yavuz Lock Aufzeichnungen Export';
 }

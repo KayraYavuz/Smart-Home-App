@@ -2990,4 +2990,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userNotAuthenticated => 'User not authenticated';
+
+  @override
+  String get recordsExportShareText => 'Yavuz Lock Records Export';
 }

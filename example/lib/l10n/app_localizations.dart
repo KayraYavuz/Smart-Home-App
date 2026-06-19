@@ -5487,6 +5487,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'User not authenticated'**
   String get userNotAuthenticated;
+
+  /// No description provided for @recordsExportShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Yavuz Lock Records Export'**
+  String get recordsExportShareText;
 }
 
 class _AppLocalizationsDelegate

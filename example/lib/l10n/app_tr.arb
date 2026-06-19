@@ -1234,5 +1234,6 @@
       }
     }
   },
-  "userNotAuthenticated": "Kullanıcı kimliği doğrulanmadı"
+  "userNotAuthenticated": "Kullanıcı kimliği doğrulanmadı",
+  "recordsExportShareText": "Yavuz Lock Kayıt Dışa Aktarma"
 }

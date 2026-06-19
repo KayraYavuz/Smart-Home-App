@@ -3002,4 +3002,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get userNotAuthenticated => 'Kullanıcı kimliği doğrulanmadı';
+
+  @override
+  String get recordsExportShareText => 'Yavuz Lock Kayıt Dışa Aktarma';
 }

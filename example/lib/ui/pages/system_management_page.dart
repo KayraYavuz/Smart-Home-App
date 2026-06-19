@@ -95,7 +95,7 @@ class _SystemManagementPageState extends State<SystemManagementPage> {
       await file.writeAsString(jsonEncode(allRecords));
 
       await SharePlus.instance.share(ShareParams(
-          files: [XFile(file.path)], text: 'Yavuz Lock Records Export'));
+          files: [XFile(file.path)], text: l10n.recordsExportShareText));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
