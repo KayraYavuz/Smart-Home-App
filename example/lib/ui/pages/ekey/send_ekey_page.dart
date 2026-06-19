@@ -243,7 +243,7 @@ class _SendEKeyPageState extends State<SendEKeyPage>
       }
 
       if (result == null) {
-        throw Exception(lastError ?? "Unknown error");
+        throw Exception(lastError ?? l10n.unknown);
       }
 
       // Fetch unlock link with retry mechanism

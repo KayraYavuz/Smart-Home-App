@@ -402,10 +402,10 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              const Text(
-                                'Yavuz Lock', // App Title (l10n.appTitle kullanılabilir)
+                              Text(
+                                l10n.appTitle,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,

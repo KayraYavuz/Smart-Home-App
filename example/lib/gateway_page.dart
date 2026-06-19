@@ -50,17 +50,13 @@ class _GatewayPageState extends State<GatewayPage> {
   }
 
   Future<void> _initGateway_2(String? wifi, String? wifiPassword) async {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     if (widget.wifi == null || wifiPassword == null || wifiPassword.isEmpty) {
-      _showSnackBar(
-          l10n?.wifiOrPasswordEmpty ?? 'Wi-Fi ağı veya şifre boş olamaz',
-          isError: true);
+      _showSnackBar(l10n.wifiOrPasswordEmpty, isError: true);
       return;
     }
     if (_gatewayName.isEmpty) {
-      _showSnackBar(
-          l10n?.enterGatewayNameAlt ?? 'Lütfen bir ağ geçidi adı girin',
-          isError: true);
+      _showSnackBar(l10n.enterGatewayNameAlt, isError: true);
       return;
     }
 
@@ -69,9 +65,7 @@ class _GatewayPageState extends State<GatewayPage> {
     final pw = await apiService.getMd5Password();
 
     if (uid == null || pw == null) {
-      _showSnackBar(
-          'Kullanıcı bilgileri bulunamadı. Lütfen tekrar giriş yapın.',
-          isError: true);
+      _showSnackBar(l10n.userInfoNotFoundReLogin, isError: true);
       return;
     }
 
@@ -87,11 +81,9 @@ class _GatewayPageState extends State<GatewayPage> {
   }
 
   Future<void> _initGateway_3_4() async {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     if (_gatewayName.isEmpty) {
-      _showSnackBar(
-          l10n?.enterGatewayNameAlt ?? 'Lütfen bir ağ geçidi adı girin',
-          isError: true);
+      _showSnackBar(l10n.enterGatewayNameAlt, isError: true);
       return;
     }
 
@@ -100,10 +92,7 @@ class _GatewayPageState extends State<GatewayPage> {
     final pw = await apiService.getMd5Password();
 
     if (uid == null || pw == null) {
-      _showSnackBar(
-          l10n?.userInfoNotFoundReLogin ??
-              'Kullanıcı bilgileri bulunamadı. Lütfen tekrar giriş yapın.',
-          isError: true);
+      _showSnackBar(l10n.userInfoNotFoundReLogin, isError: true);
       return;
     }
 
@@ -117,21 +106,18 @@ class _GatewayPageState extends State<GatewayPage> {
   }
 
   void _initGateway(Map paramMap) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = true);
     debugPrint("Gateway INIT START: paramMap=$paramMap");
 
-    // Güvenlik amaçlı 60 saniyelik zaman aşımı (Native SDK takılırsa diye)
+    // Safety 60-second timeout in case the native SDK hangs.
     bool isCallbackFired = false;
     Future.delayed(const Duration(seconds: 60), () {
       if (mounted && _isLoading && !isCallbackFired) {
         debugPrint("Gateway INIT TIMEOUT");
         isCallbackFired = true;
         setState(() => _isLoading = false);
-        _showSnackBar(
-            l10n?.gatewayConnectionTimeout ??
-                'Bağlantı zaman aşımına uğradı. Lütfen ağ geçidini sıfırlayıp ağı kontrol edin.',
-            isError: true);
+        _showSnackBar(l10n.gatewayConnectionTimeout, isError: true);
       }
     });
 
@@ -150,8 +136,7 @@ class _GatewayPageState extends State<GatewayPage> {
         );
 
         if (mounted) {
-          _showSnackBar(l10n?.gatewayAddedSuccessServer ??
-              'Ağ geçidi başarıyla eklendi ve sunucuya kaydedildi!');
+          _showSnackBar(l10n.gatewayAddedSuccessServer);
           setState(() => _isLoading = false);
           Future.delayed(const Duration(seconds: 1), () {
             if (mounted) {
@@ -170,8 +155,7 @@ class _GatewayPageState extends State<GatewayPage> {
                 (g) => g['gatewayMac'] == map['mac'] || g['mac'] == map['mac']);
 
             if (isRegistered) {
-              _showSnackBar(l10n?.gatewayAddedSuccessTimeoutServer ??
-                  'Ağ geçidi başarıyla eklendi (Zaman aşımına rağmen sunucuya ulaştı)!');
+              _showSnackBar(l10n.gatewayAddedSuccessTimeoutServer);
               setState(() => _isLoading = false);
               Future.delayed(const Duration(seconds: 1), () {
                 if (mounted) {
@@ -185,8 +169,7 @@ class _GatewayPageState extends State<GatewayPage> {
           }
 
           _showSnackBar(
-              l10n?.gatewayAddedSuccessServerFail(e.toString()) ??
-                  'Ağ geçidi cihaza eklendi ancak sunucuya kaydedilemedi: $e',
+              l10n.gatewayAddedSuccessServerFail(e.toString()),
               isError: true);
           setState(() => _isLoading = false);
         }
@@ -198,18 +181,14 @@ class _GatewayPageState extends State<GatewayPage> {
         debugPrint("Gateway INIT ERROR: errorCode=$errorCode, msg=$errorMsg");
         setState(() => _isLoading = false);
         _showSnackBar(
-            l10n?.gatewayError(errorCode.toString(), errorMsg) ??
-                'Hata: $errorCode - $errorMsg',
+            l10n.gatewayError(errorCode.toString(), errorMsg),
             isError: true);
         if (errorCode == TTGatewayError.notConnect ||
             errorCode == TTGatewayError.disconnect) {
           debugPrint(
               "Lütfen ağ geçidini yeniden başlatıp tekrar bağlanın."); // Internal debug print
         } else if (errorCode == TTGatewayError.fail) {
-          _showSnackBar(
-              l10n?.gatewayCheckWifiAndPermissions ??
-                  'Lütfen Wi-Fi ve konum/bluetooth izinlerini kontrol edin.',
-              isError: true);
+          _showSnackBar(l10n.gatewayCheckWifiAndPermissions, isError: true);
         }
       }
     });
@@ -217,10 +196,10 @@ class _GatewayPageState extends State<GatewayPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
         appBar: AppBar(
-          title: Text(l10n?.addGatewayTitleAlt ?? "Ağ Geçidi Ekle"),
+          title: Text(l10n.addGatewayTitleAlt),
         ),
         body: _isLoading
             ? Center(
@@ -229,20 +208,18 @@ class _GatewayPageState extends State<GatewayPage> {
                   children: [
                     const CircularProgressIndicator(),
                     const SizedBox(height: 16),
-                    Text(l10n?.gatewayInitializingWait ??
-                        "Ağ geçidi başlatılıyor, lütfen bekleyin..."),
+                    Text(l10n.gatewayInitializingWait),
                   ],
                 ),
               )
             : getChild(l10n));
   }
 
-  Widget getChild(AppLocalizations? l10n) {
+  Widget getChild(AppLocalizations l10n) {
     TextField nameTextField = TextField(
       textAlign: TextAlign.center,
       controller: _gatewayNameController,
-      decoration: InputDecoration(
-          hintText: l10n?.gatewayNameHintAlt ?? 'Ağ Geçidi Adı (örn: Ev)'),
+      decoration: InputDecoration(hintText: l10n.gatewayNameHintAlt),
       onChanged: (String content) {
         _gatewayName = content;
       },
@@ -252,22 +229,20 @@ class _GatewayPageState extends State<GatewayPage> {
       textAlign: TextAlign.center,
       controller: _wifiController,
       enabled: false,
-      decoration: InputDecoration(
-          labelText: l10n?.selectedWifiNetwork ?? 'Seçili Wi-Fi Ağı'),
+      decoration: InputDecoration(labelText: l10n.selectedWifiNetwork),
     );
 
     TextField wifiPasswordTextField = TextField(
         textAlign: TextAlign.center,
         controller: _wifiPasswordController,
-        decoration: InputDecoration(
-            hintText: l10n?.enterWifiPasswordHint ?? 'Wi-Fi Şifresini Girin'),
+        decoration: InputDecoration(hintText: l10n.enterWifiPasswordHint),
         obscureText: false,
         onChanged: (String content) {
           _wifiPassword = content;
         });
 
     ElevatedButton initGatewayButton = ElevatedButton(
-      child: Text(l10n?.connectAndAdd ?? 'Bağlan ve Ekle'),
+      child: Text(l10n.connectAndAdd),
       onPressed: () {
         FocusScope.of(context).requestFocus(FocusNode());
         //g2
