@@ -109,28 +109,25 @@ class _AddFingerprintPageState extends State<AddFingerprintPage>
 
   Future<void> _onNext() async {
     final name = _nameController.text.trim();
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n?.nameLabel ?? 'Name is required')),
+        SnackBar(content: Text(l10n.nameLabel)),
       );
       return;
     }
 
     if (_currentTabIndex == 2 && _selectedDays.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                l10n?.selectDays ?? 'Please configure the validity period')),
+        SnackBar(content: Text(l10n.selectDays)),
       );
       return;
     }
 
     setState(() {
       _isLoading = true;
-      _statusMessage = l10n?.fingerprintInstruction4Times ??
-          'Lütfen parmağınızı kilide 4 kere okutun.'; // 4 times press instruction
+      _statusMessage = l10n.fingerprintInstruction4Times;
     });
 
     try {
@@ -156,9 +153,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage>
           (currentCount, totalCount) {
         if (mounted) {
           setState(() {
-            _statusMessage = l10n?.fingerprintInstructionCount(
-                    currentCount, totalCount) ??
-                'Lütfen parmağınızı kilide okutun. ($currentCount/$totalCount)';
+            _statusMessage = l10n.fingerprintInstructionCount(currentCount, totalCount);
           });
         }
       }, (fingerprintNumber) async {
@@ -166,8 +161,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage>
         if (!mounted) return;
 
         setState(() {
-          _statusMessage = l10n?.fingerprintReadSaving ??
-              'Parmak izi okundu! Sunucuya kaydediliyor...';
+          _statusMessage = l10n.fingerprintReadSaving;
         });
 
         try {
@@ -183,8 +177,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage>
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(l10n?.fingerprintAddedSuccessfully ??
-                    '✅ Parmak izi başarıyla eklendi!'),
+                content: Text(l10n.fingerprintAddedSuccessfully),
                 backgroundColor: Colors.green),
           );
           Navigator.pop(context, true);
@@ -192,8 +185,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage>
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(l10n?.fingerprintSaveFailed(e.toString()) ??
-                    'Sunucuya kaydedilirken hata oluştu: $e'),
+                content: Text(l10n.fingerprintSaveFailed(e.toString())),
                 backgroundColor: Colors.orange),
           );
           setState(() {
@@ -206,8 +198,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage>
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(l10n?.fingerprintAddFailed(errorMsg) ??
-                  'Başarısız: $errorMsg'),
+              content: Text(l10n.fingerprintAddFailed(errorMsg)),
               backgroundColor: Colors.red),
         );
         setState(() {
@@ -219,7 +210,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(l10n?.fingerprintError(e.toString()) ?? 'Hata: $e'),
+            content: Text(l10n.fingerprintError(e.toString())),
             backgroundColor: Colors.red),
       );
 
@@ -258,8 +249,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    if (l10n == null) return const Center(child: CircularProgressIndicator());
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
@@ -509,15 +499,6 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
   late TimeOfDay _startTime;
   late TimeOfDay _endTime;
 
-  final List<String> _dayLabels = [
-    'Sun',
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat'
-  ];
   final List<int> _dayValues = [7, 1, 2, 3, 4, 5, 6];
 
   @override
@@ -584,14 +565,15 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final dayLabels = [l10n.daySun, l10n.dayMon, l10n.dayTue, l10n.dayWed, l10n.dayThu, l10n.dayFri, l10n.daySat];
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: Text(l10n?.validityPeriod ?? 'Validity Period',
+        title: Text(l10n.validityPeriod,
             style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -609,17 +591,17 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRow(l10n?.startDate ?? 'Start Date',
+                  _buildRow(l10n.startDate,
                       DateFormat('yyyy-MM-dd').format(_startDate),
                       onTap: () => _pickDate(true)),
                   _buildDivider(),
-                  _buildRow(l10n?.endDate ?? 'End Date',
+                  _buildRow(l10n.endDate,
                       DateFormat('yyyy-MM-dd').format(_endDate),
                       onTap: () => _pickDate(false)),
                   _buildDivider(),
                   Container(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-                    child: Text(l10n?.cycleOn ?? 'Cycle on',
+                    child: Text(l10n.cycleOn,
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -659,7 +641,7 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                             ),
                             child: Center(
                               child: Text(
-                                _dayLabels[index],
+                                dayLabels[index],
                                 style: TextStyle(
                                   color: isSelected
                                       ? Colors.white
@@ -676,12 +658,11 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                   ),
                   const SizedBox(height: 20),
                   _buildDivider(),
-                  _buildRow(l10n?.startTime ?? 'Start Time',
+                  _buildRow(l10n.startTime,
                       _startTime.format(context),
                       onTap: () => _pickTime(true)),
                   _buildDivider(),
-                  _buildRow(
-                      l10n?.endTime ?? 'End Time', _endTime.format(context),
+                  _buildRow(l10n.endTime, _endTime.format(context),
                       onTap: () => _pickTime(false)),
                   _buildDivider(),
                 ],
@@ -710,7 +691,7 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                   elevation: 0,
                 ),
                 child: Text(
-                  l10n?.ok ?? 'OK',
+                  l10n.ok,
                   style: const TextStyle(
                       fontSize: 18,
                       color: Colors.white,

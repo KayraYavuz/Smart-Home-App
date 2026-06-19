@@ -117,20 +117,18 @@ class _AddCardPageState extends State<AddCardPage>
   /// Next button: Start phone NFC scan → read card number → register via Gateway
   Future<void> _onNext() async {
     final cardName = _cardNameController.text.trim();
+    final l10n = AppLocalizations.of(context)!;
+
     if (cardName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(AppLocalizations.of(context)?.cardNameRequired ??
-                'Card name is required')),
+        SnackBar(content: Text(l10n.cardNameRequired)),
       );
       return;
     }
 
     if (_currentTabIndex == 2 && _selectedDays.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(AppLocalizations.of(context)?.selectDays ??
-                'Please configure the validity period')),
+        SnackBar(content: Text(l10n.selectDays)),
       );
       return;
     }
@@ -142,20 +140,17 @@ class _AddCardPageState extends State<AddCardPage>
     if (!isAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(AppLocalizations.of(context)?.nfcNotAvailable ??
-                'NFC is not available on this device'),
+            content: Text(l10n.nfcNotAvailable),
             backgroundColor: Colors.red),
       );
       return;
     }
 
-    final l10n = AppLocalizations.of(context);
-
     setState(() {
       _isLoading = true;
       _statusMessage = widget.isBluetooth
-          ? (l10n?.bluetoothAddInstructions ?? 'Connecting to lock...')
-          : (l10n?.scanCardWithPhone ?? 'Hold the card to your phone...');
+          ? l10n.bluetoothAddInstructions
+          : l10n.scanCardWithPhone;
     });
 
     try {
@@ -199,8 +194,7 @@ class _AddCardPageState extends State<AddCardPage>
       if (widget.isBluetooth) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-                l10n?.bluetoothAddInstructions ?? 'Connecting to lock...')));
+            content: Text(l10n.bluetoothAddInstructions)));
 
         TTLock.addCard(ttCycleList, startDateMs, endDateMs, widget.lockData,
             () {
@@ -208,13 +202,10 @@ class _AddCardPageState extends State<AddCardPage>
           if (mounted) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             setState(() {
-              _statusMessage = l10n?.lockReadyScanCard ??
-                  'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.';
+              _statusMessage = l10n.lockReadyScanCard;
             });
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                  l10n?.lockReadyScanCard ??
-                      'Kilit hazır! Lütfen IC kartınızı kilidin tuş takımına OKUTUN.',
+              content: Text(l10n.lockReadyScanCard,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16)),
               backgroundColor: Colors.orange,
@@ -233,8 +224,7 @@ class _AddCardPageState extends State<AddCardPage>
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(l10n?.iosNfcWarning ??
-                  'Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.'),
+              content: Text(l10n.iosNfcWarning),
               backgroundColor: Colors.orange,
               duration: const Duration(seconds: 4),
             ),
@@ -247,8 +237,7 @@ class _AddCardPageState extends State<AddCardPage>
             NfcPollingOption.iso15693,
             NfcPollingOption.iso18092,
           },
-          alertMessageIos:
-              l10n?.holdCardNearPhoneNfc ?? 'Hold your IC card near the phone',
+          alertMessageIos: l10n.holdCardNearPhoneNfc,
           onDiscovered: (NfcTag tag) async {
             try {
               // Read card UID from NFC tag — cross-platform
@@ -329,8 +318,7 @@ class _AddCardPageState extends State<AddCardPage>
       if (!mounted) return;
 
       setState(() {
-        _statusMessage =
-            l10n?.cardSaving(cardNumber) ?? 'Card: $cardNumber\nSaving...';
+        _statusMessage = l10n.cardSaving(cardNumber);
       });
 
       final apiService = Provider.of<ApiService>(context, listen: false);
@@ -360,8 +348,7 @@ class _AddCardPageState extends State<AddCardPage>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-                l10n?.cardAddedSuccessfully ?? '✅ Card added successfully!'),
+            content: Text(l10n.cardAddedSuccessfully),
             backgroundColor: Colors.green),
       );
       Navigator.pop(context, true);
@@ -374,7 +361,7 @@ class _AddCardPageState extends State<AddCardPage>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(l10n?.failedToAddCard(e.toString()) ?? 'Failed: $e'),
+            content: Text(l10n.failedToAddCard(e.toString())),
             backgroundColor: Colors.red),
       );
 
@@ -413,8 +400,7 @@ class _AddCardPageState extends State<AddCardPage>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    if (l10n == null) return const Center(child: CircularProgressIndicator());
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
@@ -669,15 +655,6 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
   late TimeOfDay _startTime;
   late TimeOfDay _endTime;
 
-  final List<String> _dayLabels = [
-    'Sun',
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat'
-  ];
   final List<int> _dayValues = [7, 1, 2, 3, 4, 5, 6];
 
   @override
@@ -744,14 +721,15 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final dayLabels = [l10n.daySun, l10n.dayMon, l10n.dayTue, l10n.dayWed, l10n.dayThu, l10n.dayFri, l10n.daySat];
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: const Color(0xFF121212),
         elevation: 0,
-        title: Text(l10n?.validityPeriod ?? 'Validity Period',
+        title: Text(l10n.validityPeriod,
             style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -769,17 +747,17 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRow(l10n?.startDate ?? 'Start Date',
+                  _buildRow(l10n.startDate,
                       DateFormat('yyyy-MM-dd').format(_startDate),
                       onTap: () => _pickDate(true)),
                   _buildDivider(),
-                  _buildRow(l10n?.endDate ?? 'End Date',
+                  _buildRow(l10n.endDate,
                       DateFormat('yyyy-MM-dd').format(_endDate),
                       onTap: () => _pickDate(false)),
                   _buildDivider(),
                   Container(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
-                    child: Text(l10n?.cycleOn ?? 'Cycle on',
+                    child: Text(l10n.cycleOn,
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -819,7 +797,7 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                             ),
                             child: Center(
                               child: Text(
-                                _dayLabels[index],
+                                dayLabels[index],
                                 style: TextStyle(
                                   color: isSelected
                                       ? Colors.white
@@ -836,12 +814,11 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                   ),
                   const SizedBox(height: 20),
                   _buildDivider(),
-                  _buildRow(l10n?.startTime ?? 'Start Time',
+                  _buildRow(l10n.startTime,
                       _startTime.format(context),
                       onTap: () => _pickTime(true)),
                   _buildDivider(),
-                  _buildRow(
-                      l10n?.endTime ?? 'End Time', _endTime.format(context),
+                  _buildRow(l10n.endTime, _endTime.format(context),
                       onTap: () => _pickTime(false)),
                   _buildDivider(),
                 ],
@@ -870,7 +847,7 @@ class _ValidityPeriodPageState extends State<_ValidityPeriodPage> {
                   elevation: 0,
                 ),
                 child: Text(
-                  l10n?.ok ?? 'OK',
+                  l10n.ok,
                   style: const TextStyle(
                       fontSize: 18,
                       color: Colors.white,
