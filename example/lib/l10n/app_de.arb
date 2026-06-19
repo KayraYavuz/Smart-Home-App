@@ -1237,5 +1237,7 @@
   "userNotAuthenticated": "Benutzer nicht authentifiziert",
   "recordsExportShareText": "Yavuz Lock Aufzeichnungen Export",
   "noDaySelected": "Kein Tag ausgewählt",
-  "weekdays": "Wochentage"
+  "weekdays": "Wochentage",
+  "comingSoon": "Demnächst",
+  "groupIdLabel": "Gruppen-ID"
 }

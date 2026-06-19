@@ -3038,4 +3038,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get weekdays => 'Wochentage';
+
+  @override
+  String get comingSoon => 'Demnächst';
+
+  @override
+  String get groupIdLabel => 'Gruppen-ID';
 }

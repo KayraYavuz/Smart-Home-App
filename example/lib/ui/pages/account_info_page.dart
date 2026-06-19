@@ -24,6 +24,7 @@ class _AccountInfoPageState extends State<AccountInfoPage> {
 
   Future<void> _loadUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     setState(() {
       _email = prefs.getString('saved_email') ?? '';
       _username = prefs.getString('saved_username') ?? '';

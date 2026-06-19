@@ -317,7 +317,7 @@ class _GroupManagementPageState extends State<GroupManagementPage> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Grup ID: ${group['groupId']}',
+                                        '${l10n.groupIdLabel}: ${group['groupId']}',
                                         style: TextStyle(
                                             color: Colors.grey[600],
                                             fontSize: 12),

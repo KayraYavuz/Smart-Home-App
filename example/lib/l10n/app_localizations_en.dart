@@ -2999,4 +2999,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weekdays => 'Weekdays';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get groupIdLabel => 'Group ID';
 }

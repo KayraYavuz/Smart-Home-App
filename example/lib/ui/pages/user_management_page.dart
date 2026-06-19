@@ -410,7 +410,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
-            title: Text(user['username'] ?? 'Unknown',
+            title: Text(user['username'] ?? AppLocalizations.of(context)!.unknown,
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,

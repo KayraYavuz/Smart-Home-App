@@ -5505,6 +5505,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weekdays'**
   String get weekdays;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @groupIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group ID'**
+  String get groupIdLabel;
 }
 
 class _AppLocalizationsDelegate

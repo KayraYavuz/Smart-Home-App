@@ -3011,4 +3011,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get weekdays => 'Hafta içi';
+
+  @override
+  String get comingSoon => 'Yakında';
+
+  @override
+  String get groupIdLabel => 'Grup ID';
 }
