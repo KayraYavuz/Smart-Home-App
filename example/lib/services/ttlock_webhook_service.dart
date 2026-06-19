@@ -91,7 +91,7 @@ class TTLockWebhookService {
         Uri.parse(_webhookUrl!),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(payload),
-      );
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         debugPrint('✅ Webhook sent successfully: ${response.statusCode}');

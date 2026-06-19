@@ -349,7 +349,7 @@ class HybridUnlockService {
         'date': DateTime.now().millisecondsSinceEpoch.toString(),
       });
 
-      final response = await http.post(url);
+      final response = await http.post(url).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -403,7 +403,7 @@ class HybridUnlockService {
         'date': DateTime.now().millisecondsSinceEpoch.toString(),
       });
 
-      final response = await http.post(url);
+      final response = await http.post(url).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);

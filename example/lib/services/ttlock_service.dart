@@ -45,7 +45,7 @@ class TTLockService {
     );
 
     try {
-      final response = await http.get(uri);
+      final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -93,7 +93,7 @@ class TTLockService {
     if (endDate != null) body['endDate'] = endDate.toString();
 
     try {
-      final response = await http.post(uri, headers: _headers, body: body);
+      final response = await http.post(uri, headers: _headers, body: body).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -131,7 +131,7 @@ class TTLockService {
     };
 
     try {
-      final response = await http.post(uri, headers: _headers, body: body);
+      final response = await http.post(uri, headers: _headers, body: body).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -178,7 +178,7 @@ class TTLockService {
     if (endDate != null) body['endDate'] = endDate.toString();
 
     try {
-      final response = await http.post(uri, headers: _headers, body: body);
+      final response = await http.post(uri, headers: _headers, body: body).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -211,7 +211,7 @@ class TTLockService {
     );
 
     try {
-      final response = await http.get(uri);
+      final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -249,7 +249,7 @@ class TTLockService {
     };
 
     try {
-      final response = await http.post(uri, headers: _headers, body: body);
+      final response = await http.post(uri, headers: _headers, body: body).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -280,7 +280,7 @@ class TTLockService {
     };
 
     try {
-      final response = await http.post(uri, headers: _headers, body: body);
+      final response = await http.post(uri, headers: _headers, body: body).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -316,7 +316,7 @@ class TTLockService {
     };
 
     try {
-      final response = await http.post(uri, headers: _headers, body: body);
+      final response = await http.post(uri, headers: _headers, body: body).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -346,7 +346,7 @@ class TTLockService {
     };
 
     try {
-      final response = await http.post(uri, headers: _headers, body: body);
+      final response = await http.post(uri, headers: _headers, body: body).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -378,7 +378,7 @@ class TTLockService {
     };
 
     try {
-      final response = await http.post(uri, headers: _headers, body: body);
+      final response = await http.post(uri, headers: _headers, body: body).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
