@@ -2978,4 +2978,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get allHours => 'Alle Stunden';
+
+  @override
+  String get wifiLockOnlyNotice =>
+      'Diese Funktion ist nur für Schlösser mit eingebautem WLAN.';
+
+  @override
+  String get wifiLockGatewayTip =>
+      'Wenn Sie ein Gateway verwenden, prüfen Sie bitte das Gateway-Menü.';
 }

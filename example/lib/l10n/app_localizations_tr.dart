@@ -2952,4 +2952,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get allHours => 'Tüm saatler';
+
+  @override
+  String get wifiLockOnlyNotice =>
+      'Bu özellik yalnızca yerleşik Wi-Fi\'ye sahip kilitler içindir.';
+
+  @override
+  String get wifiLockGatewayTip =>
+      'Gateway kullanıyorsanız lütfen Gateway menüsünü kontrol edin.';
 }

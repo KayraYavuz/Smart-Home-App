@@ -5397,6 +5397,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Hours'**
   String get allHours;
+
+  /// No description provided for @wifiLockOnlyNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This feature is only for locks with built-in Wi-Fi.'**
+  String get wifiLockOnlyNotice;
+
+  /// No description provided for @wifiLockGatewayTip.
+  ///
+  /// In en, this message translates to:
+  /// **'If you use a Gateway, please check the Gateway menu.'**
+  String get wifiLockGatewayTip;
 }
 
 class _AppLocalizationsDelegate

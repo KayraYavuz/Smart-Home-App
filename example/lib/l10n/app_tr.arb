@@ -979,6 +979,8 @@
   "onTheseDays": "Bu günlerde",
   "timeSettings": "Zaman ayarları",
   "allHours": "Tüm saatler",
+  "wifiLockOnlyNotice": "Bu özellik yalnızca yerleşik Wi-Fi'ye sahip kilitler içindir.",
+  "wifiLockGatewayTip": "Gateway kullanıyorsanız lütfen Gateway menüsünü kontrol edin.",
   "@appTitle": {
     "description": "The title of the application"
   },

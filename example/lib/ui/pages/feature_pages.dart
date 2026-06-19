@@ -514,14 +514,14 @@ class _WifiLockPageState extends State<WifiLockPage> {
                         const Icon(Icons.error_outline,
                             color: Colors.orange, size: 48),
                         const SizedBox(height: 16),
-                        const Text(
-                          "This feature is only for locks with built-in Wi-Fi.",
+                        Text(
+                          AppLocalizations.of(context)!.wifiLockOnlyNotice,
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontSize: 16),
+                          style: const TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "If you use a Gateway, please check the Gateway menu.",
+                          AppLocalizations.of(context)!.wifiLockGatewayTip,
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.grey[400]),
                         ),

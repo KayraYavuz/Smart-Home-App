@@ -90,7 +90,7 @@ class ApiService {
     try {
       final url = Uri.parse(_baseUrl);
       // Using a HEAD request to get headers without downloading body
-      final response = await http.head(url);
+      final response = await http.head(url).timeout(const Duration(seconds: 30));
 
       if (response.headers.containsKey('date')) {
         final serverDateStr = response.headers['date'];
@@ -165,7 +165,7 @@ class ApiService {
             Uri.parse('$region/v3/user/resetPassword'),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: body,
-          );
+          ).timeout(const Duration(seconds: 30));
 
           if (response.statusCode == 200) {
             final data = json.decode(response.body);
@@ -220,7 +220,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint('📨 Register API yanıtı - Status: ${response.statusCode}');
 
@@ -433,7 +433,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData.containsKey('faceId')) {
@@ -469,7 +469,7 @@ class ApiService {
       if (searchStr != null) 'searchStr': searchStr,
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -509,7 +509,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -554,7 +554,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -587,7 +587,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -623,7 +623,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -676,7 +676,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData.containsKey('fingerprintId')) {
@@ -717,7 +717,7 @@ class ApiService {
       'orderBy': orderBy.toString(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -763,7 +763,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -793,7 +793,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -829,7 +829,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -883,7 +883,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint('📨 Key list API yanıtı - Status: ${response.statusCode}');
 
@@ -1008,7 +1008,7 @@ class ApiService {
 
     debugPrint('📡 Get eKey API çağrısı: $url');
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     debugPrint('📨 Get eKey API yanıtı - Status: ${response.statusCode}');
 
@@ -1055,7 +1055,7 @@ class ApiService {
 
     debugPrint('📡 Query Lock Open State API çağrısı: $url');
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Query Lock Open State API yanıtı - Status: ${response.statusCode}');
@@ -1108,7 +1108,7 @@ class ApiService {
 
     debugPrint('📡 Query Lock Time API çağrısı: $url');
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Query Lock Time API yanıtı - Status: ${response.statusCode}');
@@ -1168,7 +1168,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Update Lock Time API yanıtı - Status: ${response.statusCode}');
@@ -1221,7 +1221,7 @@ class ApiService {
 
     debugPrint('📡 Query Lock Battery API çağrısı: $url');
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Query Lock Battery API yanıtı - Status: ${response.statusCode}');
@@ -1269,7 +1269,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1317,7 +1317,7 @@ class ApiService {
     final url = Uri.parse('$_baseUrl/v3/lockRecord/list')
         .replace(queryParameters: queryParams);
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1358,7 +1358,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1394,7 +1394,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1427,7 +1427,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1464,7 +1464,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1498,7 +1498,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1528,7 +1528,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1566,7 +1566,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1601,7 +1601,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1638,7 +1638,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1667,7 +1667,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1717,7 +1717,7 @@ class ApiService {
 
     debugPrint('📡 List Identity Cards API çağrısı: $url');
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 List Identity Cards API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -1761,7 +1761,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1805,7 +1805,7 @@ class ApiService {
 
     debugPrint('📡 Gateway list API çağrısı: $url');
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -1850,7 +1850,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -1914,7 +1914,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Lock init API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -1980,7 +1980,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.post(url);
+    final response = await http.post(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2012,7 +2012,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.post(url);
+    final response = await http.post(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2049,7 +2049,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2089,7 +2089,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.post(url);
+    final response = await http.post(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2128,7 +2128,7 @@ class ApiService {
 
     debugPrint('📡 Get Gateways by Lock API çağrısı: $url');
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2171,7 +2171,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2236,7 +2236,7 @@ class ApiService {
 
     debugPrint('📡 Lock Key List API çağrısı: $url');
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2281,7 +2281,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint('📨 Delete eKey API yanıtı - Status: ${response.statusCode}');
 
@@ -2328,7 +2328,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint('📨 Freeze eKey API yanıtı - Status: ${response.statusCode}');
 
@@ -2375,7 +2375,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint('📨 Unfreeze eKey API yanıtı - Status: ${response.statusCode}');
 
@@ -2432,7 +2432,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint('📨 Update eKey API yanıtı - Status: ${response.statusCode}');
 
@@ -2483,7 +2483,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Change eKey Period API yanıtı - Status: ${response.statusCode}');
@@ -2535,7 +2535,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint('📨 Authorize eKey API yanıtı - Status: ${response.statusCode}');
 
@@ -2584,7 +2584,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Unauthorize eKey API yanıtı - Status: ${response.statusCode}');
@@ -2634,7 +2634,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Get Unlock Link API yanıtı - Status: ${response.statusCode}');
@@ -2724,7 +2724,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Send eKey API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -2763,7 +2763,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.post(url);
+    final response = await http.post(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2807,7 +2807,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
@@ -2840,7 +2840,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -2883,7 +2883,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
@@ -2917,7 +2917,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -2962,7 +2962,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
@@ -3060,7 +3060,7 @@ class ApiService {
           Uri.parse(fullUrl),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: body,
-        );
+        ).timeout(const Duration(seconds: 30));
         debugPrint('📨 Response [${response.statusCode}]: ${response.body}');
 
         if (response.statusCode != 200 ||
@@ -3263,7 +3263,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: body,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -3314,7 +3314,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Delete Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -3369,7 +3369,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Change Identity Card Period API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -3422,7 +3422,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Rename Identity Card API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -3472,7 +3472,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Clear Identity Cards API yanıtı - Status: ${response.statusCode}, Body: ${response.body}');
@@ -3521,7 +3521,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
@@ -3559,7 +3559,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
@@ -3598,7 +3598,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
@@ -3673,7 +3673,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] == 0 || responseData['errcode'] == null) {
@@ -3714,7 +3714,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint('📨 Rename Gateway API yanıtı - Status: ${response.statusCode}');
 
@@ -3769,7 +3769,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Transfer Gateway API yanıtı - Status: ${response.statusCode}');
@@ -3822,7 +3822,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Query Gateway Init Status API yanıtı - Status: ${response.statusCode}');
@@ -3890,7 +3890,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Upload Gateway Detail API yanıtı - Status: ${response.statusCode}');
@@ -3938,7 +3938,7 @@ class ApiService {
 
     debugPrint('📡 Gateway Upgrade Check API çağrısı: $url');
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Gateway Upgrade Check API yanıtı - Status: ${response.statusCode}');
@@ -3991,7 +3991,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     debugPrint(
         '📨 Set Gateway Upgrade Mode API yanıtı - Status: ${response.statusCode}');
@@ -4039,7 +4039,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -4069,7 +4069,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -4407,7 +4407,7 @@ class ApiService {
     debugPrint('📡 User List API çağrısı: $url');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 30));
 
       debugPrint('📨 User List API yanıtı - Status: ${response.statusCode}');
 
@@ -4451,7 +4451,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint('📨 Delete User API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
@@ -4510,7 +4510,7 @@ class ApiService {
     final url = Uri.parse('$_baseUrl/v3/lock/list')
         .replace(queryParameters: queryParams);
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -4585,7 +4585,7 @@ class ApiService {
     debugPrint('📡 Lock Detail API çağrısı: $url');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 30));
 
       debugPrint('📨 Lock Detail API yanıtı - Status: ${response.statusCode}');
 
@@ -4651,7 +4651,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint('📨 Delete Lock API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
@@ -4713,7 +4713,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Update Lock Data API yanıtı - Status: ${response.statusCode}');
@@ -4775,7 +4775,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint('📨 Rename Lock API yanıtı - Status: ${response.statusCode}');
       debugPrint('   Body: ${response.body}');
@@ -4843,7 +4843,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Change Admin Pwd API yanıtı - Status: ${response.statusCode}');
@@ -4908,7 +4908,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Transfer Lock API yanıtı - Status: ${response.statusCode}');
@@ -4972,7 +4972,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Update Battery API yanıtı - Status: ${response.statusCode}');
@@ -5043,7 +5043,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Set Auto Lock Time API yanıtı - Status: ${response.statusCode}');
@@ -5121,7 +5121,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Config Passage Mode API yanıtı - Status: ${response.statusCode}');
@@ -5175,7 +5175,7 @@ class ApiService {
     debugPrint('📡 Get Passage Mode Config API çağrısı: $url');
 
     try {
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Get Passage Mode Config API yanıtı - Status: ${response.statusCode}');
@@ -5254,7 +5254,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Set Hotel Card Sector API yanıtı - Status: ${response.statusCode}');
@@ -5318,7 +5318,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Query Lock Setting API yanıtı - Status: ${response.statusCode}');
@@ -5382,7 +5382,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: queryParams,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Get Working Mode API yanıtı - Status: ${response.statusCode}');
@@ -5460,7 +5460,7 @@ class ApiService {
         url,
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: formBody,
-      );
+      ).timeout(const Duration(seconds: 30));
 
       debugPrint(
           '📨 Config Working Mode API yanıtı - Status: ${response.statusCode}');
@@ -5509,7 +5509,7 @@ class ApiService {
         'lockId': lockId,
         'date': _getApiTime(),
       },
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -5542,7 +5542,7 @@ class ApiService {
         'url': callbackUrl,
         'date': _getApiTime(),
       },
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -5586,7 +5586,7 @@ class ApiService {
           'date': _getApiTime(),
         });
 
-        final response = await http.get(url);
+        final response = await http.get(url).timeout(const Duration(seconds: 30));
 
         debugPrint('📡 Endpoint: $endpoint - Status: ${response.statusCode}');
 
@@ -5664,7 +5664,7 @@ class ApiService {
         'pageSize': pageSize.toString(),
         'date': _getApiTime(),
       },
-    );
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -5718,7 +5718,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -5765,7 +5765,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -5822,7 +5822,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -5857,7 +5857,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -5895,7 +5895,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -5931,7 +5931,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -5967,7 +5967,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -6010,7 +6010,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6064,7 +6064,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -6103,7 +6103,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6139,7 +6139,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6171,7 +6171,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6214,7 +6214,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6253,7 +6253,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -6293,7 +6293,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6339,7 +6339,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -6376,7 +6376,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -6413,7 +6413,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6448,7 +6448,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6489,7 +6489,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -6525,7 +6525,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6568,7 +6568,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -6598,7 +6598,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6629,7 +6629,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6689,7 +6689,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -6726,7 +6726,7 @@ class ApiService {
       if (name != null) 'name': name,
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6758,7 +6758,7 @@ class ApiService {
       'date': _getApiTime(),
     });
 
-    final response = await http.get(url);
+    final response = await http.get(url).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -6810,7 +6810,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6846,7 +6846,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6880,7 +6880,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -6933,7 +6933,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -6967,7 +6967,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -7011,7 +7011,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -7065,7 +7065,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
 
@@ -7103,7 +7103,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -7145,7 +7145,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -7181,7 +7181,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {
@@ -7213,7 +7213,7 @@ class ApiService {
       url,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
-    );
+    ).timeout(const Duration(seconds: 30));
 
     final responseData = json.decode(response.body);
     if (responseData['errcode'] != 0 && responseData['errcode'] != null) {

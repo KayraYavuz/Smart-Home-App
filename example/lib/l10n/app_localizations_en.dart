@@ -2940,4 +2940,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allHours => 'All Hours';
+
+  @override
+  String get wifiLockOnlyNotice =>
+      'This feature is only for locks with built-in Wi-Fi.';
+
+  @override
+  String get wifiLockGatewayTip =>
+      'If you use a Gateway, please check the Gateway menu.';
 }

@@ -1213,5 +1213,7 @@
   "selectAtLeastOneDay": "Bitte wählen Sie mindestens einen Tag aus",
   "onTheseDays": "An diesen Tagen",
   "timeSettings": "Zeiteinstellungen",
-  "allHours": "Alle Stunden"
+  "allHours": "Alle Stunden",
+  "wifiLockOnlyNotice": "Diese Funktion ist nur für Schlösser mit eingebautem WLAN.",
+  "wifiLockGatewayTip": "Wenn Sie ein Gateway verwenden, prüfen Sie bitte das Gateway-Menü."
 }

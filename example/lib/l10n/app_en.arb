@@ -1237,5 +1237,7 @@
   "selectAtLeastOneDay": "Please select at least one day",
   "onTheseDays": "On these days",
   "timeSettings": "Time Settings",
-  "allHours": "All Hours"
+  "allHours": "All Hours",
+  "wifiLockOnlyNotice": "This feature is only for locks with built-in Wi-Fi.",
+  "wifiLockGatewayTip": "If you use a Gateway, please check the Gateway menu."
 }
