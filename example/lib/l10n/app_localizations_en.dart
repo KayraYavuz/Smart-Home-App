@@ -2966,4 +2966,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryGateway => 'Try Gateway';
+
+  @override
+  String get daySun => 'Sun';
+
+  @override
+  String get dayMon => 'Mon';
+
+  @override
+  String get dayTue => 'Tue';
+
+  @override
+  String get dayWed => 'Wed';
+
+  @override
+  String get dayThu => 'Thu';
+
+  @override
+  String get dayFri => 'Fri';
+
+  @override
+  String get daySat => 'Sat';
 }

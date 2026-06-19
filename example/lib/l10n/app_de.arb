@@ -1226,5 +1226,12 @@
     }
   },
   "bluetoothTimedOut": "Bluetooth-Vorgang hat das Zeitlimit überschritten.",
-  "tryGateway": "Gateway versuchen"
+  "tryGateway": "Gateway versuchen",
+  "daySun": "So",
+  "dayMon": "Mo",
+  "dayTue": "Di",
+  "dayWed": "Mi",
+  "dayThu": "Do",
+  "dayFri": "Fr",
+  "daySat": "Sa"
 }

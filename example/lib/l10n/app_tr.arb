@@ -992,6 +992,13 @@
   },
   "bluetoothTimedOut": "Bluetooth işlemi zaman aşımına uğradı.",
   "tryGateway": "Gateway'i Dene",
+  "daySun": "Paz",
+  "dayMon": "Pzt",
+  "dayTue": "Sal",
+  "dayWed": "Çar",
+  "dayThu": "Per",
+  "dayFri": "Cum",
+  "daySat": "Cmt",
   "@appTitle": {
     "description": "The title of the application"
   },

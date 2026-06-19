@@ -28,15 +28,6 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
   TimeOfDay _startTime = const TimeOfDay(hour: 9, minute: 0);
   TimeOfDay _endTime = const TimeOfDay(hour: 18, minute: 0);
 
-  final List<String> _dayLabels = [
-    'Paz',
-    'Pzt',
-    'Sal',
-    'Çar',
-    'Per',
-    'Cum',
-    'Cmt'
-  ]; // Sun-Sat
 
   Future<void> _selectDate(bool isStart) async {
     final picked = await showDatePicker(
@@ -95,6 +86,11 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final dayLabels = [
+      l10n.daySun, l10n.dayMon, l10n.dayTue, l10n.dayWed,
+      l10n.dayThu, l10n.dayFri, l10n.daySat,
+    ];
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -102,7 +98,7 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(AppLocalizations.of(context)!.validityPeriod,
+        title: Text(l10n.validityPeriod,
             style: const TextStyle(color: Colors.white, fontSize: 18)),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -112,13 +108,13 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildRow(AppLocalizations.of(context)!.startDate,
+            _buildRow(l10n.startDate,
                 _formatDate(_startDate), () => _selectDate(true)),
             _buildDivider(),
-            _buildRow(AppLocalizations.of(context)!.endDate,
+            _buildRow(l10n.endDate,
                 _formatDate(_endDate), () => _selectDate(false)),
             const SizedBox(height: 30),
-            Text(AppLocalizations.of(context)!.cycle,
+            Text(l10n.cycle,
                 style: const TextStyle(color: Colors.grey, fontSize: 14)),
             const SizedBox(height: 16),
             Row(
@@ -145,7 +141,7 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      _dayLabels[index],
+                      dayLabels[index],
                       style: TextStyle(
                         color: isSelected ? Colors.white : Colors.grey,
                         fontSize: 12,
@@ -159,12 +155,12 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
             ),
             const SizedBox(height: 30),
             _buildRow(
-                '${AppLocalizations.of(context)!.tabTimed} ${AppLocalizations.of(context)!.startDate.split(' ')[1]}',
+                '${l10n.tabTimed} ${l10n.startDate.split(' ')[1]}',
                 _formatTime(_startTime),
                 () => _selectTime(true)),
             _buildDivider(),
             _buildRow(
-                '${AppLocalizations.of(context)!.tabTimed} ${AppLocalizations.of(context)!.endDate.split(' ')[1]}',
+                '${l10n.tabTimed} ${l10n.endDate.split(' ')[1]}',
                 _formatTime(_endTime),
                 () => _selectTime(false)),
             const SizedBox(height: 50),
@@ -183,7 +179,7 @@ class _RecurringPeriodPageState extends State<RecurringPeriodPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25)),
                 ),
-                child: Text(AppLocalizations.of(context)!.ok,
+                child: Text(l10n.ok,
                     style: const TextStyle(color: Colors.white, fontSize: 16)),
               ),
             ),

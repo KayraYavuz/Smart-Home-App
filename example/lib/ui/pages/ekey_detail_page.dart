@@ -348,7 +348,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     } catch (e) {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) {
@@ -392,7 +392,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
     } catch (e) {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) {
@@ -513,7 +513,7 @@ class _EKeyDetailPageState extends State<EKeyDetailPage> {
           } catch (e) {
             if (!mounted) return;
             scaffoldMessenger.showSnackBar(
-              SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
+              SnackBar(content: Text(l10n.errorWithMsg(e.toString())), backgroundColor: Colors.red),
             );
           }
         },

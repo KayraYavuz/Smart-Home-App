@@ -3005,4 +3005,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tryGateway => 'Gateway versuchen';
+
+  @override
+  String get daySun => 'So';
+
+  @override
+  String get dayMon => 'Mo';
+
+  @override
+  String get dayTue => 'Di';
+
+  @override
+  String get dayWed => 'Mi';
+
+  @override
+  String get dayThu => 'Do';
+
+  @override
+  String get dayFri => 'Fr';
+
+  @override
+  String get daySat => 'Sa';
 }

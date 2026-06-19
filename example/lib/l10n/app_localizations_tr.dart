@@ -2978,4 +2978,25 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get tryGateway => 'Gateway\'i Dene';
+
+  @override
+  String get daySun => 'Paz';
+
+  @override
+  String get dayMon => 'Pzt';
+
+  @override
+  String get dayTue => 'Sal';
+
+  @override
+  String get dayWed => 'Çar';
+
+  @override
+  String get dayThu => 'Per';
+
+  @override
+  String get dayFri => 'Cum';
+
+  @override
+  String get daySat => 'Cmt';
 }

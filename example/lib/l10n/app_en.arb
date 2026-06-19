@@ -1250,5 +1250,12 @@
     }
   },
   "bluetoothTimedOut": "Bluetooth operation timed out.",
-  "tryGateway": "Try Gateway"
+  "tryGateway": "Try Gateway",
+  "daySun": "Sun",
+  "dayMon": "Mon",
+  "dayTue": "Tue",
+  "dayWed": "Wed",
+  "dayThu": "Thu",
+  "dayFri": "Fri",
+  "daySat": "Sat"
 }
