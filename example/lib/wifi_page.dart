@@ -35,9 +35,8 @@ class _WifiPageState extends State<WifiPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(AppLocalizations.of(context)
-                        ?.locationPermissionRequiredForWifi ??
-                    'Wi-Fi taraması için konum izni gereklidir.')),
+                content: Text(AppLocalizations.of(context)!
+                    .locationPermissionRequiredForWifi)),
           );
         }
       });
@@ -82,7 +81,7 @@ class _WifiPageState extends State<WifiPage> {
     return Scaffold(
         appBar: AppBar(
           title:
-              Text(AppLocalizations.of(context)?.selectWifi ?? 'Select Wifi'),
+              Text(AppLocalizations.of(context)!.selectWifi),
         ),
         body: Material(child: ProgressHud(
           child: Builder(builder: (context) {
@@ -99,8 +98,7 @@ class _WifiPageState extends State<WifiPage> {
 
     if (!_isScanning && _wifiList.isEmpty) {
       return Center(
-          child: Text(AppLocalizations.of(context)?.noWifiNetworksFound ??
-              'Bulunan Wi-Fi ağı yok.'));
+          child: Text(AppLocalizations.of(context)!.noWifiNetworksFound));
     }
 
     return ListView.builder(

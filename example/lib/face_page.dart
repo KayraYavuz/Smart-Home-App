@@ -63,7 +63,7 @@ class _FacePageState extends State<FacePage> {
           if (state is FaceOperationFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Operation failed: ${state.error}'),
+                content: Text(l10n.errorWithMsg(state.error)),
                 backgroundColor: Colors.red,
               ),
             );
@@ -83,7 +83,7 @@ class _FacePageState extends State<FacePage> {
               itemBuilder: (context, index) {
                 final face = faces[index];
                 return ListTile(
-                  title: Text(face['name'] ?? 'No Name'),
+                  title: Text(face['name'] ?? l10n.unnamed),
                   subtitle: Text('ID: ${face['faceId']}'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),

@@ -1257,5 +1257,6 @@
   "dayWed": "Wed",
   "dayThu": "Thu",
   "dayFri": "Fri",
-  "daySat": "Sat"
+  "daySat": "Sat",
+  "userNotAuthenticated": "User not authenticated"
 }

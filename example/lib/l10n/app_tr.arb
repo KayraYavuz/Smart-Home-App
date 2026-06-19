@@ -1233,5 +1233,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "userNotAuthenticated": "Kullanıcı kimliği doğrulanmadı"
 }

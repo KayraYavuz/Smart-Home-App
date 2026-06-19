@@ -5481,6 +5481,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sat'**
   String get daySat;
+
+  /// No description provided for @userNotAuthenticated.
+  ///
+  /// In en, this message translates to:
+  /// **'User not authenticated'**
+  String get userNotAuthenticated;
 }
 
 class _AppLocalizationsDelegate

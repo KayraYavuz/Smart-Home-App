@@ -81,7 +81,7 @@ class _FingerprintPageState extends State<FingerprintPage> {
               itemBuilder: (context, index) {
                 final fingerprint = fingerprints[index];
                 return ListTile(
-                  title: Text(fingerprint['fingerprintName'] ?? 'No Name'),
+                  title: Text(fingerprint['fingerprintName'] ?? l10n.unnamed),
                   subtitle: Text(fingerprint['fingerprintNumber']),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),

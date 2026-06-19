@@ -2999,4 +2999,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get daySat => 'Cmt';
+
+  @override
+  String get userNotAuthenticated => 'Kullanıcı kimliği doğrulanmadı';
 }

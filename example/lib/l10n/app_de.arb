@@ -1233,5 +1233,6 @@
   "dayWed": "Mi",
   "dayThu": "Do",
   "dayFri": "Fr",
-  "daySat": "Sa"
+  "daySat": "Sa",
+  "userNotAuthenticated": "Benutzer nicht authentifiziert"
 }

@@ -2987,4 +2987,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get daySat => 'Sat';
+
+  @override
+  String get userNotAuthenticated => 'User not authenticated';
 }
