@@ -80,8 +80,9 @@ class _QueryLockPageState extends State<QueryLockPage> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         setState(() {
-          _errorMessage = 'Sorgulama hatası: $e';
+          _errorMessage = l10n.errorWithMsg(e.toString());
           _isLoading = false;
         });
       }
@@ -178,7 +179,7 @@ class _QueryLockPageState extends State<QueryLockPage> {
             return DropdownMenuItem<String>(
               value: lock['lockId']?.toString(),
               child: Text(
-                lock['name'] ?? 'Bilinmeyen Kilit',
+                lock['name'] ?? l10n.unknownLock,
                 style: const TextStyle(color: Colors.white),
               ),
             );

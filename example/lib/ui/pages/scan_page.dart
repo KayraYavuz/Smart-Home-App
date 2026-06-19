@@ -375,7 +375,7 @@ class ScanPage extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    'Versiyon: ${lock.lockVersion}',
+                                    '${l10n.version}: ${lock.lockVersion}',
                                     style: TextStyle(
                                       color: Colors.grey[400],
                                       fontSize: 12,
