@@ -660,6 +660,7 @@ class _PalmVeinPageState extends State<PalmVeinPage> {
         ],
       ),
     );
+    controller.dispose();
     if (newName == null || newName.isEmpty || !mounted) return;
 
     final scaffoldMessenger = ScaffoldMessenger.of(context);

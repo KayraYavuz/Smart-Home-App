@@ -267,6 +267,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         ],
       ),
     );
+    usernameController.dispose();
   }
 
   Future<void> _processGroupShare(String groupId, String receiverUsername,
