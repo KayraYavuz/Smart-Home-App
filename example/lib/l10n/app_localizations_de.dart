@@ -2986,4 +2986,23 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get wifiLockGatewayTip =>
       'Wenn Sie ein Gateway verwenden, prüfen Sie bitte das Gateway-Menü.';
+
+  @override
+  String get adminOnlyNote =>
+      'Hinweis: Nur der Schloss-Administrator kann diese Einstellung ändern.';
+
+  @override
+  String get timeSetViaGateway => 'Zeit eingestellt (über Gateway)';
+
+  @override
+  String btAndGatewayFailed(String btError, String gwError) {
+    return 'Bluetooth fehlgeschlagen: $btError\n\nGateway auch fehlgeschlagen: $gwError';
+  }
+
+  @override
+  String get bluetoothTimedOut =>
+      'Bluetooth-Vorgang hat das Zeitlimit überschritten.';
+
+  @override
+  String get tryGateway => 'Gateway versuchen';
 }

@@ -1215,5 +1215,16 @@
   "timeSettings": "Zeiteinstellungen",
   "allHours": "Alle Stunden",
   "wifiLockOnlyNotice": "Diese Funktion ist nur für Schlösser mit eingebautem WLAN.",
-  "wifiLockGatewayTip": "Wenn Sie ein Gateway verwenden, prüfen Sie bitte das Gateway-Menü."
+  "wifiLockGatewayTip": "Wenn Sie ein Gateway verwenden, prüfen Sie bitte das Gateway-Menü.",
+  "adminOnlyNote": "Hinweis: Nur der Schloss-Administrator kann diese Einstellung ändern.",
+  "timeSetViaGateway": "Zeit eingestellt (über Gateway)",
+  "btAndGatewayFailed": "Bluetooth fehlgeschlagen: {btError}\n\nGateway auch fehlgeschlagen: {gwError}",
+  "@btAndGatewayFailed": {
+    "placeholders": {
+      "btError": {"type": "String"},
+      "gwError": {"type": "String"}
+    }
+  },
+  "bluetoothTimedOut": "Bluetooth-Vorgang hat das Zeitlimit überschritten.",
+  "tryGateway": "Gateway versuchen"
 }

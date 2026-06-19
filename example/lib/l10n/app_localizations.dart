@@ -5409,6 +5409,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'If you use a Gateway, please check the Gateway menu.'**
   String get wifiLockGatewayTip;
+
+  /// No description provided for @adminOnlyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note: Only the Lock Admin can change this setting.'**
+  String get adminOnlyNote;
+
+  /// No description provided for @timeSetViaGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Time set (via Gateway)'**
+  String get timeSetViaGateway;
+
+  /// No description provided for @btAndGatewayFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth failed: {btError}\n\nGateway also failed: {gwError}'**
+  String btAndGatewayFailed(String btError, String gwError);
+
+  /// No description provided for @bluetoothTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth operation timed out.'**
+  String get bluetoothTimedOut;
+
+  /// No description provided for @tryGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Gateway'**
+  String get tryGateway;
 }
 
 class _AppLocalizationsDelegate

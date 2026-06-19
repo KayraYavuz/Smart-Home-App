@@ -1239,5 +1239,16 @@
   "timeSettings": "Time Settings",
   "allHours": "All Hours",
   "wifiLockOnlyNotice": "This feature is only for locks with built-in Wi-Fi.",
-  "wifiLockGatewayTip": "If you use a Gateway, please check the Gateway menu."
+  "wifiLockGatewayTip": "If you use a Gateway, please check the Gateway menu.",
+  "adminOnlyNote": "Note: Only the Lock Admin can change this setting.",
+  "timeSetViaGateway": "Time set (via Gateway)",
+  "btAndGatewayFailed": "Bluetooth failed: {btError}\n\nGateway also failed: {gwError}",
+  "@btAndGatewayFailed": {
+    "placeholders": {
+      "btError": {"type": "String"},
+      "gwError": {"type": "String"}
+    }
+  },
+  "bluetoothTimedOut": "Bluetooth operation timed out.",
+  "tryGateway": "Try Gateway"
 }

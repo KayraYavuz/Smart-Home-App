@@ -2960,4 +2960,22 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get wifiLockGatewayTip =>
       'Gateway kullanıyorsanız lütfen Gateway menüsünü kontrol edin.';
+
+  @override
+  String get adminOnlyNote =>
+      'Not: Bu ayarı yalnızca Kilit Yöneticisi değiştirebilir.';
+
+  @override
+  String get timeSetViaGateway => 'Süre ayarlandı (Gateway ile)';
+
+  @override
+  String btAndGatewayFailed(String btError, String gwError) {
+    return 'Bluetooth başarısız: $btError\n\nGateway da başarısız: $gwError';
+  }
+
+  @override
+  String get bluetoothTimedOut => 'Bluetooth işlemi zaman aşımına uğradı.';
+
+  @override
+  String get tryGateway => 'Gateway\'i Dene';
 }

@@ -981,6 +981,17 @@
   "allHours": "Tüm saatler",
   "wifiLockOnlyNotice": "Bu özellik yalnızca yerleşik Wi-Fi'ye sahip kilitler içindir.",
   "wifiLockGatewayTip": "Gateway kullanıyorsanız lütfen Gateway menüsünü kontrol edin.",
+  "adminOnlyNote": "Not: Bu ayarı yalnızca Kilit Yöneticisi değiştirebilir.",
+  "timeSetViaGateway": "Süre ayarlandı (Gateway ile)",
+  "btAndGatewayFailed": "Bluetooth başarısız: {btError}\n\nGateway da başarısız: {gwError}",
+  "@btAndGatewayFailed": {
+    "placeholders": {
+      "btError": {"type": "String"},
+      "gwError": {"type": "String"}
+    }
+  },
+  "bluetoothTimedOut": "Bluetooth işlemi zaman aşımına uğradı.",
+  "tryGateway": "Gateway'i Dene",
   "@appTitle": {
     "description": "The title of the application"
   },

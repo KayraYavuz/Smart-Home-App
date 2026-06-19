@@ -2948,4 +2948,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get wifiLockGatewayTip =>
       'If you use a Gateway, please check the Gateway menu.';
+
+  @override
+  String get adminOnlyNote =>
+      'Note: Only the Lock Admin can change this setting.';
+
+  @override
+  String get timeSetViaGateway => 'Time set (via Gateway)';
+
+  @override
+  String btAndGatewayFailed(String btError, String gwError) {
+    return 'Bluetooth failed: $btError\n\nGateway also failed: $gwError';
+  }
+
+  @override
+  String get bluetoothTimedOut => 'Bluetooth operation timed out.';
+
+  @override
+  String get tryGateway => 'Try Gateway';
 }

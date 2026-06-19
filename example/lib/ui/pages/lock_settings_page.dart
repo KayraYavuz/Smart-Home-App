@@ -731,9 +731,9 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               decoration: InputDecoration(suffixText: l10n.secondsShortcut),
             ),
             const SizedBox(height: 12),
-            const Text(
-              "Note: Only the Lock Admin can change this setting.",
-              style: TextStyle(color: Colors.grey, fontSize: 12),
+            Text(
+              l10n.adminOnlyNote,
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
               textAlign: TextAlign.center,
             ),
           ],
@@ -766,7 +766,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
 
               if (lockData.isEmpty) {
                 scaffoldMessenger.showSnackBar(
-                    const SnackBar(content: Text("Lock data not found")));
+                    SnackBar(content: Text(l10n.lockDataNotFound)));
                 return;
               }
 
@@ -854,7 +854,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                       navigator.pop(); // Close gateway loading
                       setState(() => _autoLockSeconds = seconds);
                       scaffoldMessenger.showSnackBar(SnackBar(
-                          content: Text("${l10n.timeSet} (via Gateway)")));
+                          content: Text(l10n.timeSetViaGateway)));
                     }
                   } catch (e) {
                     debugPrint("Gateway set failed: $e");
@@ -863,13 +863,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text("Error"),
-                          content: Text(
-                              "Failed via Bluetooth: $bluetoothError\n\nFailed via Gateway: $e"),
+                          title: Text(l10n.errorLabel),
+                          content: Text(l10n.btAndGatewayFailed(bluetoothError, e.toString())),
                           actions: [
                             TextButton(
                                 onPressed: () => navigator.pop(),
-                                child: const Text("OK"))
+                                child: Text(l10n.ok))
                           ],
                         ),
                       );
@@ -879,7 +878,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   if (mounted) {
                     String errorMsg = l10n.errorLabel;
                     if (bluetoothError.contains("Timeout")) {
-                      errorMsg = "Bluetooth operation timed out.";
+                      errorMsg = l10n.bluetoothTimedOut;
                     } else {
                       errorMsg = bluetoothError;
                     }
@@ -887,12 +886,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                     showDialog(
                       context: context,
                       builder: (dialogCtx) => AlertDialog(
-                        title: const Text("Error"),
+                        title: Text(l10n.errorLabel),
                         content: Text(errorMsg),
                         actions: [
                           TextButton(
                               onPressed: () => Navigator.of(dialogCtx).pop(),
-                              child: const Text("OK")),
+                              child: Text(l10n.ok)),
                           TextButton(
                             onPressed: () async {
                               Navigator.of(dialogCtx)
@@ -930,11 +929,11 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                                   Navigator.of(context)
                                       .pop(); // Close gateway loading
                                   scaffoldMessenger.showSnackBar(SnackBar(
-                                      content: Text("Gateway failed: $e")));
+                                      content: Text(l10n.errorWithMsg(e.toString()))));
                                 }
                               }
                             },
-                            child: const Text("Try Gateway"),
+                            child: Text(l10n.tryGateway),
                           )
                         ],
                       ),
