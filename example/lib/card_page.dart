@@ -201,6 +201,9 @@ class _CardPageState extends State<CardPage> {
       },
     );
 
+    final newCardName = nameController.text;
+    nameController.dispose();
+
     if (save == true) {
       if (!mounted) return;
       setState(() => _isLoading = true);
@@ -209,11 +212,11 @@ class _CardPageState extends State<CardPage> {
         bool needsRefresh = false;
 
         // Rename if name is different
-        if (nameController.text != (card['cardName'] ?? '')) {
+        if (newCardName != (card['cardName'] ?? '')) {
           await apiService.renameIdentityCard(
               lockId: widget.lockId,
               cardId: cardId,
-              cardName: nameController.text);
+              cardName: newCardName);
           needsRefresh = true;
         }
 

@@ -21,9 +21,24 @@ class _GatewayPageState extends State<GatewayPage> {
   String _gatewayName = "";
   bool _isLoading = false;
 
+  late final TextEditingController _gatewayNameController;
+  late final TextEditingController _wifiController;
+  late final TextEditingController _wifiPasswordController;
+
   @override
   void initState() {
     super.initState();
+    _gatewayNameController = TextEditingController(text: _gatewayName);
+    _wifiController = TextEditingController(text: widget.wifi ?? '');
+    _wifiPasswordController = TextEditingController(text: _wifiPassword ?? '');
+  }
+
+  @override
+  void dispose() {
+    _gatewayNameController.dispose();
+    _wifiController.dispose();
+    _wifiPasswordController.dispose();
+    super.dispose();
   }
 
   void _showSnackBar(String text, {bool isError = false}) {
@@ -225,7 +240,7 @@ class _GatewayPageState extends State<GatewayPage> {
   Widget getChild(AppLocalizations? l10n) {
     TextField nameTextField = TextField(
       textAlign: TextAlign.center,
-      controller: TextEditingController(text: _gatewayName),
+      controller: _gatewayNameController,
       decoration: InputDecoration(
           hintText: l10n?.gatewayNameHintAlt ?? 'Ağ Geçidi Adı (örn: Ev)'),
       onChanged: (String content) {
@@ -235,7 +250,7 @@ class _GatewayPageState extends State<GatewayPage> {
 
     TextField wifiTextField = TextField(
       textAlign: TextAlign.center,
-      controller: TextEditingController(text: widget.wifi),
+      controller: _wifiController,
       enabled: false,
       decoration: InputDecoration(
           labelText: l10n?.selectedWifiNetwork ?? 'Seçili Wi-Fi Ağı'),
@@ -243,7 +258,7 @@ class _GatewayPageState extends State<GatewayPage> {
 
     TextField wifiPasswordTextField = TextField(
         textAlign: TextAlign.center,
-        controller: TextEditingController(text: _wifiPassword),
+        controller: _wifiPasswordController,
         decoration: InputDecoration(
             hintText: l10n?.enterWifiPasswordHint ?? 'Wi-Fi Şifresini Girin'),
         obscureText: false,

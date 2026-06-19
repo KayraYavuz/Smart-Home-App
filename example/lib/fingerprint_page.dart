@@ -140,11 +140,12 @@ class _FingerprintPageState extends State<FingerprintPage> {
     );
   }
 
-  void _showRenameDialog(
-      BuildContext context, int lockId, int fingerprintId, String currentName) {
+  Future<void> _showRenameDialog(
+      BuildContext context, int lockId, int fingerprintId,
+      String currentName) async {
     final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController(text: currentName);
-    showDialog(
+    await showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.renameFingerprint),
@@ -171,6 +172,7 @@ class _FingerprintPageState extends State<FingerprintPage> {
         ],
       ),
     );
+    nameController.dispose();
   }
 
   Future<void> _showChangePeriodDialog(

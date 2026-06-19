@@ -145,11 +145,11 @@ class _FacePageState extends State<FacePage> {
     );
   }
 
-  void _showRenameDialog(
-      BuildContext context, int lockId, int faceId, String currentName) {
+  Future<void> _showRenameDialog(
+      BuildContext context, int lockId, int faceId, String currentName) async {
     final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController(text: currentName);
-    showDialog(
+    await showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.renameFace),
@@ -176,6 +176,7 @@ class _FacePageState extends State<FacePage> {
         ],
       ),
     );
+    nameController.dispose();
   }
 
   Future<void> _showChangePeriodDialog(

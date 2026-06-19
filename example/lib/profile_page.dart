@@ -461,6 +461,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
     );
+    controller.dispose();
 
     if (newName != null && newName.isNotEmpty) {
       final prefs = await SharedPreferences.getInstance();
