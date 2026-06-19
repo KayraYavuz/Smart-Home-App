@@ -391,8 +391,9 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     } catch (e) {
       if (mounted) navigator.pop();
       if (mounted) {
-        scaffoldMessenger.showSnackBar(
-            SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red));
+        scaffoldMessenger.showSnackBar(SnackBar(
+            content: Text(l10n.errorWithMsg(e.toString())),
+            backgroundColor: Colors.red));
       }
     }
   }

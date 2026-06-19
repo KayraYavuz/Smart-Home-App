@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_state.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class GatewayLocksPage extends StatefulWidget {
   final String gatewayId;
@@ -59,17 +60,18 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        title: Text('Locks for ${widget.gatewayName}'),
+        title: Text(l10n.locksForGateway(widget.gatewayName)),
       ),
-      body: _buildBody(),
+      body: _buildBody(l10n),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(AppLocalizations l10n) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -81,9 +83,9 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
     }
 
     if (_locks.isEmpty) {
-      return const Center(
-        child: Text('No locks found for this gateway.',
-            style: TextStyle(color: Colors.white)),
+      return Center(
+        child: Text(l10n.noLocksFound,
+            style: const TextStyle(color: Colors.white)),
       );
     }
 
@@ -93,7 +95,7 @@ class _GatewayLocksPageState extends State<GatewayLocksPage> {
         final lock = _locks[index];
         return ListTile(
           leading: const Icon(Icons.lock, color: Color(0xFF1E90FF)),
-          title: Text(lock['lockAlias'] ?? 'Unknown Lock',
+          title: Text(lock['lockAlias'] ?? l10n.unknownLock,
               style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,

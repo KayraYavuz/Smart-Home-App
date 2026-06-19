@@ -2935,4 +2935,21 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get iosNfcWarning =>
       'Apple cihazlar standart (Mifare Classic) IC kartlarını okumayı desteklemez. Kart telefonunuzda okunmuyorsa lütfen Bluetooth seçeneğini kullanın.';
+
+  @override
+  String locksForGateway(String name) {
+    return '$name Kilitleri';
+  }
+
+  @override
+  String get selectAtLeastOneDay => 'Lütfen en az bir gün seçin';
+
+  @override
+  String get onTheseDays => 'Bu günlerde';
+
+  @override
+  String get timeSettings => 'Zaman ayarları';
+
+  @override
+  String get allHours => 'Tüm saatler';
 }

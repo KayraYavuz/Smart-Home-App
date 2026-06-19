@@ -2923,4 +2923,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get iosNfcWarning =>
       'Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.';
+
+  @override
+  String locksForGateway(String name) {
+    return 'Locks for $name';
+  }
+
+  @override
+  String get selectAtLeastOneDay => 'Please select at least one day';
+
+  @override
+  String get onTheseDays => 'On these days';
+
+  @override
+  String get timeSettings => 'Time Settings';
+
+  @override
+  String get allHours => 'All Hours';
 }

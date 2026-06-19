@@ -1225,5 +1225,17 @@
   "registrationFailed": "Registration failed",
   "apiRegistrationUnexpectedResponse": "Registration failed: Unexpected response format",
   "apiResetPasswordFailed": "Password reset failed",
-  "iosNfcWarning": "Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth."
+  "iosNfcWarning": "Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.",
+  "locksForGateway": "Locks for {name}",
+  "@locksForGateway": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "selectAtLeastOneDay": "Please select at least one day",
+  "onTheseDays": "On these days",
+  "timeSettings": "Time Settings",
+  "allHours": "All Hours"
 }

@@ -5367,6 +5367,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Apple devices do not support standard (Mifare Classic) IC cards. If scanning fails, please try adding via Bluetooth.'**
   String get iosNfcWarning;
+
+  /// No description provided for @locksForGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Locks for {name}'**
+  String locksForGateway(String name);
+
+  /// No description provided for @selectAtLeastOneDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one day'**
+  String get selectAtLeastOneDay;
+
+  /// No description provided for @onTheseDays.
+  ///
+  /// In en, this message translates to:
+  /// **'On these days'**
+  String get onTheseDays;
+
+  /// No description provided for @timeSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Settings'**
+  String get timeSettings;
+
+  /// No description provided for @allHours.
+  ///
+  /// In en, this message translates to:
+  /// **'All Hours'**
+  String get allHours;
 }
 
 class _AppLocalizationsDelegate

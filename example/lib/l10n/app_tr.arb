@@ -967,6 +967,18 @@
   "apiRegistrationUnexpectedResponse": "Kayıt başarısız: Beklenmeyen yanıt formatı",
   "apiResetPasswordFailed": "Şifre sıfırlama başarısız",
   "iosNfcWarning": "Apple cihazlar standart (Mifare Classic) IC kartlarını okumayı desteklemez. Kart telefonunuzda okunmuyorsa lütfen Bluetooth seçeneğini kullanın.",
+  "locksForGateway": "{name} Kilitleri",
+  "@locksForGateway": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "selectAtLeastOneDay": "Lütfen en az bir gün seçin",
+  "onTheseDays": "Bu günlerde",
+  "timeSettings": "Zaman ayarları",
+  "allHours": "Tüm saatler",
   "@appTitle": {
     "description": "The title of the application"
   },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/ui/theme.dart';
 import 'time_period_model.dart';
 
@@ -106,8 +107,8 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
   void _save() {
     if (_selectedDays.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Lütfen en az bir gün seçin'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.selectAtLeastOneDay),
           backgroundColor: AppColors.error,
         ),
       );
@@ -141,9 +142,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Zaman dilimi',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.timePeriod,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -160,14 +161,14 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Day Selector Section
-                  _buildSectionTitle('Bu günlerde'),
+                  _buildSectionTitle(AppLocalizations.of(context)!.onTheseDays),
                   const SizedBox(height: 16),
                   _buildDaySelector(),
 
                   const SizedBox(height: 32),
 
                   // Time Settings Section
-                  _buildSectionTitle('Zaman ayarları'),
+                  _buildSectionTitle(AppLocalizations.of(context)!.timeSettings),
                   const SizedBox(height: 16),
 
                   // All Hours Option
@@ -177,7 +178,7 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
 
                   // Start Time
                   _buildTimeRow(
-                    title: 'Başlangıç saati',
+                    title: AppLocalizations.of(context)!.startTime,
                     time: _startTime,
                     onTap: _isAllHours ? null : _selectStartTime,
                     enabled: !_isAllHours,
@@ -187,7 +188,7 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
 
                   // End Time
                   _buildTimeRow(
-                    title: 'Bitiş zamanı',
+                    title: AppLocalizations.of(context)!.endTime,
                     time: _endTime,
                     onTap: _isAllHours ? null : _selectEndTime,
                     enabled: !_isAllHours,
@@ -294,9 +295,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
                       : null,
                 ),
                 const SizedBox(width: 14),
-                const Text(
-                  'Tüm saatler',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.allHours,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                   ),
@@ -398,9 +399,9 @@ class _TimePeriodPageState extends State<TimePeriodPage> {
               ),
               elevation: 0,
             ),
-            child: const Text(
-              'Tamam',
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context)!.ok,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),

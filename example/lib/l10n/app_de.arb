@@ -1201,5 +1201,17 @@
   "registrationFailed": "Registrierung fehlgeschlagen",
   "apiRegistrationUnexpectedResponse": "Registrierung fehlgeschlagen: Unerwartetes Antwortformat",
   "apiResetPasswordFailed": "Passwort-Zurücksetzen fehlgeschlagen",
-  "iosNfcWarning": "Apple-Geräte unterstützen keine Standard-IC-Karten (Mifare Classic). Wenn das Scannen fehlschlägt, versuchen Sie bitte, über Bluetooth hinzuzufügen."
+  "iosNfcWarning": "Apple-Geräte unterstützen keine Standard-IC-Karten (Mifare Classic). Wenn das Scannen fehlschlägt, versuchen Sie bitte, über Bluetooth hinzuzufügen.",
+  "locksForGateway": "Schlösser für {name}",
+  "@locksForGateway": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "selectAtLeastOneDay": "Bitte wählen Sie mindestens einen Tag aus",
+  "onTheseDays": "An diesen Tagen",
+  "timeSettings": "Zeiteinstellungen",
+  "allHours": "Alle Stunden"
 }

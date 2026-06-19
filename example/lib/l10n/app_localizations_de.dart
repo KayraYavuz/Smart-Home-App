@@ -2961,4 +2961,21 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get iosNfcWarning =>
       'Apple-Geräte unterstützen keine Standard-IC-Karten (Mifare Classic). Wenn das Scannen fehlschlägt, versuchen Sie bitte, über Bluetooth hinzuzufügen.';
+
+  @override
+  String locksForGateway(String name) {
+    return 'Schlösser für $name';
+  }
+
+  @override
+  String get selectAtLeastOneDay => 'Bitte wählen Sie mindestens einen Tag aus';
+
+  @override
+  String get onTheseDays => 'An diesen Tagen';
+
+  @override
+  String get timeSettings => 'Zeiteinstellungen';
+
+  @override
+  String get allHours => 'Alle Stunden';
 }
