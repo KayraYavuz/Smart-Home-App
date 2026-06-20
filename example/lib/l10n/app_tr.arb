@@ -1239,5 +1239,20 @@
   "noDaySelected": "Gün seçilmedi",
   "weekdays": "Hafta içi",
   "comingSoon": "Yakında",
-  "groupIdLabel": "Grup ID"
+  "groupIdLabel": "Grup ID",
+  "lockDirectionTitle": "Kilit Yönü",
+  "lockDirectionLeft": "Sol taraflı",
+  "lockDirectionRight": "Sağ taraflı",
+  "advancedSettings": "Gelişmiş Ayarlar",
+  "passcodeVisibleTitle": "Şifre Görünürlüğü",
+  "passcodeVisibleSubtitle": "Tuş takımında şifreyi göster veya gizle",
+  "tamperAlertTitle": "Kurcalama Uyarısı",
+  "tamperAlertSubtitle": "Kilit kurcalandığında uyarı ver",
+  "privacyLockTitle": "Mahremiyet Kilidi",
+  "privacyLockSubtitle": "Mahremiyet modunda dışarıdan kilidi engelle",
+  "doubleAuthTitle": "Çift Kimlik Doğrulama",
+  "doubleAuthSubtitle": "Açmak için iki yöntem gerektirir",
+  "configUpdated": "Ayar güncellendi",
+  "lockDirectionUpdated": "Kilit yönü güncellendi",
+  "currentLabel": "Mevcut"
 }

@@ -1239,5 +1239,20 @@
   "noDaySelected": "Kein Tag ausgewählt",
   "weekdays": "Wochentage",
   "comingSoon": "Demnächst",
-  "groupIdLabel": "Gruppen-ID"
+  "groupIdLabel": "Gruppen-ID",
+  "lockDirectionTitle": "Schlossrichtung",
+  "lockDirectionLeft": "Linkshändig",
+  "lockDirectionRight": "Rechtshändig",
+  "advancedSettings": "Erweiterte Einstellungen",
+  "passcodeVisibleTitle": "Passcode sichtbar",
+  "passcodeVisibleSubtitle": "Passcode auf Tastatur ein- oder ausblenden",
+  "tamperAlertTitle": "Sabotagealarm",
+  "tamperAlertSubtitle": "Alarm bei Sabotageerkennung",
+  "privacyLockTitle": "Datenschutzsperre",
+  "privacyLockSubtitle": "Von außen blockieren im Datenschutzmodus",
+  "doubleAuthTitle": "Doppelte Authentifizierung",
+  "doubleAuthSubtitle": "Zwei Entsperrmethoden erforderlich",
+  "configUpdated": "Einstellung aktualisiert",
+  "lockDirectionUpdated": "Schlossrichtung aktualisiert",
+  "currentLabel": "Aktuell"
 }

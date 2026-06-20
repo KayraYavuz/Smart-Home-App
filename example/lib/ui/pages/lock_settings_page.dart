@@ -30,6 +30,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
   String? _groupName;
   int _autoLockSeconds = 0;
   String _lockData = '';
+  TTLockDirection? _lockDirection;
 
   @override
   void initState() {
@@ -131,6 +132,16 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                       : l10n.passiveLabel,
                   onTap: _openPassageModePage,
                 ),
+                _buildSettingTile(
+                  icon: Icons.swap_horiz,
+                  title: l10n.lockDirectionTitle,
+                  subtitle: _lockDirection == null
+                      ? l10n.unknown
+                      : _lockDirection == TTLockDirection.left
+                          ? l10n.lockDirectionLeft
+                          : l10n.lockDirectionRight,
+                  onTap: _showLockDirectionDialog,
+                ),
                 // Working Hours removed as per request (not supported/redundant)
 
                 const SizedBox(height: 24),
@@ -158,6 +169,33 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   title: l10n.firmwareTitle,
                   subtitle: l10n.firmwareSubtitle,
                   onTap: _checkFirmware,
+                ),
+
+                const SizedBox(height: 24),
+                _buildSectionHeader(l10n.advancedSettings),
+                _buildSettingTile(
+                  icon: Icons.dialpad,
+                  title: l10n.passcodeVisibleTitle,
+                  subtitle: l10n.passcodeVisibleSubtitle,
+                  onTap: () => _showConfigToggle(TTLockConfig.passcodeVisible, l10n.passcodeVisibleTitle),
+                ),
+                _buildSettingTile(
+                  icon: Icons.warning_amber,
+                  title: l10n.tamperAlertTitle,
+                  subtitle: l10n.tamperAlertSubtitle,
+                  onTap: () => _showConfigToggle(TTLockConfig.tamperAlert, l10n.tamperAlertTitle),
+                ),
+                _buildSettingTile(
+                  icon: Icons.privacy_tip,
+                  title: l10n.privacyLockTitle,
+                  subtitle: l10n.privacyLockSubtitle,
+                  onTap: () => _showConfigToggle(TTLockConfig.privacyLock, l10n.privacyLockTitle),
+                ),
+                _buildSettingTile(
+                  icon: Icons.verified_user,
+                  title: l10n.doubleAuthTitle,
+                  subtitle: l10n.doubleAuthSubtitle,
+                  onTap: () => _showConfigToggle(TTLockConfig.doubleAuth, l10n.doubleAuthTitle),
                 ),
 
                 const SizedBox(height: 24),
@@ -539,6 +577,114 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     if (ok == true && mounted) {
       scaffoldMessenger
           .showSnackBar(SnackBar(content: Text(l10n.timeCalibrated)));
+    }
+  }
+
+  Future<void> _showLockDirectionDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    final current = await _runBleOp<TTLockDirection>((c) {
+      TTLock.getLockDirection(
+        _lockData,
+        (dir) { if (!c.isCompleted) c.complete(dir); },
+        (code, msg) { if (!c.isCompleted) c.completeError('$msg ($code)'); },
+      );
+    });
+    if (current == null || !mounted) return;
+    setState(() => _lockDirection = current);
+
+    final currentLabel = current == TTLockDirection.left
+        ? l10n.lockDirectionLeft
+        : l10n.lockDirectionRight;
+
+    final picked = await showDialog<TTLockDirection>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.lockDirectionTitle),
+        content: Text('${l10n.currentLabel}: $currentLabel'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(TTLockDirection.left),
+            child: Text(l10n.lockDirectionLeft),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(TTLockDirection.right),
+            child: Text(l10n.lockDirectionRight),
+          ),
+        ],
+      ),
+    );
+    if (picked == null || !mounted) return;
+
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.setLockDirection(
+        picked,
+        _lockData,
+        () { if (!c.isCompleted) c.complete(true); },
+        (code, msg) { if (!c.isCompleted) c.completeError('$msg ($code)'); },
+      );
+    });
+    if (ok == true && mounted) {
+      setState(() => _lockDirection = picked);
+      scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text(l10n.lockDirectionUpdated)));
+    }
+  }
+
+  Future<void> _showConfigToggle(TTLockConfig config, String title) async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    final current = await _runBleOp<bool>((c) {
+      TTLock.getLockConfig(
+        config,
+        _lockData,
+        (isOn) { if (!c.isCompleted) c.complete(isOn); },
+        (code, msg) { if (!c.isCompleted) c.completeError('$msg ($code)'); },
+      );
+    });
+    if (current == null || !mounted) return;
+
+    final on = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text('${l10n.currentLabel}: ${current ? l10n.on : l10n.off}'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.off),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.on),
+          ),
+        ],
+      ),
+    );
+    if (on == null || !mounted) return;
+
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.setLockConfig(
+        config,
+        on,
+        _lockData,
+        () { if (!c.isCompleted) c.complete(true); },
+        (code, msg) { if (!c.isCompleted) c.completeError('$msg ($code)'); },
+      );
+    });
+    if (ok == true && mounted) {
+      scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text(l10n.configUpdated)));
     }
   }
 

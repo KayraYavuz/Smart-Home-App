@@ -1263,5 +1263,20 @@
   "noDaySelected": "No day selected",
   "weekdays": "Weekdays",
   "comingSoon": "Coming soon",
-  "groupIdLabel": "Group ID"
+  "groupIdLabel": "Group ID",
+  "lockDirectionTitle": "Lock Direction",
+  "lockDirectionLeft": "Left-handed",
+  "lockDirectionRight": "Right-handed",
+  "advancedSettings": "Advanced Settings",
+  "passcodeVisibleTitle": "Passcode Visible",
+  "passcodeVisibleSubtitle": "Show or hide passcode on keypad display",
+  "tamperAlertTitle": "Tamper Alert",
+  "tamperAlertSubtitle": "Alert when lock detects tampering",
+  "privacyLockTitle": "Privacy Lock",
+  "privacyLockSubtitle": "Block outside unlocking in privacy mode",
+  "doubleAuthTitle": "Double Authentication",
+  "doubleAuthSubtitle": "Require two unlock methods to open",
+  "configUpdated": "Setting updated",
+  "lockDirectionUpdated": "Lock direction updated",
+  "currentLabel": "Current"
 }
