@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/blocs/passcode/passcode_cubit.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/repositories/ttlock_repository.dart';
 import 'package:yavuz_lock/create_passcode_page.dart';
 import 'package:yavuz_lock/services/passcode_model.dart';
@@ -19,6 +21,44 @@ class PasscodePage extends StatelessWidget {
     required this.accessToken,
     required this.lock, // Added lock object
   });
+
+  Future<void> _changePeriod(
+      BuildContext context, Passcode passcode, AppLocalizations l10n) async {
+    final now = DateTime.now();
+    final start = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 5),
+    );
+    if (start == null || !context.mounted) return;
+    final end = await showDatePicker(
+      context: context,
+      initialDate: DateTime(now.year + 1, now.month, now.day),
+      firstDate: start,
+      lastDate: DateTime(now.year + 10),
+    );
+    if (end == null || !context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final api = ApiService(context.read<AuthRepository>());
+      await api.modifyPasscodeViaGateway(
+        lockId: lockId.toString(),
+        keyboardPwdId: passcode.keyboardPwdId,
+        startDate: start.millisecondsSinceEpoch,
+        endDate: end.millisecondsSinceEpoch,
+      );
+      if (!context.mounted) return;
+      context
+          .read<PasscodeCubit>()
+          .fetchPasscodes(lockId, clientId, accessToken);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.saveSuccess)));
+    } catch (e) {
+      messenger.showSnackBar(
+          SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
 
   /// Shows a confirmation dialog and, if confirmed, deletes the passcode via
   /// the [PasscodeCubit]. The cubit refreshes the list automatically on success.
@@ -116,11 +156,28 @@ class PasscodePage extends StatelessWidget {
                     subtitle: Text(
                         '${passcode.keyboardPwdName} | ${l10n.typePrefix}: ${_getPasscodeType(passcode.keyboardPwdType, l10n)}',
                         style: TextStyle(color: Colors.grey[400])),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline,
-                          color: Colors.redAccent),
-                      onPressed: () =>
-                          _confirmDelete(context, passcode, l10n),
+                    trailing: PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert, color: Colors.white70),
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'period':
+                            _changePeriod(context, passcode, l10n);
+                            break;
+                          case 'delete':
+                            _confirmDelete(context, passcode, l10n);
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                            value: 'period',
+                            child: Text(l10n.changePeriod)),
+                        PopupMenuItem(
+                            value: 'delete',
+                            child: Text(l10n.delete,
+                                style:
+                                    const TextStyle(color: Colors.redAccent))),
+                      ],
                     ),
                   );
                 },

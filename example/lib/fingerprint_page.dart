@@ -83,38 +83,37 @@ class _FingerprintPageState extends State<FingerprintPage> {
                 return ListTile(
                   title: Text(fingerprint['fingerprintName'] ?? l10n.unnamed),
                   subtitle: Text(fingerprint['fingerprintNumber']),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      context.read<FingerprintBloc>().add(DeleteFingerprint(
-                          widget.lockId, fingerprint['fingerprintId']));
+                  trailing: PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'rename':
+                          _showRenameDialog(
+                              context,
+                              widget.lockId,
+                              fingerprint['fingerprintId'],
+                              fingerprint['fingerprintName'] ?? '');
+                          break;
+                        case 'period':
+                          _showChangePeriodDialog(
+                              context, widget.lockId, fingerprint['fingerprintId']);
+                          break;
+                        case 'delete':
+                          context.read<FingerprintBloc>().add(DeleteFingerprint(
+                              widget.lockId, fingerprint['fingerprintId']));
+                          break;
+                      }
                     },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(value: 'rename', child: Text(l10n.rename)),
+                      PopupMenuItem(
+                          value: 'period', child: Text(l10n.changePeriod)),
+                      PopupMenuItem(
+                          value: 'delete',
+                          child: Text(l10n.delete,
+                              style: const TextStyle(color: Colors.redAccent))),
+                    ],
                   ),
-                  onLongPress: () {
-                    showMenu(
-                      context: context,
-                      position: const RelativeRect.fromLTRB(100, 400, 100, 100),
-                      items: [
-                        PopupMenuItem(
-                          child: Text(l10n.rename),
-                          onTap: () {
-                            _showRenameDialog(
-                                context,
-                                widget.lockId,
-                                fingerprint['fingerprintId'],
-                                fingerprint['fingerprintName']);
-                          },
-                        ),
-                        PopupMenuItem(
-                          child: Text(l10n.changePeriod),
-                          onTap: () {
-                            _showChangePeriodDialog(context, widget.lockId,
-                                fingerprint['fingerprintId']);
-                          },
-                        ),
-                      ],
-                    );
-                  },
                 );
               },
             );

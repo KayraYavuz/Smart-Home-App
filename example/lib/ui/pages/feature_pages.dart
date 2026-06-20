@@ -42,6 +42,8 @@ class _RemoteListPageState extends State<RemoteListPage> {
   List<dynamic> _remotes = [];
   bool _isLoading = true;
 
+  ApiService get _api => ApiService(context.read<AuthRepository>());
+
   @override
   void initState() {
     super.initState();
@@ -51,9 +53,9 @@ class _RemoteListPageState extends State<RemoteListPage> {
   Future<void> _loadRemotes() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context)!;
+    if (mounted) setState(() => _isLoading = true);
     try {
-      final api = ApiService(context.read<AuthRepository>());
-      final result = await api.getRemoteList(lockId: widget.lockId);
+      final result = await _api.getRemoteList(lockId: widget.lockId);
       if (!mounted) return;
       setState(() {
         _remotes = result['list'] ?? [];
@@ -68,61 +70,189 @@ class _RemoteListPageState extends State<RemoteListPage> {
     }
   }
 
+  Future<void> _rename(Map remote) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: remote['remoteName'] ?? '');
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.rename),
+        content: TextField(
+            controller: controller,
+            decoration: InputDecoration(labelText: l10n.newName)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(controller.text.trim()),
+              child: Text(l10n.save)),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (newName == null || newName.isEmpty || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await _api.updateRemote(remoteId: remote['remoteId'], name: newName);
+      await _loadRemotes();
+    } catch (e) {
+      if (!mounted) return;
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _changePeriod(Map remote) async {
+    final now = DateTime.now();
+    final start = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 5),
+    );
+    if (start == null || !mounted) return;
+    final end = await showDatePicker(
+      context: context,
+      initialDate: DateTime(now.year + 1, now.month, now.day),
+      firstDate: start,
+      lastDate: DateTime(now.year + 10),
+    );
+    if (end == null || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await _api.updateRemote(
+        remoteId: remote['remoteId'],
+        startDate: start.millisecondsSinceEpoch,
+        endDate: end.millisecondsSinceEpoch,
+      );
+      await _loadRemotes();
+    } catch (e) {
+      if (!mounted) return;
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _delete(Map remote) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await _api.deleteRemote(remoteId: remote['remoteId']);
+      await _loadRemotes();
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+          SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _clearAll() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.clearAll),
+        content: Text(l10n.confirmClearAll),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.clearAll,
+                  style: const TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await _api.clearRemotes(lockId: widget.lockId);
+      await _loadRemotes();
+    } catch (e) {
+      if (!mounted) return;
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FeatureBasePage(
-      title: AppLocalizations.of(context)!.remoteControls,
+      title: l10n.remoteControls,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _remotes.length,
-              itemBuilder: (context, index) {
-                final remote = _remotes[index];
-                return Card(
-                  color: const Color(0xFF1E1E1E),
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    title: Text(
-                        remote['remoteName'] ??
-                            AppLocalizations.of(context)!.remoteControl,
-                        style: const TextStyle(color: Colors.white)),
-                    subtitle: Text('ID: ${remote['remoteId']}',
-                        style: const TextStyle(color: Colors.grey)),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        final scaffoldMessenger = ScaffoldMessenger.of(context);
-                        final l10n = AppLocalizations.of(context)!;
-                        // Implement delete
-                        try {
-                          final api =
-                              ApiService(context.read<AuthRepository>());
-                          await api.deleteRemote(remoteId: remote['remoteId']);
-                          _loadRemotes();
-                        } catch (e) {
-                          if (mounted) {
-                            scaffoldMessenger.showSnackBar(SnackBar(
-                                content: Text(
-                                    l10n.deleteErrorWithMsg(e.toString()))));
-                          }
-                        }
-                      },
-                    ),
+          : _remotes.isEmpty
+              ? Center(
+                  child: Text(l10n.noData,
+                      style: const TextStyle(color: Colors.white70)))
+              : RefreshIndicator(
+                  onRefresh: _loadRemotes,
+                  child: ListView.builder(
+                    itemCount: _remotes.length,
+                    itemBuilder: (context, index) {
+                      final remote = _remotes[index] as Map;
+                      return Card(
+                        color: const Color(0xFF1E1E1E),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: ListTile(
+                          leading: const Icon(Icons.settings_remote,
+                              color: Color(0xFF1E90FF)),
+                          title: Text(
+                              remote['remoteName'] ?? l10n.remoteControl,
+                              style: const TextStyle(color: Colors.white)),
+                          subtitle: Text('ID: ${remote['remoteId']}',
+                              style: const TextStyle(color: Colors.grey)),
+                          trailing: PopupMenuButton<String>(
+                            icon: const Icon(Icons.more_vert,
+                                color: Colors.white70),
+                            onSelected: (value) {
+                              switch (value) {
+                                case 'rename':
+                                  _rename(remote);
+                                  break;
+                                case 'period':
+                                  _changePeriod(remote);
+                                  break;
+                                case 'delete':
+                                  _delete(remote);
+                                  break;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                  value: 'rename', child: Text(l10n.rename)),
+                              PopupMenuItem(
+                                  value: 'period',
+                                  child: Text(l10n.changePeriod)),
+                              PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text(l10n.delete,
+                                      style: const TextStyle(
+                                          color: Colors.redAccent))),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
+                ),
       actions: [
         IconButton(
+          icon: const Icon(Icons.delete_sweep),
+          tooltip: l10n.clearAll,
+          onPressed: _remotes.isEmpty ? null : _clearAll,
+        ),
+        IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () {
-            // Add logic would go here (usually needs bluetooth interaction first)
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    AppLocalizations.of(context)!.bluetoothAddInstructions)));
-          },
-        )
+          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.bluetoothAddInstructions))),
+        ),
       ],
     );
   }
@@ -141,6 +271,8 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
   List<dynamic> _keypads = [];
   bool _isLoading = true;
 
+  ApiService get _api => ApiService(context.read<AuthRepository>());
+
   @override
   void initState() {
     super.initState();
@@ -150,9 +282,9 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
   Future<void> _loadKeypads() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context)!;
+    if (mounted) setState(() => _isLoading = true);
     try {
-      final api = ApiService(context.read<AuthRepository>());
-      final result = await api.getWirelessKeypadList(lockId: widget.lockId);
+      final result = await _api.getWirelessKeypadList(lockId: widget.lockId);
       if (!mounted) return;
       setState(() {
         _keypads = result['list'] ?? [];
@@ -167,59 +299,121 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
     }
   }
 
+  Future<void> _rename(Map keypad) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller =
+        TextEditingController(text: keypad['wirelessKeypadName'] ?? '');
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.rename),
+        content: TextField(
+            controller: controller,
+            decoration: InputDecoration(labelText: l10n.newName)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(controller.text.trim()),
+              child: Text(l10n.save)),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (newName == null || newName.isEmpty || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await _api.renameWirelessKeypad(
+        wirelessKeypadId: keypad['wirelessKeypadId'],
+        wirelessKeypadName: newName,
+      );
+      await _loadKeypads();
+    } catch (e) {
+      if (!mounted) return;
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _delete(Map keypad) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await _api.deleteWirelessKeypad(
+          wirelessKeypadId: keypad['wirelessKeypadId']);
+      await _loadKeypads();
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+          SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FeatureBasePage(
-      title: AppLocalizations.of(context)!.wirelessKeypads,
+      title: l10n.wirelessKeypads,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _keypads.length,
-              itemBuilder: (context, index) {
-                final keypad = _keypads[index];
-                return Card(
-                  color: const Color(0xFF1E1E1E),
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    title: Text(
-                        keypad['wirelessKeypadName'] ??
-                            AppLocalizations.of(context)!.wirelessKeypad,
-                        style: const TextStyle(color: Colors.white)),
-                    subtitle: Text('MAC: ${keypad['wirelessKeypadMac']}',
-                        style: const TextStyle(color: Colors.grey)),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        final scaffoldMessenger = ScaffoldMessenger.of(context);
-                        final l10n = AppLocalizations.of(context)!;
-                        try {
-                          final api =
-                              ApiService(context.read<AuthRepository>());
-                          await api.deleteWirelessKeypad(
-                              wirelessKeypadId: keypad['wirelessKeypadId']);
-                          _loadKeypads();
-                        } catch (e) {
-                          if (!mounted) return;
-                          scaffoldMessenger.showSnackBar(SnackBar(
-                              content:
-                                  Text(l10n.deleteErrorWithMsg(e.toString()))));
-                        }
-                      },
-                    ),
+          : _keypads.isEmpty
+              ? Center(
+                  child: Text(l10n.noData,
+                      style: const TextStyle(color: Colors.white70)))
+              : RefreshIndicator(
+                  onRefresh: _loadKeypads,
+                  child: ListView.builder(
+                    itemCount: _keypads.length,
+                    itemBuilder: (context, index) {
+                      final keypad = _keypads[index] as Map;
+                      return Card(
+                        color: const Color(0xFF1E1E1E),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: ListTile(
+                          leading: const Icon(Icons.dialpad,
+                              color: Color(0xFF1E90FF)),
+                          title: Text(
+                              keypad['wirelessKeypadName'] ?? l10n.wirelessKeypad,
+                              style: const TextStyle(color: Colors.white)),
+                          subtitle: Text('MAC: ${keypad['wirelessKeypadMac']}',
+                              style: const TextStyle(color: Colors.grey)),
+                          trailing: PopupMenuButton<String>(
+                            icon: const Icon(Icons.more_vert,
+                                color: Colors.white70),
+                            onSelected: (value) {
+                              switch (value) {
+                                case 'rename':
+                                  _rename(keypad);
+                                  break;
+                                case 'delete':
+                                  _delete(keypad);
+                                  break;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                  value: 'rename', child: Text(l10n.rename)),
+                              PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text(l10n.delete,
+                                      style: const TextStyle(
+                                          color: Colors.redAccent))),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
+                ),
       actions: [
         IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    AppLocalizations.of(context)!.bluetoothAddInstructions)));
-          },
-        )
+          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.bluetoothAddInstructions))),
+        ),
       ],
     );
   }
@@ -238,6 +432,8 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
   Map<String, dynamic>? _sensor;
   bool _isLoading = true;
 
+  ApiService get _api => ApiService(context.read<AuthRepository>());
+
   @override
   void initState() {
     super.initState();
@@ -245,32 +441,79 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
   }
 
   Future<void> _loadSensor() async {
+    if (mounted) setState(() => _isLoading = true);
     try {
-      final api = ApiService(context.read<AuthRepository>());
-      final result = await api.queryDoorSensor(lockId: widget.lockId);
+      final result = await _api.queryDoorSensor(lockId: widget.lockId);
       if (!mounted) return;
       setState(() {
-        _sensor =
-            result; // Assuming result is the sensor object or null if not found (needs proper handling based on API)
+        _sensor = result;
         _isLoading = false;
       });
     } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        // API might throw if no sensor, handle gracefully
-      }
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _rename(Map sensor) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller =
+        TextEditingController(text: sensor['doorSensorName'] ?? '');
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.rename),
+        content: TextField(
+            controller: controller,
+            decoration: InputDecoration(labelText: l10n.newName)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(controller.text.trim()),
+              child: Text(l10n.save)),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (newName == null || newName.isEmpty || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await _api.renameDoorSensor(
+          doorSensorId: sensor['doorSensorId'], name: newName);
+      await _loadSensor();
+    } catch (e) {
+      if (!mounted) return;
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _delete(Map sensor) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await _api.deleteDoorSensor(doorSensorId: sensor['doorSensorId']);
+      if (!mounted) return;
+      setState(() => _sensor = null);
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+          SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FeatureBasePage(
-      title: AppLocalizations.of(context)!.doorSensor,
+      title: l10n.doorSensor,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _sensor == null
               ? Center(
-                  child: Text(AppLocalizations.of(context)!.sensorNotFound,
+                  child: Text(l10n.sensorNotFound,
                       style: const TextStyle(color: Colors.grey)))
               : ListView(
                   children: [
@@ -279,36 +522,39 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
                       margin: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
                       child: ListTile(
-                        title: Text(AppLocalizations.of(context)!.doorSensor,
+                        leading: const Icon(Icons.sensors,
+                            color: Color(0xFF1E90FF)),
+                        title: Text(
+                            _sensor!['doorSensorName'] ?? l10n.doorSensor,
                             style: const TextStyle(color: Colors.white)),
                         subtitle: Text(
                             'MAC: ${_sensor!['doorSensorMac'] ?? 'N/A'}',
                             style: const TextStyle(color: Colors.grey)),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () async {
-                            final scaffoldMessenger =
-                                ScaffoldMessenger.of(context);
-                            final l10n = AppLocalizations.of(context)!;
-                            try {
-                              final api =
-                                  ApiService(context.read<AuthRepository>());
-                              await api.deleteDoorSensor(
-                                  doorSensorId: _sensor!['doorSensorId']);
-                              if (!mounted) return;
-                              setState(() {
-                                _sensor = null;
-                              });
-                            } catch (e) {
-                              if (!mounted) return;
-                              scaffoldMessenger.showSnackBar(SnackBar(
-                                  content: Text(
-                                      l10n.deleteErrorWithMsg(e.toString()))));
+                        trailing: PopupMenuButton<String>(
+                          icon: const Icon(Icons.more_vert,
+                              color: Colors.white70),
+                          onSelected: (value) {
+                            switch (value) {
+                              case 'rename':
+                                _rename(_sensor!);
+                                break;
+                              case 'delete':
+                                _delete(_sensor!);
+                                break;
                             }
                           },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                                value: 'rename', child: Text(l10n.rename)),
+                            PopupMenuItem(
+                                value: 'delete',
+                                child: Text(l10n.delete,
+                                    style: const TextStyle(
+                                        color: Colors.redAccent))),
+                          ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
     );
@@ -328,6 +574,8 @@ class _QrCodePageState extends State<QrCodePage> {
   List<dynamic> _qrCodes = [];
   bool _isLoading = true;
 
+  ApiService get _api => ApiService(context.read<AuthRepository>());
+
   @override
   void initState() {
     super.initState();
@@ -337,9 +585,9 @@ class _QrCodePageState extends State<QrCodePage> {
   Future<void> _loadQrCodes() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context)!;
+    if (mounted) setState(() => _isLoading = true);
     try {
-      final api = ApiService(context.read<AuthRepository>());
-      final result = await api.getQrCodeList(lockId: widget.lockId);
+      final result = await _api.getQrCodeList(lockId: widget.lockId);
       if (!mounted) return;
       setState(() {
         _qrCodes = result['list'] ?? [];
@@ -354,12 +602,11 @@ class _QrCodePageState extends State<QrCodePage> {
     }
   }
 
-  void _addQrCode() async {
+  Future<void> _addQrCode() async {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context)!;
     try {
-      final api = ApiService(context.read<AuthRepository>());
-      await api.addQrCode(
+      await _api.addQrCode(
         lockId: widget.lockId,
         type: 1,
         name: l10n.newQrWithName("${DateTime.now().minute}"),
@@ -367,7 +614,7 @@ class _QrCodePageState extends State<QrCodePage> {
         endDate:
             DateTime.now().add(const Duration(days: 1)).millisecondsSinceEpoch,
       );
-      _loadQrCodes();
+      await _loadQrCodes();
       if (!mounted) return;
       scaffoldMessenger
           .showSnackBar(SnackBar(content: Text(l10n.qrCodeCreated)));
@@ -378,81 +625,219 @@ class _QrCodePageState extends State<QrCodePage> {
     }
   }
 
+  Future<void> _rename(Map qr) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: qr['name'] ?? '');
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.rename),
+        content: TextField(
+            controller: controller,
+            decoration: InputDecoration(labelText: l10n.newName)),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(controller.text.trim()),
+              child: Text(l10n.save)),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (newName == null || newName.isEmpty || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await _api.updateQrCode(
+        qrCodeId: qr['qrCodeId'],
+        type: qr['type'] ?? 1,
+        changeType: 0,
+        name: newName,
+      );
+      await _loadQrCodes();
+    } catch (e) {
+      if (!mounted) return;
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _changePeriod(Map qr) async {
+    final now = DateTime.now();
+    final start = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 5),
+    );
+    if (start == null || !mounted) return;
+    final end = await showDatePicker(
+      context: context,
+      initialDate: DateTime(now.year + 1, now.month, now.day),
+      firstDate: start,
+      lastDate: DateTime(now.year + 10),
+    );
+    if (end == null || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await _api.updateQrCode(
+        qrCodeId: qr['qrCodeId'],
+        type: qr['type'] ?? 3,
+        changeType: 0,
+        startDate: start.millisecondsSinceEpoch,
+        endDate: end.millisecondsSinceEpoch,
+      );
+      await _loadQrCodes();
+    } catch (e) {
+      if (!mounted) return;
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _delete(Map qr) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await _api.deleteQrCode(
+          lockId: widget.lockId, qrCodeId: qr['qrCodeId']);
+      await _loadQrCodes();
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+          SnackBar(content: Text(l10n.deleteErrorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _clearAll() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.clearAll),
+        content: Text(l10n.confirmClearAll),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.cancel)),
+          TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.clearAll,
+                  style: const TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await _api.clearQrCodes(lockId: widget.lockId);
+      await _loadQrCodes();
+    } catch (e) {
+      if (!mounted) return;
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _showContent(Map qr) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final data = await _api.getQrCodeData(qrCodeId: qr['qrCodeId']);
+      if (!mounted) return;
+      showDialog(
+          context: context,
+          builder: (c) => AlertDialog(
+                title: Text(l10n.qrContent),
+                content: Text(data['qrCodeContent'] ?? l10n.empty),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(c), child: Text(l10n.ok))
+                ],
+              ));
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text('${l10n.errorLabel}: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FeatureBasePage(
-      title: AppLocalizations.of(context)!.qrCodes,
+      title: l10n.qrCodes,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _qrCodes.length,
-              itemBuilder: (context, index) {
-                final qr = _qrCodes[index];
-                return Card(
-                  color: const Color(0xFF1E1E1E),
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    title: Text(
-                        qr['name'] ?? AppLocalizations.of(context)!.qrCode,
-                        style: const TextStyle(color: Colors.white)),
-                    subtitle: Text('ID: ${qr['qrCodeId']}',
-                        style: const TextStyle(color: Colors.grey)),
-                    onTap: () async {
-                      final scaffoldMessenger = ScaffoldMessenger.of(context);
-                      final l10n = AppLocalizations.of(context)!;
-                      // Show QR content
-                      try {
-                        final api = ApiService(context.read<AuthRepository>());
-                        final data =
-                            await api.getQrCodeData(qrCodeId: qr['qrCodeId']);
-                        if (!context.mounted) return;
-                        showDialog(
-                            context: context,
-                            builder: (c) => AlertDialog(
-                                  title: Text(l10n.qrContent),
-                                  content:
-                                      Text(data['qrCodeContent'] ?? l10n.empty),
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () => Navigator.pop(c),
-                                        child: Text(l10n.ok))
-                                  ],
-                                ));
-                      } catch (e) {
-                        if (!context.mounted) return;
-                        scaffoldMessenger.showSnackBar(
-                            SnackBar(content: Text('${l10n.errorLabel}: $e')));
-                      }
+          : _qrCodes.isEmpty
+              ? Center(
+                  child: Text(l10n.noData,
+                      style: const TextStyle(color: Colors.white70)))
+              : RefreshIndicator(
+                  onRefresh: _loadQrCodes,
+                  child: ListView.builder(
+                    itemCount: _qrCodes.length,
+                    itemBuilder: (context, index) {
+                      final qr = _qrCodes[index] as Map;
+                      return Card(
+                        color: const Color(0xFF1E1E1E),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: ListTile(
+                          leading: const Icon(Icons.qr_code,
+                              color: Color(0xFF1E90FF)),
+                          title: Text(qr['name'] ?? l10n.qrCode,
+                              style: const TextStyle(color: Colors.white)),
+                          subtitle: Text('ID: ${qr['qrCodeId']}',
+                              style: const TextStyle(color: Colors.grey)),
+                          onTap: () => _showContent(qr),
+                          trailing: PopupMenuButton<String>(
+                            icon: const Icon(Icons.more_vert,
+                                color: Colors.white70),
+                            onSelected: (value) {
+                              switch (value) {
+                                case 'rename':
+                                  _rename(qr);
+                                  break;
+                                case 'period':
+                                  _changePeriod(qr);
+                                  break;
+                                case 'delete':
+                                  _delete(qr);
+                                  break;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                  value: 'rename', child: Text(l10n.rename)),
+                              PopupMenuItem(
+                                  value: 'period',
+                                  child: Text(l10n.changePeriod)),
+                              PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text(l10n.delete,
+                                      style: const TextStyle(
+                                          color: Colors.redAccent))),
+                            ],
+                          ),
+                        ),
+                      );
                     },
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        final scaffoldMessenger = ScaffoldMessenger.of(context);
-                        final l10n = AppLocalizations.of(context)!;
-                        try {
-                          final api =
-                              ApiService(context.read<AuthRepository>());
-                          await api.deleteQrCode(
-                              lockId: widget.lockId, qrCodeId: qr['qrCodeId']);
-                          _loadQrCodes();
-                        } catch (e) {
-                          if (!mounted) return;
-                          scaffoldMessenger.showSnackBar(SnackBar(
-                              content:
-                                  Text(l10n.deleteErrorWithMsg(e.toString()))));
-                        }
-                      },
-                    ),
                   ),
-                );
-              },
-            ),
+                ),
       actions: [
+        IconButton(
+          icon: const Icon(Icons.delete_sweep),
+          tooltip: l10n.clearAll,
+          onPressed: _qrCodes.isEmpty ? null : _clearAll,
+        ),
         IconButton(
           icon: const Icon(Icons.add),
           onPressed: _addQrCode,
-        )
+        ),
       ],
     );
   }
