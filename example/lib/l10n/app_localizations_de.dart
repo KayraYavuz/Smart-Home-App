@@ -3044,4 +3044,70 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get groupIdLabel => 'Gruppen-ID';
+
+  @override
+  String get lockDirectionTitle => 'Schlossrichtung';
+
+  @override
+  String get lockDirectionLeft => 'Linkshändig';
+
+  @override
+  String get lockDirectionRight => 'Rechtshändig';
+
+  @override
+  String get advancedSettings => 'Erweiterte Einstellungen';
+
+  @override
+  String get passcodeVisibleTitle => 'Passcode sichtbar';
+
+  @override
+  String get passcodeVisibleSubtitle =>
+      'Passcode auf Tastatur ein- oder ausblenden';
+
+  @override
+  String get tamperAlertTitle => 'Sabotagealarm';
+
+  @override
+  String get tamperAlertSubtitle => 'Alarm bei Sabotageerkennung';
+
+  @override
+  String get privacyLockTitle => 'Datenschutzsperre';
+
+  @override
+  String get privacyLockSubtitle => 'Von außen blockieren im Datenschutzmodus';
+
+  @override
+  String get doubleAuthTitle => 'Doppelte Authentifizierung';
+
+  @override
+  String get doubleAuthSubtitle => 'Zwei Entsperrmethoden erforderlich';
+
+  @override
+  String get configUpdated => 'Einstellung aktualisiert';
+
+  @override
+  String get lockDirectionUpdated => 'Schlossrichtung aktualisiert';
+
+  @override
+  String get currentLabel => 'Aktuell';
+
+  @override
+  String get scanningAccessories => 'Suche nach Zubehör...';
+
+  @override
+  String get selectAccessory => 'Zubehör auswählen';
+
+  @override
+  String get noAccessoriesFound => 'Kein Zubehör in der Nähe gefunden';
+
+  @override
+  String get accessoryAdded => 'Zubehör erfolgreich hinzugefügt';
+
+  @override
+  String get addingAccessory => 'Zubehör wird hinzugefügt...';
+
+  @override
+  String rssiLabel(int rssi) {
+    return 'Signal: $rssi dBm';
+  }
 }

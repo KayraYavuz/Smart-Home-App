@@ -1254,5 +1254,16 @@
   "doubleAuthSubtitle": "Açmak için iki yöntem gerektirir",
   "configUpdated": "Ayar güncellendi",
   "lockDirectionUpdated": "Kilit yönü güncellendi",
-  "currentLabel": "Mevcut"
+  "currentLabel": "Mevcut",
+  "scanningAccessories": "Aksesuar aranıyor...",
+  "selectAccessory": "Aksesuar Seç",
+  "noAccessoriesFound": "Yakında aksesuar bulunamadı",
+  "accessoryAdded": "Aksesuar başarıyla eklendi",
+  "addingAccessory": "Aksesuar ekleniyor...",
+  "rssiLabel": "Sinyal: {rssi} dBm",
+  "@rssiLabel": {
+    "placeholders": {
+      "rssi": { "type": "int" }
+    }
+  }
 }

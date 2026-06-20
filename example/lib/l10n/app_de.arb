@@ -1254,5 +1254,16 @@
   "doubleAuthSubtitle": "Zwei Entsperrmethoden erforderlich",
   "configUpdated": "Einstellung aktualisiert",
   "lockDirectionUpdated": "Schlossrichtung aktualisiert",
-  "currentLabel": "Aktuell"
+  "currentLabel": "Aktuell",
+  "scanningAccessories": "Suche nach Zubehör...",
+  "selectAccessory": "Zubehör auswählen",
+  "noAccessoriesFound": "Kein Zubehör in der Nähe gefunden",
+  "accessoryAdded": "Zubehör erfolgreich hinzugefügt",
+  "addingAccessory": "Zubehör wird hinzugefügt...",
+  "rssiLabel": "Signal: {rssi} dBm",
+  "@rssiLabel": {
+    "placeholders": {
+      "rssi": { "type": "int" }
+    }
+  }
 }

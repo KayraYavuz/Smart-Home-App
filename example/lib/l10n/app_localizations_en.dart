@@ -3005,4 +3005,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupIdLabel => 'Group ID';
+
+  @override
+  String get lockDirectionTitle => 'Lock Direction';
+
+  @override
+  String get lockDirectionLeft => 'Left-handed';
+
+  @override
+  String get lockDirectionRight => 'Right-handed';
+
+  @override
+  String get advancedSettings => 'Advanced Settings';
+
+  @override
+  String get passcodeVisibleTitle => 'Passcode Visible';
+
+  @override
+  String get passcodeVisibleSubtitle =>
+      'Show or hide passcode on keypad display';
+
+  @override
+  String get tamperAlertTitle => 'Tamper Alert';
+
+  @override
+  String get tamperAlertSubtitle => 'Alert when lock detects tampering';
+
+  @override
+  String get privacyLockTitle => 'Privacy Lock';
+
+  @override
+  String get privacyLockSubtitle => 'Block outside unlocking in privacy mode';
+
+  @override
+  String get doubleAuthTitle => 'Double Authentication';
+
+  @override
+  String get doubleAuthSubtitle => 'Require two unlock methods to open';
+
+  @override
+  String get configUpdated => 'Setting updated';
+
+  @override
+  String get lockDirectionUpdated => 'Lock direction updated';
+
+  @override
+  String get currentLabel => 'Current';
+
+  @override
+  String get scanningAccessories => 'Scanning for accessories...';
+
+  @override
+  String get selectAccessory => 'Select Accessory';
+
+  @override
+  String get noAccessoriesFound => 'No accessories found nearby';
+
+  @override
+  String get accessoryAdded => 'Accessory added successfully';
+
+  @override
+  String get addingAccessory => 'Adding accessory...';
+
+  @override
+  String rssiLabel(int rssi) {
+    return 'Signal: $rssi dBm';
+  }
 }

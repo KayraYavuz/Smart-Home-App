@@ -3017,4 +3017,71 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get groupIdLabel => 'Grup ID';
+
+  @override
+  String get lockDirectionTitle => 'Kilit Yönü';
+
+  @override
+  String get lockDirectionLeft => 'Sol taraflı';
+
+  @override
+  String get lockDirectionRight => 'Sağ taraflı';
+
+  @override
+  String get advancedSettings => 'Gelişmiş Ayarlar';
+
+  @override
+  String get passcodeVisibleTitle => 'Şifre Görünürlüğü';
+
+  @override
+  String get passcodeVisibleSubtitle =>
+      'Tuş takımında şifreyi göster veya gizle';
+
+  @override
+  String get tamperAlertTitle => 'Kurcalama Uyarısı';
+
+  @override
+  String get tamperAlertSubtitle => 'Kilit kurcalandığında uyarı ver';
+
+  @override
+  String get privacyLockTitle => 'Mahremiyet Kilidi';
+
+  @override
+  String get privacyLockSubtitle =>
+      'Mahremiyet modunda dışarıdan kilidi engelle';
+
+  @override
+  String get doubleAuthTitle => 'Çift Kimlik Doğrulama';
+
+  @override
+  String get doubleAuthSubtitle => 'Açmak için iki yöntem gerektirir';
+
+  @override
+  String get configUpdated => 'Ayar güncellendi';
+
+  @override
+  String get lockDirectionUpdated => 'Kilit yönü güncellendi';
+
+  @override
+  String get currentLabel => 'Mevcut';
+
+  @override
+  String get scanningAccessories => 'Aksesuar aranıyor...';
+
+  @override
+  String get selectAccessory => 'Aksesuar Seç';
+
+  @override
+  String get noAccessoriesFound => 'Yakında aksesuar bulunamadı';
+
+  @override
+  String get accessoryAdded => 'Aksesuar başarıyla eklendi';
+
+  @override
+  String get addingAccessory => 'Aksesuar ekleniyor...';
+
+  @override
+  String rssiLabel(int rssi) {
+    return 'Sinyal: $rssi dBm';
+  }
 }

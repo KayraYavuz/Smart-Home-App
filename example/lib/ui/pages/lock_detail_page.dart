@@ -758,7 +758,7 @@ class _LockDetailPageState extends State<LockDetailPage>
       context,
       MaterialPageRoute(
         builder: (context) =>
-            RemoteListPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
+            RemoteListPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0, lockData: widget.lock['lockData'] ?? ''),
       ),
     );
   }
@@ -778,7 +778,7 @@ class _LockDetailPageState extends State<LockDetailPage>
       context,
       MaterialPageRoute(
         builder: (context) =>
-            DoorSensorPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
+            DoorSensorPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0, lockData: widget.lock['lockData'] ?? ''),
       ),
     );
   }

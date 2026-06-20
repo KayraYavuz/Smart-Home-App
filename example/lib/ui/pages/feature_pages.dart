@@ -1,5 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ttlock_flutter/ttlock.dart';
+import 'package:ttlock_flutter/ttremotekey.dart';
+import 'package:ttlock_flutter/ttdoorSensor.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import '../../api_service.dart';
 import '../../repositories/auth_repository.dart';
@@ -32,7 +37,8 @@ class FeatureBasePage extends StatelessWidget {
 // --- Remote List Page ---
 class RemoteListPage extends StatefulWidget {
   final int lockId;
-  const RemoteListPage({super.key, required this.lockId});
+  final String lockData;
+  const RemoteListPage({super.key, required this.lockId, required this.lockData});
 
   @override
   State<RemoteListPage> createState() => _RemoteListPageState();
@@ -179,6 +185,136 @@ class _RemoteListPageState extends State<RemoteListPage> {
     }
   }
 
+  Future<void> _addRemote() async {
+    final l10n = AppLocalizations.of(context)!;
+    final discovered = <TTRemoteAccessoryScanModel>[];
+    TTRemoteKey.startScan((model) {
+      if (mounted &&
+          !discovered.any((d) => d.mac == model.mac)) {
+        setState(() => discovered.add(model));
+      }
+    });
+
+    final selected = await showModalBottomSheet<TTRemoteAccessoryScanModel>(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (ctx, setSt) {
+          TTRemoteKey.startScan((model) {
+            if (!discovered.any((d) => d.mac == model.mac)) {
+              setSt(() => discovered.add(model));
+            }
+          });
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(l10n.selectAccessory,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
+              ),
+              if (discovered.isEmpty)
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 16),
+                        Text(l10n.scanningAccessories,
+                            style: const TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: discovered.length,
+                    itemBuilder: (_, i) {
+                      final d = discovered[i];
+                      return ListTile(
+                        leading: const Icon(Icons.settings_remote,
+                            color: Color(0xFF1E90FF)),
+                        title: Text(
+                            d.name.isNotEmpty ? d.name : d.mac,
+                            style: const TextStyle(color: Colors.white)),
+                        subtitle: Text(l10n.rssiLabel(d.rssi),
+                            style: const TextStyle(color: Colors.grey)),
+                        onTap: () => Navigator.of(sheetContext).pop(d),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+
+    TTRemoteKey.stopScan();
+    if (selected == null || !mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final initCompleter = Completer<TTLockSystemModel>();
+      TTRemoteKey.init(
+        selected.mac,
+        widget.lockData,
+        (model) => initCompleter.complete(model),
+        (err, msg) => initCompleter.completeError(msg),
+      );
+      final systemModel =
+          await initCompleter.future.timeout(const Duration(seconds: 15));
+
+      final addCompleter = Completer<void>();
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final fiveYearsLater =
+          DateTime.now().add(const Duration(days: 365 * 5)).millisecondsSinceEpoch;
+      TTLock.addRemoteKey(
+        selected.mac,
+        null,
+        now,
+        fiveYearsLater,
+        widget.lockData,
+        () => addCompleter.complete(),
+        (errCode, msg) => addCompleter.completeError(msg),
+      );
+      await addCompleter.future.timeout(const Duration(seconds: 15));
+
+      await _api.addRemote(
+        lockId: widget.lockId,
+        number: selected.mac,
+        mac: selected.mac,
+        electricQuantity: systemModel.electricQuantity ?? 0,
+        firmwareInfo: {
+          'modelNum': systemModel.modelNum ?? '',
+          'hardwareRevision': systemModel.hardwareRevision ?? '',
+          'firmwareRevision': systemModel.firmwareRevision ?? '',
+        },
+      );
+
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      await _loadRemotes();
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(l10n.accessoryAdded)));
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -250,8 +386,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
         ),
         IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.bluetoothAddInstructions))),
+          onPressed: _addRemote,
         ),
       ],
     );
@@ -422,7 +557,8 @@ class _WirelessKeypadPageState extends State<WirelessKeypadPage> {
 // --- Door Sensor Page ---
 class DoorSensorPage extends StatefulWidget {
   final int lockId;
-  const DoorSensorPage({super.key, required this.lockId});
+  final String lockData;
+  const DoorSensorPage({super.key, required this.lockId, required this.lockData});
 
   @override
   State<DoorSensorPage> createState() => _DoorSensorPageState();
@@ -504,6 +640,129 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
     }
   }
 
+  Future<void> _addDoorSensor() async {
+    final l10n = AppLocalizations.of(context)!;
+    final discovered = <TTRemoteAccessoryScanModel>[];
+    TTDoorSensor.startScan((model) {
+      if (mounted && !discovered.any((d) => d.mac == model.mac)) {
+        setState(() => discovered.add(model));
+      }
+    });
+
+    final selected = await showModalBottomSheet<TTRemoteAccessoryScanModel>(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (ctx, setSt) {
+          TTDoorSensor.startScan((model) {
+            if (!discovered.any((d) => d.mac == model.mac)) {
+              setSt(() => discovered.add(model));
+            }
+          });
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(l10n.selectAccessory,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
+              ),
+              if (discovered.isEmpty)
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 16),
+                        Text(l10n.scanningAccessories,
+                            style: const TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: discovered.length,
+                    itemBuilder: (_, i) {
+                      final d = discovered[i];
+                      return ListTile(
+                        leading:
+                            const Icon(Icons.sensors, color: Color(0xFF1E90FF)),
+                        title: Text(
+                            d.name.isNotEmpty ? d.name : d.mac,
+                            style: const TextStyle(color: Colors.white)),
+                        subtitle: Text(l10n.rssiLabel(d.rssi),
+                            style: const TextStyle(color: Colors.grey)),
+                        onTap: () => Navigator.of(sheetContext).pop(d),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+
+    TTDoorSensor.stopScan();
+    if (selected == null || !mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final initCompleter = Completer<TTLockSystemModel>();
+      TTDoorSensor.init(
+        selected.mac,
+        widget.lockData,
+        (model) => initCompleter.complete(model),
+        (err, msg) => initCompleter.completeError(msg),
+      );
+      final systemModel =
+          await initCompleter.future.timeout(const Duration(seconds: 15));
+
+      final addCompleter = Completer<void>();
+      TTLock.addDoorSensor(
+        selected.mac,
+        widget.lockData,
+        () => addCompleter.complete(),
+        (errCode, msg) => addCompleter.completeError(msg),
+      );
+      await addCompleter.future.timeout(const Duration(seconds: 15));
+
+      await _api.addDoorSensor(
+        lockId: widget.lockId,
+        number: selected.mac,
+        mac: selected.mac,
+        electricQuantity: systemModel.electricQuantity ?? 0,
+        firmwareInfo: {
+          'modelNum': systemModel.modelNum ?? '',
+          'hardwareRevision': systemModel.hardwareRevision ?? '',
+          'firmwareRevision': systemModel.firmwareRevision ?? '',
+        },
+      );
+
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      await _loadSensor();
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(l10n.accessoryAdded)));
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      messenger
+          .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -557,6 +816,13 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
                     ),
                   ],
                 ),
+      actions: [
+        if (_sensor == null)
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: _addDoorSensor,
+          ),
+      ],
     );
   }
 }

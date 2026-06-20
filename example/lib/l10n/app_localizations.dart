@@ -5517,6 +5517,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Group ID'**
   String get groupIdLabel;
+
+  /// No description provided for @lockDirectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Direction'**
+  String get lockDirectionTitle;
+
+  /// No description provided for @lockDirectionLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Left-handed'**
+  String get lockDirectionLeft;
+
+  /// No description provided for @lockDirectionRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Right-handed'**
+  String get lockDirectionRight;
+
+  /// No description provided for @advancedSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Settings'**
+  String get advancedSettings;
+
+  /// No description provided for @passcodeVisibleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Passcode Visible'**
+  String get passcodeVisibleTitle;
+
+  /// No description provided for @passcodeVisibleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show or hide passcode on keypad display'**
+  String get passcodeVisibleSubtitle;
+
+  /// No description provided for @tamperAlertTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tamper Alert'**
+  String get tamperAlertTitle;
+
+  /// No description provided for @tamperAlertSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert when lock detects tampering'**
+  String get tamperAlertSubtitle;
+
+  /// No description provided for @privacyLockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Lock'**
+  String get privacyLockTitle;
+
+  /// No description provided for @privacyLockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Block outside unlocking in privacy mode'**
+  String get privacyLockSubtitle;
+
+  /// No description provided for @doubleAuthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Double Authentication'**
+  String get doubleAuthTitle;
+
+  /// No description provided for @doubleAuthSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Require two unlock methods to open'**
+  String get doubleAuthSubtitle;
+
+  /// No description provided for @configUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting updated'**
+  String get configUpdated;
+
+  /// No description provided for @lockDirectionUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock direction updated'**
+  String get lockDirectionUpdated;
+
+  /// No description provided for @currentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get currentLabel;
+
+  /// No description provided for @scanningAccessories.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning for accessories...'**
+  String get scanningAccessories;
+
+  /// No description provided for @selectAccessory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Accessory'**
+  String get selectAccessory;
+
+  /// No description provided for @noAccessoriesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No accessories found nearby'**
+  String get noAccessoriesFound;
+
+  /// No description provided for @accessoryAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessory added successfully'**
+  String get accessoryAdded;
+
+  /// No description provided for @addingAccessory.
+  ///
+  /// In en, this message translates to:
+  /// **'Adding accessory...'**
+  String get addingAccessory;
+
+  /// No description provided for @rssiLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Signal: {rssi} dBm'**
+  String rssiLabel(int rssi);
 }
 
 class _AppLocalizationsDelegate

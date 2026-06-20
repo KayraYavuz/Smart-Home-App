@@ -1278,5 +1278,16 @@
   "doubleAuthSubtitle": "Require two unlock methods to open",
   "configUpdated": "Setting updated",
   "lockDirectionUpdated": "Lock direction updated",
-  "currentLabel": "Current"
+  "currentLabel": "Current",
+  "scanningAccessories": "Scanning for accessories...",
+  "selectAccessory": "Select Accessory",
+  "noAccessoriesFound": "No accessories found nearby",
+  "accessoryAdded": "Accessory added successfully",
+  "addingAccessory": "Adding accessory...",
+  "rssiLabel": "Signal: {rssi} dBm",
+  "@rssiLabel": {
+    "placeholders": {
+      "rssi": { "type": "int" }
+    }
+  }
 }
