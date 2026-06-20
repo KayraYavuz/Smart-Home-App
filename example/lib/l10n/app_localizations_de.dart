@@ -1451,6 +1451,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get modeUpdated => 'Modus aktualisiert';
 
   @override
+  String get workingHoursSet => 'Schloss-Betriebszeiten aktualisiert';
+
+  @override
+  String get selectWorkingPeriod => 'Betriebszeitraum auswählen';
+
+  @override
+  String get grantAdminAccess => 'Administratorzugriff gewähren';
+
+  @override
+  String get grantAdminSubtitle =>
+      'Administratorschlüssel an einen anderen Benutzer senden';
+
+  @override
+  String get enterUsername => 'Benutzernamen eingeben';
+
+  @override
   String get newPasscodeTitle => 'Neuer Passcode';
 
   @override

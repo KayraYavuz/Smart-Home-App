@@ -2758,6 +2758,36 @@ abstract class AppLocalizations {
   /// **'Mode updated'**
   String get modeUpdated;
 
+  /// No description provided for @workingHoursSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock working hours updated'**
+  String get workingHoursSet;
+
+  /// No description provided for @selectWorkingPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Working Period'**
+  String get selectWorkingPeriod;
+
+  /// No description provided for @grantAdminAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant Admin Access'**
+  String get grantAdminAccess;
+
+  /// No description provided for @grantAdminSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send admin key to another user'**
+  String get grantAdminSubtitle;
+
+  /// No description provided for @enterUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter username'**
+  String get enterUsername;
+
   /// No description provided for @newPasscodeTitle.
   ///
   /// In en, this message translates to:

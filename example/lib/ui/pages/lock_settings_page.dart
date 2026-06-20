@@ -227,6 +227,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   subtitle: l10n.transferLockSubtitle,
                   onTap: _transferLock,
                 ),
+                _buildSettingTile(
+                  icon: Icons.admin_panel_settings_outlined,
+                  title: l10n.grantAdminAccess,
+                  subtitle: l10n.grantAdminSubtitle,
+                  onTap: _grantAdminAccess,
+                ),
 
                 const SizedBox(height: 32),
                 ElevatedButton(
@@ -1134,7 +1140,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
               title: Text(l10n.customHours),
               onTap: () {
                 Navigator.pop(context);
-                // Implementation for custom hours...
+                _setCustomWorkingHours();
               },
             ),
           ],
@@ -1160,6 +1166,84 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       if (!mounted) return;
       scaffoldMessenger.showSnackBar(
           SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
+    }
+  }
+
+  Future<void> _setCustomWorkingHours() async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final now = DateTime.now();
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: now,
+      lastDate: DateTime(now.year + 10),
+      saveText: l10n.save,
+      cancelText: l10n.cancel,
+      helpText: l10n.selectWorkingPeriod,
+      builder: (context, child) => Theme(
+        data: ThemeData.dark().copyWith(
+          colorScheme: const ColorScheme.dark(
+            primary: AppColors.primary,
+            onPrimary: Colors.black,
+            surface: Color(0xFF1E1E1E),
+            onSurface: Colors.white,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (range == null || !mounted) return;
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.setLockWorkingTime(
+        range.start.millisecondsSinceEpoch,
+        range.end.millisecondsSinceEpoch,
+        _lockData,
+        () { if (!c.isCompleted) c.complete(true); },
+        (errorCode, errorMsg) { if (!c.isCompleted) c.completeError('$errorMsg ($errorCode)'); },
+      );
+    });
+    if (ok == true && mounted) {
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.workingHoursSet)));
+    }
+  }
+
+  Future<void> _grantAdminAccess() async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final controller = TextEditingController();
+    final username = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.grantAdminAccess),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: InputDecoration(labelText: l10n.enterUsername),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(controller.text.trim()),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (username == null || username.isEmpty || !mounted) return;
+    try {
+      await _apiService.grantAdmin(
+        lockId: widget.lock['lockId'].toString(),
+        receiverUsername: username,
+      );
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.adminGranted)));
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
     }
   }
 

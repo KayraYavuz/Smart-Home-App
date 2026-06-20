@@ -1438,6 +1438,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get modeUpdated => 'Mod güncellendi';
 
   @override
+  String get workingHoursSet => 'Kilit çalışma saatleri güncellendi';
+
+  @override
+  String get selectWorkingPeriod => 'Çalışma Dönemi Seçin';
+
+  @override
+  String get grantAdminAccess => 'Yönetici Erişimi Ver';
+
+  @override
+  String get grantAdminSubtitle =>
+      'Başka bir kullanıcıya yönetici anahtarı gönder';
+
+  @override
+  String get enterUsername => 'Kullanıcı adını girin';
+
+  @override
   String get newPasscodeTitle => 'Yeni Şifre';
 
   @override

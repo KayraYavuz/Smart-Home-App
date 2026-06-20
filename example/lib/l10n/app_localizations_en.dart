@@ -1428,6 +1428,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modeUpdated => 'Mode updated';
 
   @override
+  String get workingHoursSet => 'Lock working hours updated';
+
+  @override
+  String get selectWorkingPeriod => 'Select Working Period';
+
+  @override
+  String get grantAdminAccess => 'Grant Admin Access';
+
+  @override
+  String get grantAdminSubtitle => 'Send admin key to another user';
+
+  @override
+  String get enterUsername => 'Enter username';
+
+  @override
   String get newPasscodeTitle => 'New Passcode';
 
   @override
