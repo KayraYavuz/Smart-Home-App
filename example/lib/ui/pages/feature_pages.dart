@@ -1112,7 +1112,8 @@ class _QrCodePageState extends State<QrCodePage> {
 // --- Wi-Fi Lock Page ---
 class WifiLockPage extends StatefulWidget {
   final int lockId;
-  const WifiLockPage({super.key, required this.lockId});
+  final String lockData;
+  const WifiLockPage({super.key, required this.lockId, required this.lockData});
 
   @override
   State<WifiLockPage> createState() => _WifiLockPageState();
@@ -1144,15 +1145,152 @@ class _WifiLockPageState extends State<WifiLockPage> {
           _isLoading = false;
           _errorMessage = e.toString();
         });
-        // Optional: still show snackbar or just show in body
       }
+    }
+  }
+
+  Future<void> _configureWifi() async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+
+    // Show scanning indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        content: Row(
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(width: 16),
+            Expanded(child: Text(l10n.scanningWifi, style: const TextStyle(color: Colors.white))),
+          ],
+        ),
+      ),
+    );
+
+    List<dynamic> networks = [];
+    try {
+      final completer = Completer<List>();
+      final collected = <dynamic>[];
+      TTLock.scanWifi(widget.lockData, (finished, list) {
+        collected.addAll(list);
+        if (finished && !completer.isCompleted) completer.complete(List.from(collected));
+      }, (code, msg) {
+        if (!completer.isCompleted) completer.completeError(msg);
+      });
+      networks = await completer.future.timeout(const Duration(seconds: 15));
+    } catch (_) {
+      networks = [];
+    }
+
+    if (!mounted) return;
+    Navigator.of(context).pop(); // close scanning dialog
+
+    if (networks.isEmpty) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.noWifiFound)));
+      return;
+    }
+
+    // Show WiFi list bottom sheet
+    final selected = await showModalBottomSheet<Map>(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      builder: (ctx) => ListView.builder(
+        itemCount: networks.length,
+        itemBuilder: (ctx, i) {
+          final wifi = networks[i] as Map;
+          final ssid = wifi['wifiName']?.toString() ?? wifi['ssid']?.toString() ?? 'Unknown';
+          return ListTile(
+            leading: const Icon(Icons.wifi, color: Colors.white70),
+            title: Text(ssid, style: const TextStyle(color: Colors.white)),
+            onTap: () => Navigator.of(ctx).pop(wifi),
+          );
+        },
+      ),
+    );
+
+    if (selected == null || !mounted) return;
+    final ssid = selected['wifiName']?.toString() ?? selected['ssid']?.toString() ?? '';
+
+    // Prompt for password
+    final passwordController = TextEditingController();
+    final password = await showDialog<String>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.wifiPassword, style: const TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l10n.enterWifiPassword(ssid), style: TextStyle(color: Colors.grey[400])),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: l10n.wifiPassword,
+                labelStyle: const TextStyle(color: Colors.grey),
+                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(passwordController.text),
+            child: Text(l10n.save, style: const TextStyle(color: Color(0xFF1E90FF))),
+          ),
+        ],
+      ),
+    );
+    passwordController.dispose();
+
+    if (password == null || !mounted) return;
+
+    // Apply WiFi config via BLE
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final configCompleter = Completer<void>();
+      TTLock.configWifi(ssid, password, widget.lockData, () {
+        if (!configCompleter.isCompleted) configCompleter.complete();
+      }, (code, msg) {
+        if (!configCompleter.isCompleted) configCompleter.completeError(msg);
+      });
+      await configCompleter.future.timeout(const Duration(seconds: 15));
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      messenger.showSnackBar(SnackBar(content: Text(l10n.wifiConfigured)));
+      _loadDetail();
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      messenger.showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FeatureBasePage(
-      title: AppLocalizations.of(context)!.wifiLockDetails,
+      title: l10n.wifiLockDetails,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.wifi_find, color: Colors.white),
+          tooltip: l10n.configureWifi,
+          onPressed: widget.lockData.isNotEmpty ? _configureWifi : null,
+        ),
+      ],
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
@@ -1166,13 +1304,13 @@ class _WifiLockPageState extends State<WifiLockPage> {
                             color: Colors.orange, size: 48),
                         const SizedBox(height: 16),
                         Text(
-                          AppLocalizations.of(context)!.wifiLockOnlyNotice,
+                          l10n.wifiLockOnlyNotice,
                           textAlign: TextAlign.center,
                           style: const TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          AppLocalizations.of(context)!.wifiLockGatewayTip,
+                          l10n.wifiLockGatewayTip,
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.grey[400]),
                         ),
@@ -1193,18 +1331,16 @@ class _WifiLockPageState extends State<WifiLockPage> {
                     children: [
                       if (_detail != null) ...[
                         _buildInfoRow(
-                            AppLocalizations.of(context)!.isOnline,
+                            l10n.isOnline,
                             _detail!['isOnline'] == true
-                                ? AppLocalizations.of(context)!.online
-                                : AppLocalizations.of(context)!.offline),
-                        _buildInfoRow(AppLocalizations.of(context)!.networkName,
-                            _detail!['networkName'] ?? '-'),
+                                ? l10n.online
+                                : l10n.offline),
+                        _buildInfoRow(l10n.networkName, _detail!['networkName'] ?? '-'),
                         _buildInfoRow('MAC', _detail!['wifiMac'] ?? '-'),
                         _buildInfoRow('IP', _detail!['ip'] ?? '-'),
-                        _buildInfoRow(AppLocalizations.of(context)!.rssiGrade,
-                            '${_detail!['rssiGrade'] ?? '0'}'),
+                        _buildInfoRow(l10n.rssiGrade, '${_detail!['rssiGrade'] ?? '0'}'),
                       ] else
-                        Text(AppLocalizations.of(context)!.detailNotFound,
+                        Text(l10n.detailNotFound,
                             style: const TextStyle(color: Colors.white)),
                     ],
                   ),

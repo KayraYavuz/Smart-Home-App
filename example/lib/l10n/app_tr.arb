@@ -1270,5 +1270,20 @@
     "placeholders": {
       "rssi": { "type": "int" }
     }
-  }
+  },
+  "configureWifi": "WiFi Yapılandır",
+  "wifiPassword": "WiFi Şifresi",
+  "wifiConfigured": "WiFi başarıyla yapılandırıldı",
+  "scanningWifi": "WiFi ağları taranıyor...",
+  "noWifiFound": "WiFi ağı bulunamadı",
+  "enterWifiPassword": "{ssid} için WiFi şifresi girin",
+  "@enterWifiPassword": {
+    "placeholders": {
+      "ssid": { "type": "String" }
+    }
+  },
+  "erasePasscodeTitle": "Silme Kodu",
+  "erasePasscodeSubtitle": "Tüm kimlik bilgilerini silen panik kodu ayarla",
+  "erasePasscodeSet": "Silme kodu ayarlandı",
+  "enterErasePasscode": "Silme kodunu girin (6+ hane)"
 }

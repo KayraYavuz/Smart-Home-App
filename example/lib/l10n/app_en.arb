@@ -1294,5 +1294,20 @@
     "placeholders": {
       "rssi": { "type": "int" }
     }
-  }
+  },
+  "configureWifi": "Configure WiFi",
+  "wifiPassword": "WiFi Password",
+  "wifiConfigured": "WiFi configured successfully",
+  "scanningWifi": "Scanning for WiFi networks...",
+  "noWifiFound": "No WiFi networks found",
+  "enterWifiPassword": "Enter WiFi password for {ssid}",
+  "@enterWifiPassword": {
+    "placeholders": {
+      "ssid": { "type": "String" }
+    }
+  },
+  "erasePasscodeTitle": "Erase Passcode",
+  "erasePasscodeSubtitle": "Set a panic code that wipes all credentials",
+  "erasePasscodeSet": "Erase passcode set",
+  "enterErasePasscode": "Enter erase passcode (6+ digits)"
 }

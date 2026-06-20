@@ -3086,4 +3086,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String rssiLabel(int rssi) {
     return 'Signal: $rssi dBm';
   }
+
+  @override
+  String get configureWifi => 'Configure WiFi';
+
+  @override
+  String get wifiPassword => 'WiFi Password';
+
+  @override
+  String get wifiConfigured => 'WiFi configured successfully';
+
+  @override
+  String get scanningWifi => 'Scanning for WiFi networks...';
+
+  @override
+  String get noWifiFound => 'No WiFi networks found';
+
+  @override
+  String enterWifiPassword(String ssid) {
+    return 'Enter WiFi password for $ssid';
+  }
+
+  @override
+  String get erasePasscodeTitle => 'Erase Passcode';
+
+  @override
+  String get erasePasscodeSubtitle =>
+      'Set a panic code that wipes all credentials';
+
+  @override
+  String get erasePasscodeSet => 'Erase passcode set';
+
+  @override
+  String get enterErasePasscode => 'Enter erase passcode (6+ digits)';
 }

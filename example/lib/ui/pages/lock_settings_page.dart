@@ -216,6 +216,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   onTap: _changeAdminPasscode,
                 ),
                 _buildSettingTile(
+                  icon: Icons.security_update_warning_outlined,
+                  title: l10n.erasePasscodeTitle,
+                  subtitle: l10n.erasePasscodeSubtitle,
+                  onTap: _setErasePasscode,
+                ),
+                _buildSettingTile(
                   icon: Icons.lock_reset,
                   title: l10n.resetPasscodesTitle,
                   subtitle: l10n.resetPasscodesSubtitle,
@@ -1247,6 +1253,56 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     }
   }
 
+  Future<void> _setErasePasscode() async {
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final controller = TextEditingController();
+    final passcode = await showDialog<String>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.erasePasscodeTitle, style: const TextStyle(color: Colors.white)),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: l10n.enterErasePasscode,
+            hintStyle: const TextStyle(color: Colors.grey),
+            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => navigator.pop(),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              final text = controller.text.trim();
+              if (text.length >= 6) navigator.pop(text);
+            },
+            child: Text(l10n.save, style: const TextStyle(color: AppColors.primary)),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (passcode == null || !mounted) return;
+
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.setErasePasscode(passcode, _lockData, () {
+        if (!c.isCompleted) c.complete(true);
+      }, (code, msg) {
+        if (!c.isCompleted) c.completeError(msg);
+      });
+    });
+    if (ok == true && mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.erasePasscodeSet)));
+    }
+  }
+
   Future<void> _changeAdminPasscode() async {
     final controller = TextEditingController();
     final l10n = AppLocalizations.of(context)!;
@@ -1376,7 +1432,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       context,
       MaterialPageRoute(
         builder: (context) =>
-            WifiLockPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
+            WifiLockPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0, lockData: _lockData),
       ),
     );
   }

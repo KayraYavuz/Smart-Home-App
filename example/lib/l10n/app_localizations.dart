@@ -5673,6 +5673,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Signal: {rssi} dBm'**
   String rssiLabel(int rssi);
+
+  /// No description provided for @configureWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure WiFi'**
+  String get configureWifi;
+
+  /// No description provided for @wifiPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi Password'**
+  String get wifiPassword;
+
+  /// No description provided for @wifiConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'WiFi configured successfully'**
+  String get wifiConfigured;
+
+  /// No description provided for @scanningWifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning for WiFi networks...'**
+  String get scanningWifi;
+
+  /// No description provided for @noWifiFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No WiFi networks found'**
+  String get noWifiFound;
+
+  /// No description provided for @enterWifiPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter WiFi password for {ssid}'**
+  String enterWifiPassword(String ssid);
+
+  /// No description provided for @erasePasscodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase Passcode'**
+  String get erasePasscodeTitle;
+
+  /// No description provided for @erasePasscodeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a panic code that wipes all credentials'**
+  String get erasePasscodeSubtitle;
+
+  /// No description provided for @erasePasscodeSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase passcode set'**
+  String get erasePasscodeSet;
+
+  /// No description provided for @enterErasePasscode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter erase passcode (6+ digits)'**
+  String get enterErasePasscode;
 }
 
 class _AppLocalizationsDelegate

@@ -1270,5 +1270,20 @@
     "placeholders": {
       "rssi": { "type": "int" }
     }
-  }
+  },
+  "configureWifi": "WLAN konfigurieren",
+  "wifiPassword": "WLAN-Passwort",
+  "wifiConfigured": "WLAN erfolgreich konfiguriert",
+  "scanningWifi": "WLAN-Netzwerke werden gesucht...",
+  "noWifiFound": "Kein WLAN gefunden",
+  "enterWifiPassword": "WLAN-Passwort für {ssid} eingeben",
+  "@enterWifiPassword": {
+    "placeholders": {
+      "ssid": { "type": "String" }
+    }
+  },
+  "erasePasscodeTitle": "Lösch-Passcode",
+  "erasePasscodeSubtitle": "Panikcode festlegen, der alle Anmeldedaten löscht",
+  "erasePasscodeSet": "Lösch-Passcode festgelegt",
+  "enterErasePasscode": "Lösch-Passcode eingeben (6+ Stellen)"
 }

@@ -3100,4 +3100,37 @@ class AppLocalizationsTr extends AppLocalizations {
   String rssiLabel(int rssi) {
     return 'Sinyal: $rssi dBm';
   }
+
+  @override
+  String get configureWifi => 'WiFi Yapılandır';
+
+  @override
+  String get wifiPassword => 'WiFi Şifresi';
+
+  @override
+  String get wifiConfigured => 'WiFi başarıyla yapılandırıldı';
+
+  @override
+  String get scanningWifi => 'WiFi ağları taranıyor...';
+
+  @override
+  String get noWifiFound => 'WiFi ağı bulunamadı';
+
+  @override
+  String enterWifiPassword(String ssid) {
+    return '$ssid için WiFi şifresi girin';
+  }
+
+  @override
+  String get erasePasscodeTitle => 'Silme Kodu';
+
+  @override
+  String get erasePasscodeSubtitle =>
+      'Tüm kimlik bilgilerini silen panik kodu ayarla';
+
+  @override
+  String get erasePasscodeSet => 'Silme kodu ayarlandı';
+
+  @override
+  String get enterErasePasscode => 'Silme kodunu girin (6+ hane)';
 }

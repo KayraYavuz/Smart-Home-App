@@ -3126,4 +3126,37 @@ class AppLocalizationsDe extends AppLocalizations {
   String rssiLabel(int rssi) {
     return 'Signal: $rssi dBm';
   }
+
+  @override
+  String get configureWifi => 'WLAN konfigurieren';
+
+  @override
+  String get wifiPassword => 'WLAN-Passwort';
+
+  @override
+  String get wifiConfigured => 'WLAN erfolgreich konfiguriert';
+
+  @override
+  String get scanningWifi => 'WLAN-Netzwerke werden gesucht...';
+
+  @override
+  String get noWifiFound => 'Kein WLAN gefunden';
+
+  @override
+  String enterWifiPassword(String ssid) {
+    return 'WLAN-Passwort für $ssid eingeben';
+  }
+
+  @override
+  String get erasePasscodeTitle => 'Lösch-Passcode';
+
+  @override
+  String get erasePasscodeSubtitle =>
+      'Panikcode festlegen, der alle Anmeldedaten löscht';
+
+  @override
+  String get erasePasscodeSet => 'Lösch-Passcode festgelegt';
+
+  @override
+  String get enterErasePasscode => 'Lösch-Passcode eingeben (6+ Stellen)';
 }
