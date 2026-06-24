@@ -98,6 +98,14 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kullanımınıza göre öneriler göster';
 
   @override
+  String get locksRequireOnline =>
+      'Telefon İnternette Olmasını Gerektiren Kilitler';
+
+  @override
+  String get locksRequireOnlineSubtitle =>
+      'Bu kilitleri açarken telefonun internete bağlı olması gerekir';
+
+  @override
   String get preferences => 'Tercihler';
 
   @override

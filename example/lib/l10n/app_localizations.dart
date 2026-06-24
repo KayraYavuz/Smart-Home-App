@@ -274,6 +274,18 @@ abstract class AppLocalizations {
   /// **'Show suggestions based on your usage'**
   String get personalizedSuggestionsSubtitle;
 
+  /// No description provided for @locksRequireOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Locks Requiring Phone Online'**
+  String get locksRequireOnline;
+
+  /// No description provided for @locksRequireOnlineSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone must be connected to the internet when unlocking these locks'**
+  String get locksRequireOnlineSubtitle;
+
   /// No description provided for @preferences.
   ///
   /// In en, this message translates to:

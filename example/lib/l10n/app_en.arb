@@ -83,6 +83,8 @@
   "notificationsSubtitle": "Receive notifications for lock events",
   "personalizedSuggestions": "Personalized Suggestions",
   "personalizedSuggestionsSubtitle": "Show suggestions based on your usage",
+  "locksRequireOnline": "Locks Requiring Phone Online",
+  "locksRequireOnlineSubtitle": "Phone must be connected to the internet when unlocking these locks",
   "preferences": "Preferences",
   "languages": "Languages",
   "screenLock": "Screen Lock",

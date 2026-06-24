@@ -29,6 +29,8 @@
   "notificationsSubtitle": "Benachrichtigungen für Schlossereignisse erhalten",
   "personalizedSuggestions": "Personalisierte Vorschläge",
   "personalizedSuggestionsSubtitle": "Vorschläge basierend auf Ihrer Nutzung anzeigen",
+  "locksRequireOnline": "Schlösser mit Pflicht zur Online-Verbindung",
+  "locksRequireOnlineSubtitle": "Das Telefon muss beim Öffnen dieser Schlösser mit dem Internet verbunden sein",
   "preferences": "Einstellungen",
   "languages": "Sprachen",
   "screenLock": "Bildschirmsperre",

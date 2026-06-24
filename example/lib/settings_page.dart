@@ -18,6 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _touchToUnlockEnabled = false;
   bool _notificationEnabled = true;
   bool _personalizedSuggestionsEnabled = false;
+  bool _locksRequireOnline = false;
 
   // Selection Settings
   String _selectedLanguage = 'Otomatik';
@@ -38,6 +39,8 @@ class _SettingsPageState extends State<SettingsPage> {
       _notificationEnabled = prefs.getBool('notification_enabled') ?? true;
       _personalizedSuggestionsEnabled =
           prefs.getBool('personalized_suggestions_enabled') ?? false;
+      _locksRequireOnline =
+          prefs.getBool('locks_require_online') ?? false;
       _selectedLanguage = prefs.getString('selected_language') ?? 'Otomatik';
       _selectedScreenLock = prefs.getString('selected_screen_lock') ?? 'Kapalı';
       _selectedHideInvalidAccess =
@@ -116,6 +119,15 @@ class _SettingsPageState extends State<SettingsPage> {
               onChanged: (value) {
                 setState(() => _personalizedSuggestionsEnabled = value);
                 _saveSetting('personalized_suggestions_enabled', value);
+              },
+            ),
+            _buildSwitchTile(
+              title: l10n.locksRequireOnline,
+              subtitle: l10n.locksRequireOnlineSubtitle,
+              value: _locksRequireOnline,
+              onChanged: (value) {
+                setState(() => _locksRequireOnline = value);
+                _saveSetting('locks_require_online', value);
               },
             ),
 

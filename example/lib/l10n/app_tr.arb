@@ -29,6 +29,8 @@
   "notificationsSubtitle": "Kilit olayları için bildirim al",
   "personalizedSuggestions": "Kişiselleştirilmiş Öneriler",
   "personalizedSuggestionsSubtitle": "Kullanımınıza göre öneriler göster",
+  "locksRequireOnline": "Telefon İnternette Olmasını Gerektiren Kilitler",
+  "locksRequireOnlineSubtitle": "Bu kilitleri açarken telefonun internete bağlı olması gerekir",
   "preferences": "Tercihler",
   "languages": "Diller",
   "screenLock": "Ekran Kilidi",

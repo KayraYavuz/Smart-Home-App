@@ -97,6 +97,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show suggestions based on your usage';
 
   @override
+  String get locksRequireOnline => 'Locks Requiring Phone Online';
+
+  @override
+  String get locksRequireOnlineSubtitle =>
+      'Phone must be connected to the internet when unlocking these locks';
+
+  @override
   String get preferences => 'Preferences';
 
   @override

@@ -99,6 +99,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Vorschläge basierend auf Ihrer Nutzung anzeigen';
 
   @override
+  String get locksRequireOnline =>
+      'Schlösser mit Pflicht zur Online-Verbindung';
+
+  @override
+  String get locksRequireOnlineSubtitle =>
+      'Das Telefon muss beim Öffnen dieser Schlösser mit dem Internet verbunden sein';
+
+  @override
   String get preferences => 'Einstellungen';
 
   @override
