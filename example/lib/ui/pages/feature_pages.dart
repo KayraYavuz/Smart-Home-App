@@ -188,23 +188,21 @@ class _RemoteListPageState extends State<RemoteListPage> {
   Future<void> _addRemote() async {
     final l10n = AppLocalizations.of(context)!;
     final discovered = <TTRemoteAccessoryScanModel>[];
-    TTRemoteKey.startScan((model) {
-      if (mounted &&
-          !discovered.any((d) => d.mac == model.mac)) {
-        setState(() => discovered.add(model));
-      }
-    });
+    bool scanStarted = false;
 
     final selected = await showModalBottomSheet<TTRemoteAccessoryScanModel>(
       context: context,
       backgroundColor: const Color(0xFF1E1E1E),
       builder: (sheetContext) => StatefulBuilder(
         builder: (ctx, setSt) {
-          TTRemoteKey.startScan((model) {
-            if (!discovered.any((d) => d.mac == model.mac)) {
-              setSt(() => discovered.add(model));
-            }
-          });
+          if (!scanStarted) {
+            scanStarted = true;
+            TTRemoteKey.startScan((model) {
+              if (!discovered.any((d) => d.mac == model.mac)) {
+                setSt(() => discovered.add(model));
+              }
+            });
+          }
           return Column(
             children: [
               Padding(
@@ -643,22 +641,21 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
   Future<void> _addDoorSensor() async {
     final l10n = AppLocalizations.of(context)!;
     final discovered = <TTRemoteAccessoryScanModel>[];
-    TTDoorSensor.startScan((model) {
-      if (mounted && !discovered.any((d) => d.mac == model.mac)) {
-        setState(() => discovered.add(model));
-      }
-    });
+    bool scanStarted = false;
 
     final selected = await showModalBottomSheet<TTRemoteAccessoryScanModel>(
       context: context,
       backgroundColor: const Color(0xFF1E1E1E),
       builder: (sheetContext) => StatefulBuilder(
         builder: (ctx, setSt) {
-          TTDoorSensor.startScan((model) {
-            if (!discovered.any((d) => d.mac == model.mac)) {
-              setSt(() => discovered.add(model));
-            }
-          });
+          if (!scanStarted) {
+            scanStarted = true;
+            TTDoorSensor.startScan((model) {
+              if (!discovered.any((d) => d.mac == model.mac)) {
+                setSt(() => discovered.add(model));
+              }
+            });
+          }
           return Column(
             children: [
               Padding(
