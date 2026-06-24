@@ -1151,6 +1151,7 @@ class _WifiLockPageState extends State<WifiLockPage> {
   Future<void> _configureWifi() async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
+    final nav = Navigator.of(context);
 
     // Show scanning indicator
     showDialog(
@@ -1183,8 +1184,8 @@ class _WifiLockPageState extends State<WifiLockPage> {
       networks = [];
     }
 
+    nav.pop(); // close scanning dialog
     if (!mounted) return;
-    Navigator.of(context).pop(); // close scanning dialog
 
     if (networks.isEmpty) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.noWifiFound)));
@@ -1267,13 +1268,13 @@ class _WifiLockPageState extends State<WifiLockPage> {
         if (!configCompleter.isCompleted) configCompleter.completeError(msg);
       });
       await configCompleter.future.timeout(const Duration(seconds: 15));
+      nav.pop();
       if (!mounted) return;
-      Navigator.of(context).pop();
       messenger.showSnackBar(SnackBar(content: Text(l10n.wifiConfigured)));
       _loadDetail();
     } catch (e) {
+      nav.pop();
       if (!mounted) return;
-      Navigator.of(context).pop();
       messenger.showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
     }
   }
