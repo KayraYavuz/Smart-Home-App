@@ -991,8 +991,12 @@
   "btAndGatewayFailed": "Bluetooth başarısız: {btError}\n\nGateway da başarısız: {gwError}",
   "@btAndGatewayFailed": {
     "placeholders": {
-      "btError": {"type": "String"},
-      "gwError": {"type": "String"}
+      "btError": {
+        "type": "String"
+      },
+      "gwError": {
+        "type": "String"
+      }
     }
   },
   "bluetoothTimedOut": "Bluetooth işlemi zaman aşımına uğradı.",
@@ -1268,7 +1272,9 @@
   "rssiLabel": "Sinyal: {rssi} dBm",
   "@rssiLabel": {
     "placeholders": {
-      "rssi": { "type": "int" }
+      "rssi": {
+        "type": "int"
+      }
     }
   },
   "configureWifi": "WiFi Yapılandır",
@@ -1279,11 +1285,23 @@
   "enterWifiPassword": "{ssid} için WiFi şifresi girin",
   "@enterWifiPassword": {
     "placeholders": {
-      "ssid": { "type": "String" }
+      "ssid": {
+        "type": "String"
+      }
     }
   },
   "erasePasscodeTitle": "Silme Kodu",
   "erasePasscodeSubtitle": "Tüm kimlik bilgilerini silen panik kodu ayarla",
   "erasePasscodeSet": "Silme kodu ayarlandı",
-  "enterErasePasscode": "Silme kodunu girin (6+ hane)"
+  "enterErasePasscode": "Silme kodunu girin (6+ hane)",
+  "authorizedAdminMenu": "Yetkili Yönetici",
+  "noAdminsYet": "Henüz yetkili yönetici yok",
+  "adminRevoked": "Yönetici erişimi iptal edildi",
+  "importFromLock": "Başka Bir Kilit'ten İçe Aktar",
+  "importFromLockSubtitle": "Eski kilitteki kimlik bilgilerini bu kilide kopyala",
+  "importFromLockDesc": "Her iki kilidin Bluetooth ile yakında olduğundan emin olun. Şifreler ve kartları aktarmak için kaynak kilidi seçin.",
+  "proceed": "Devam Et",
+  "selectSourceLock": "Kaynak Kilidi Seçin",
+  "importStarted": "Bluetooth ile içe aktarma başladı",
+  "noOtherLocks": "Başka kilit bulunamadı"
 }

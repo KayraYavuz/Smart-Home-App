@@ -19,6 +19,7 @@ import 'package:yavuz_lock/passcode_page.dart';
 import 'package:yavuz_lock/card_page.dart';
 import 'package:yavuz_lock/face_page.dart';
 import 'package:yavuz_lock/ui/pages/feature_pages.dart';
+import 'package:yavuz_lock/ui/pages/authorized_admin_page.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 
 class LockDetailPage extends StatefulWidget {
@@ -517,6 +518,12 @@ class _LockDetailPageState extends State<LockDetailPage>
                             ),
                             _buildGridMenuItem(
                               context,
+                              icon: Icons.back_hand,
+                              label: l10n.palmVeinMenu,
+                              onTap: () => _showPalmVein(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
                               icon: Icons.face,
                               label: l10n.facesMenu,
                               onTap: () => _showFaces(context),
@@ -547,15 +554,15 @@ class _LockDetailPageState extends State<LockDetailPage>
                             ),
                             _buildGridMenuItem(
                               context,
-                              icon: Icons.back_hand,
-                              label: l10n.palmVeinMenu,
-                              onTap: () => _showPalmVein(context),
-                            ),
-                            _buildGridMenuItem(
-                              context,
                               icon: Icons.history,
                               label: l10n.recordsMenu,
                               onTap: () => _showRecords(context),
+                            ),
+                            _buildGridMenuItem(
+                              context,
+                              icon: Icons.admin_panel_settings,
+                              label: l10n.authorizedAdminMenu,
+                              onTap: () => _showAuthorizedAdmin(context),
                             ),
                             _buildGridMenuItem(
                               context,
@@ -799,6 +806,18 @@ class _LockDetailPageState extends State<LockDetailPage>
       MaterialPageRoute(
         builder: (context) =>
             PalmVeinPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0),
+      ),
+    );
+  }
+
+  void _showAuthorizedAdmin(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AuthorizedAdminPage(
+          lockId: widget.lock['lockId']?.toString() ?? '',
+          lockName: widget.lock['name'] ?? '',
+        ),
       ),
     );
   }

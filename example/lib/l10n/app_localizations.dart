@@ -5733,6 +5733,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter erase passcode (6+ digits)'**
   String get enterErasePasscode;
+
+  /// No description provided for @authorizedAdminMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized Admin'**
+  String get authorizedAdminMenu;
+
+  /// No description provided for @noAdminsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No authorized admins yet'**
+  String get noAdminsYet;
+
+  /// No description provided for @adminRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin access revoked'**
+  String get adminRevoked;
+
+  /// No description provided for @importFromLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from Another Lock'**
+  String get importFromLock;
+
+  /// No description provided for @importFromLockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy credentials from an old lock to this lock'**
+  String get importFromLockSubtitle;
+
+  /// No description provided for @importFromLockDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure both locks are nearby via Bluetooth. Select the source lock to import its passcodes and cards.'**
+  String get importFromLockDesc;
+
+  /// No description provided for @proceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed'**
+  String get proceed;
+
+  /// No description provided for @selectSourceLock.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Source Lock'**
+  String get selectSourceLock;
+
+  /// No description provided for @importStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Import started via Bluetooth'**
+  String get importStarted;
+
+  /// No description provided for @noOtherLocks.
+  ///
+  /// In en, this message translates to:
+  /// **'No other locks found'**
+  String get noOtherLocks;
 }
 
 class _AppLocalizationsDelegate

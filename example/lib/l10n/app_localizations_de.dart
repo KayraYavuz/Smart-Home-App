@@ -3159,4 +3159,36 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get enterErasePasscode => 'Lösch-Passcode eingeben (6+ Stellen)';
+
+  @override
+  String get authorizedAdminMenu => 'Autorisierter Admin';
+
+  @override
+  String get noAdminsYet => 'Noch keine autorisierten Admins';
+
+  @override
+  String get adminRevoked => 'Administratorzugriff widerrufen';
+
+  @override
+  String get importFromLock => 'Von einem anderen Schloss importieren';
+
+  @override
+  String get importFromLockSubtitle =>
+      'Anmeldedaten von einem alten Schloss auf dieses Schloss kopieren';
+
+  @override
+  String get importFromLockDesc =>
+      'Stellen Sie sicher, dass beide Schlösser per Bluetooth in der Nähe sind. Wählen Sie das Quellschloss aus.';
+
+  @override
+  String get proceed => 'Fortfahren';
+
+  @override
+  String get selectSourceLock => 'Quellschloss auswählen';
+
+  @override
+  String get importStarted => 'Import über Bluetooth gestartet';
+
+  @override
+  String get noOtherLocks => 'Keine anderen Schlösser gefunden';
 }

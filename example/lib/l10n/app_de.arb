@@ -1226,8 +1226,12 @@
   "btAndGatewayFailed": "Bluetooth fehlgeschlagen: {btError}\n\nGateway auch fehlgeschlagen: {gwError}",
   "@btAndGatewayFailed": {
     "placeholders": {
-      "btError": {"type": "String"},
-      "gwError": {"type": "String"}
+      "btError": {
+        "type": "String"
+      },
+      "gwError": {
+        "type": "String"
+      }
     }
   },
   "bluetoothTimedOut": "Bluetooth-Vorgang hat das Zeitlimit überschritten.",
@@ -1268,7 +1272,9 @@
   "rssiLabel": "Signal: {rssi} dBm",
   "@rssiLabel": {
     "placeholders": {
-      "rssi": { "type": "int" }
+      "rssi": {
+        "type": "int"
+      }
     }
   },
   "configureWifi": "WLAN konfigurieren",
@@ -1279,11 +1285,23 @@
   "enterWifiPassword": "WLAN-Passwort für {ssid} eingeben",
   "@enterWifiPassword": {
     "placeholders": {
-      "ssid": { "type": "String" }
+      "ssid": {
+        "type": "String"
+      }
     }
   },
   "erasePasscodeTitle": "Lösch-Passcode",
   "erasePasscodeSubtitle": "Panikcode festlegen, der alle Anmeldedaten löscht",
   "erasePasscodeSet": "Lösch-Passcode festgelegt",
-  "enterErasePasscode": "Lösch-Passcode eingeben (6+ Stellen)"
+  "enterErasePasscode": "Lösch-Passcode eingeben (6+ Stellen)",
+  "authorizedAdminMenu": "Autorisierter Admin",
+  "noAdminsYet": "Noch keine autorisierten Admins",
+  "adminRevoked": "Administratorzugriff widerrufen",
+  "importFromLock": "Von einem anderen Schloss importieren",
+  "importFromLockSubtitle": "Anmeldedaten von einem alten Schloss auf dieses Schloss kopieren",
+  "importFromLockDesc": "Stellen Sie sicher, dass beide Schlösser per Bluetooth in der Nähe sind. Wählen Sie das Quellschloss aus.",
+  "proceed": "Fortfahren",
+  "selectSourceLock": "Quellschloss auswählen",
+  "importStarted": "Import über Bluetooth gestartet",
+  "noOtherLocks": "Keine anderen Schlösser gefunden"
 }

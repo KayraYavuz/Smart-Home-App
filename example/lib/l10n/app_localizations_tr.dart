@@ -3133,4 +3133,36 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get enterErasePasscode => 'Silme kodunu girin (6+ hane)';
+
+  @override
+  String get authorizedAdminMenu => 'Yetkili Yönetici';
+
+  @override
+  String get noAdminsYet => 'Henüz yetkili yönetici yok';
+
+  @override
+  String get adminRevoked => 'Yönetici erişimi iptal edildi';
+
+  @override
+  String get importFromLock => 'Başka Bir Kilit\'ten İçe Aktar';
+
+  @override
+  String get importFromLockSubtitle =>
+      'Eski kilitteki kimlik bilgilerini bu kilide kopyala';
+
+  @override
+  String get importFromLockDesc =>
+      'Her iki kilidin Bluetooth ile yakında olduğundan emin olun. Şifreler ve kartları aktarmak için kaynak kilidi seçin.';
+
+  @override
+  String get proceed => 'Devam Et';
+
+  @override
+  String get selectSourceLock => 'Kaynak Kilidi Seçin';
+
+  @override
+  String get importStarted => 'Bluetooth ile içe aktarma başladı';
+
+  @override
+  String get noOtherLocks => 'Başka kilit bulunamadı';
 }

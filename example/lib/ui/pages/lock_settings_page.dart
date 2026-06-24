@@ -10,6 +10,7 @@ import 'package:yavuz_lock/ui/pages/passage_mode/passage_mode_page.dart';
 import 'package:ttlock_flutter/ttlock.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:yavuz_lock/ui/pages/import_from_lock_page.dart';
 
 class LockSettingsPage extends StatefulWidget {
   final Map<String, dynamic> lock;
@@ -205,6 +206,12 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                   title: l10n.exportData,
                   subtitle: l10n.exportDataSubtitle,
                   onTap: _exportLockRecords,
+                ),
+                _buildSettingTile(
+                  icon: Icons.download_for_offline_outlined,
+                  title: l10n.importFromLock,
+                  subtitle: l10n.importFromLockSubtitle,
+                  onTap: _importFromAnotherLock,
                 ),
 
                 const SizedBox(height: 24),
@@ -1433,6 +1440,38 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       MaterialPageRoute(
         builder: (context) =>
             WifiLockPage(lockId: int.tryParse(widget.lock['lockId']?.toString() ?? '') ?? 0, lockData: _lockData),
+      ),
+    );
+  }
+
+  Future<void> _importFromAnotherLock() async {
+    final l10n = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.importFromLock, style: const TextStyle(color: Colors.white)),
+        content: Text(l10n.importFromLockDesc, style: const TextStyle(color: Colors.grey)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.proceed, style: const TextStyle(color: Color(0xFF1E90FF))),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    navigator.push(
+      MaterialPageRoute(
+        builder: (context) => ImportFromLockPage(
+          targetLockData: _lockData,
+          targetLockId: widget.lock['lockId']?.toString() ?? '',
+        ),
       ),
     );
   }

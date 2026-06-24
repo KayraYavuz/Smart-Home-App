@@ -3119,4 +3119,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterErasePasscode => 'Enter erase passcode (6+ digits)';
+
+  @override
+  String get authorizedAdminMenu => 'Authorized Admin';
+
+  @override
+  String get noAdminsYet => 'No authorized admins yet';
+
+  @override
+  String get adminRevoked => 'Admin access revoked';
+
+  @override
+  String get importFromLock => 'Import from Another Lock';
+
+  @override
+  String get importFromLockSubtitle =>
+      'Copy credentials from an old lock to this lock';
+
+  @override
+  String get importFromLockDesc =>
+      'Make sure both locks are nearby via Bluetooth. Select the source lock to import its passcodes and cards.';
+
+  @override
+  String get proceed => 'Proceed';
+
+  @override
+  String get selectSourceLock => 'Select Source Lock';
+
+  @override
+  String get importStarted => 'Import started via Bluetooth';
+
+  @override
+  String get noOtherLocks => 'No other locks found';
 }
