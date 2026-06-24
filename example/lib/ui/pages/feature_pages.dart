@@ -256,6 +256,7 @@ class _RemoteListPageState extends State<RemoteListPage> {
     if (selected == null || !mounted) return;
 
     final messenger = ScaffoldMessenger.of(context);
+    final rootNav = Navigator.of(context, rootNavigator: true);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -300,14 +301,14 @@ class _RemoteListPageState extends State<RemoteListPage> {
         },
       );
 
+      rootNav.pop();
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).pop();
       await _loadRemotes();
       if (!mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.accessoryAdded)));
     } catch (e) {
+      rootNav.pop();
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).pop();
       messenger
           .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
     }
@@ -709,6 +710,7 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
     if (selected == null || !mounted) return;
 
     final messenger = ScaffoldMessenger.of(context);
+    final rootNav = Navigator.of(context, rootNavigator: true);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -747,14 +749,14 @@ class _DoorSensorPageState extends State<DoorSensorPage> {
         },
       );
 
+      rootNav.pop();
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).pop();
       await _loadSensor();
       if (!mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.accessoryAdded)));
     } catch (e) {
+      rootNav.pop();
       if (!mounted) return;
-      Navigator.of(context, rootNavigator: true).pop();
       messenger
           .showSnackBar(SnackBar(content: Text(l10n.errorWithMsg(e.toString()))));
     }

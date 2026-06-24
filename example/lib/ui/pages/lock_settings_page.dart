@@ -405,7 +405,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
     }
 
     // Always close the loading dialog.
-    if (mounted) navigator.pop();
+    navigator.pop();
 
     if (newLockData == null) {
       if (mounted) {
@@ -464,7 +464,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       error = e.toString();
     }
 
-    if (mounted) navigator.pop(); // always close the loading dialog
+    navigator.pop(); // always close the loading dialog
 
     if (error != null && mounted) {
       scaffoldMessenger.showSnackBar(
@@ -730,7 +730,7 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
       error = e.toString();
     }
 
-    if (mounted) navigator.pop(); // close loading
+    navigator.pop(); // always close loading
     if (!mounted) return;
 
     if (error != null) {

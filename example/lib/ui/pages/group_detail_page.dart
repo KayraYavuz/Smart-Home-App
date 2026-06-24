@@ -291,7 +291,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       final locks = await _apiService.getGroupLockList(groupId);
 
       if (locks.isEmpty) {
-        if (mounted) navigator.pop();
+        navigator.pop();
         if (mounted) {
           scaffoldMessenger
               .showSnackBar(SnackBar(content: Text(l10n.noLocksInGroup)));
@@ -378,7 +378,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         }
       }
 
-      if (mounted) navigator.pop();
+      navigator.pop();
       if (mounted) {
         scaffoldMessenger.showSnackBar(
           SnackBar(
@@ -389,7 +389,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         );
       }
     } catch (e) {
-      if (mounted) navigator.pop();
+      navigator.pop();
       if (mounted) {
         scaffoldMessenger.showSnackBar(SnackBar(
             content: Text(l10n.errorWithMsg(e.toString())),
