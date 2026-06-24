@@ -19,6 +19,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  late final TapGestureRecognizer _termsRecognizer;
+  late final TapGestureRecognizer _privacyRecognizer;
 
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -27,6 +29,15 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isAgreed = false;
 
   final _auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = () => _launchUrl('https://sites.google.com/view/terms-yavuz-lock/ana-sayfa');
+    _privacyRecognizer = TapGestureRecognizer()
+      ..onTap = () => _launchUrl('https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa');
+  }
 
   Future<void> _registerAndSendVerification() async {
     final l10n = AppLocalizations.of(context)!;
@@ -243,6 +254,8 @@ class _RegisterPageState extends State<RegisterPage> {
     _usernameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _termsRecognizer.dispose();
+    _privacyRecognizer.dispose();
     super.dispose();
   }
 
@@ -395,9 +408,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       style: const TextStyle(
                                           color: Colors.blue,
                                           decoration: TextDecoration.underline),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () => _launchUrl(
-                                            'https://sites.google.com/view/terms-yavuz-lock/ana-sayfa'),
+                                      recognizer: _termsRecognizer,
                                     ),
                                     TextSpan(text: ' ${l10n.and} '),
                                     TextSpan(
@@ -405,9 +416,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       style: const TextStyle(
                                           color: Colors.blue,
                                           decoration: TextDecoration.underline),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () => _launchUrl(
-                                            'https://sites.google.com/view/yavuz-lock-privacy/ana-sayfa'),
+                                      recognizer: _privacyRecognizer,
                                     ),
                                     TextSpan(text: ' ${l10n.readAndApprove}.'),
                                   ],

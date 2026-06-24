@@ -72,7 +72,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   Future<void> _sendCode() async {
     final l10n = AppLocalizations.of(context)!;
-    if (!_emailFormKey.currentState!.validate()) return;
+    // In step 2 the email form is no longer in the tree; validate the value directly.
+    if (_emailFormKey.currentState != null) {
+      if (!_emailFormKey.currentState!.validate()) return;
+    } else if (!_isValidEmail(_emailController.text)) {
+      _snack(l10n.invalidEmail, error: true);
+      return;
+    }
     setState(() => _isLoading = true);
     try {
       final code = _emailService.generateVerificationCode();
@@ -244,7 +250,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ),
             validator: (v) {
               if (v == null || v.isEmpty) return l10n.passwordRequired;
-              if (v.length < 6) return l10n.passwordTooShort;
+              if (v.length < 8) return l10n.passwordMinLength;
+              if (!RegExp(r'[0-9]').hasMatch(v)) return l10n.passwordDigitRequired;
+              if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(v)) return l10n.passwordSymbolRequired;
               return null;
             },
           ),
