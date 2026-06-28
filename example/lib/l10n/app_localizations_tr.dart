@@ -466,14 +466,14 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get codeSendFailed =>
-      'Doğrulama kodu gönderilemedi. Bunun yerine TTLock sitesinden sıfırlayabilirsin.';
+      'Doğrulama kodu gönderilemedi. Lütfen tekrar deneyin.';
 
   @override
   String get resetCouldNotAuto =>
-      'Bu şifre otomatik olarak sıfırlanamadı. Bu, TTLock sitesinden sıfırlanması gereken bir TTLock hesabı olabilir. Şimdi açılsın mı?';
+      'Şifre sıfırlama başarısız oldu. Lütfen tekrar deneyin.';
 
   @override
-  String get openTtlockResetBtn => 'TTLock\'ta sıfırla';
+  String get openTtlockResetBtn => 'Tamam';
 
   @override
   String get enterCodeAndNewPassword =>
@@ -502,6 +502,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get invalidEmail => 'Lütfen geçerli bir e-posta gir';
+
+  @override
+  String get networkError => 'Ağ hatası. Lütfen bağlantını kontrol et.';
+
+  @override
+  String get tooManyRequests =>
+      'Çok fazla deneme. Lütfen daha sonra tekrar dene.';
 
   @override
   String get passwordTooShort => 'Şifre en az 6 karakter olmalı';
@@ -3173,4 +3180,76 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noOtherLocks => 'Başka kilit bulunamadı';
+
+  @override
+  String get elevatorControl => 'Asansör Kontrolü';
+
+  @override
+  String get elevatorControlSubtitle => 'Asansör erişim katlarını yönet';
+
+  @override
+  String get floorActivation => 'Kat Aktivasyonu';
+
+  @override
+  String get floorActivationSubtitle => 'Belirli katlara erişimi etkinleştir';
+
+  @override
+  String get elevatorWorkMode => 'Asansör Çalışma Modu';
+
+  @override
+  String get elevatorWorkModeSubtitle => 'Tüm katlar veya belirli katlar';
+
+  @override
+  String get allFloors => 'Tüm Katlar';
+
+  @override
+  String get specificFloors => 'Belirli Katlar';
+
+  @override
+  String get enterFloors =>
+      'Kat numaralarını girin (virgülle ayrılmış, örn: 1,2,3)';
+
+  @override
+  String get floorsActivated => 'Katlar aktive edildi';
+
+  @override
+  String get elevatorWorkModeUpdated => 'Asansör çalışma modu güncellendi';
+
+  @override
+  String get powerSaverMode => 'Güç Tasarrufu Modu';
+
+  @override
+  String get powerSaverModeSubtitle => 'Güç tasarrufu tetikleyicisini ayarla';
+
+  @override
+  String get allCards => 'Tüm Kartlar';
+
+  @override
+  String get hotelCard => 'Otel Kartı';
+
+  @override
+  String get roomCard => 'Oda Kartı';
+
+  @override
+  String get powerSaverUpdated => 'Güç tasarrufu modu güncellendi';
+
+  @override
+  String get lockSystemInfo => 'Kilit Sistem Bilgisi';
+
+  @override
+  String get lockSystemInfoSubtitle =>
+      'Bluetooth ile kilit teknik bilgilerini oku';
+
+  @override
+  String get lockSystemInfoTitle => 'Sistem Bilgisi';
+
+  @override
+  String get floorControlAble => 'Kontrol Edilebilir Katlar';
+
+  @override
+  String get floorControlAbleSubtitle =>
+      'Kilitle kontrol edilebilecek katları ayarla';
+
+  @override
+  String get floorsControlAbleSet => 'Kontrol edilebilir katlar ayarlandı';
 }

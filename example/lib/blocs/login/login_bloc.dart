@@ -1,12 +1,14 @@
 import "package:flutter/foundation.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_event.dart';
 import 'package:yavuz_lock/blocs/login/login_event.dart';
 import 'package:yavuz_lock/blocs/login/login_state.dart';
+import 'package:yavuz_lock/repositories/auth_repository.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final ApiService _apiService;
@@ -88,15 +90,26 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         _authBloc.add(LoggedIn(accessToken));
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('saved_email', event.username);
+        // Keychain'e de yaz — reinstall'da SharedPreferences silinse bile kalır
+        await AuthRepository().saveEmail(event.username.trim());
+
+        // Firestore key: email'den türetilen sabit anahtar
+        final docKey = event.username.trim().toLowerCase()
+            .replaceAll(RegExp(r'[^a-z0-9]'), '_');
+        try {
+          await FirebaseFirestore.instance.collection('users').doc(docKey)
+              .set({'email': event.username.trim()}, SetOptions(merge: true));
+          debugPrint('✅ Firestore user doc yazıldı: $docKey');
+        } catch (e) {
+          debugPrint('⚠️ Firestore user doc oluşturulamadı: $e');
+        }
         debugPrint('🎉 [LoginBloc] LoginSuccess emit ediliyor');
         emit(LoginSuccess());
       } else {
         emit(const LoginFailure('loginSuccessButNoToken'));
       }
     } else if (firebaseSuccess && !ttlockSuccess) {
-      // Şifre uyuşmazlığı durumunda karmaşık süreçler yerine doğrudan Web Portalına yönlendir.
-      debugPrint(
-          '⚠️ [LoginBloc] Şifre uyuşmazlığı (Firebase OK, TTLock FAIL). Web Portalına yönlendiriliyor...');
+      debugPrint('⚠️ [LoginBloc] Firebase OK, TTLock FAIL. Web Portalına yönlendiriliyor...');
       emit(LoginTTLockWebRedirect());
     } else {
       debugPrint('❌ [LoginBloc] Tüm giriş yöntemleri başarısız');

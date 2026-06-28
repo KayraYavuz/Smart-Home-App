@@ -985,19 +985,19 @@ abstract class AppLocalizations {
   /// No description provided for @codeSendFailed.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t send the verification code. You can reset on TTLock\'s site instead.'**
+  /// **'Couldn\'t send the verification code. Please try again.'**
   String get codeSendFailed;
 
   /// No description provided for @resetCouldNotAuto.
   ///
   /// In en, this message translates to:
-  /// **'We couldn\'t reset this password automatically. It may be a TTLock account that must be reset on TTLock\'s site. Open it now?'**
+  /// **'Password reset failed. Please try again.'**
   String get resetCouldNotAuto;
 
   /// No description provided for @openTtlockResetBtn.
   ///
   /// In en, this message translates to:
-  /// **'Reset on TTLock'**
+  /// **'OK'**
   String get openTtlockResetBtn;
 
   /// No description provided for @enterCodeAndNewPassword.
@@ -1047,6 +1047,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter a valid email'**
   String get invalidEmail;
+
+  /// No description provided for @networkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your connection.'**
+  String get networkError;
+
+  /// No description provided for @tooManyRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please try again later.'**
+  String get tooManyRequests;
 
   /// No description provided for @passwordTooShort.
   ///
@@ -5805,6 +5817,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No other locks found'**
   String get noOtherLocks;
+
+  /// No description provided for @elevatorControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevator Control'**
+  String get elevatorControl;
+
+  /// No description provided for @elevatorControlSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage elevator floor access'**
+  String get elevatorControlSubtitle;
+
+  /// No description provided for @floorActivation.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor Activation'**
+  String get floorActivation;
+
+  /// No description provided for @floorActivationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate access to specific floors'**
+  String get floorActivationSubtitle;
+
+  /// No description provided for @elevatorWorkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevator Work Mode'**
+  String get elevatorWorkMode;
+
+  /// No description provided for @elevatorWorkModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All floors or specific floors'**
+  String get elevatorWorkModeSubtitle;
+
+  /// No description provided for @allFloors.
+  ///
+  /// In en, this message translates to:
+  /// **'All Floors'**
+  String get allFloors;
+
+  /// No description provided for @specificFloors.
+  ///
+  /// In en, this message translates to:
+  /// **'Specific Floors'**
+  String get specificFloors;
+
+  /// No description provided for @enterFloors.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter floor numbers (comma-separated, e.g. 1,2,3)'**
+  String get enterFloors;
+
+  /// No description provided for @floorsActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Floors activated'**
+  String get floorsActivated;
+
+  /// No description provided for @elevatorWorkModeUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevator work mode updated'**
+  String get elevatorWorkModeUpdated;
+
+  /// No description provided for @powerSaverMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Power Saver Mode'**
+  String get powerSaverMode;
+
+  /// No description provided for @powerSaverModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set power saver trigger'**
+  String get powerSaverModeSubtitle;
+
+  /// No description provided for @allCards.
+  ///
+  /// In en, this message translates to:
+  /// **'All Cards'**
+  String get allCards;
+
+  /// No description provided for @hotelCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel Card'**
+  String get hotelCard;
+
+  /// No description provided for @roomCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Room Card'**
+  String get roomCard;
+
+  /// No description provided for @powerSaverUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Power saver mode updated'**
+  String get powerSaverUpdated;
+
+  /// No description provided for @lockSystemInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock System Info'**
+  String get lockSystemInfo;
+
+  /// No description provided for @lockSystemInfoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read lock technical info via Bluetooth'**
+  String get lockSystemInfoSubtitle;
+
+  /// No description provided for @lockSystemInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'System Info'**
+  String get lockSystemInfoTitle;
+
+  /// No description provided for @floorControlAble.
+  ///
+  /// In en, this message translates to:
+  /// **'Controllable Floors'**
+  String get floorControlAble;
+
+  /// No description provided for @floorControlAbleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set which floors this lock can control'**
+  String get floorControlAbleSubtitle;
+
+  /// No description provided for @floorsControlAbleSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Controllable floors set'**
+  String get floorsControlAbleSet;
 }
 
 class _AppLocalizationsDelegate

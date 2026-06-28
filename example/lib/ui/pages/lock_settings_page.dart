@@ -200,6 +200,39 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
                 ),
 
                 const SizedBox(height: 24),
+                _buildSectionHeader(l10n.elevatorControl),
+                _buildSettingTile(
+                  icon: Icons.elevator,
+                  title: l10n.floorActivation,
+                  subtitle: l10n.floorActivationSubtitle,
+                  onTap: _showFloorActivation,
+                ),
+                _buildSettingTile(
+                  icon: Icons.layers,
+                  title: l10n.elevatorWorkMode,
+                  subtitle: l10n.elevatorWorkModeSubtitle,
+                  onTap: _showElevatorWorkMode,
+                ),
+                _buildSettingTile(
+                  icon: Icons.settings_input_component,
+                  title: l10n.floorControlAble,
+                  subtitle: l10n.floorControlAbleSubtitle,
+                  onTap: _showFloorControlAble,
+                ),
+                _buildSettingTile(
+                  icon: Icons.battery_saver,
+                  title: l10n.powerSaverMode,
+                  subtitle: l10n.powerSaverModeSubtitle,
+                  onTap: _showPowerSaverMode,
+                ),
+                _buildSettingTile(
+                  icon: Icons.info_outline,
+                  title: l10n.lockSystemInfo,
+                  subtitle: l10n.lockSystemInfoSubtitle,
+                  onTap: _showLockSystemInfo,
+                ),
+
+                const SizedBox(height: 24),
                 _buildSectionHeader(l10n.dataManagement),
                 _buildSettingTile(
                   icon: Icons.file_download_outlined,
@@ -1472,6 +1505,248 @@ class _LockSettingsPageState extends State<LockSettingsPage> {
           targetLockData: _lockData,
           targetLockId: widget.lock['lockId']?.toString() ?? '',
         ),
+      ),
+    );
+  }
+
+  Future<void> _showFloorActivation() async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final controller = TextEditingController();
+    final floors = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.floorActivation, style: const TextStyle(color: Colors.white)),
+        content: TextField(
+          controller: controller,
+          style: const TextStyle(color: Colors.white),
+          keyboardType: TextInputType.text,
+          decoration: InputDecoration(
+            hintText: l10n.enterFloors,
+            hintStyle: const TextStyle(color: Colors.grey),
+            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
+            child: Text(l10n.set, style: const TextStyle(color: AppColors.primary)),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (floors == null || floors.isEmpty || !mounted) return;
+
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.activateLift(floors, _lockData, (lockTime, electricQuantity, uniqueId) {
+        if (!c.isCompleted) c.complete(true);
+      }, (code, msg) {
+        if (!c.isCompleted) c.completeError('$msg ($code)');
+      });
+    });
+    if (ok == true && mounted) {
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.floorsActivated)));
+    }
+  }
+
+  Future<void> _showFloorControlAble() async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final controller = TextEditingController();
+    final floors = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.floorControlAble, style: const TextStyle(color: Colors.white)),
+        content: TextField(
+          controller: controller,
+          style: const TextStyle(color: Colors.white),
+          keyboardType: TextInputType.text,
+          decoration: InputDecoration(
+            hintText: l10n.enterFloors,
+            hintStyle: const TextStyle(color: Colors.grey),
+            enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text.trim()),
+            child: Text(l10n.set, style: const TextStyle(color: AppColors.primary)),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (floors == null || floors.isEmpty || !mounted) return;
+
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.setLiftControlAble(floors, _lockData, () {
+        if (!c.isCompleted) c.complete(true);
+      }, (code, msg) {
+        if (!c.isCompleted) c.completeError('$msg ($code)');
+      });
+    });
+    if (ok == true && mounted) {
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.floorsControlAbleSet)));
+    }
+  }
+
+  Future<void> _showElevatorWorkMode() async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final picked = await showDialog<TTLiftWorkActivateType>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.elevatorWorkMode, style: const TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(l10n.allFloors, style: const TextStyle(color: Colors.white)),
+              onTap: () => Navigator.of(ctx).pop(TTLiftWorkActivateType.allFloors),
+            ),
+            ListTile(
+              title: Text(l10n.specificFloors, style: const TextStyle(color: Colors.white)),
+              onTap: () => Navigator.of(ctx).pop(TTLiftWorkActivateType.specificFloors),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+          ),
+        ],
+      ),
+    );
+    if (picked == null || !mounted) return;
+
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.setLiftWorkMode(picked, _lockData, () {
+        if (!c.isCompleted) c.complete(true);
+      }, (code, msg) {
+        if (!c.isCompleted) c.completeError('$msg ($code)');
+      });
+    });
+    if (ok == true && mounted) {
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.elevatorWorkModeUpdated)));
+    }
+  }
+
+  Future<void> _showPowerSaverMode() async {
+    final l10n = AppLocalizations.of(context)!;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final picked = await showDialog<TTPowerSaverWorkType>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.powerSaverMode, style: const TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(l10n.allCards, style: const TextStyle(color: Colors.white)),
+              onTap: () => Navigator.of(ctx).pop(TTPowerSaverWorkType.allCards),
+            ),
+            ListTile(
+              title: Text(l10n.hotelCard, style: const TextStyle(color: Colors.white)),
+              onTap: () => Navigator.of(ctx).pop(TTPowerSaverWorkType.hotelCard),
+            ),
+            ListTile(
+              title: Text(l10n.roomCard, style: const TextStyle(color: Colors.white)),
+              onTap: () => Navigator.of(ctx).pop(TTPowerSaverWorkType.roomCard),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+          ),
+        ],
+      ),
+    );
+    if (picked == null || !mounted) return;
+
+    final ok = await _runBleOp<bool>((c) {
+      TTLock.setPowerSaverWorkMode(picked, _lockData, () {
+        if (!c.isCompleted) c.complete(true);
+      }, (code, msg) {
+        if (!c.isCompleted) c.completeError('$msg ($code)');
+      });
+    });
+    if (ok == true && mounted) {
+      scaffoldMessenger.showSnackBar(SnackBar(content: Text(l10n.powerSaverUpdated)));
+    }
+  }
+
+  Future<void> _showLockSystemInfo() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final info = await _runBleOp<TTLockSystemModel>((c) {
+      TTLock.getLockSystemInfo(_lockData, (sysModel) {
+        if (!c.isCompleted) c.complete(sysModel);
+      }, (code, msg) {
+        if (!c.isCompleted) c.completeError('$msg ($code)');
+      });
+    });
+
+    if (info == null || !mounted) return;
+
+    final rows = <MapEntry<String, String>>[
+      if (info.modelNum != null) MapEntry('Model', info.modelNum!),
+      if (info.hardwareRevision != null) MapEntry('HW', info.hardwareRevision!),
+      if (info.firmwareRevision != null) MapEntry('FW', info.firmwareRevision!),
+      if (info.electricQuantity != null) MapEntry('Battery', '${info.electricQuantity}%'),
+      if (info.nbOperator != null) MapEntry('NB Operator', info.nbOperator!),
+      if (info.nbNodeId != null) MapEntry('NB Node', info.nbNodeId!),
+      if (info.nbCardNumber != null) MapEntry('NB Card', info.nbCardNumber!),
+      if (info.nbRssi != null) MapEntry('NB RSSI', info.nbRssi!),
+      if (info.passcodeKeyNumber != null) MapEntry('Passcode Keys', info.passcodeKeyNumber!),
+    ];
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(l10n.lockSystemInfoTitle, style: const TextStyle(color: Colors.white)),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: rows.isEmpty
+                ? [Text(l10n.noData, style: const TextStyle(color: Colors.grey))]
+                : rows.map((e) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${e.key}: ', style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                        Expanded(
+                          child: Text(e.value, style: const TextStyle(color: Colors.white, fontSize: 13)),
+                        ),
+                      ],
+                    ),
+                  )).toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.ok, style: const TextStyle(color: AppColors.primary)),
+          ),
+        ],
       ),
     );
   }

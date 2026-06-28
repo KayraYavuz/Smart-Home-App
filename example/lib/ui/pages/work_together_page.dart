@@ -3,6 +3,8 @@ import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/ui/pages/work_together/query_lock_page.dart';
 import 'package:yavuz_lock/ui/pages/work_together/card_encoder_page.dart';
 import 'package:yavuz_lock/ui/pages/work_together/open_platform_page.dart';
+import 'package:yavuz_lock/ui/pages/work_together/utility_meter_page.dart';
+import 'package:yavuz_lock/ui/pages/bookings_page.dart';
 
 class WorkTogetherPage extends StatelessWidget {
   const WorkTogetherPage({super.key});
@@ -71,6 +73,36 @@ class WorkTogetherPage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => const OpenPlatformPage()),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            _buildPartnerService(
+              icon: Icons.book_online,
+              iconColor: Colors.purple,
+              title: 'Bookings',
+              description: Localizations.localeOf(context).languageCode == 'tr'
+                  ? 'Oda, daire ve kort rezervasyon yönetimi'
+                  : 'Manage room, apartment and court bookings',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BookingsPage()),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            _buildPartnerService(
+              icon: Icons.electric_meter,
+              iconColor: Colors.teal,
+              title: l10n.utilityMeter,
+              description: l10n.utilityMeterDesc,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UtilityMeterPage()),
                 );
               },
             ),

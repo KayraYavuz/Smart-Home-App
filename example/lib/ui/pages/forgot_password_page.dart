@@ -1,6 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:yavuz_lock/api_service.dart';
 import 'package:yavuz_lock/l10n/app_localizations.dart';
 import 'package:yavuz_lock/services/email_service.dart';
@@ -82,8 +82,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     setState(() => _isLoading = true);
     try {
       final code = _emailService.generateVerificationCode();
+      final lang = Localizations.localeOf(context).languageCode;
       final sent = await _emailService.sendVerificationEmail(
-          _emailController.text.trim(), code);
+          _emailController.text.trim(), code,
+          languageCode: lang);
       if (!mounted) return;
       if (sent) {
         setState(() {
@@ -93,7 +95,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         _snack(l10n.codeSentTo(_emailController.text.trim()));
       } else {
         // SMTP not configured or send failed → can't verify; offer fallback.
-        await _offerTtlockFallback(l10n.codeSendFailed);
+        _offerTtlockFallback(l10n.codeSendFailed);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -113,42 +115,28 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         username: _emailController.text.trim(),
         newPassword: _newPasswordController.text,
       );
+      // Firebase şifresini de güncelle (oturum açıksa)
+      final fbUser = FirebaseAuth.instance.currentUser;
+      if (fbUser != null) {
+        try {
+          await fbUser.updatePassword(_newPasswordController.text);
+        } catch (_) {
+          // Oturum süresi dolmuş olabilir — TTLock girişi yeterli
+        }
+      }
       if (!mounted) return;
       _snack(l10n.resetPasswordSuccess);
       Navigator.of(context).pop();
-    } catch (_) {
-      if (mounted) await _offerTtlockFallback(l10n.resetCouldNotAuto);
+    } catch (e) {
+      final detail = e.toString().replaceAll('Exception: ', '');
+      if (mounted) _offerTtlockFallback('$detail');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _offerTtlockFallback(String message) async {
-    final l10n = AppLocalizations.of(context)!;
-    final go = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.forgotPasswordTitle),
-        content: Text(message),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: Text(l10n.cancel)),
-          TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(l10n.openTtlockResetBtn)),
-        ],
-      ),
-    );
-    if (go != true) return;
-    final uri = Uri.parse('https://lock2.ttlock.com/');
-    try {
-      if (!await launchUrl(uri, mode: LaunchMode.inAppBrowserView)) {
-        await launchUrl(uri);
-      }
-    } catch (_) {
-      _snack(l10n.urlOpenError(uri.toString()), error: true);
-    }
+  void _offerTtlockFallback(String message) {
+    _snack(message, error: true);
   }
 
   @override

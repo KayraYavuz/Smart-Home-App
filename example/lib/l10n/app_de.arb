@@ -158,6 +158,8 @@
   "resetPasswordSuccess": "Passwort erfolgreich zurückgesetzt. Bitte melden Sie sich an.",
   "resendCode": "Code erneut senden",
   "invalidEmail": "Bitte geben Sie eine gültige E-Mail ein",
+  "networkError": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
+  "tooManyRequests": "Zu viele Versuche. Bitte versuchen Sie es später erneut.",
   "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
   "emailOrPhone": "E-Mail oder Telefon",
   "sendCode": "Code senden",

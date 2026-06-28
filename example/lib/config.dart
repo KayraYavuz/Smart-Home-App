@@ -13,6 +13,10 @@ class ApiConfig {
   // app-sent email disabled.
   static String smtpUser = Env.smtpUser;
   static String smtpPassword = Env.smtpPassword;
+
+  // TTLock assigns this short prefix to our clientId internally.
+  // It's returned as the username prefix in registerUser responses (e.g. "fihbg_username").
+  static const String ttlockUsernamePrefix = 'fihbg_';
 }
 // DEBUG: Test credentials (TTLock test account)
 // Uncomment to test with TTLock test account

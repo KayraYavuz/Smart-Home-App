@@ -506,6 +506,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get invalidEmail => 'Bitte geben Sie eine gültige E-Mail ein';
 
   @override
+  String get networkError =>
+      'Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.';
+
+  @override
+  String get tooManyRequests =>
+      'Zu viele Versuche. Bitte versuchen Sie es später erneut.';
+
+  @override
   String get passwordTooShort => 'Passwort muss mindestens 6 Zeichen lang sein';
 
   @override
@@ -3199,4 +3207,74 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noOtherLocks => 'Keine anderen Schlösser gefunden';
+
+  @override
+  String get elevatorControl => 'Elevator Control';
+
+  @override
+  String get elevatorControlSubtitle => 'Manage elevator floor access';
+
+  @override
+  String get floorActivation => 'Floor Activation';
+
+  @override
+  String get floorActivationSubtitle => 'Activate access to specific floors';
+
+  @override
+  String get elevatorWorkMode => 'Elevator Work Mode';
+
+  @override
+  String get elevatorWorkModeSubtitle => 'All floors or specific floors';
+
+  @override
+  String get allFloors => 'All Floors';
+
+  @override
+  String get specificFloors => 'Specific Floors';
+
+  @override
+  String get enterFloors => 'Enter floor numbers (comma-separated, e.g. 1,2,3)';
+
+  @override
+  String get floorsActivated => 'Floors activated';
+
+  @override
+  String get elevatorWorkModeUpdated => 'Elevator work mode updated';
+
+  @override
+  String get powerSaverMode => 'Power Saver Mode';
+
+  @override
+  String get powerSaverModeSubtitle => 'Set power saver trigger';
+
+  @override
+  String get allCards => 'All Cards';
+
+  @override
+  String get hotelCard => 'Hotel Card';
+
+  @override
+  String get roomCard => 'Room Card';
+
+  @override
+  String get powerSaverUpdated => 'Power saver mode updated';
+
+  @override
+  String get lockSystemInfo => 'Lock System Info';
+
+  @override
+  String get lockSystemInfoSubtitle => 'Read lock technical info via Bluetooth';
+
+  @override
+  String get lockSystemInfoTitle => 'System Info';
+
+  @override
+  String get floorControlAble => 'Controllable Floors';
+
+  @override
+  String get floorControlAbleSubtitle =>
+      'Set which floors this lock can control';
+
+  @override
+  String get floorsControlAbleSet => 'Controllable floors set';
 }

@@ -359,9 +359,9 @@ class _LoginPageState extends State<LoginPage> {
                 } else if (state is LoginTTLockWebRedirect) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(l10n.ttlockWebSyncMsg),
-                      backgroundColor: Colors.orange,
-                      duration: const Duration(seconds: 6),
+                      content: Text(l10n.loginFailedCheckCredentials),
+                      backgroundColor: Colors.red,
+                      duration: const Duration(seconds: 4),
                     ),
                   );
                 }

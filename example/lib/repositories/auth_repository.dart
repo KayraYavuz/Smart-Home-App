@@ -7,8 +7,18 @@ class AuthRepository {
   static const _baseUrlKey = 'base_url';
   static const _uidKey = 'uid';
   static const _md5PasswordKey = 'md5_password';
+  static const _emailKey = 'user_email';
 
   final _secureStorage = const FlutterSecureStorage();
+
+  /// Email'i Keychain'e kaydeder — uygulama yeniden kurulsa bile silinmez.
+  Future<void> saveEmail(String email) async {
+    await _secureStorage.write(key: _emailKey, value: email);
+  }
+
+  Future<String?> getEmail() async {
+    return await _secureStorage.read(key: _emailKey);
+  }
 
   Future<void> saveTokens({
     required String accessToken,

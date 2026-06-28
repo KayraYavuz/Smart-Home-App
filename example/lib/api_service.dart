@@ -141,7 +141,7 @@ class ApiService {
     // fallback, across both region servers; stop on the first success.
     final base = _usernameVariants(username);
     final candidates = <String>{
-      ...base.map((u) => '${ApiConfig.clientId}_$u'),
+      ...base.map((u) => '${ApiConfig.ttlockUsernamePrefix}$u'),
       ...base,
     };
     final regions = [ApiConfig.baseUrl, 'https://api.ttlock.com'];
@@ -175,8 +175,8 @@ class ApiService {
             }
             debugPrint(
                 '↩️ reset denendi user="$user" region="$region": ${data['errmsg']} (${data['errcode']})');
-            lastError =
-                Exception('apiResetPasswordFailed:${data['errmsg']}');
+            lastError = Exception(
+                'apiResetPasswordFailed [${data['errcode']}]: ${data['errmsg']}');
           } else {
             lastError = Exception(
                 'apiResetPasswordFailed:HTTP ${response.statusCode}');
@@ -229,8 +229,13 @@ class ApiService {
       debugPrint('🔍 registerUser response: $responseData');
 
       if (responseData.containsKey('errcode') && responseData['errcode'] != 0) {
-        // Eğer kullanıcı zaten varsa (errcode: 10003 - User already exists)
-        if (responseData['errcode'] == 10003) {
+        final int errcode = responseData['errcode'] as int? ?? 0;
+        final String errmsg = (responseData['errmsg'] ?? '').toString().toLowerCase();
+        final bool userExists = errcode == 10003 ||
+            errmsg.contains('existing') ||
+            errmsg.contains('already') ||
+            errmsg.contains('registered');
+        if (userExists) {
           throw Exception('apiUsernameAlreadyTaken');
         }
         throw Exception('apiRegistrationFailed:${responseData['errmsg']}');
