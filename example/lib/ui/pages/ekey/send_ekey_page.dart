@@ -116,44 +116,15 @@ class _SendEKeyPageState extends State<SendEKeyPage>
 
   Future<void> _sendKey() async {
     final l10n = AppLocalizations.of(context)!;
-    String receiver = _receiverController.text.trim();
+    final String receiver = _receiverController.text.trim();
     if (receiver.isEmpty) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(l10n.enterReceiver)));
       return;
     }
 
-    // --- Format receiver for TTLock API ---
-    // Remove any spaces or dashes
-    receiver = receiver.replaceAll(RegExp(r'[\s\-]'), '');
-
-    List<String> usernamesToTry = [];
-    usernamesToTry.add(receiver); // Original (trimmed)
-
-    // 1. Phone number logic (Turkey specific and general)
-    String digitsOnly = receiver.replaceAll(RegExp(r'[^0-9]'), '');
-    if (digitsOnly.isNotEmpty) {
-      // If it's a 10-digit number starting with 5 (e.g. 532...)
-      if (digitsOnly.length == 10 && digitsOnly.startsWith('5')) {
-        usernamesToTry.add('90$digitsOnly');
-      }
-      // If it's an 11-digit number starting with 05 (e.g. 0532...)
-      else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
-        usernamesToTry.add('90${digitsOnly.substring(1)}');
-      }
-      // If it starts with +, also try without +
-      if (receiver.startsWith('+')) {
-        usernamesToTry.add(receiver.substring(1));
-      }
-    }
-
-    // 2. Email logic (Sanitization as used in RegisterPage)
-    if (receiver.contains('@')) {
-      String alphanumeric = receiver.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-      if (alphanumeric.isNotEmpty && !usernamesToTry.contains(alphanumeric)) {
-        usernamesToTry.add(alphanumeric);
-      }
-    }
+    // Email ve telefon için fihbg_ dahil tüm formatları öncelik sırasıyla üret
+    final usernamesToTry = buildReceiverUsernames(receiver);
 
     debugPrint('👥 Sharing eKey - trying formats: $usernamesToTry');
 
@@ -192,54 +163,40 @@ class _SendEKeyPageState extends State<SendEKeyPage>
 
       Map<String, dynamic>? result;
       String? lastError;
+      final String keyNameToUse =
+          _nameController.text.isEmpty ? receiver : _nameController.text;
 
-      // Try each format until one works
-      for (String userToTry in usernamesToTry) {
+      Future<Map<String, dynamic>?> trySend(String userToTry, int createUser) async {
         try {
-          debugPrint("Attempting sendEKey to: $userToTry (createUser: 2)");
-          result = await apiService.sendEKey(
-            accessToken: token,
+          debugPrint("Attempting sendEKey to: $userToTry (createUser: $createUser)");
+          return await apiService.sendEKey(
+            accessToken: token!,
             lockId: widget.lock['lockId'].toString(),
             receiverUsername: userToTry,
-            keyName:
-                _nameController.text.isEmpty ? receiver : _nameController.text,
+            keyName: keyNameToUse,
             startDate: finalStartDate,
             endDate: finalEndDate,
             remoteEnable: _allowRemoteUnlock ? 1 : 2,
             cyclicConfig: cyclicConfig,
-            createUser: 2,
+            createUser: createUser,
           );
-          break; // Success!
         } catch (e) {
           lastError = e.toString();
-          debugPrint("Failed with $userToTry: $lastError");
-
-          // If user not found (10004) or invalid username (1002),
-          // we might try with createUser: 1 for this same userToTry
-          if (lastError.contains('10004') || lastError.contains('1002')) {
-            try {
-              debugPrint("Retrying sendEKey to: $userToTry (createUser: 1)");
-              result = await apiService.sendEKey(
-                accessToken: token,
-                lockId: widget.lock['lockId'].toString(),
-                receiverUsername: userToTry,
-                keyName: _nameController.text.isEmpty
-                    ? receiver
-                    : _nameController.text,
-                startDate: finalStartDate,
-                endDate: finalEndDate,
-                remoteEnable: _allowRemoteUnlock ? 1 : 2,
-                cyclicConfig: cyclicConfig,
-                createUser: 1,
-              );
-              break; // Success!
-            } catch (e2) {
-              lastError = e2.toString();
-              debugPrint("Retry failed with $userToTry: $lastError");
-              // Continue to next format in usernamesToTry
-            }
-          }
+          debugPrint("Failed with $userToTry (createUser:$createUser): $lastError");
+          return null;
         }
+      }
+
+      // Faz 1: TÜM formatları createUser:2 (oluşturma YOK) ile dene — var olan
+      // kayıtlı hesabı bul (fihbg_/Yavuz Lock önce, sonra ham email/TTLock-native).
+      for (final userToTry in usernamesToTry) {
+        result = await trySend(userToTry, 2);
+        if (result != null) break;
+      }
+      // Faz 2: hiç kayıtlı değilse oluştur (createUser:1). Email ise fihbg_ formatı
+      // (Yavuz Lock kaydı varsayımı), değilse ilk format.
+      if (result == null && usernamesToTry.isNotEmpty) {
+        result = await trySend(usernamesToTry.first, 1);
       }
 
       if (result == null) {

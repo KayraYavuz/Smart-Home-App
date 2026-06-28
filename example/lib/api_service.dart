@@ -8,6 +8,50 @@ import 'package:http/http.dart' as http;
 import 'package:yavuz_lock/config.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 
+/// eKey gönderiminde denenecek TTLock kullanıcı adı formatlarını öncelik
+/// sırasıyla üretir. Yavuz Lock kaydı her zaman fihbg_<sanitized> olur (giriş
+/// bununla yapılır) — bu yüzden EN ÖNCE o denenmeli. Sonra TTLock-native
+/// formatlar (ham email/telefon). Email ve telefon için ayrı mantık.
+///
+/// Kullanım: önce listedeki TÜM formatları createUser:2 (oluşturma yok) ile
+/// dene → var olan kayıtlı hesabı bul. Hiçbiri yoksa ilk format (fihbg_) ile
+/// createUser:1 yaparak oluştur.
+List<String> buildReceiverUsernames(String receiverRaw) {
+  final receiver = receiverRaw.trim().replaceAll(RegExp(r'[\s\-]'), '');
+  final prefix = ApiConfig.ttlockUsernamePrefix; // 'fihbg_'
+  final list = <String>[];
+
+  if (receiver.contains('@')) {
+    // E-POSTA alıcı
+    final san = receiver.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+    list.add('$prefix$san'); // Yavuz Lock kaydı (öncelik)
+    list.add(receiver); // TTLock-native ham email
+    list.add(san); // prefix'siz sanitized
+  } else {
+    // TELEFON alıcı
+    final digits = receiver.replaceAll(RegExp(r'[^0-9]'), '');
+    String? norm90;
+    if (digits.length == 10 && digits.startsWith('5')) {
+      norm90 = '90$digits';
+    } else if (digits.length == 11 && digits.startsWith('05')) {
+      norm90 = '90${digits.substring(1)}';
+    } else if (digits.startsWith('90')) {
+      norm90 = digits;
+    }
+    // Yavuz Lock kaydı (fihbg_) — telefon da arkada TTLock'a fihbg_<rakam> olur
+    if (digits.isNotEmpty) list.add('$prefix$digits');
+    if (norm90 != null) list.add('$prefix$norm90');
+    // TTLock-native telefon
+    list.add(receiver);
+    if (norm90 != null) list.add(norm90);
+    if (receiver.startsWith('+')) list.add(receiver.substring(1));
+  }
+
+  // boşları at, tekrarları kaldır (sıra korunur)
+  final seen = <String>{};
+  return list.where((u) => u.isNotEmpty && seen.add(u)).toList();
+}
+
 // Webhook olayları için model sınıfları
 enum TTLockWebhookEventType {
   lockOpened, // Kilit açıldı
@@ -4213,14 +4257,22 @@ class ApiService {
 
     // 5. Email variants
     if (cleanInput.contains('@')) {
-      // b) Alphanumeric only (what register uses)
+      // b) Alphanumeric only (what register uses). Hem orijinal hem KÜÇÜK HARF —
+      //    register fihbg_<email.toLowerCase().alphanumeric> oluşturduğu için
+      //    karışık harfli email girişlerinde de eşleşme sağlanır.
       final alphanumeric = cleanInput.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-      if (alphanumeric.isNotEmpty) out.add(alphanumeric);
+      if (alphanumeric.isNotEmpty) {
+        out.add(alphanumeric);
+        out.add(alphanumeric.toLowerCase());
+      }
 
-      // c) Name part before @, alphanumeric
+      // c) Name part before @, alphanumeric (orijinal + küçük harf)
       final namePart =
           cleanInput.split('@')[0].replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-      if (namePart.isNotEmpty) out.add(namePart);
+      if (namePart.isNotEmpty) {
+        out.add(namePart);
+        out.add(namePart.toLowerCase());
+      }
     }
 
     return out;

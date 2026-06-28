@@ -89,7 +89,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (accessToken != null) {
         _authBloc.add(LoggedIn(accessToken));
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('saved_email', event.username);
+        // trim'li kaydet — premium docKey de trim'li, aksi halde boşluklu email
+        // girişinde anahtarlar uyuşmaz (farklı Firestore belgesi aranır).
+        await prefs.setString('saved_email', event.username.trim());
         // Keychain'e de yaz — reinstall'da SharedPreferences silinse bile kalır
         await AuthRepository().saveEmail(event.username.trim());
 

@@ -299,42 +299,15 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         return;
       }
 
-      String receiver = receiverUsername.trim();
-      // Remove any spaces or dashes
-      receiver = receiver.replaceAll(RegExp(r'[\s\-]'), '');
-
-      List<String> usernamesToTry = [];
-      usernamesToTry.add(receiver);
-
-      // 1. Phone number logic
-      String digitsOnly = receiver.replaceAll(RegExp(r'[^0-9]'), '');
-      if (digitsOnly.isNotEmpty) {
-        if (digitsOnly.length == 10 && digitsOnly.startsWith('5')) {
-          usernamesToTry.add('90$digitsOnly');
-        } else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
-          usernamesToTry.add('90${digitsOnly.substring(1)}');
-        }
-        if (receiver.startsWith('+')) {
-          usernamesToTry.add(receiver.substring(1));
-        }
-      }
-
-      // 2. Email logic (Sanitization as used in RegisterPage)
-      if (receiver.contains('@')) {
-        String alphanumeric = receiver.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-        if (alphanumeric.isNotEmpty && !usernamesToTry.contains(alphanumeric)) {
-          usernamesToTry.add(alphanumeric);
-        }
-      }
+      final String receiver = receiverUsername.trim();
+      // Email ve telefon için fihbg_ dahil tüm formatları öncelik sırasıyla üret
+      final usernamesToTry = buildReceiverUsernames(receiver);
 
       int successCount = 0;
       int failCount = 0;
 
       for (var lock in locks) {
-        bool lockShared = false;
-        String? lastError;
-
-        for (String userToTry in usernamesToTry) {
+        Future<bool> trySend(String userToTry, int createUser) async {
           try {
             await _apiService.sendEKey(
               accessToken: token,
@@ -344,31 +317,25 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               startDate: DateTime.fromMillisecondsSinceEpoch(startDateMs),
               endDate: DateTime.fromMillisecondsSinceEpoch(endDateMs),
               remoteEnable: 2,
-              createUser: 2,
+              createUser: createUser,
             );
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }
+
+        bool lockShared = false;
+        // Faz 1: TÜM formatları createUser:2 (oluşturma yok) — kayıtlı hesabı bul.
+        for (final userToTry in usernamesToTry) {
+          if (await trySend(userToTry, 2)) {
             lockShared = true;
             break;
-          } catch (e) {
-            lastError = e.toString();
-            if (lastError.contains('10004') || lastError.contains('1002')) {
-              try {
-                await _apiService.sendEKey(
-                  accessToken: token,
-                  lockId: lock['lockId'].toString(),
-                  receiverUsername: userToTry,
-                  keyName: "${lock['lockAlias'] ?? 'Lock'} (Group)",
-                  startDate: DateTime.fromMillisecondsSinceEpoch(startDateMs),
-                  endDate: DateTime.fromMillisecondsSinceEpoch(endDateMs),
-                  remoteEnable: 2,
-                  createUser: 1,
-                );
-                lockShared = true;
-                break;
-              } catch (e2) {
-                lastError = e2.toString();
-              }
-            }
           }
+        }
+        // Faz 2: hiç kayıtlı değilse oluştur (createUser:1, ilk format = fihbg_/email).
+        if (!lockShared && usernamesToTry.isNotEmpty) {
+          lockShared = await trySend(usernamesToTry.first, 1);
         }
 
         if (lockShared) {

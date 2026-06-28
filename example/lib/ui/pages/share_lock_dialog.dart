@@ -481,33 +481,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
         throw Exception(l10n.accessTokenNotFound);
       }
 
-      String receiver = _emailController.text.trim();
-      // Remove any spaces or dashes
-      receiver = receiver.replaceAll(RegExp(r'[\s\-]'), '');
-
-      List<String> usernamesToTry = [];
-      usernamesToTry.add(receiver);
-
-      // 1. Phone number logic
-      String digitsOnly = receiver.replaceAll(RegExp(r'[^0-9]'), '');
-      if (digitsOnly.isNotEmpty) {
-        if (digitsOnly.length == 10 && digitsOnly.startsWith('5')) {
-          usernamesToTry.add('90$digitsOnly');
-        } else if (digitsOnly.length == 11 && digitsOnly.startsWith('05')) {
-          usernamesToTry.add('90${digitsOnly.substring(1)}');
-        }
-        if (receiver.startsWith('+')) {
-          usernamesToTry.add(receiver.substring(1));
-        }
-      }
-
-      // 2. Email logic (Sanitization as used in RegisterPage)
-      if (receiver.contains('@')) {
-        String alphanumeric = receiver.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-        if (alphanumeric.isNotEmpty && !usernamesToTry.contains(alphanumeric)) {
-          usernamesToTry.add(alphanumeric);
-        }
-      }
+      final String receiver = _emailController.text.trim();
+      // Email ve telefon için fihbg_ dahil tüm formatları öncelik sırasıyla üret
+      final usernamesToTry = buildReceiverUsernames(receiver);
 
       bool shareSuccess = false;
       String? lastError;
@@ -515,10 +491,9 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
       final DateTime? shareStart = _shareType == 0 ? _startDate : null;
       final DateTime? shareEnd = _shareType == 0 ? _endDate : null;
 
-      // Try each format until one works
-      for (String userToTry in usernamesToTry) {
+      Future<bool> trySend(String userToTry, int createUser) async {
         try {
-          debugPrint("Attempting sendEKey to: $userToTry (createUser: 2)");
+          debugPrint("Attempting sendEKey to: $userToTry (createUser: $createUser)");
           await apiService.sendEKey(
             accessToken: accessToken,
             lockId: widget.lock['lockId'].toString(),
@@ -527,35 +502,27 @@ class _ShareLockDialogState extends State<ShareLockDialog> {
             startDate: shareStart,
             endDate: shareEnd,
             remoteEnable: _selectedPermission == 1 ? 1 : 2,
-            createUser: 2,
+            createUser: createUser,
           );
-          shareSuccess = true;
-          break;
+          return true;
         } catch (e) {
           lastError = e.toString();
-          debugPrint("Failed with $userToTry: $lastError");
-
-          if (lastError.contains('10004') || lastError.contains('1002')) {
-            try {
-              debugPrint("Retrying sendEKey to: $userToTry (createUser: 1)");
-              await apiService.sendEKey(
-                accessToken: accessToken,
-                lockId: widget.lock['lockId'].toString(),
-                receiverUsername: userToTry,
-                keyName: 'Key for $receiver',
-                startDate: shareStart,
-                endDate: shareEnd,
-                remoteEnable: _selectedPermission == 1 ? 1 : 2,
-                createUser: 1,
-              );
-              shareSuccess = true;
-              break;
-            } catch (e2) {
-              lastError = e2.toString();
-              debugPrint("Retry failed with $userToTry: $lastError");
-            }
-          }
+          debugPrint("Failed with $userToTry (createUser:$createUser): $lastError");
+          return false;
         }
+      }
+
+      // Faz 1: TÜM formatları createUser:2 (oluşturma YOK) ile dene — var olan
+      // kayıtlı hesabı bul (fihbg_/Yavuz Lock önce, sonra ham email/TTLock-native).
+      for (final userToTry in usernamesToTry) {
+        if (await trySend(userToTry, 2)) {
+          shareSuccess = true;
+          break;
+        }
+      }
+      // Faz 2: hiç kayıtlı değilse oluştur (createUser:1, ilk format = fihbg_/email).
+      if (!shareSuccess && usernamesToTry.isNotEmpty) {
+        shareSuccess = await trySend(usernamesToTry.first, 1);
       }
 
       if (!shareSuccess) {

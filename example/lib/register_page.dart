@@ -18,7 +18,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
+  final _usernameController = TextEditingController(); // e-posta (TTLock kimliği + doğrulama)
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _otpController = TextEditingController();
@@ -105,28 +105,39 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() => _isLoading = true);
 
     try {
-      // 1. Firebase hesabı oluştur (zaten varsa aynı şifreyle giriş yap)
+      // 1. Firebase hesabı oluştur — e-posta ile (doğrulama e-postaya gider).
+      //    Firebase OPSİYONELDİR: e-posta zaten kayıtlı + şifre uyuşmazsa
+      //    (invalid-credential) kayıt çökmemeli, TTLock kaydıyla devam etmeli.
       final email = _usernameController.text.trim();
       final password = _passwordController.text;
-      User user;
+      User? user;
       try {
         final cred = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
-        user = cred.user!;
+        user = cred.user;
       } on FirebaseAuthException catch (e) {
-        if (e.code != 'email-already-in-use') rethrow;
-        final cred = await _auth.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        user = cred.user!;
+        if (e.code == 'email-already-in-use') {
+          try {
+            final cred = await _auth.signInWithEmailAndPassword(
+              email: email,
+              password: password,
+            );
+            user = cred.user;
+          } catch (_) {
+            // Firebase şifresi uyuşmuyor — sessizce devam et (Firebase opsiyonel)
+          }
+        }
+        // Diğer Firebase hataları da kayıt akışını bozmasın
+      } catch (_) {
+        // Beklenmedik Firebase hatası — TTLock kaydıyla devam et
       }
 
-      // 2. TTLock'a kayıt ol (hesap zaten varsa mevcut hesaba bağlan)
+      // 2. TTLock'a kayıt ol — kimlik e-posta (fihbg_<email>)
       final apiService = ApiService(context.read<AuthRepository>());
-      final sanitizedUsername = email.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      final sanitizedUsername =
+          email.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
       final fallback = '${ApiConfig.ttlockUsernamePrefix}$sanitizedUsername';
 
       String prefixedUsername = fallback;
@@ -151,8 +162,8 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       }
 
-      // 3. TTLock kullanıcı adını Firebase'e kaydet
-      await user.updateDisplayName(prefixedUsername);
+      // 3. TTLock kullanıcı adını Firebase'e kaydet (Firebase varsa)
+      await user?.updateDisplayName(prefixedUsername);
 
       if (!mounted) return;
 
@@ -337,10 +348,17 @@ class _RegisterPageState extends State<RegisterPage> {
           const SizedBox(height: 40),
           TextFormField(
             controller: _usernameController,
-            decoration: _buildInputDecoration(l10n.emailOrPhone, prefixIcon: Icons.email),
+            decoration: _buildInputDecoration(
+                l10n.localeName == 'tr' ? 'E-posta' : 'Email',
+                prefixIcon: Icons.email),
             style: const TextStyle(color: Colors.white),
             keyboardType: TextInputType.emailAddress,
-            validator: (value) => value!.isEmpty ? l10n.usernameRequired : null,
+            validator: (value) {
+              final v = value?.trim() ?? '';
+              if (v.isEmpty) return l10n.usernameRequired;
+              if (!v.contains('@')) return l10n.invalidEmail;
+              return null;
+            },
           ),
           const SizedBox(height: 20),
           TextFormField(

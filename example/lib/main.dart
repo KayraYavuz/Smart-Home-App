@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:ttlock_flutter/ttlock.dart'; // TTLock SDK import
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:yavuz_lock/blocs/auth/auth_bloc.dart';
 import 'package:yavuz_lock/blocs/auth/auth_event.dart';
@@ -87,6 +88,22 @@ Future<void> main() async {
       .startListening(app_config.TTLockConfig.webhookCallbackUrl);
 
   final authRepository = AuthRepository();
+
+  // saved_email (SharedPreferences) reinstall'da silinir ama Keychain'deki email
+  // kalır. Boşsa Keychain'den geri yükle → profil/bookings/iletişim formu hepsi düzelir.
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    if ((prefs.getString('saved_email') ?? '').isEmpty) {
+      final kcEmail = await authRepository.getEmail();
+      if (kcEmail != null && kcEmail.isNotEmpty) {
+        await prefs.setString('saved_email', kcEmail);
+        debugPrint('✅ saved_email Keychain\'den geri yüklendi: $kcEmail');
+      }
+    }
+  } catch (e) {
+    debugPrint('⚠️ saved_email geri yüklenemedi: $e');
+  }
+
   runApp(
     MultiProvider(
       providers: [

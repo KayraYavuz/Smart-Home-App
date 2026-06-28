@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yavuz_lock/api_service.dart';
-import 'package:yavuz_lock/config.dart';
 import 'package:yavuz_lock/repositories/auth_repository.dart';
 import 'package:yavuz_lock/services/email_service.dart';
 import 'package:yavuz_lock/ui/theme.dart';
@@ -464,6 +463,7 @@ class _BookingsPageState extends State<BookingsPage> {
   Future<void> _createBooking(Map<String, dynamic> unit, String bookingType) async {
     final guestNameCtrl = TextEditingController();
     final guestContactCtrl = TextEditingController();
+    final guestEmailCtrl = TextEditingController(); // PIN şifresini göndermek için
 
     final now = DateTime.now();
     DateTime startTime = now;
@@ -511,10 +511,26 @@ class _BookingsPageState extends State<BookingsPage> {
                   decoration: InputDecoration(
                     labelText: accessType == 'ekey'
                         ? _t(ctx, tr: 'Alıcı E-posta *', en: 'Recipient Email *')
-                        : _t(ctx, tr: 'Telefon / E-posta', en: 'Phone / Email'),
+                        : _t(ctx, tr: 'Telefon', en: 'Phone'),
                     labelStyle: const TextStyle(color: Colors.grey),
                   ),
                 ),
+                // PIN için: şifreyi e-postayla göndermek üzere ayrı, net alan
+                if (accessType == 'pin') ...[
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: guestEmailCtrl,
+                    style: const TextStyle(color: Colors.white),
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: _t(ctx,
+                          tr: 'E-posta (şifre buraya gönderilir)',
+                          en: 'Email (PIN sent here)'),
+                      labelStyle: const TextStyle(color: Colors.grey),
+                      prefixIcon: const Icon(Icons.email_outlined, color: Colors.grey, size: 20),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 12),
                 if (bookingType != 'cyclic') ...[
                   Text(_t(ctx, tr: 'Başlangıç:', en: 'Start:'),
@@ -744,21 +760,49 @@ class _BookingsPageState extends State<BookingsPage> {
         if (email.isEmpty || !email.contains('@')) {
           throw Exception(_t(context, tr: 'Geçerli bir e-posta gerekli', en: 'Valid email required'));
         }
-        // App'e kayıt olan misafirin TTLock kullanıcı adı fihbg_<sanitized> olur
-        // (register_page ile aynı format). eKey'i bu formata gönder ki app'te görünsün.
-        final sanitized = email.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
-        final receiverUsername = '${ApiConfig.ttlockUsernamePrefix}$sanitized';
-        final result = await _api.sendEKey(
-          accessToken: token,
-          lockId: lockId,
-          receiverUsername: receiverUsername,
-          keyName: '${guestNameCtrl.text.trim().isEmpty ? _t(context, tr: 'Misafir', en: 'Guest') : guestNameCtrl.text.trim()} - ${unit['name']}',
-          startDate: startTime,
-          endDate: endTime,
-          createUser: 1,
-          remoteEnable: 1, // link ile uzaktan açma için
-          cyclicConfig: cyclicConfigData,
-        );
+        // Paylaşılan yardımcı: fihbg_ (Yavuz Lock) + ham email (TTLock-native) +
+        // sanitized formatlarını öncelik sırasıyla üretir. ÖNCE hepsini
+        // createUser:2 (oluşturma yok) ile dene → kayıtlı hesabı bul. Hiçbiri
+        // yoksa ilk format (fihbg_) ile oluştur.
+        final usernamesToTry = buildReceiverUsernames(email);
+        final keyName =
+            '${guestNameCtrl.text.trim().isEmpty ? _t(context, tr: 'Misafir', en: 'Guest') : guestNameCtrl.text.trim()} - ${unit['name']}';
+
+        Future<Map<String, dynamic>?> trySend(String u, int cu) async {
+          try {
+            final r = await _api.sendEKey(
+              accessToken: token!,
+              lockId: lockId,
+              receiverUsername: u,
+              keyName: keyName,
+              startDate: startTime,
+              endDate: endTime,
+              createUser: cu,
+              remoteEnable: 1, // link ile uzaktan açma için
+              cyclicConfig: cyclicConfigData,
+            );
+            debugPrint('✅ eKey gönderildi: "$u" (createUser:$cu)');
+            return r;
+          } catch (e) {
+            debugPrint('⚠️ eKey "$u" (createUser:$cu) başarısız: $e');
+            return null;
+          }
+        }
+
+        Map<String, dynamic>? result;
+        // Faz 1: var olan kayıtlı hesabı bul (createUser:2, oluşturma yok)
+        for (final u in usernamesToTry) {
+          result = await trySend(u, 2);
+          if (result != null) break;
+        }
+        // Faz 2: hiç kayıtlı değilse ilk format (fihbg_) ile oluştur
+        if (result == null && usernamesToTry.isNotEmpty) {
+          result = await trySend(usernamesToTry.first, 1);
+        }
+
+        if (result == null) {
+          throw Exception(_t(context, tr: 'eKey gönderilemedi', en: 'Failed to send eKey'));
+        }
         keyId = result['keyId']?.toString() ?? result['key_id']?.toString();
       }
 
@@ -807,8 +851,13 @@ class _BookingsPageState extends State<BookingsPage> {
       }
 
       // Misafire bildirim emaili gönder (sonucu yakala)
+      // PIN → ayrı e-posta alanı (yoksa contact alanına bak); eKey → alıcı e-posta
       bool emailSent = false;
-      final contactEmail = guestContactCtrl.text.trim();
+      final contactEmail = accessType == 'pin'
+          ? (guestEmailCtrl.text.contains('@')
+              ? guestEmailCtrl.text.trim()
+              : guestContactCtrl.text.trim())
+          : guestContactCtrl.text.trim();
       if (contactEmail.contains('@')) {
         try {
           emailSent = await EmailService().sendBookingConfirmation(

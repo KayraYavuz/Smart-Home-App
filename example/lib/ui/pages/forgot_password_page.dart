@@ -178,7 +178,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             autofillHints: const [AutofillHints.email],
             enabled: !_isLoading,
             decoration: InputDecoration(
-              labelText: l10n.emailOrPhone,
+              labelText: Localizations.localeOf(context).languageCode == 'tr'
+                  ? 'E-posta'
+                  : 'Email',
               prefixIcon: const Icon(Icons.email_outlined),
             ),
             validator: (v) {
