@@ -99,6 +99,23 @@ fi
 cd "$PROJECT_DIR"
 echo "Proje dizini: $(pwd)"
 
+# env.dart dosyasının oluşturulması (Gitignored olduğu için Xcode Cloud'da bulunmaz)
+ENV_DART_PATH="lib/env/env.dart"
+if [ -n "$ENV_DART_CONTENT_BASE64" ]; then
+    echo "env.dart dosyası Base64 içerikten decode ediliyor..."
+    mkdir -p lib/env
+    echo "$ENV_DART_CONTENT_BASE64" | base64 --decode > "$ENV_DART_PATH"
+elif [ -n "$ENV_DART_CONTENT" ]; then
+    echo "env.dart dosyası düz metin içerikten oluşturuluyor..."
+    mkdir -p lib/env
+    echo "$ENV_DART_CONTENT" > "$ENV_DART_PATH"
+else
+    echo "⚠️ UYARI: ENV_DART_CONTENT_BASE64 veya ENV_DART_CONTENT değişkeni bulunamadı. env.dart.example şablondan kopyalanıyor..."
+    mkdir -p lib/env
+    cp lib/env/env.dart.example "$ENV_DART_PATH"
+fi
+
+
 echo "Flutter paketleri yükleniyor..."
 flutter pub get
 
