@@ -4,6 +4,8 @@
 set -e
 set -x
 
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
 echo "=== BAŞLANGIÇ: CI Post Clone Script ($(date)) ==="
 
 # 1. GoogleService-Info.plist ve .env dosyalarını oluştur
@@ -65,18 +67,12 @@ else
     touch ../../.env
 fi
 
-# 2. Flutter Kurulumu
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-if [ -z "$CI_WORKSPACE" ]; then
-    if [ -n "$CI_PRIMARY_REPOSITORY_PATH" ]; then
-        CI_WORKSPACE="$CI_PRIMARY_REPOSITORY_PATH"
-    else
-        CI_WORKSPACE="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-    fi
+# Flutter'ı Repository içinde klonlayarak Sandbox kısıtlamalarını (PhaseScriptExecution yetki hatasını) önlüyoruz.
+if [ -n "$CI_PRIMARY_REPOSITORY_PATH" ]; then
+    FLUTTER_ROOT="$CI_PRIMARY_REPOSITORY_PATH/flutter"
+else
+    FLUTTER_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)/flutter"
 fi
-
-FLUTTER_ROOT="$CI_WORKSPACE/flutter"
 
 if [ ! -d "$FLUTTER_ROOT" ]; then
     echo "Flutter indiriliyor (stable)..."
@@ -87,6 +83,11 @@ if [ ! -d "$FLUTTER_ROOT" ]; then
 fi
 
 export PATH="$FLUTTER_ROOT/bin:$PATH"
+
+# CocoaPods güncellemesi ve brew CocoaPods çakışmalarını engelleme
+echo "CocoaPods kontrol ediliyor ve güncelleniyor..."
+sudo gem install cocoapods --no-document || gem install cocoapods --user-install --no-document || echo "CocoaPods update skipped"
+
 echo "Flutter version checking..."
 flutter --version
 
