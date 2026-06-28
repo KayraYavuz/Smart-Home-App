@@ -105,7 +105,8 @@ echo "Yerelleştirme dosyaları oluşturuluyor..."
 flutter gen-l10n
 
 echo "iOS konfigürasyonu hazırlanıyor..."
-flutter config --no-swift-package-manager
+# --no-swift-package-manager Flutter 3.27+'da kaldırıldı; yeni flag veya eski flag, her ikisini dene
+flutter config --no-enable-swift-package-manager 2>/dev/null || flutter config --no-swift-package-manager 2>/dev/null || echo "SPM flag not needed in this Flutter version"
 flutter build ios --config-only --no-codesign
 
 # 4. iOS Pod Kurulumu
